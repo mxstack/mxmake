@@ -1,6 +1,46 @@
 from mxdev import Hook
 from mxdev import State
+import abc
+import logging
 import os
+import sys
+
+
+NAMESPACE = 'mxenv-'
+
+
+###############################################################################
+# logging
+###############################################################################
+
+logger = logging.getLogger('mxenv')
+
+
+def setup_logger(level):
+    root = logging.getLogger()
+    root.setLevel(level)
+    handler = logging.StreamHandler(sys.stdout)
+    handler.setLevel(level)
+    if level == logging.DEBUG:
+        formatter = logging.Formatter(
+            "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+        )
+        handler.setFormatter(formatter)
+    root.addHandler(handler)
+
+
+###############################################################################
+# utils
+###############################################################################
+
+def ns_name(name):
+    return '{}{}'.format(NAMESPACE, name)
+
+
+def list_value(value):
+    if not value:
+        return list()
+    return [v.strip() for v in value.replace('\n', ' ').strip().split(' ')]
 
 
 SCRIPT_TEMPLATE = """\
@@ -48,18 +88,70 @@ class Environment:
         )
 
 
-TEST_TEMPLATE = """\
+###############################################################################
+# template basics
+###############################################################################
+
+class template:
+    _registry = dict()
+
+    def __init__(self, name):
+        self.name = name
+
+    def __call__(self, ob):
+        ob.name = self.name
+        self._registry[self.name] = ob
+        return ob
+
+    @classmethod
+    def lookup(cls, name):
+        return cls._registry.get(name)
+
+
+class Template(abc.ABC):
+    name = None
+
+    def __init__(self, config):
+        self.config = config
+
+    @property
+    def settings(self):
+        return self.config.hooks.get(ns_name(self.name), {})
+
+    def ensure_directory(self, name):
+        if not os.path.exists(name):
+            os.mkdir(name)
+
+    @abc.abstractmethod
+    def write(self):
+        """Write script to filesystem."""
+
+
+###############################################################################
+# test script template
+###############################################################################
+
+TEST_TEMPLATE = """
 ./bin/zope-testrunner --auto-color --auto-progress \\
 {testpaths}
     --module=$1
 """
 
 
-class Test:
+@template('test.sh')
+class Test(Template):
+    description = 'Run tests'
 
-    def paths(self, test_packages, attr):
+    @property
+    def env(self):
+        env_name = self.settings.get('environment')
+        return Environment(
+            **self.config.hooks.get(ns_name(env_name), {}) if env_name else {}
+        )
+
+    def package_paths(self, attr):
         paths = list()
-        for name, package in test_packages.items():
+        for name, package in self.config.packages.items():
             if attr not in package:
                 continue
             path = '{target}/{name}/{path}'.format(
@@ -70,16 +162,26 @@ class Test:
             paths.append(path)
         return paths
 
-    def render(self, test_packages):
-        paths = self.paths(test_packages, 'mxenv-test-path')
+    def render(self):
+        paths = self.package_paths(ns_name('test-path'))
         return TEST_TEMPLATE.format(
             testpaths='\n'.join(
                 ['    --test-path={} \\'.format(p) for p in paths]
             )
         )
 
+    def write(self):
+        self.ensure_directory('scripts')
+        data = Script().render(self.description, self.env.render(self.render()))
+        with open(os.path.join('scripts', self.name), 'w') as f:
+            f.write(data)
 
-COVERAGE_TEMPLATE = """\
+
+###############################################################################
+# coverage script template
+###############################################################################
+
+COVERAGE_TEMPLATE = """
 sources=(
 {sourcepaths}
 )
@@ -97,11 +199,13 @@ sources=${{sources:1}}
 """
 
 
+@template('coverage.sh')
 class Coverage(Test):
+    description = 'Run coverage'
 
-    def render(self, test_packages):
-        tpaths = self.paths(test_packages, 'mxenv-test-path')
-        spaths = self.paths(test_packages, 'mxenv-source-path')
+    def render(self):
+        tpaths = self.package_paths(ns_name('test-path'))
+        spaths = self.package_paths(ns_name('source-path'))
         return COVERAGE_TEMPLATE.format(
             sourcepaths='\n'.join(['    {}'.format(p) for p in spaths]),
             testpaths='\n'.join(
@@ -110,34 +214,26 @@ class Coverage(Test):
         )
 
 
+###############################################################################
+# mxdev hook
+###############################################################################
+
 class MxEnv(Hook):
-    namespace = 'mxenv-'
+    namespace = NAMESPACE
+
+    def __init__(self):
+        setup_logger(logging.INFO)
 
     def write(self, state: State) -> None:
         config = state.configuration
-        env = Environment(**config.hooks.get('mxenv-environment', {}))
-        test_packages = dict()
-        for name, package in config.packages.items():
-            if 'mxenv-test-path' in package:
-                test_packages[name] = package
-        if test_packages:
-            self.ensure_scripts_location()
-            script = Script()
-            test = Test()
-            self.write_script('test.sh', script.render(
-                'Run tests',
-                env.render(test.render(test_packages))
-            ))
-            coverage = Coverage()
-            self.write_script('coverage.sh', script.render(
-                'Run coverage',
-                env.render(coverage.render(test_packages))
-            ))
-
-    def ensure_scripts_location(self):
-        if not os.path.exists('scripts'):
-            os.mkdir('scripts')
-
-    def write_script(self, name, data):
-        with open(os.path.join('scripts', name), 'w') as f:
-            f.write(data)
+        templates = list_value(config.settings.get(ns_name('templates')))
+        if not templates:
+            logger.info('mxenv: No templates defined')
+            return
+        for name in templates:
+            factory = template.lookup(name)
+            if not factory:
+                msg = 'mxenv: No template registered under name {}'.format(name)
+                logger.warning(msg)
+                continue
+            factory(config).write()
