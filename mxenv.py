@@ -232,7 +232,7 @@ done
 
 
 @template('clean.sh')
-class Clean(Test):
+class Clean(ScriptTemplate):
     description = 'Clean development environment'
     to_remove = ['constraints-mxdev.txt', 'requirements-mxdev.txt']
     template_to_remove = {
@@ -250,6 +250,29 @@ class Clean(Test):
         to_remove += list_value(self.settings.get('to-remove'))
         return CLEAN_TEMPLATE.format(
             to_remove='\n'.join(['    {}'.format(it) for it in to_remove])
+        )
+
+
+###############################################################################
+# deps script template
+###############################################################################
+
+DEPS_TEMPLATE = """
+sudo apt-get install -y \\
+{deps}
+"""
+
+
+@template('deps.sh')
+class Deps(ScriptTemplate):
+    description = 'Install system dependencies'
+
+    def render(self):
+        deps = list_value(self.settings.get('dependencies'))
+        return DEPS_TEMPLATE.format(
+            deps='\n'.join(
+                ['    {} \\'.format(dep) for dep in deps]
+            ).rstrip(' \\')
         )
 
 
