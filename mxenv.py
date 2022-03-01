@@ -294,6 +294,30 @@ class DocsScript(ScriptTemplate):
 
 
 ###############################################################################
+# venv script template
+###############################################################################
+
+VENV_TEMPLATE = """
+set -e
+
+python3 -m venv .
+./bin/pip install -U pip setuptools wheel
+{custom}
+
+./bin/pip install -r requirements-mxdev.txt
+"""
+
+
+@template('venv.sh')
+class VenvScript(ScriptTemplate):
+    description = 'Install virtual environment'
+
+    def render(self):
+        custom = self.settings.get('custom-install', '')
+        return VENV_TEMPLATE.format(custom=custom)
+
+
+###############################################################################
 # mxdev hook
 ###############################################################################
 
