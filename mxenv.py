@@ -215,6 +215,45 @@ class Coverage(Test):
 
 
 ###############################################################################
+# clean script template
+###############################################################################
+
+CLEAN_TEMPLATE = """
+to_remove=(
+{to_remove}
+)
+
+for item in "${{to_remove[@]}}"; do
+    if [ -e "$item" ]; then
+        rm -rf "$item"
+    fi
+done
+"""
+
+
+@template('clean.sh')
+class Clean(Test):
+    description = 'Clean development environment'
+    to_remove = ['constraints-mxdev.txt', 'requirements-mxdev.txt']
+    template_to_remove = {
+        'coverage.sh': ['.coverage', 'htmlcov'],
+        'venv.sh': ['bin', 'include', 'lib64', 'lib', 'pyvenv.cfg', 'share'],
+        'docs.sh': ['docs/html']
+    }
+
+    def render(self):
+        to_remove = list()
+        to_remove += self.to_remove
+        templates = list_value(self.config.settings.get(ns_name('templates')))
+        for name in templates:
+            to_remove += self.template_to_remove.get(name, list())
+        to_remove += list_value(self.settings.get('to-remove'))
+        return CLEAN_TEMPLATE.format(
+            to_remove='\n'.join(['    {}'.format(it) for it in to_remove])
+        )
+
+
+###############################################################################
 # mxdev hook
 ###############################################################################
 
