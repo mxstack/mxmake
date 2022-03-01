@@ -1,14 +1,17 @@
 mxenv
 =====
 
-This package is an extension for `mxdev <https://github.com/bluedynamics/mxdev>`_.
+An extension for `mxdev <https://github.com/bluedynamics/mxdev>`_.
 
 
 Overview
 --------
 
-It supports generating helper scripts for developing python packages.
+This tool supports generating helper scripts for developing python packages.
 Configuration is done inside the ``mxdev.ini`` file.
+
+It's initial target is for development of the repositories contained in the
+ `conestack <https://github.com/conestack>`_ organization on github.
 
 Helper scripts are generated from templates which are defined in the
 ``settings`` section of ``mxdev.ini``:
