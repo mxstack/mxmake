@@ -1,5 +1,6 @@
 from mxdev import Hook
 from mxdev import State
+import os
 
 
 SCRIPT_TEMPLATE = """\
@@ -40,7 +41,7 @@ class Environment:
     def render(self, content):
         return ENV_TEMPLATE.format(
             setenv='\n'.join([
-                'export {}={}'.format(k, v) for k, v in self.env.items()
+                'export {}="{}"'.format(k, v) for k, v in self.env.items()
             ]),
             content=content,
             unsetenv='\n'.join(['unset {}'.format(k) for k in self.env])
@@ -50,36 +51,41 @@ class Environment:
 TEST_TEMPLATE = """\
 ./bin/zope-testrunner --auto-color --auto-progress \\
 {testpaths}
+    --module=$1
 """
 
 
 class Test:
 
-    def test_paths(self, test_packages):
-        test_paths = list()
+    def paths(self, test_packages, attr):
+        paths = list()
         for name, package in test_packages.items():
-            testpath = '{target}/{name}/{testpath}'.format(
+            if attr not in package:
+                continue
+            path = '{target}/{name}/{path}'.format(
                 target=package['target'],
                 name=name,
-                testpath=package['mxenv-test-path']
-            )
-            test_paths.append(testpath)
-        return test_paths
+                path=package[attr]
+            ).rstrip('/')
+            paths.append(path)
+        return paths
 
     def render(self, test_packages):
-        paths = self.test_paths(test_packages)
+        paths = self.paths(test_packages, 'mxenv-test-path')
         return TEST_TEMPLATE.format(
-            testpaths='\n'.join(['    --test-path={} \\'.format(p) for p in paths])
+            testpaths='\n'.join(
+                ['    --test-path={} \\'.format(p) for p in paths]
+            )
         )
 
 
 COVERAGE_TEMPLATE = """\
 sources=(
-    {sourcepaths}
+{sourcepaths}
 )
 
-sources=$(printf ",%s" "${sources[@]}")
-sources=${sources:1}
+sources=$(printf ",%s" "${{sources[@]}}")
+sources=${{sources:1}}
 
 ./bin/coverage run \\
     --source=$sources \\
@@ -94,25 +100,44 @@ sources=${sources:1}
 class Coverage(Test):
 
     def render(self, test_packages):
-        paths = self.test_paths(test_packages)
-        return TEST_TEMPLATE.format(
-            sourcepaths='\n'.join(['    {}'.format(p) for p in paths]),
-            testpaths='\n'.join(['    --test-path={} \\'.format(p) for p in paths])
+        tpaths = self.paths(test_packages, 'mxenv-test-path')
+        spaths = self.paths(test_packages, 'mxenv-source-path')
+        return COVERAGE_TEMPLATE.format(
+            sourcepaths='\n'.join(['    {}'.format(p) for p in spaths]),
+            testpaths='\n'.join(
+                ['    --test-path={} \\'.format(p) for p in tpaths]
+            ).rstrip(' \\')
         )
 
 
 class MxEnv(Hook):
     namespace = 'mxenv-'
 
-    def read(self, state: State) -> None:
-        config = state.configuration
-        self.env = Environment(**config.hooks.get('mxenv-environment', {}))
-        self.test_packages = dict()
-        for name, package in config.packages.items():
-            if package.get('mxenv-test-path'):
-                self.test_packages[name] = package
-
     def write(self, state: State) -> None:
-        """Gets executed after mxdev write operation."""
-        print(self.env.env)
-        print(self.test_packages)
+        config = state.configuration
+        env = Environment(**config.hooks.get('mxenv-environment', {}))
+        test_packages = dict()
+        for name, package in config.packages.items():
+            if 'mxenv-test-path' in package:
+                test_packages[name] = package
+        if test_packages:
+            self.ensure_scripts_location()
+            script = Script()
+            test = Test()
+            self.write_script('test.sh', script.render(
+                'Run tests',
+                env.render(test.render(test_packages))
+            ))
+            coverage = Coverage()
+            self.write_script('coverage.sh', script.render(
+                'Run coverage',
+                env.render(coverage.render(test_packages))
+            ))
+
+    def ensure_scripts_location(self):
+        if not os.path.exists('scripts'):
+            os.mkdir('scripts')
+
+    def write_script(self, name, data):
+        with open(os.path.join('scripts', name), 'w') as f:
+            f.write(data)
