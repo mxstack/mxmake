@@ -152,7 +152,7 @@ TEST_TEMPLATE = """
 
 
 @template('test.sh')
-class Test(ScriptTemplate):
+class TestScript(ScriptTemplate):
     description = 'Run tests'
 
     def package_paths(self, attr):
@@ -200,7 +200,7 @@ sources=${{sources:1}}
 
 
 @template('coverage.sh')
-class Coverage(Test):
+class CoverageScript(TestScript):
     description = 'Run coverage'
 
     def render(self):
@@ -232,7 +232,7 @@ done
 
 
 @template('clean.sh')
-class Clean(ScriptTemplate):
+class CleanScript(ScriptTemplate):
     description = 'Clean development environment'
     to_remove = ['constraints-mxdev.txt', 'requirements-mxdev.txt']
     template_to_remove = {
@@ -264,7 +264,7 @@ sudo apt-get install -y \\
 
 
 @template('deps.sh')
-class Deps(ScriptTemplate):
+class DepsScript(ScriptTemplate):
     description = 'Install system dependencies'
 
     def render(self):
@@ -274,6 +274,23 @@ class Deps(ScriptTemplate):
                 ['    {} \\'.format(dep) for dep in deps]
             ).rstrip(' \\')
         )
+
+
+###############################################################################
+# docs script template
+###############################################################################
+
+DOCS_TEMPLATE = """
+./bin/sphinx-build docs/source/ docs/html
+"""
+
+
+@template('docs.sh')
+class DocsScript(ScriptTemplate):
+    description = 'Build docs'
+
+    def render(self):
+        return DOCS_TEMPLATE
 
 
 ###############################################################################
