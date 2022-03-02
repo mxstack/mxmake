@@ -6,27 +6,9 @@ import os
 import sys
 
 
-NAMESPACE = 'mxenv-'
-
-
-###############################################################################
-# logging
-###############################################################################
-
 logger = logging.getLogger('mxenv')
 
-
-def setup_logger(level):
-    root = logging.getLogger()
-    root.setLevel(level)
-    handler = logging.StreamHandler(sys.stdout)
-    handler.setLevel(level)
-    if level == logging.DEBUG:
-        formatter = logging.Formatter(
-            "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-        )
-        handler.setFormatter(formatter)
-    root.addHandler(handler)
+NAMESPACE = 'mxenv-'
 
 
 ###############################################################################
@@ -325,7 +307,7 @@ class MxEnv(Hook):
     namespace = NAMESPACE
 
     def __init__(self):
-        setup_logger(logging.INFO)
+        logger.info('mxenv: hook initialized')
 
     def write(self, state: State) -> None:
         config = state.configuration
