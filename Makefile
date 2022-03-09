@@ -1,15 +1,18 @@
 # Makefile for mxenv projects.
 
 ###############################################################################
-# Settings
+# Project settings
+###############################################################################
 
 PYTHON?=python3
 VENV_FOLDER?=.
 PROJECT_CONFIG?=mxdev.ini
 
 ###############################################################################
-# Defensive settings for make: https://tech.davis-hansson.com/p/make/
+# Basics
+###############################################################################
 
+# Defensive settings for make: https://tech.davis-hansson.com/p/make/
 SHELL:=bash
 .ONESHELL:
 # for Makefile debugging purposes add -x to the .SHELLFLAGS
@@ -19,9 +22,7 @@ SHELL:=bash
 MAKEFLAGS+=--warn-undefined-variables
 MAKEFLAGS+=--no-builtin-rules
 
-###############################################################################
 # Colors
-
 # OK=Green, warn=yellow, error=red
 ifeq ($(TERM),)
 # no colors if not in terminal
@@ -38,15 +39,8 @@ else
 	NO_COLOR=`tput sgr0`
 endif
 
-###############################################################################
-# Basics
-
-PIP_BIN:=$(VENV_FOLDER)/bin/pip
-MXDEV:=https://github.com/bluedynamics/mxdev/archive/master.zip
-MVENV:=https://github.com/conestack/mxenv/archive/master.zip
-
 # Sentinel files
-SENTINEL_FOLDER:=make/.sentinels
+SENTINEL_FOLDER:=.sentinels
 SENTINEL:=$(SENTINEL_FOLDER)/about.txt
 $(SENTINEL):
 	@mkdir -p $(SENTINEL_FOLDER)
@@ -54,6 +48,13 @@ $(SENTINEL):
 
 ###############################################################################
 # venv
+###############################################################################
+
+PIP_BIN:=$(VENV_FOLDER)/bin/pip
+#MXDEV:=https://github.com/bluedynamics/mxdev/archive/master.zip
+#MVENV:=https://github.com/conestack/mxenv/archive/master.zip
+MXDEV:=sources/mxdev
+MVENV:=sources/mxenv
 
 VENV_SENTINEL:=$(SENTINEL_FOLDER)/venv.sentinel
 
@@ -70,6 +71,7 @@ $(VENV_SENTINEL): $(SENTINEL)
 
 ###############################################################################
 # mxenv
+###############################################################################
 
 MXENV_SENTINEL:=$(SENTINEL_FOLDER)/mxenv.sentinel
 
@@ -83,6 +85,7 @@ $(MXENV_SENTINEL): $(VENV_SENTINEL) $(SENTINEL)
 
 ###############################################################################
 # mxdev
+###############################################################################
 
 MXDEV_SENTINEL:=$(SENTINEL_FOLDER)/mxdev.sentinel
 
@@ -96,8 +99,9 @@ $(MXDEV_SENTINEL): $(MXENV_SENTINEL) $(VENV_SENTINEL) $(SENTINEL)
 
 ###############################################################################
 # pip
+###############################################################################
 
-PIP_PACKAGES=installed.txt
+PIP_PACKAGES=.installed.txt
 
 .PHONY: pip
 pip: $(PIP_PACKAGES)
