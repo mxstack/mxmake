@@ -180,3 +180,23 @@ ifneq ("$(wildcard $(COVERAGE_SCRIPT))","")
 else
 	@echo "$(ERROR_COLOR)Coverage script not exists $(ERROR_COLOR)"
 endif
+
+###############################################################################
+# clean
+###############################################################################
+
+COMMON_CLEAN_TARGETS=\
+    .coverage .installed.txt .sentinels bin config/custom-clean.conf \
+    config/system-dependencies.conf constraints-mxdev.txt docs/html htmlcov \
+    include lib lib64 openldap pyvenv.cfg requirements-mxdev.txt \
+    scripts/custom-pip.sh scripts/run-coverage.sh scripts/run-tests.sh \
+    share
+CUSTOM_CLEAN_TARGETS=config/custom-clean.conf
+
+.PHONY: clean
+clean:
+	@echo "$(OK_COLOR)Clean environment $(NO_COLOR)"
+	@rm -rf $(COMMON_CLEAN_TARGETS)
+ifneq ("$(wildcard $(CUSTOM_CLEAN_TARGETS))","")
+	@rm -rf $$(cat $(CUSTOM_CLEAN_TARGETS))
+endif

@@ -36,46 +36,29 @@ please file an issue at github.
 Bootstrap
 ---------
 
-To bootstrap a new project with mxenv, run the following:
+To bootstrap a new project with mxenv, get the mxenv makefile:
 
 .. code-block:: sh
 
     wget https://raw.githubusercontent.com/conestack/mxenv/master/Makefile
-    make bootstrap
 
-Create ``mxdev.ini`` if not already done and run:
-
-.. code-block:: sh
-
-    make init
-
-This runs initial mxdev without checking out sources. The project files are
-generated.
-
-NOTE: This replaces the minimal Makefile with the final project Makefile.
-
-
-Install
--------
-
-After bootstrapping the project, or after checking out an already existing
-project, it can be installed running:
+Create ``mxdev.ini`` and run:
 
 .. code-block:: sh
 
-    make install
+    make
 
 
 Templates
 ---------
 
-test.sh
-~~~~~~~
+run-tests
+~~~~~~~~~
 
 A script for running tests of python packages defined as mxdev sources. It
 utilizes ``zope-testrunner``, thus expects it to be installed.
 
-The generation target is ``scripts/test.sh``.
+The generation target is ``scripts/run-tests.sh``.
 
 Configuration looks like so:
 
@@ -83,26 +66,26 @@ Configuration looks like so:
 
     [settings]
     # tell mxenv to generate test script
-    mxenv-templates = test.sh
+    mxenv-templates = run-tests
 
     # optional system variables to set before running the tests
     [mxenv-env]
     ENVVAR = value
 
     # test script related settings
-    [mxenv-test.sh]
+    [mxenv-run-tests]
     # the section to use for environment variables
     environment = env
 
 
-coverage.sh
-~~~~~~~~~~~
+run-coverage
+~~~~~~~~~~~~
 
 A script for running coverage tests of python packages defined as mxdev sources.
 It utilizes ``zope-testrunner`` and ``coverage``, thus expects these packages to
 be installed.
 
-The generation target is ``scripts/coverage.sh``.
+The generation target is ``scripts/run-coverage.sh``.
 
 Configuration looks like so:
 
@@ -110,135 +93,84 @@ Configuration looks like so:
 
     [settings]
     # tell mxenv to generate coverage script
-    mxenv-templates = coverage.sh
+    mxenv-templates = run-coverage
 
     # optional system variables to set before running tests and coverage
     [mxenv-env]
     ENVVAR = value
 
     # coverage script related settings
-    [mxenv-coverage.sh]
+    [mxenv-run-coverage]
     # the section to use for environment variables
     environment = env
 
 
-clean.sh
-~~~~~~~~
+custom-pip
+~~~~~~~~~~
 
-A script to cleanup development environment. It deletes files and folders
-created during installation.
+A script which gets executed by ``make pip`` before remaining requirements are
+installed. This can be used for custom pip invocation, e.g. for packages
+requiring special build configuration or similar.
 
-The generation target is ``scripts/clean.sh``.
-
-Which items get deleted depends to a certain degree on which scripts are
-generated.
-
-Files which are always removed, are:
-
-- constraints-mxdev.txt
-- requirements-mxdev.txt
-
-If ``coverage.sh`` is present, additionally the following items are removed:
-
-- .coverage
-- htmlcov
-
-If ``docs.sh`` is present, additionally the following items are removed:
-
-- docs/html
-
-If ``venv.sh`` is present, additionally the following items are removed:
-
-- bin
-- include
-- lib64
-- lib
-- pyvenv.cfg
-- share
+The generation target is ``scripts/custom-pip.sh``.
 
 Configuration looks like so:
 
 .. code-block:: ini
 
     [settings]
-    # tell mxenv to generate clean script
-    mxenv-templates = clean.sh
+    # tell mxenv to generate custom pip script
+    mxenv-templates = custom-pip
 
-    # clean script related settings
-    [mxenv-clean.sh]
-    # additional items to remove at cleanup
-    to-remove = item1 item2
+    # custom pip script related settings
+    [mxenv-custom-pip]
+    scripts =
+        scripts/custom-pip-1.sh
+        scripts/custom-pip-2.sh
 
 
-deps.sh
-~~~~~~~
+system-dependencies
+~~~~~~~~~~~~~~~~~~~
 
-A script to install required system dependencies for development.
+A config file read by ``make deps`` to install required system dependencies for
+development.
 
 Currently it depends on ``sudo`` and ``apt``.
 
-The generation target is ``scripts/deps.sh``.
+The generation target is ``config/system-dependencies.conf``.
 
 Configuration looks like so:
 
 .. code-block:: ini
 
     [settings]
-    # tell mxenv to generate deps script
-    mxenv-templates = deps.sh
+    # tell mxenv to generate system dependencies config file
+    mxenv-templates = system-dependencies
 
-    # deps script related settings
-    [mxenv-deps.sh]
+    # system dependencies related settings
+    [mxenv-system-dependencies]
     # system packages to install
     dependencies = build-essential curl
 
 
-docs.sh
-~~~~~~~
+custom-clean
+~~~~~~~~~~~~
 
-A script to run sphinx docs.
-
-The docs sources are expected at ``docs/source`` and get generated to
-``docs/html``.
+A config file read by ``make clean`` to remove additionally things from file
+system when cleaning up.
 
 Configuration looks like so:
 
 .. code-block:: ini
 
     [settings]
-    # tell mxenv to generate docs script
-    mxenv-templates = docs.sh
+    # tell mxenv to generate custom clean config file
+    mxenv-templates = custom-clean
 
-    # this script currently has no template related settings
-
-
-venv.sh
-~~~~~~~
-
-A script for installing a virtualenv.
-
-The generated script creates a virtualenv, installs/updates ``pip``,
-``setuptools`` and ``wheel``, runs optional install steps defined in the
-config file and calls ``pip`` with the requirements file generated by
-``mxdev`` (requirements-mxdev.txt).
-
-Configuration looks like so:
-
-.. code-block:: ini
-
-    [settings]
-    # tell mxenv to generate venv script
-    mxenv-templates = venv.sh
-
-    # venv script related settings
-    [mxenv-venv.sh]
-    # optional install commands. Useful if packages need to be installed
-    # in a custom way
-    custom-install =
-        ./bin/pip install \
-        --no-use-pep517 \
-        --global-option=build_ext \
-        package_name
+    # custom clean related settings
+    [mxenv-custom-clean]
+    # additional items to remove at cleanup
+    to-remove = item1 item2
 
 
 Contributors
