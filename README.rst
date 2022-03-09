@@ -33,11 +33,20 @@ This package is in alpha state. If you encounter bugs or like to improve it,
 please file an issue at github.
 
 
+Bootstrap
+---------
+
+To bootstrap a new project with mxenv, run the following:
+
+    wget https://raw.githubusercontent.com/conestack/mxenv/master/Makefile
+    make bootstrap
+
+
 Templates
-=========
+---------
 
 test.sh
--------
+~~~~~~~
 
 A script for running tests of python packages defined as mxdev sources. It
 utilizes ``zope-testrunner``, thus expects it to be installed.
@@ -63,7 +72,7 @@ Configuration looks like so:
 
 
 coverage.sh
------------
+~~~~~~~~~~~
 
 A script for running coverage tests of python packages defined as mxdev sources.
 It utilizes ``zope-testrunner`` and ``coverage``, thus expects these packages to
@@ -90,7 +99,7 @@ Configuration looks like so:
 
 
 clean.sh
---------
+~~~~~~~~
 
 A script to cleanup development environment. It deletes files and folders
 created during installation.
@@ -138,7 +147,7 @@ Configuration looks like so:
 
 
 deps.sh
--------
+~~~~~~~
 
 A script to install required system dependencies for development.
 
@@ -161,7 +170,7 @@ Configuration looks like so:
 
 
 docs.sh
--------
+~~~~~~~
 
 A script to run sphinx docs.
 
@@ -180,7 +189,7 @@ Configuration looks like so:
 
 
 venv.sh
--------
+~~~~~~~
 
 A script for installing a virtualenv.
 

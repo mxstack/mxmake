@@ -40,8 +40,6 @@ setup(
         'setuptools'
     ],
     entry_points={
-        'mxdev': [
-            'hook = mxenv:MxEnv',
-        ]
+        'mxdev': ['hook = mxenv:MxEnv']
     }
 )
