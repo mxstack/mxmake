@@ -52,9 +52,9 @@ $(SENTINEL):
 
 PIP_BIN:=$(VENV_FOLDER)/bin/pip
 #MXDEV:=https://github.com/bluedynamics/mxdev/archive/master.zip
+MXDEV:=-e sources/mxdev
 #MVENV:=https://github.com/conestack/mxenv/archive/master.zip
-MXDEV:=sources/mxdev
-MVENV:=sources/mxenv
+MVENV:=-e sources/mxenv
 
 VENV_SENTINEL:=$(SENTINEL_FOLDER)/venv.sentinel
 
@@ -102,11 +102,81 @@ $(MXDEV_SENTINEL): $(MXENV_SENTINEL) $(VENV_SENTINEL) $(SENTINEL)
 ###############################################################################
 
 PIP_PACKAGES=.installed.txt
+CUSTOM_PIP_INSTALL=scripts/custom-pip.sh
 
 .PHONY: pip
 pip: $(PIP_PACKAGES)
 
 $(PIP_PACKAGES): $(MXDEV_SENTINEL) $(MXENV_SENTINEL) $(VENV_SENTINEL) $(SENTINEL)
 	@echo "$(OK_COLOR)Install python packages $(NO_COLOR)"
+ifneq ("$(wildcard $(CUSTOM_PIP_INSTALL))","")
+	@echo "$(OK_COLOR)Run custom scripts $(NO_COLOR)"
+	@$(CUSTOM_PIP_INSTALL)
+endif
 	@$(PIP_BIN) install -r requirements-mxdev.txt
 	@$(PIP_BIN) freeze > $(PIP_PACKAGES)
+
+###############################################################################
+# deps
+###############################################################################
+
+SYSTEM_DEPS=config/system-dependencies.conf
+
+.PHONY: deps
+deps: $(SYSTEM_DEPS)
+
+$(SYSTEM_DEPS): $(MXENV_SENTINEL)
+	@echo "$(OK_COLOR)Install system dependencies $(NO_COLOR)"
+ifneq ("$(wildcard $(SYSTEM_DEPS))","")
+	@sudo apt-get install -y $$(cat $(SYSTEM_DEPS))
+	@touch $(SYSTEM_DEPS)
+else
+	@echo "$(ERROR_COLOR)System dependencies config not exists $(ERROR_COLOR)"
+endif
+
+###############################################################################
+# docs
+###############################################################################
+
+DOCS_BIN?=bin/sphinx-build
+DOCS_SOURCE?=docs/source
+DOCS_TARGET?=docs/html
+
+.PHONY: docs
+docs:
+	@echo "$(OK_COLOR)Build sphinx docs $(NO_COLOR)"
+ifneq ("$(wildcard $(DOCS_BIN))","")
+	@$(DOCS_BIN) $(DOCS_SOURCE) $(DOCS_TARGET)
+else
+	@echo "$(ERROR_COLOR)Sphinx binary not exists $(ERROR_COLOR)"
+endif
+
+###############################################################################
+# test
+###############################################################################
+
+TEST_SCRIPT=scripts/run-tests.sh
+
+.PHONY: test
+test:
+	@echo "$(OK_COLOR)Run tests $(NO_COLOR)"
+ifneq ("$(wildcard $(TEST_SCRIPT))","")
+	@$(TEST_SCRIPT)
+else
+	@echo "$(ERROR_COLOR)Test script not exists $(ERROR_COLOR)"
+endif
+
+###############################################################################
+# coverage
+###############################################################################
+
+COVERAGE_SCRIPT=scripts/run-coverage.sh
+
+.PHONY: coverage
+coverage:
+	@echo "$(OK_COLOR)Run coverage $(NO_COLOR)"
+ifneq ("$(wildcard $(COVERAGE_SCRIPT))","")
+	@$(COVERAGE_SCRIPT)
+else
+	@echo "$(ERROR_COLOR)Coverage script not exists $(ERROR_COLOR)"
+endif

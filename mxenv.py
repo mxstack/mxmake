@@ -16,7 +16,7 @@ NAMESPACE = 'mxenv-'
 ###############################################################################
 
 def ns_name(name):
-    return '{}{}'.format(NAMESPACE, name)
+    return f'{NAMESPACE}{name}'
 
 
 def list_value(value):
@@ -82,9 +82,7 @@ exit 0
 
 def render_script(description, content):
     return SCRIPT_TEMPLATE.format(
-        description='\n'.join([
-            '# {}'.format(line) for line in description.split('\n')
-        ]),
+        description='\n'.join([f'# {line}' for line in description.split('\n')]),
         content=content
     )
 
@@ -98,11 +96,9 @@ ENV_TEMPLATE = """\
 
 def render_env(env, content):
     return ENV_TEMPLATE.format(
-        setenv='\n'.join([
-            'export {}="{}"'.format(k, v) for k, v in env.items()
-        ]),
+        setenv='\n'.join([f'export {k}="{v}"' for k, v in env.items()]),
         content=content,
-        unsetenv='\n'.join(['unset {}'.format(k) for k in env])
+        unsetenv='\n'.join([f'unset {k}' for k in env])
     )
 
 
@@ -115,11 +111,13 @@ class ScriptTemplate(Template):
 
     def write(self):
         self.ensure_directory('scripts')
-        with open(os.path.join('scripts', self.name), 'w') as f:
+        script_path = os.path.join('scripts', f'{self.name}.sh')
+        with open(script_path, 'w') as f:
             f.write(render_script(
                 self.description,
                 render_env(self.env, self.render())
             ))
+        os.chmod(script_path, 0o750)
 
 
 ###############################################################################
@@ -133,7 +131,7 @@ TEST_TEMPLATE = """
 """
 
 
-@template('test.sh')
+@template('run-tests')
 class TestScript(ScriptTemplate):
     description = 'Run tests'
 
@@ -142,20 +140,14 @@ class TestScript(ScriptTemplate):
         for name, package in self.config.packages.items():
             if attr not in package:
                 continue
-            path = '{target}/{name}/{path}'.format(
-                target=package['target'],
-                name=name,
-                path=package[attr]
-            ).rstrip('/')
+            path = f"{package['target']}/{name}/{package[attr]}".rstrip('/')
             paths.append(path)
         return paths
 
     def render(self):
         paths = self.package_paths(ns_name('test-path'))
         return TEST_TEMPLATE.format(
-            testpaths='\n'.join(
-                ['    --test-path={} \\'.format(p) for p in paths]
-            )
+            testpaths='\n'.join([f'    --test-path={p} \\' for p in paths])
         )
 
 
@@ -181,7 +173,7 @@ sources=${{sources:1}}
 """
 
 
-@template('coverage.sh')
+@template('run-coverage')
 class CoverageScript(TestScript):
     description = 'Run coverage'
 
@@ -189,9 +181,9 @@ class CoverageScript(TestScript):
         tpaths = self.package_paths(ns_name('test-path'))
         spaths = self.package_paths(ns_name('source-path'))
         return COVERAGE_TEMPLATE.format(
-            sourcepaths='\n'.join(['    {}'.format(p) for p in spaths]),
+            sourcepaths='\n'.join([f'    {p}' for p in spaths]),
             testpaths='\n'.join(
-                ['    --test-path={} \\'.format(p) for p in tpaths]
+                [f'    --test-path={p} \\' for p in tpaths]
             ).rstrip(' \\')
         )
 
@@ -231,72 +223,45 @@ class CleanScript(ScriptTemplate):
             to_remove += self.template_to_remove.get(name, list())
         to_remove += list_value(self.settings.get('to-remove'))
         return CLEAN_TEMPLATE.format(
-            to_remove='\n'.join(['    {}'.format(it) for it in to_remove])
+            to_remove='\n'.join([f'    {it}' for it in to_remove])
         )
 
 
 ###############################################################################
-# deps script template
+# pip script template
 ###############################################################################
 
-DEPS_TEMPLATE = """
-sudo apt-get install -y \\
-{deps}
-"""
+@template('custom-pip')
+class CustomPipScript(ScriptTemplate):
+    description = 'Custom pip installs'
+
+    def render(self):
+        scripts = list_value(self.settings.get('scripts'))
+        return '\n'.join([f'source {script}' for script in scripts])
 
 
-@template('deps.sh')
-class DepsScript(ScriptTemplate):
-    description = 'Install system dependencies'
+###############################################################################
+# config template basics
+###############################################################################
+
+class ConfigTemplate(Template):
+
+    def write(self):
+        self.ensure_directory('config')
+        with open(os.path.join('config', f'{self.name}.conf'), 'w') as f:
+            f.write(self.render())
+
+
+###############################################################################
+# deps config template
+###############################################################################
+
+@template('system-dependencies')
+class DepsConfig(ConfigTemplate):
 
     def render(self):
         deps = list_value(self.settings.get('dependencies'))
-        return DEPS_TEMPLATE.format(
-            deps='\n'.join(
-                ['    {} \\'.format(dep) for dep in deps]
-            ).rstrip(' \\')
-        )
-
-
-###############################################################################
-# docs script template
-###############################################################################
-
-DOCS_TEMPLATE = """
-./bin/sphinx-build docs/source/ docs/html
-"""
-
-
-@template('docs.sh')
-class DocsScript(ScriptTemplate):
-    description = 'Build docs'
-
-    def render(self):
-        return DOCS_TEMPLATE
-
-
-###############################################################################
-# venv script template
-###############################################################################
-
-VENV_TEMPLATE = """
-set -e
-
-python3 -m venv .
-./bin/pip install -U pip setuptools wheel
-{custom}
-
-./bin/pip install -r requirements-mxdev.txt
-"""
-
-
-@template('venv.sh')
-class VenvScript(ScriptTemplate):
-    description = 'Install virtual environment'
-
-    def render(self):
-        custom = self.settings.get('custom-install', '')
-        return VENV_TEMPLATE.format(custom=custom)
+        return ' '.join(deps)
 
 
 ###############################################################################
@@ -318,7 +283,7 @@ class MxEnv(Hook):
         for name in templates:
             factory = template.lookup(name)
             if not factory:
-                msg = 'mxenv: No template registered under name {}'.format(name)
+                msg = f'mxenv: No template registered under name {name}'
                 logger.warning(msg)
                 continue
             factory(config).write()
