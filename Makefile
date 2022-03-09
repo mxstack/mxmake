@@ -196,7 +196,7 @@ CUSTOM_CLEAN_TARGETS=config/custom-clean.conf
 .PHONY: clean
 clean:
 	@echo "$(OK_COLOR)Clean environment $(NO_COLOR)"
-	@rm -rf $(COMMON_CLEAN_TARGETS)
 ifneq ("$(wildcard $(CUSTOM_CLEAN_TARGETS))","")
 	@rm -rf $$(cat $(CUSTOM_CLEAN_TARGETS))
 endif
+	@rm -rf $(COMMON_CLEAN_TARGETS)
