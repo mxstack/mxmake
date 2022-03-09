@@ -7,7 +7,7 @@ An extension for `mxdev <https://github.com/bluedynamics/mxdev>`_.
 Overview
 --------
 
-This tool supports generating helper scripts for developing python packages.
+This tool supports generating helper scripts for developing python projects.
 Configuration is done inside the ``mxdev.ini`` file.
 
 It's initial target is for development of the repositories contained in the
@@ -38,8 +38,32 @@ Bootstrap
 
 To bootstrap a new project with mxenv, run the following:
 
+.. code-block:: sh
+
     wget https://raw.githubusercontent.com/conestack/mxenv/master/Makefile
     make bootstrap
+
+Create ``mxdev.ini`` if not already done and run:
+
+.. code-block:: sh
+
+    make init
+
+This runs initial mxdev without checking out sources. The project files are
+generated.
+
+NOTE: This replaces the minimal Makefile with the final project Makefile.
+
+
+Install
+-------
+
+After bootstrapping the project, or after checking out an already existing
+project, it can be installed running:
+
+.. code-block:: sh
+
+    make install
 
 
 Templates

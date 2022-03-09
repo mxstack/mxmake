@@ -1,4 +1,4 @@
 TODO
 ====
 
-- makefiles wherever meaningful/possible
+- Makefiles wherever meaningful/possible
