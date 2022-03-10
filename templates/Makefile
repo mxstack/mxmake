@@ -46,10 +46,10 @@ $(SENTINEL):
 ###############################################################################
 
 PIP_BIN:=$(VENV_FOLDER)/bin/pip
-#MXDEV:=https://github.com/bluedynamics/mxdev/archive/master.zip
-MXDEV:=-e sources/mxdev
-#MVENV:=https://github.com/conestack/mxenv/archive/master.zip
-MVENV:=-e sources/mxenv
+#MXDEV:=mxdev
+MXDEV:=https://github.com/bluedynamics/mxdev/archive/master.zip
+#MVENV:=mxenv
+MVENV:=https://github.com/conestack/mxenv/archive/master.zip
 
 VENV_SENTINEL:=$(SENTINEL_FOLDER)/venv.sentinel
 

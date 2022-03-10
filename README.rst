@@ -1,20 +1,44 @@
-mxenv
-=====
+**``mxenv`` - Create development environmets for python packages.**
 
-An extension for `mxdev <https://github.com/bluedynamics/mxdev>`_.
+.. image:: https://img.shields.io/pypi/v/mxenv.svg
+    :target: https://pypi.python.org/pypi/mxenv
+    :alt: Latest PyPI version
+
+.. image:: https://img.shields.io/pypi/dm/mxenv.svg
+    :target: https://pypi.python.org/pypi/mxenv
+    :alt: Number of PyPI downloads
 
 
 Overview
 --------
 
-This tool supports generating helper scripts for developing python projects.
-Configuration is done inside the ``mxdev.ini`` file.
+This tool helps creating development environments for python projects based
+on `make <https://www.gnu.org/software/make>`_ and
+`mxdev <https://github.com/bluedynamics/mxdev>`_.
 
 It's initial target is for development of the repositories contained in the
  `conestack <https://github.com/conestack>`_ organization on github.
 
+
+Bootstrap
+---------
+
+To bootstrap a project with mxenv, navigate to yout project folder and download
+the ``Makefile`` and ``mxdev.ini``:
+
+.. code-block:: sh
+
+    wget https://raw.githubusercontent.com/conestack/mxenv/master/templates/Makefile
+    wget https://raw.githubusercontent.com/conestack/mxenv/master/templates/mxdev.ini
+
+
+Configuration
+-------------
+
+Additional project configuration is located in ``mxdev.ini``.
+
 Helper scripts are generated from templates which are defined in the
-``settings`` section of ``mxdev.ini``:
+``settings`` section the ini file:
 
 .. code-block:: ini
 
@@ -28,25 +52,6 @@ named after ``mxenv-<templatename>``:
 
     [mxenv-name1]
     setting = value
-
-This package is in alpha state. If you encounter bugs or like to improve it,
-please file an issue at github.
-
-
-Bootstrap
----------
-
-To bootstrap a new project with mxenv, get the mxenv makefile:
-
-.. code-block:: sh
-
-    wget https://raw.githubusercontent.com/conestack/mxenv/master/Makefile
-
-Create ``mxdev.ini`` and run:
-
-.. code-block:: sh
-
-    make
 
 
 Templates
