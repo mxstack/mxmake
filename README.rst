@@ -24,7 +24,7 @@ documentation.
 running tasks like project installation or tests.
 
 It's initial target is for development of the repositories contained in the
- `conestack <https://github.com/conestack>`_ organization on github.
+`conestack <https://github.com/conestack>`_ organization on github.
 
 
 Usage
