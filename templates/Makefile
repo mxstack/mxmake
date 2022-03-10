@@ -150,11 +150,11 @@ coverage: $(PIP_PACKAGES)
 ###############################################################################
 
 COMMON_CLEAN_TARGETS=\
-    .coverage .installed.txt .sentinels bin config/custom-clean.conf \
-    config/system-dependencies.conf constraints-mxdev.txt docs/html htmlcov \
-    include lib lib64 openldap pyvenv.cfg requirements-mxdev.txt \
-    scripts/custom-pip.sh scripts/run-coverage.sh scripts/run-tests.sh \
-    share
+	.coverage .installed.txt .sentinels bin config/custom-clean.conf \
+	config/system-dependencies.conf constraints-mxdev.txt docs/html htmlcov \
+	include lib lib64 openldap pyvenv.cfg requirements-mxdev.txt \
+	scripts/custom-pip.sh scripts/run-coverage.sh scripts/run-tests.sh \
+	share
 CUSTOM_CLEAN_TARGETS=config/custom-clean.conf
 
 .PHONY: clean
