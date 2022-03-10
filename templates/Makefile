@@ -17,23 +17,6 @@ SHELL:=bash
 MAKEFLAGS+=--warn-undefined-variables
 MAKEFLAGS+=--no-builtin-rules
 
-# Colors
-# OK=Green, warn=yellow, error=red
-ifeq ($(TERM),)
-# no colors if not in terminal
-	MARK_COLOR=
-	OK_COLOR=
-	WARN_COLOR=
-	ERROR_COLOR=
-	NO_COLOR=
-else
-	MARK_COLOR=`tput setaf 6`
-	OK_COLOR=`tput setaf 2`
-	WARN_COLOR=`tput setaf 3`
-	ERROR_COLOR=`tput setaf 1`
-	NO_COLOR=`tput sgr0`
-endif
-
 # Sentinel files
 SENTINEL_FOLDER:=.sentinels
 SENTINEL:=$(SENTINEL_FOLDER)/about.txt
@@ -57,7 +40,7 @@ VENV_SENTINEL:=$(SENTINEL_FOLDER)/venv.sentinel
 venv: $(VENV_SENTINEL)
 
 $(VENV_SENTINEL): $(SENTINEL)
-	@echo "$(OK_COLOR)Setup Python Virtual Environment under '$(VENV_FOLDER)' $(NO_COLOR)"
+	@echo "Setup Python Virtual Environment under '$(VENV_FOLDER)'"
 	@$(PYTHON) -m venv $(VENV_FOLDER)
 	@$(PIP_BIN) install -U pip setuptools wheel
 	@$(PIP_BIN) install $(MXDEV)
@@ -65,69 +48,64 @@ $(VENV_SENTINEL): $(SENTINEL)
 	@touch $(VENV_SENTINEL)
 
 ###############################################################################
-# mxenv
+# files
 ###############################################################################
 
-MXENV_SENTINEL:=$(SENTINEL_FOLDER)/mxenv.sentinel
+FILES_SENTINEL:=$(SENTINEL_FOLDER)/files.sentinel
 
-.PHONY: mxenv
-mxenv: $(MXENV_SENTINEL)
+.PHONY: files
+files: $(FILES_SENTINEL)
 
-$(MXENV_SENTINEL): $(VENV_SENTINEL) $(SENTINEL)
-	@echo "$(OK_COLOR)Create project files $(NO_COLOR)"
+$(FILES_SENTINEL): $(VENV_SENTINEL)
+	@echo "Create project files"
 	@$(VENV_FOLDER)/bin/mxdev -n -c $(PROJECT_CONFIG)
-	@touch $(MXENV_SENTINEL)
+	@touch $(FILES_SENTINEL)
 
 ###############################################################################
-# mxdev
+# sources
 ###############################################################################
 
-MXDEV_SENTINEL:=$(SENTINEL_FOLDER)/mxdev.sentinel
+SOURCES_SENTINEL:=$(SENTINEL_FOLDER)/sources.sentinel
 
-.PHONY: mxdev
-mxdev: $(MXDEV_SENTINEL)
+.PHONY: sources
+sources: $(SOURCES_SENTINEL)
 
-$(MXDEV_SENTINEL): $(MXENV_SENTINEL) $(VENV_SENTINEL) $(SENTINEL)
-	@echo "$(OK_COLOR)Run mxdev $(NO_COLOR)"
+$(SOURCES_SENTINEL): $(FILES_SENTINEL)
+	@echo "Checkout project sources"
 	@$(VENV_FOLDER)/bin/mxdev -o -c $(PROJECT_CONFIG)
-	@touch $(MXDEV_SENTINEL)
+	@touch $(SOURCES_SENTINEL)
 
 ###############################################################################
-# pip
+# install
 ###############################################################################
 
 PIP_PACKAGES=.installed.txt
 CUSTOM_PIP_INSTALL=scripts/custom-pip.sh
 
-.PHONY: pip
-pip: $(PIP_PACKAGES)
+.PHONY: install
+install: $(PIP_PACKAGES)
 
-$(PIP_PACKAGES): $(MXDEV_SENTINEL) $(MXENV_SENTINEL) $(VENV_SENTINEL) $(SENTINEL)
-	@echo "$(OK_COLOR)Install python packages $(NO_COLOR)"
-ifneq ("$(wildcard $(CUSTOM_PIP_INSTALL))","")
-	@echo "$(OK_COLOR)Run custom scripts $(NO_COLOR)"
-	@$(CUSTOM_PIP_INSTALL)
-endif
+$(PIP_PACKAGES): $(SOURCES_SENTINEL)
+	@echo "Install python packages"
+	@test -e $(CUSTOM_PIP_INSTALL) && echo "Run custom scripts"
+	@test -e $(CUSTOM_PIP_INSTALL) && $(CUSTOM_PIP_INSTALL)
 	@$(PIP_BIN) install -r requirements-mxdev.txt
 	@$(PIP_BIN) freeze > $(PIP_PACKAGES)
 
 ###############################################################################
-# deps
+# dependencies
 ###############################################################################
 
 SYSTEM_DEPS=config/system-dependencies.conf
 
-.PHONY: deps
-deps: $(SYSTEM_DEPS)
+.PHONY: dependencies
+dependencies: $(SYSTEM_DEPS)
 
-$(SYSTEM_DEPS): $(MXENV_SENTINEL)
-	@echo "$(OK_COLOR)Install system dependencies $(NO_COLOR)"
-ifneq ("$(wildcard $(SYSTEM_DEPS))","")
-	@sudo apt-get install -y $$(cat $(SYSTEM_DEPS))
-	@touch $(SYSTEM_DEPS)
-else
-	@echo "$(ERROR_COLOR)System dependencies config not exists $(ERROR_COLOR)"
-endif
+$(SYSTEM_DEPS): $(FILES_SENTINEL)
+	@echo "Install system dependencies"
+	@test -e $(SYSTEM_DEPS) && sudo apt-get install -y $$(cat $(SYSTEM_DEPS))
+	@test -e $(SYSTEM_DEPS) && touch $(SYSTEM_DEPS)
+	@test -e $(SYSTEM_DEPS) || echo "System dependencies config not exists"
 
 ###############################################################################
 # docs
@@ -139,12 +117,9 @@ DOCS_TARGET?=docs/html
 
 .PHONY: docs
 docs:
-	@echo "$(OK_COLOR)Build sphinx docs $(NO_COLOR)"
-ifneq ("$(wildcard $(DOCS_BIN))","")
-	@$(DOCS_BIN) $(DOCS_SOURCE) $(DOCS_TARGET)
-else
-	@echo "$(ERROR_COLOR)Sphinx binary not exists $(ERROR_COLOR)"
-endif
+	@echo "Build sphinx docs"
+	@test -e $(DOCS_BIN) && $(DOCS_BIN) $(DOCS_SOURCE) $(DOCS_TARGET)
+	@test -e $(DOCS_BIN) || echo "Sphinx binary not exists"
 
 ###############################################################################
 # test
@@ -153,13 +128,10 @@ endif
 TEST_SCRIPT=scripts/run-tests.sh
 
 .PHONY: test
-test:
-	@echo "$(OK_COLOR)Run tests $(NO_COLOR)"
-ifneq ("$(wildcard $(TEST_SCRIPT))","")
-	@$(TEST_SCRIPT)
-else
-	@echo "$(ERROR_COLOR)Test script not exists $(ERROR_COLOR)"
-endif
+test: $(PIP_PACKAGES)
+	@echo "Run tests"
+	@test -e $(TEST_SCRIPT) && $(TEST_SCRIPT)
+	@test -e $(TEST_SCRIPT) || echo "Test script not exists"
 
 ###############################################################################
 # coverage
@@ -168,13 +140,10 @@ endif
 COVERAGE_SCRIPT=scripts/run-coverage.sh
 
 .PHONY: coverage
-coverage:
-	@echo "$(OK_COLOR)Run coverage $(NO_COLOR)"
-ifneq ("$(wildcard $(COVERAGE_SCRIPT))","")
-	@$(COVERAGE_SCRIPT)
-else
-	@echo "$(ERROR_COLOR)Coverage script not exists $(ERROR_COLOR)"
-endif
+coverage: $(PIP_PACKAGES)
+	@echo "Run coverage"
+	@test -e $(COVERAGE_SCRIPT) && $(COVERAGE_SCRIPT)
+	@test -e $(COVERAGE_SCRIPT) || echo "Coverage script not exists"
 
 ###############################################################################
 # clean
@@ -190,10 +159,8 @@ CUSTOM_CLEAN_TARGETS=config/custom-clean.conf
 
 .PHONY: clean
 clean:
-	@echo "$(OK_COLOR)Clean environment $(NO_COLOR)"
-ifneq ("$(wildcard $(CUSTOM_CLEAN_TARGETS))","")
-	@rm -rf $$(cat $(CUSTOM_CLEAN_TARGETS))
-endif
+	@echo "Clean environment"
+	@test -e $(CUSTOM_CLEAN_TARGETS) && rm -rf $$(cat $(CUSTOM_CLEAN_TARGETS))
 	@rm -rf $(COMMON_CLEAN_TARGETS)
 
 ###############################################################################
