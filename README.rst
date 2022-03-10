@@ -30,17 +30,49 @@ It's initial target is for development of the repositories contained in the
 Usage
 -----
 
-Bootstrap
-~~~~~~~~~
+Basics
+~~~~~~
 
-To bootstrap a project with mxenv, download ``Makefile`` and ``mxdev.ini`` to
-your project folder:
+To bootstrap a new project with mxenv, download ``Makefile`` and ``mxdev.ini``
+to your project folder:
 
 .. code-block:: sh
 
-    wget https://raw.githubusercontent.com/conestack/mxenv/master/templates/Makefile
-    wget https://raw.githubusercontent.com/conestack/mxenv/master/templates/mxdev.ini
+    $ wget https://raw.githubusercontent.com/conestack/mxenv/master/templates/Makefile
+    $ wget https://raw.githubusercontent.com/conestack/mxenv/master/templates/mxdev.ini
 
+After proper :ref:`Configuration` of the ini file, run:
+
+.. code-block:: sh
+
+    $ make install
+
+This installs a Python virtual environment, generates the relevant files,
+checks out the sources defined in ``mxdev.ini`` and installs everything using
+pip.
+
+To run the test suite, type:
+
+.. code-block:: sh
+
+    $ make test
+
+Run code coverage and create coverage report:
+
+.. code-block:: sh
+
+    $ make coverage
+
+Cleanup the development environment:
+
+.. code-block:: sh
+
+    $ make clean
+
+See :ref:`Targets` for more information about the available make targets.
+
+
+.. _Configuration:
 
 Configuration
 ~~~~~~~~~~~~~
@@ -63,27 +95,36 @@ named after ``mxenv-<templatename>``:
     [mxenv-name1]
     setting = value
 
-See :ref:`Templates <mxenv_templates>` for documations about the available
-templates.
+See :ref:`Templates` for documations about the available templates.
 
+See `here <https://github.com/bluedynamics/mxdev>`_ for more
+documentation about config file.
 
-.. _mxenv_makef:
 
 Make
 ----
 
 The ``Makefile`` contains a set of targets for working on your project.
 
+At the end of the ``Makefile``, all files ending with ``.mk`` contained in the
+``config`` folder are included.
 
-.. _mxenv_targets:
+Some read-to-use include files can be found in the
+`templates <https://github.com/conestack/mxenv/tree/master/templates>`_.
+
+
+.. _Targets:
 
 Targets
 -------
 
+The available make targets are build with ``make <targetname>``.
+
+
 venv
 ~~~~
 
-Create a basic python virtual env. The following basic packages are installed
+Create python virtual environment. The following python packages are installed
 respective updated:
 
 - pip
@@ -92,11 +133,26 @@ respective updated:
 - mxdev
 - mxenv
 
+Configuration options:
+
+- PYTHON: The python interpreter to use for creating the virtual environment.
+  Defaults to ``python3``.
+- VENV_FOLDER: The folder where the virtual environment get created. Defaults
+  to ``.``.
+
 
 files
 ~~~~~
 
 Create all project files by running ``mxdev``. It does not checkout sources.
+
+Dependency targets:
+
+- venv
+
+Configuration options:
+
+- PROJECT_CONFIG: The config file to use. Defaults to ``mxdev.ini``.
 
 
 sources
@@ -104,11 +160,23 @@ sources
 
 Checkout sources by running ``mxdev``. It does not generate project files.
 
+Dependency targets:
+
+- files
+
+Configuration options:
+
+- PROJECT_CONFIG: The config file to use. Defaults to ``mxdev.ini``.
+
 
 install
 ~~~~~~~
 
 Install packages with pip after creating files and checking out sources.
+
+Dependency targets:
+
+- sources
 
 
 dependencies
@@ -116,11 +184,22 @@ dependencies
 
 Install system dependencies.
 
+Dependency targets:
+
+- files
+
 
 docs
 ~~~~
 
-Generate sphinx docs.
+Generate sphinx docs. Sphinx is expected to be installed. This is not done
+automatically.
+
+Configuration options:
+
+- DOCS_BIN: The Sphinx build executable. Defaults to  ``bin/sphinx-build``.
+- DOCS_SOURCE: Documentation source folder. Defaults to ``docs/source``.
+- DOCS_TARGET: Documentation generation target folder. Defaults to ``docs/html``.
 
 
 test
@@ -128,11 +207,19 @@ test
 
 Run project tests.
 
+Dependency targets:
+
+- install
+
 
 coverage
 ~~~~~~~~
 
 Run project coverage.
+
+Dependency targets:
+
+- install
 
 
 clean
@@ -141,10 +228,13 @@ clean
 Cleanup project environment.
 
 
-.. _mxenv_templates:
+.. _Templates:
 
 Templates
 ---------
+
+The following section describes the templates which can be build by mxenv.
+
 
 run-tests
 ~~~~~~~~~
@@ -153,6 +243,8 @@ A script for running tests of python packages defined as mxdev sources. It
 utilizes ``zope-testrunner``, thus expects it to be installed.
 
 The generation target is ``scripts/run-tests.sh``.
+
+Invocation of the test run is done via ``make tests``.
 
 Configuration looks like so:
 
@@ -180,6 +272,8 @@ It utilizes ``zope-testrunner`` and ``coverage``, thus expects these packages to
 be installed.
 
 The generation target is ``scripts/run-coverage.sh``.
+
+Invocation of the coverage run is done via ``make coverage``.
 
 Configuration looks like so:
 
@@ -250,7 +344,7 @@ Configuration looks like so:
 custom-clean
 ~~~~~~~~~~~~
 
-A config file read by ``make clean`` to remove additionally things from file
+A config file read by ``make clean`` to remove additionally stuff from file
 system when cleaning up.
 
 Configuration looks like so:
