@@ -263,6 +263,11 @@ Configuration looks like so:
     # the section to use for environment variables
     environment = env
 
+    # package related
+    [packagename]
+    # relative path to package checkout directory to search for tests
+    mxenv-test-path = src
+
 
 run-coverage
 ~~~~~~~~~~~~
@@ -291,6 +296,14 @@ Configuration looks like so:
     [mxenv-run-coverage]
     # the section to use for environment variables
     environment = env
+
+    # package related
+    [packagename]
+    # relative path to package checkout directory to search for tests
+    # also used by ``run-tests``
+    mxenv-test-path = src
+    # relative path to package checkout directory to define coverage source path
+    mxenv-source-path = src/node
 
 
 custom-pip
