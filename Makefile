@@ -89,7 +89,7 @@ mxdev: $(MXDEV_SENTINEL)
 
 $(MXDEV_SENTINEL): $(MXENV_SENTINEL) $(VENV_SENTINEL) $(SENTINEL)
 	@echo "$(OK_COLOR)Run mxdev $(NO_COLOR)"
-	@$(VENV_FOLDER)/bin/mxdev -c $(PROJECT_CONFIG)
+	@$(VENV_FOLDER)/bin/mxdev -o -c $(PROJECT_CONFIG)
 	@touch $(MXDEV_SENTINEL)
 
 ###############################################################################
