@@ -8,10 +8,6 @@ OPENLDAP_DIR?=$(shell echo $(realpath .))/openldap
 OPENLDAP_ENV?="PATH=/usr/local/bin:/usr/bin:/bin"
 
 OPENLDAP_SENTINEL:=$(SENTINEL_FOLDER)/openldap.sentinel
-
-.PHONY: openldap
-openldap: $(OPENLDAP_SENTINEL)
-
 $(OPENLDAP_SENTINEL): $(SENTINEL)
 	@echo "Building openldap server in '$(OPENLDAP_DIR)'"
 	@test -d $(OPENLDAP_DIR) || curl -o openldap-$(OPENLDAP_VERSION).tgz \
@@ -29,6 +25,9 @@ $(OPENLDAP_SENTINEL): $(SENTINEL)
 		&& make -j4 \
 		&& make install'
 	@touch $(OPENLDAP_SENTINEL)
+
+.PHONY: openldap
+openldap: $(OPENLDAP_SENTINEL)
 
 .PHONY: openldap-dirty
 openldap-dirty:

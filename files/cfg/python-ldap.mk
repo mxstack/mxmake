@@ -1,14 +1,10 @@
-include $(CONFIG_FOLDER)/openldap.mk
-
 ###############################################################################
 # python-ldap
 ###############################################################################
 
+include $(CONFIG_FOLDER)/openldap.mk
+
 PYTHON_LDAP_SENTINEL:=$(SENTINEL_FOLDER)/python-ldap.sentinel
-
-.PHONY: python-ldap
-python-ldap: $(PYTHON_LDAP_SENTINEL)
-
 $(PYTHON_LDAP_SENTINEL): $(VENV_SENTINEL) $(OPENLDAP_SENTINEL)
 	@$(PIP_BIN) install \
 		--force-reinstall \
@@ -19,6 +15,9 @@ $(PYTHON_LDAP_SENTINEL): $(VENV_SENTINEL) $(OPENLDAP_SENTINEL)
 		--global-option="-R$(OPENLDAP_DIR)/lib" \
 		python-ldap
 	@touch $(PYTHON_LDAP_SENTINEL)
+
+.PHONY: python-ldap
+python-ldap: $(PYTHON_LDAP_SENTINEL)
 
 .PHONY: python-ldap-dirty
 python-ldap-dirty:

@@ -26,16 +26,12 @@ $(SENTINEL):
 PYTHON?=python3
 VENV_FOLDER?=venv
 PIP_BIN:=$(VENV_FOLDER)/bin/pip
-#MXDEV:=mxdev
-MXDEV:=https://github.com/bluedynamics/mxdev/archive/master.zip
-#MVENV:=mxenv
-MVENV:=https://github.com/conestack/mxenv/archive/master.zip
+#MXDEV?=mxdev
+MXDEV?=https://github.com/bluedynamics/mxdev/archive/master.zip
+#MVENV?=mxenv
+MVENV?=https://github.com/conestack/mxenv/archive/master.zip
 
 VENV_SENTINEL:=$(SENTINEL_FOLDER)/venv.sentinel
-
-.PHONY: venv
-venv: $(VENV_SENTINEL)
-
 $(VENV_SENTINEL): $(SENTINEL)
 	@echo "Setup Python Virtual Environment under '$(VENV_FOLDER)'"
 	@$(PYTHON) -m venv $(VENV_FOLDER)
@@ -43,6 +39,9 @@ $(VENV_SENTINEL): $(SENTINEL)
 	@$(PIP_BIN) install -U $(MXDEV)
 	@$(PIP_BIN) install -U $(MVENV)
 	@touch $(VENV_SENTINEL)
+
+.PHONY: venv
+venv: $(VENV_SENTINEL)
 
 .PHONY: venv-dirty
 venv-dirty:
@@ -61,10 +60,6 @@ SCRIPTS_FOLDER?=$(VENV_FOLDER)/bin
 CONFIG_FOLDER?=cfg
 
 FILES_SENTINEL:=$(SENTINEL_FOLDER)/files.sentinel
-
-.PHONY: files
-files: $(FILES_SENTINEL)
-
 $(FILES_SENTINEL): $(PROJECT_CONFIG) $(VENV_SENTINEL)
 	@echo "Create project files"
 	@export MXENV_VENV_FOLDER=$(VENV_FOLDER)
@@ -75,6 +70,9 @@ $(FILES_SENTINEL): $(PROJECT_CONFIG) $(VENV_SENTINEL)
 	@unset MXENV_SCRIPTS_FOLDER
 	@unset MXENV_CONFIG_FOLDER
 	@touch $(FILES_SENTINEL)
+
+.PHONY: files
+files: $(FILES_SENTINEL)
 
 .PHONY: files-dirty
 files-dirty:
@@ -90,14 +88,13 @@ files-clean: files-dirty
 ###############################################################################
 
 SOURCES_SENTINEL:=$(SENTINEL_FOLDER)/sources.sentinel
-
-.PHONY: sources
-sources: $(SOURCES_SENTINEL)
-
 $(SOURCES_SENTINEL): $(FILES_SENTINEL)
 	@echo "Checkout project sources"
 	@$(VENV_FOLDER)/bin/mxdev -o -c $(PROJECT_CONFIG)
 	@touch $(SOURCES_SENTINEL)
+
+.PHONY: sources
+sources: $(SOURCES_SENTINEL)
 
 .PHONY: sources-dirty
 sources-dirty:
@@ -114,15 +111,14 @@ sources-clean: sources-dirty
 PIP_PACKAGES=.installed.txt
 
 INSTALL_SENTINEL:=$(SENTINEL_FOLDER)/install.sentinel
-
-.PHONY: install
-install: $(INSTALL_SENTINEL)
-
 $(INSTALL_SENTINEL): $(SOURCES_SENTINEL)
 	@echo "Install python packages"
 	@$(PIP_BIN) install -r requirements-mxdev.txt
 	@$(PIP_BIN) freeze > $(PIP_PACKAGES)
 	@touch $(INSTALL_SENTINEL)
+
+.PHONY: install
+install: $(INSTALL_SENTINEL)
 
 .PHONY: install-dirty
 install-dirty:
