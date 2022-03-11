@@ -13,6 +13,10 @@ NAMESPACE = 'mxenv-'
 # utils
 ###############################################################################
 
+def venv_folder():
+    return os.environ.get('MXENV_VENV_FOLDER', os.path.join('venv'))
+
+
 def scripts_folder():
     return os.environ.get('MXENV_SCRIPTS_FOLDER', os.path.join('venv', 'bin'))
 
@@ -131,7 +135,7 @@ class ScriptTemplate(Template):
 ###############################################################################
 
 TEST_TEMPLATE = """
-./bin/zope-testrunner --auto-color --auto-progress \\
+{venv}/bin/zope-testrunner --auto-color --auto-progress \\
 {testpaths}
     --module=$1
 """
@@ -153,6 +157,7 @@ class TestScript(ScriptTemplate):
     def render(self):
         paths = self.package_paths(ns_name('test-path'))
         return TEST_TEMPLATE.format(
+            venv=venv_folder(),
             testpaths='\n'.join([f'    --test-path={p} \\' for p in paths])
         )
 
@@ -169,13 +174,13 @@ sources=(
 sources=$(printf ",%s" "${{sources[@]}}")
 sources=${{sources:1}}
 
-./bin/coverage run \\
+{venv}/bin/coverage run \\
     --source=$sources \\
     -m zope.testrunner --auto-color --auto-progress \\
 {testpaths}
 
-./bin/coverage report
-./bin/coverage html
+{venv}/bin/coverage report
+{venv}/bin/coverage html
 """
 
 
@@ -187,6 +192,7 @@ class CoverageScript(TestScript):
         tpaths = self.package_paths(ns_name('test-path'))
         spaths = self.package_paths(ns_name('source-path'))
         return COVERAGE_TEMPLATE.format(
+            venv=venv_folder(),
             sourcepaths='\n'.join([f'    {p}' for p in spaths]),
             testpaths='\n'.join(
                 [f'    --test-path={p} \\' for p in tpaths]
