@@ -77,7 +77,7 @@ files-dirty:
 	@rm -f $(FILES_SENTINEL)
 
 .PHONY: files-clean
-files-clean:
+files-clean: files-dirty
 	@rm -f $(TEST_SCRIPT) $(COVERAGE_SCRIPT) \
 		constraints-mxdev.txt requirements-mxdev.txt
 
