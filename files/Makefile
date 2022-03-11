@@ -140,7 +140,7 @@ system-dependencies:
 # docs
 ###############################################################################
 
-DOCS_BIN?=bin/sphinx-build
+DOCS_BIN?=$(VENV_FOLDER)/bin/sphinx-build
 DOCS_SOURCE?=docs/source
 DOCS_TARGET?=docs/html
 
