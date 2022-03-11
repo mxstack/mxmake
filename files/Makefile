@@ -50,7 +50,7 @@ venv-dirty:
 
 .PHONY: venv-clean
 venv-clean: venv-dirty
-	@rm -f $(VENV_FOLDER) pyvenv.cfg
+	@rm -rf $(VENV_FOLDER)
 
 ###############################################################################
 # files
@@ -154,7 +154,7 @@ docs:
 
 .PHONY: docs-clean
 docs-clean:
-	@test -d $(DOCS_TARGET) && rm -rf $(DOCS_TARGET)
+	@rm -rf $(DOCS_TARGET)
 
 ###############################################################################
 # test
