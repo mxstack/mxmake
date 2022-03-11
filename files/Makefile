@@ -131,12 +131,10 @@ install-dirty:
 SYSTEM_DEPENDENCIES?=
 
 .PHONY: system-dependencies
-system-dependencies: $(SYSTEM_DEPENDENCIES)
-
-$(SYSTEM_DEPENDENCIES):
+system-dependencies:
 	@echo "Install system dependencies"
-	@$(SYSTEM_DEPENDENCIES) && sudo apt-get install -y $(SYSTEM_DEPENDENCIES)
-	@$(SYSTEM_DEPENDENCIES) || echo "No System dependencies defined"
+	@test -z "$(SYSTEM_DEPENDENCIES)" && echo "No System dependencies defined"
+	@test -z "$(SYSTEM_DEPENDENCIES)" || sudo apt-get install -y $(SYSTEM_DEPENDENCIES)
 
 ###############################################################################
 # docs
