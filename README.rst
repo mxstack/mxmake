@@ -112,11 +112,13 @@ Make
 
 The ``Makefile`` contains a set of targets for working on your project.
 
-At the end of the ``Makefile``, all files ending with ``.mk`` contained in the
-``config`` folder are included.
+At the end of the ``Makefile``, a make file named ``project.mk`` contained in
+the ``config`` folder is included if present. This is supposed to be used for
+overriding project settings and adding cutom targets.
 
-Some read-to-use include files can be found in the
-`templates <https://github.com/conestack/mxenv/tree/master/files/cfg>`_.
+An example ``project.mk`` and some read-to-use include files can be found in
+the `files <https://github.com/conestack/mxenv/tree/master/files/cfg>`_ folder
+of ``mxenv``.
 
 
 .. _Targets:

@@ -203,4 +203,4 @@ full-clean: clean sources-clean
 # Include custom make files
 ###############################################################################
 
--include $(CONFIG_FOLDER)/*.mk
+-include $(CONFIG_FOLDER)/project.mk
