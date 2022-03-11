@@ -37,5 +37,6 @@ openldap-dirty:
 	@rm -f $(OPENLDAP_SENTINEL)
 
 .PHONY: openldap-clean
-openldap-clean: openldap-dirty
+openldap-clean:
+	@rm -f $(OPENLDAP_SENTINEL)
 	@rm -rf $(OPENLDAP_DIR)
