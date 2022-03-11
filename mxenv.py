@@ -84,6 +84,7 @@ SCRIPT_TEMPLATE = """\
 # CHANGES MADE IN THIS FILE MAY BE LOST.
 #
 {description}
+set -e
 {content}
 exit 0
 """
@@ -96,18 +97,28 @@ def render_script(description, content):
     )
 
 
-ENV_TEMPLATE = """\
+ENV_TEMPLATE = """
+function setenv() {{
 {setenv}
-{content}
+}}
+
+function unsetenv() {{
 {unsetenv}
+}}
+
+trap unsetenv ERR INT
+
+setenv
+{content}
+unsetenv
 """
 
 
 def render_env(env, content):
     return ENV_TEMPLATE.format(
-        setenv='\n'.join([f'export {k}="{v}"' for k, v in env.items()]),
+        setenv='\n'.join([f'    export {k}="{v}"' for k, v in env.items()]),
         content=content,
-        unsetenv='\n'.join([f'unset {k}' for k in env])
+        unsetenv='\n'.join([f'    unset {k}' for k in env])
     )
 
 
