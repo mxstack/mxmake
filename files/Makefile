@@ -2,11 +2,6 @@
 # Makefile for mxenv projects.
 ###############################################################################
 
-# Project settings
-PYTHON?=python3
-VENV_FOLDER?=.
-PROJECT_CONFIG?=mxdev.ini
-
 # Defensive settings for make: https://tech.davis-hansson.com/p/make/
 SHELL:=bash
 .ONESHELL:
@@ -28,6 +23,8 @@ $(SENTINEL):
 # venv
 ###############################################################################
 
+PYTHON?=python3
+VENV_FOLDER?=venv
 PIP_BIN:=$(VENV_FOLDER)/bin/pip
 #MXDEV:=mxdev
 MXDEV:=https://github.com/bluedynamics/mxdev/archive/master.zip
@@ -43,23 +40,46 @@ $(VENV_SENTINEL): $(SENTINEL)
 	@echo "Setup Python Virtual Environment under '$(VENV_FOLDER)'"
 	@$(PYTHON) -m venv $(VENV_FOLDER)
 	@$(PIP_BIN) install -U pip setuptools wheel
-	@$(PIP_BIN) install $(MXDEV)
-	@$(PIP_BIN) install $(MVENV)
+	@$(PIP_BIN) install -U $(MXDEV)
+	@$(PIP_BIN) install -U $(MVENV)
 	@touch $(VENV_SENTINEL)
+
+.PHONY: venv-dirty
+venv-dirty:
+	@rm -f $(VENV_SENTINEL)
+
+.PHONY: venv-clean
+venv-clean: venv-dirty
+	@rm -f $(VENV_FOLDER) pyvenv.cfg
 
 ###############################################################################
 # files
 ###############################################################################
+
+PROJECT_CONFIG?=mxdev.ini
+SCRIPTS_FOLDER?=$(VENV_FOLDER)/bin
+CONFIG_FOLDER?=cfg
 
 FILES_SENTINEL:=$(SENTINEL_FOLDER)/files.sentinel
 
 .PHONY: files
 files: $(FILES_SENTINEL)
 
-$(FILES_SENTINEL): $(VENV_SENTINEL)
+$(FILES_SENTINEL): $(PROJECT_CONFIG) $(VENV_SENTINEL)
 	@echo "Create project files"
+	@export MXENV_SCRIPTS_FOLDER=$(SCRIPTS_FOLDER)
+	@export MXENV_CONFIG_FOLDER=$(CONFIG_FOLDER)
 	@$(VENV_FOLDER)/bin/mxdev -n -c $(PROJECT_CONFIG)
 	@touch $(FILES_SENTINEL)
+
+.PHONY: files-dirty
+files-dirty:
+	@rm -f $(FILES_SENTINEL)
+
+.PHONY: files-clean
+files-clean:
+	@rm -f $(TEST_SCRIPT) $(COVERAGE_SCRIPT) \
+		constraints-mxdev.txt requirements-mxdev.txt
 
 ###############################################################################
 # sources
@@ -75,37 +95,48 @@ $(SOURCES_SENTINEL): $(FILES_SENTINEL)
 	@$(VENV_FOLDER)/bin/mxdev -o -c $(PROJECT_CONFIG)
 	@touch $(SOURCES_SENTINEL)
 
+.PHONY: sources-dirty
+sources-dirty:
+	@rm -f $(SOURCES_SENTINEL)
+
+.PHONY: sources-clean
+sources-clean: sources-dirty
+	@rm -rf sources
+
 ###############################################################################
 # install
 ###############################################################################
 
 PIP_PACKAGES=.installed.txt
-CUSTOM_PIP_INSTALL=scripts/custom-pip.sh
+
+INSTALL_SENTINEL:=$(SENTINEL_FOLDER)/install.sentinel
 
 .PHONY: install
-install: $(PIP_PACKAGES)
+install: $(INSTALL_SENTINEL)
 
-$(PIP_PACKAGES): $(SOURCES_SENTINEL)
+$(INSTALL_SENTINEL): $(SOURCES_SENTINEL)
 	@echo "Install python packages"
-	@test -e $(CUSTOM_PIP_INSTALL) && echo "Run custom scripts"
-	@test -e $(CUSTOM_PIP_INSTALL) && $(CUSTOM_PIP_INSTALL)
 	@$(PIP_BIN) install -r requirements-mxdev.txt
 	@$(PIP_BIN) freeze > $(PIP_PACKAGES)
+	@touch $(INSTALL_SENTINEL)
+
+.PHONY: install-dirty
+install-dirty:
+	@rm -f $(INSTALL_SENTINEL)
 
 ###############################################################################
-# dependencies
+# system dependencies
 ###############################################################################
 
-SYSTEM_DEPS=config/system-dependencies.conf
+SYSTEM_DEPENDENCIES?=
 
-.PHONY: dependencies
-dependencies: $(SYSTEM_DEPS)
+.PHONY: system-dependencies
+system-dependencies: $(SYSTEM_DEPENDENCIES)
 
-$(SYSTEM_DEPS): $(FILES_SENTINEL)
+$(SYSTEM_DEPENDENCIES):
 	@echo "Install system dependencies"
-	@test -e $(SYSTEM_DEPS) && sudo apt-get install -y $$(cat $(SYSTEM_DEPS))
-	@test -e $(SYSTEM_DEPS) && touch $(SYSTEM_DEPS)
-	@test -e $(SYSTEM_DEPS) || echo "System dependencies config not exists"
+	@$(SYSTEM_DEPENDENCIES) && sudo apt-get install -y $(SYSTEM_DEPENDENCIES)
+	@$(SYSTEM_DEPENDENCIES) || echo "No System dependencies defined"
 
 ###############################################################################
 # docs
@@ -121,14 +152,18 @@ docs:
 	@test -e $(DOCS_BIN) && $(DOCS_BIN) $(DOCS_SOURCE) $(DOCS_TARGET)
 	@test -e $(DOCS_BIN) || echo "Sphinx binary not exists"
 
+.PHONY: docs-clean
+docs-clean:
+	@test -d $(DOCS_TARGET) && rm -rf $(DOCS_TARGET)
+
 ###############################################################################
 # test
 ###############################################################################
 
-TEST_SCRIPT=scripts/run-tests.sh
+TEST_SCRIPT=$(SCRIPTS_FOLDER)/run-tests.sh
 
 .PHONY: test
-test: $(PIP_PACKAGES)
+test: $(FILES_SENTINEL) $(SOURCES_SENTINEL) $(INSTALL_SENTINEL)
 	@echo "Run tests"
 	@test -e $(TEST_SCRIPT) && $(TEST_SCRIPT)
 	@test -e $(TEST_SCRIPT) || echo "Test script not exists"
@@ -137,34 +172,33 @@ test: $(PIP_PACKAGES)
 # coverage
 ###############################################################################
 
-COVERAGE_SCRIPT=scripts/run-coverage.sh
+COVERAGE_SCRIPT=$(SCRIPTS_FOLDER)/run-coverage.sh
 
 .PHONY: coverage
-coverage: $(PIP_PACKAGES)
+coverage: $(FILES_SENTINEL) $(SOURCES_SENTINEL) $(INSTALL_SENTINEL)
 	@echo "Run coverage"
 	@test -e $(COVERAGE_SCRIPT) && $(COVERAGE_SCRIPT)
 	@test -e $(COVERAGE_SCRIPT) || echo "Coverage script not exists"
+
+.PHONY: coverage-clean
+coverage-clean:
+	@rm -rf .coverage htmlcov
 
 ###############################################################################
 # clean
 ###############################################################################
 
-COMMON_CLEAN_TARGETS=\
-	.coverage .installed.txt .sentinels bin config/custom-clean.conf \
-	config/system-dependencies.conf constraints-mxdev.txt docs/html htmlcov \
-	include lib lib64 openldap pyvenv.cfg requirements-mxdev.txt \
-	scripts/custom-pip.sh scripts/run-coverage.sh scripts/run-tests.sh \
-	share
-CUSTOM_CLEAN_TARGETS=config/custom-clean.conf
+CLEAN_TARGETS?=
 
 .PHONY: clean
-clean:
-	@echo "Clean environment"
-	@test -e $(CUSTOM_CLEAN_TARGETS) && rm -rf $$(cat $(CUSTOM_CLEAN_TARGETS))
-	@rm -rf $(COMMON_CLEAN_TARGETS)
+clean: venv-clean files-clean docs-clean coverage-clean
+	@rm -rf $(CLEAN_TARGETS) .sentinels .installed.txt
+
+.PHONY: full-clean
+full-clean: clean sources-clean
 
 ###############################################################################
 # Include custom make files
 ###############################################################################
 
--include config/*.mk
+-include $(CONFIG_FOLDER)/*.mk

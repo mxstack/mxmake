@@ -3,8 +3,6 @@ from mxdev import State
 import abc
 import logging
 import os
-import sys
-
 
 logger = logging.getLogger('mxenv')
 
@@ -14,6 +12,14 @@ NAMESPACE = 'mxenv-'
 ###############################################################################
 # utils
 ###############################################################################
+
+def scripts_folder():
+    return os.environ.get('MXENV_SCRIPTS_FOLDER', os.path.join('venv', 'bin'))
+
+
+def config_folder():
+    return os.environ.get('MXENV_CONFIG_FOLDER', os.path.join('cfg'))
+
 
 def ns_name(name):
     return f'{NAMESPACE}{name}'
@@ -55,9 +61,8 @@ class Template(abc.ABC):
     def settings(self):
         return self.config.hooks.get(ns_name(self.name), {})
 
-    def ensure_directory(self, name):
-        if not os.path.exists(name):
-            os.mkdir(name)
+    def ensure_directory(self, path):
+        os.makedirs(path, exist_ok=True)
 
     @abc.abstractmethod
     def write(self):
@@ -110,8 +115,9 @@ class ScriptTemplate(Template):
         return self.config.hooks.get(ns_name(env_name), {}) if env_name else {}
 
     def write(self):
-        self.ensure_directory('scripts')
-        script_path = os.path.join('scripts', f'{self.name}.sh')
+        scripts = scripts_folder()
+        self.ensure_directory(scripts)
+        script_path = os.path.join(scripts, f'{self.name}.sh')
         with open(script_path, 'w') as f:
             f.write(render_script(
                 self.description,
@@ -186,55 +192,6 @@ class CoverageScript(TestScript):
                 [f'    --test-path={p} \\' for p in tpaths]
             ).rstrip(' \\')
         )
-
-
-###############################################################################
-# pip script template
-###############################################################################
-
-@template('custom-pip')
-class CustomPipScript(ScriptTemplate):
-    description = 'Custom pip installs'
-
-    def render(self):
-        scripts = list_value(self.settings.get('scripts'))
-        return '\n'.join([f'source {script}' for script in scripts])
-
-
-###############################################################################
-# config template basics
-###############################################################################
-
-class ConfigTemplate(Template):
-
-    def write(self):
-        self.ensure_directory('config')
-        with open(os.path.join('config', f'{self.name}.conf'), 'w') as f:
-            f.write(self.render())
-
-
-###############################################################################
-# clean config template
-###############################################################################
-
-@template('custom-clean')
-class CleanScript(ConfigTemplate):
-
-    def render(self):
-        targets = list_value(self.settings.get('targets'))
-        return ' '.join(targets)
-
-
-###############################################################################
-# deps config template
-###############################################################################
-
-@template('system-dependencies')
-class DepsConfig(ConfigTemplate):
-
-    def render(self):
-        deps = list_value(self.settings.get('dependencies'))
-        return ' '.join(deps)
 
 
 ###############################################################################

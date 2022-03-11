@@ -38,8 +38,8 @@ to your project folder:
 
 .. code-block:: sh
 
-    $ wget https://raw.githubusercontent.com/conestack/mxenv/master/templates/Makefile
-    $ wget https://raw.githubusercontent.com/conestack/mxenv/master/templates/mxdev.ini
+    $ wget https://raw.githubusercontent.com/conestack/mxenv/master/files/Makefile
+    $ wget https://raw.githubusercontent.com/conestack/mxenv/master/files/mxdev.ini
 
 After proper :ref:`Configuration` of the ini file, run:
 
@@ -68,6 +68,12 @@ Cleanup the development environment:
 .. code-block:: sh
 
     $ make clean
+
+Cleanup everything including the sources:
+
+.. code-block:: sh
+
+    $ make full-clean
 
 See :ref:`Targets` for more information about the available make targets.
 
@@ -110,19 +116,17 @@ At the end of the ``Makefile``, all files ending with ``.mk`` contained in the
 ``config`` folder are included.
 
 Some read-to-use include files can be found in the
-`templates <https://github.com/conestack/mxenv/tree/master/templates>`_.
+`templates <https://github.com/conestack/mxenv/tree/master/files/cfg>`_.
 
 
 .. _Targets:
 
 Targets
--------
+~~~~~~~
 
 The available make targets are build with ``make <targetname>``.
 
-
-venv
-~~~~
+**venv**
 
 Create python virtual environment. The following python packages are installed
 respective updated:
@@ -138,11 +142,17 @@ Configuration options:
 - PYTHON: The python interpreter to use for creating the virtual environment.
   Defaults to ``python3``.
 - VENV_FOLDER: The folder where the virtual environment get created. Defaults
-  to ``.``.
+  to ``venv``.
 
+**venv-dirty**
 
-files
-~~~~~
+Build ``venv`` target on next make run.
+
+**venv-clean**
+
+Removes virtual environment.
+
+**files**
 
 Create all project files by running ``mxdev``. It does not checkout sources.
 
@@ -153,10 +163,18 @@ Dependency targets:
 Configuration options:
 
 - PROJECT_CONFIG: The config file to use. Defaults to ``mxdev.ini``.
+- SCRIPTS_FOLDER: Target folder for generated scripts. Defaults to ``venv/bin``.
+- CONFIG_FOLDER: Target folder for generated config files. Defaults to ``cfg``.
 
+**files-dirty**
 
-sources
-~~~~~~~
+Build ``files`` target on next make run.
+
+**files-clean**
+
+Remove generated project files.
+
+**sources**
 
 Checkout sources by running ``mxdev``. It does not generate project files.
 
@@ -168,9 +186,15 @@ Configuration options:
 
 - PROJECT_CONFIG: The config file to use. Defaults to ``mxdev.ini``.
 
+**sources-dirty**
 
-install
-~~~~~~~
+Build ``sources`` target on next make run.
+
+**sources-clean**
+
+Removes sources folder.
+
+**install**
 
 Install packages with pip after creating files and checking out sources.
 
@@ -178,19 +202,19 @@ Dependency targets:
 
 - sources
 
+**install-dirty**
 
-dependencies
-~~~~~~~~~~~~
+Build ``install`` target on next make run.
+
+**system-dependencies**
 
 Install system dependencies.
 
-Dependency targets:
+Configuration options:
 
-- files
+- SYSTEM_DEPENDENCIES: Space separated system package names.
 
-
-docs
-~~~~
+**docs**
 
 Generate sphinx docs. Sphinx is expected to be installed. This is not done
 automatically.
@@ -201,9 +225,11 @@ Configuration options:
 - DOCS_SOURCE: Documentation source folder. Defaults to ``docs/source``.
 - DOCS_TARGET: Documentation generation target folder. Defaults to ``docs/html``.
 
+**docs-clean**
 
-test
-~~~~
+Removes generated docs.
+
+**test**
 
 Run project tests.
 
@@ -211,9 +237,7 @@ Dependency targets:
 
 - install
 
-
-coverage
-~~~~~~~~
+**coverage**
 
 Run project coverage.
 
@@ -221,11 +245,21 @@ Dependency targets:
 
 - install
 
+**coverage-clean**
 
-clean
-~~~~~
+Remove coverage related files and directories.
+
+**clean**
 
 Cleanup project environment.
+
+Configuration options:
+
+- CLEAN_TARGETS: Space separated list of files and folders to remove.
+
+**full-clean**
+
+Cleanup project environment including sources.
 
 
 .. _Templates:
@@ -304,74 +338,6 @@ Configuration looks like so:
     mxenv-test-path = src
     # relative path to package checkout directory to define coverage source path
     mxenv-source-path = src/node
-
-
-custom-pip
-~~~~~~~~~~
-
-A script which gets executed by ``make install`` before remaining requirements
-are installed. This can be used for custom pip invocation, e.g. for packages
-requiring special build configuration or similar.
-
-The generation target is ``scripts/custom-pip.sh``.
-
-Configuration looks like so:
-
-.. code-block:: ini
-
-    [settings]
-    # tell mxenv to generate custom pip script
-    mxenv-templates = custom-pip
-
-    # custom pip script related settings
-    [mxenv-custom-pip]
-    scripts =
-        scripts/custom-pip-1.sh
-        scripts/custom-pip-2.sh
-
-
-system-dependencies
-~~~~~~~~~~~~~~~~~~~
-
-A config file read by ``make dependencies`` to install required system
-dependencies for development.
-
-Currently it depends on ``sudo`` and ``apt``.
-
-The generation target is ``config/system-dependencies.conf``.
-
-Configuration looks like so:
-
-.. code-block:: ini
-
-    [settings]
-    # tell mxenv to generate system dependencies config file
-    mxenv-templates = system-dependencies
-
-    # system dependencies related settings
-    [mxenv-system-dependencies]
-    # system packages to install
-    dependencies = build-essential curl
-
-
-custom-clean
-~~~~~~~~~~~~
-
-A config file read by ``make clean`` to remove additionally stuff from file
-system when cleaning up.
-
-Configuration looks like so:
-
-.. code-block:: ini
-
-    [settings]
-    # tell mxenv to generate custom clean config file
-    mxenv-templates = custom-clean
-
-    # custom clean related settings
-    [mxenv-custom-clean]
-    # additional items to remove at cleanup
-    to-remove = item1 item2
 
 
 Contributors
