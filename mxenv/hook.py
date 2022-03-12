@@ -11,6 +11,14 @@ import mxdev
 logger = logging.getLogger('mxenv')
 
 
+def get_template_environment() -> Environment:
+    return Environment(
+        loader=PackageLoader('mxenv', 'templates'),
+        trim_blocks=True,
+        keep_trailing_newline=True
+    )
+
+
 class Hook(mxdev.Hook):
     namespace: str = NAMESPACE
 
@@ -23,11 +31,7 @@ class Hook(mxdev.Hook):
         if not templates:
             logger.info('mxenv: No templates defined')
             return
-        environment = Environment(
-            loader=PackageLoader('mxenv', 'templates'),
-            trim_blocks=True,
-            keep_trailing_newline=True
-        )
+        environment = get_template_environment()
         for name in templates:
             factory = template.lookup(name)
             if not factory:

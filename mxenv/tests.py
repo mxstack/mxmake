@@ -1,8 +1,11 @@
 from contextlib import contextmanager
 from jinja2 import Environment
 from jinja2 import FileSystemLoader
+from mxenv import hook
 from mxenv import templates
 from mxenv import utils
+import doctest
+import io
 import mxdev
 import os
 import shutil
@@ -12,42 +15,7 @@ import unittest
 
 
 ###############################################################################
-# Test utils
-###############################################################################
-
-class TestUtils(unittest.TestCase):
-
-    def test_namespace(self):
-        self.assertEqual(utils.NAMESPACE, 'mxenv-')
-
-    def test_venv_folder(self):
-        self.assertEqual(utils.venv_folder(), 'venv')
-        os.environ['MXENV_VENV_FOLDER'] = 'other'
-        self.assertEqual(utils.venv_folder(), 'other')
-        del os.environ['MXENV_VENV_FOLDER']
-
-    def test_scripts_folder(self):
-        self.assertEqual(utils.scripts_folder(), os.path.join('venv', 'bin'))
-        os.environ['MXENV_SCRIPTS_FOLDER'] = 'other'
-        self.assertEqual(utils.scripts_folder(), 'other')
-        del os.environ['MXENV_SCRIPTS_FOLDER']
-
-    def test_config_folder(self):
-        self.assertEqual(utils.config_folder(), 'cfg')
-        os.environ['MXENV_CONFIG_FOLDER'] = 'other'
-        self.assertEqual(utils.config_folder(), 'other')
-        del os.environ['MXENV_CONFIG_FOLDER']
-
-    def test_ns_name(self):
-        self.assertEqual(utils.ns_name('foo'), 'mxenv-foo')
-
-    def test_list_value(self):
-        self.assertEqual(utils.list_value(''), [])
-        self.assertEqual(utils.list_value('a\nb c'), ['a', 'b', 'c'])
-
-
-###############################################################################
-# Test teamplates
+# helpers
 ###############################################################################
 
 @contextmanager
@@ -102,7 +70,74 @@ class TestConfiguration(mxdev.Configuration):
         self.hooks = hooks
 
 
-class TestTemplates(unittest.TestCase):
+class RenderTestCase(unittest.TestCase):
+    class Example(object):
+        def __init__(self, want):
+            self.want = want + '\n'
+
+    class Failure(Exception):
+        pass
+
+    def __init__(self, *args, **kw):
+        unittest.TestCase.__init__(self, *args, **kw)
+        self._checker = doctest.OutputChecker()
+        self._optionflags = (
+            doctest.NORMALIZE_WHITESPACE |
+            doctest.ELLIPSIS |
+            doctest.REPORT_ONLY_FIRST_FAILURE
+        )
+
+    def checkOutput(self, want, got, optionflags=None):
+        if optionflags is None:
+            optionflags = self._optionflags
+        success = self._checker.check_output(want, got, optionflags)
+        if not success:
+            raise RenderTestCase.Failure(self._checker.output_difference(
+                RenderTestCase.Example(want),
+                got, optionflags
+            ))
+
+
+###############################################################################
+# Test utils
+###############################################################################
+
+class TestUtils(unittest.TestCase):
+
+    def test_namespace(self):
+        self.assertEqual(utils.NAMESPACE, 'mxenv-')
+
+    def test_venv_folder(self):
+        self.assertEqual(utils.venv_folder(), 'venv')
+        os.environ['MXENV_VENV_FOLDER'] = 'other'
+        self.assertEqual(utils.venv_folder(), 'other')
+        del os.environ['MXENV_VENV_FOLDER']
+
+    def test_scripts_folder(self):
+        self.assertEqual(utils.scripts_folder(), os.path.join('venv', 'bin'))
+        os.environ['MXENV_SCRIPTS_FOLDER'] = 'other'
+        self.assertEqual(utils.scripts_folder(), 'other')
+        del os.environ['MXENV_SCRIPTS_FOLDER']
+
+    def test_config_folder(self):
+        self.assertEqual(utils.config_folder(), 'cfg')
+        os.environ['MXENV_CONFIG_FOLDER'] = 'other'
+        self.assertEqual(utils.config_folder(), 'other')
+        del os.environ['MXENV_CONFIG_FOLDER']
+
+    def test_ns_name(self):
+        self.assertEqual(utils.ns_name('foo'), 'mxenv-foo')
+
+    def test_list_value(self):
+        self.assertEqual(utils.list_value(''), [])
+        self.assertEqual(utils.list_value('a\nb c'), ['a', 'b', 'c'])
+
+
+###############################################################################
+# Test teamplates
+###############################################################################
+
+class TestTemplates(RenderTestCase):
 
     def test_template(self):
         with reset_template_registry():
@@ -192,6 +227,156 @@ class TestTemplates(unittest.TestCase):
             'param': 'value'
         })
 
+    @template_directory()
+    def test_TestScript(self, tempdir):
+        config_file = io.StringIO()
+        config_file.write(
+            '[settings]\n'
+            '[mxenv-env]\n'
+            'ENV_PARAM = env_value\n'
+            '[mxenv-run-tests]\n'
+            'environment = env\n'
+            '[package]\n'
+            'url = https://github.com/org/package\n'
+            'mxenv-test-path = src\n'
+        )
+        config_file.seek(0)
+
+        configuration = mxdev.Configuration(config_file, [hook.Hook()])
+        factory = templates.template.lookup('run-tests')
+        template = factory(configuration, hook.get_template_environment())
+
+        self.assertEqual(template.description, 'Run tests')
+        self.assertEqual(template.target_folder, utils.scripts_folder())
+        self.assertEqual(template.target_name, 'run-tests.sh')
+        self.assertEqual(template.template_name, 'run-tests.sh')
+        self.assertEqual(template.template_variables, {
+            'description': 'Run tests',
+            'env': {'ENV_PARAM': 'env_value'},
+            'testpaths': ['sources/package/src'],
+            'venv': tempdir
+        })
+        self.assertEqual(template.package_paths('inexistent'), [])
+        self.assertEqual(
+            template.package_paths(utils.ns_name('test-path')),
+            ['sources/package/src']
+        )
+
+        template.write()
+        with open(os.path.join(tempdir, 'run-tests.sh')) as f:
+            self.checkOutput("""
+            #!/bin/bash
+            #
+            # THIS SCRIPT IS GENERATED BY MXENV.
+            # CHANGES MADE IN THIS FILE WILL BE LOST.
+            #
+            # Run tests
+            set -e
+
+            function setenv() {
+                export ENV_PARAM="env_value"
+            }
+
+            function unsetenv() {
+                unset ENV_PARAM
+            }
+
+            trap unsetenv ERR INT
+
+            setenv
+
+            /.../bin/zope-testrunner --auto-color --auto-progress \\
+                --test-path=sources/package/src \\
+                --module=$1
+
+            unsetenv
+
+            exit 0
+            """, f.read())
+
+    @template_directory()
+    def test_CoverageScript(self, tempdir):
+        config_file = io.StringIO()
+        config_file.write(
+            '[settings]\n'
+            '[mxenv-env]\n'
+            'ENV_PARAM = env_value\n'
+            '[mxenv-run-coverage]\n'
+            'environment = env\n'
+            '[package]\n'
+            'url = https://github.com/org/package\n'
+            'mxenv-test-path = src\n'
+            'mxenv-source-path = src/package\n'
+        )
+        config_file.seek(0)
+
+        configuration = mxdev.Configuration(config_file, [hook.Hook()])
+        factory = templates.template.lookup('run-coverage')
+        template = factory(configuration, hook.get_template_environment())
+
+        self.assertEqual(template.description, 'Run coverage')
+        self.assertEqual(template.target_folder, utils.scripts_folder())
+        self.assertEqual(template.target_name, 'run-coverage.sh')
+        self.assertEqual(template.template_name, 'run-coverage.sh')
+        self.assertEqual(template.template_variables, {
+            'description': 'Run coverage',
+            'env': {'ENV_PARAM': 'env_value'},
+            'testpaths': ['sources/package/src'],
+            'sourcepaths': ['sources/package/src/package'],
+            'venv': tempdir
+        })
+        self.assertEqual(template.package_paths('inexistent'), [])
+        self.assertEqual(
+            template.package_paths(utils.ns_name('test-path')),
+            ['sources/package/src']
+        )
+        self.assertEqual(
+            template.package_paths(utils.ns_name('source-path')),
+            ['sources/package/src/package']
+        )
+
+        template.write()
+        with open(os.path.join(tempdir, 'run-coverage.sh')) as f:
+            self.checkOutput("""
+            #!/bin/bash
+            #
+            # THIS SCRIPT IS GENERATED BY MXENV.
+            # CHANGES MADE IN THIS FILE WILL BE LOST.
+            #
+            # Run coverage
+            set -e
+
+            function setenv() {
+                export ENV_PARAM="env_value"
+            }
+
+            function unsetenv() {
+                unset ENV_PARAM
+            }
+
+            trap unsetenv ERR INT
+
+            setenv
+
+            sources=(
+                sources/package/src/package
+            )
+
+            sources=$(printf ",%s" "${sources[@]}")
+            sources=${sources:1}
+
+            /.../bin/coverage run \\
+                --source=$sources \\
+                -m zope.testrunner --auto-color --auto-progress \\
+                --test-path=sources/package/src
+
+            /.../bin/coverage report
+            /.../bin/coverage html
+
+            unsetenv
+
+            exit 0
+            """, f.read())
 
 if __name__ == '__main__':
     unittest.main()
