@@ -55,6 +55,20 @@ venv-clean: venv-dirty
 # files
 ###############################################################################
 
+# set environment variables for mxenv
+define set_files_env
+	export MXENV_VENV_FOLDER=$(1)
+	export MXENV_SCRIPTS_FOLDER=$(2)
+	export MXENV_CONFIG_FOLDER=$(3)
+endef
+
+# unset environment variables for mxenv
+define unset_files_env
+	unset MXENV_VENV_FOLDER
+	unset MXENV_SCRIPTS_FOLDER
+	unset MXENV_CONFIG_FOLDER
+endef
+
 PROJECT_CONFIG?=mxdev.ini
 SCRIPTS_FOLDER?=$(VENV_FOLDER)/bin
 CONFIG_FOLDER?=cfg
@@ -62,13 +76,9 @@ CONFIG_FOLDER?=cfg
 FILES_SENTINEL:=$(SENTINEL_FOLDER)/files.sentinel
 $(FILES_SENTINEL): $(PROJECT_CONFIG) $(VENV_SENTINEL)
 	@echo "Create project files"
-	@export MXENV_VENV_FOLDER=$(VENV_FOLDER)
-	@export MXENV_SCRIPTS_FOLDER=$(SCRIPTS_FOLDER)
-	@export MXENV_CONFIG_FOLDER=$(CONFIG_FOLDER)
+	$(call set_files_env,$(VENV_FOLDER),$(SCRIPTS_FOLDER),$(CONFIG_FOLDER))
 	@$(VENV_FOLDER)/bin/mxdev -n -c $(PROJECT_CONFIG)
-	@unset MXENV_VENV_FOLDER
-	@unset MXENV_SCRIPTS_FOLDER
-	@unset MXENV_CONFIG_FOLDER
+	$(call unset_files_env,$(VENV_FOLDER),$(SCRIPTS_FOLDER),$(CONFIG_FOLDER))
 	@touch $(FILES_SENTINEL)
 
 .PHONY: files
@@ -80,6 +90,9 @@ files-dirty:
 
 .PHONY: files-clean
 files-clean: files-dirty
+	$(call set_files_env,$(VENV_FOLDER),$(SCRIPTS_FOLDER),$(CONFIG_FOLDER))
+	@$(VENV_FOLDER)/bin/mxenv -c $(PROJECT_CONFIG) --clean
+	$(call unset_files_env,$(VENV_FOLDER),$(SCRIPTS_FOLDER),$(CONFIG_FOLDER))
 	@rm -f constraints-mxdev.txt requirements-mxdev.txt
 
 ###############################################################################

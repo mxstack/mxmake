@@ -48,6 +48,7 @@ setup(
         ]
     ),
     entry_points=dict(
-        mxdev=['hook = mxenv:MxEnv']
+        console_scripts=['mxenv = mxenv:main'],
+        mxdev=['hook = mxenv:Hook']
     )
 )

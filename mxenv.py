@@ -1,9 +1,11 @@
 from jinja2 import Environment
 from jinja2 import PackageLoader
 import abc
+import argparse
 import logging
 import mxdev
 import os
+import sys
 import typing
 
 logger = logging.getLogger('mxenv')
@@ -67,13 +69,13 @@ class template:
 
 
 class Template(abc.ABC):
-    name: str = ''
+    name: str
     file_mode: int = 0o644
 
     def __init__(
         self,
         config: mxdev.Configuration,
-        environment: Environment
+        environment: typing.Union[Environment, None] = None
     ) -> None:
         self.config = config
         self.environment = environment
@@ -100,6 +102,8 @@ class Template(abc.ABC):
 
     def write(self) -> None:
         """Render template and write result to file system."""
+        if not self.environment:
+            raise RuntimeError('Cannot write template without environment')
         target_folder = self.target_folder
         os.makedirs(target_folder, exist_ok=True)
         target_path = os.path.join(target_folder, self.target_name)
@@ -107,6 +111,14 @@ class Template(abc.ABC):
         with open(target_path, 'w') as f:
             f.write(template.render(**self.template_variables))
         os.chmod(target_path, self.file_mode)
+
+    def remove(self) -> bool:
+        """Remove rendered template if exists. Return bool if file existed."""
+        target_path = os.path.join(self.target_folder, self.target_name)
+        if os.path.exists(target_path):
+            os.remove(target_path)
+            return True
+        return False
 
 
 class ShellScriptTemplate(Template):
@@ -179,7 +191,7 @@ class CoverageScript(TestScript):
 # mxdev hook
 ###############################################################################
 
-class MxEnv(mxdev.Hook):
+class Hook(mxdev.Hook):
     namespace: str = NAMESPACE
 
     def __init__(self) -> None:
@@ -203,3 +215,46 @@ class MxEnv(mxdev.Hook):
                 logger.warning(msg)
                 continue
             factory(config, environment).write()
+
+
+###############################################################################
+# cmd line
+###############################################################################
+
+def main() -> None:
+    mxdev.setup_logger(logging.INFO)
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        '-c',
+        '--configuration',
+        help='mxdev configuration file',
+        nargs="?",
+        type=argparse.FileType('r'),
+        required=True
+    )
+    parser.add_argument(
+        '--clean',
+        action='store_true',
+        help='Remove generated files'
+    )
+    args = parser.parse_args()
+    if args.clean:
+        logger.info('mxenv: clean generated files')
+        hooks = mxdev.load_hooks()
+        configuration = mxdev.Configuration(tio=args.configuration, hooks=hooks)
+        state = mxdev.State(configuration=configuration)
+        mxdev.read(state)
+        mxdev.read_hooks(state, hooks)
+        config = state.configuration
+        templates = list_value(config.settings.get(ns_name('templates')))
+        if not templates:
+            logger.info('mxenv: No templates defined')
+        else:
+            for name in templates:
+                factory = template.lookup(name)
+                instance = factory(config)
+                if instance.remove():
+                    logger.info(f'mxenv: removed "{instance.target_name}"')
+        sys.exit(0)
+    logger.info('mxenv: no action given')
+    sys.exit(1)
