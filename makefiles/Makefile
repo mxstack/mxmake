@@ -26,10 +26,16 @@ $(SENTINEL):
 PYTHON?=python3
 VENV_FOLDER?=venv
 PIP_BIN:=$(VENV_FOLDER)/bin/pip
+
+# This setting is for customizing the installation of mxdev. Normally only
+# needed if working on mxdev development.
 #MXDEV?=mxdev
 MXDEV?=https://github.com/bluedynamics/mxdev/archive/master.zip
-#MVENV?=mxenv
-MVENV?=https://github.com/conestack/mxenv/archive/master.zip
+
+# This setting is for customizing the installation of mxenv. Normally only
+# needed if working on mxenv development
+#MXENV?=mxenv
+MXENV?=https://github.com/conestack/mxenv/archive/master.zip
 
 VENV_SENTINEL:=$(SENTINEL_FOLDER)/venv.sentinel
 $(VENV_SENTINEL): $(SENTINEL)
@@ -37,7 +43,7 @@ $(VENV_SENTINEL): $(SENTINEL)
 	@$(PYTHON) -m venv $(VENV_FOLDER)
 	@$(PIP_BIN) install -U pip setuptools wheel
 	@$(PIP_BIN) install -U $(MXDEV)
-	@$(PIP_BIN) install -U $(MVENV)
+	@$(PIP_BIN) install -U $(MXENV)
 	@touch $(VENV_SENTINEL)
 
 .PHONY: venv
@@ -91,7 +97,7 @@ files-dirty:
 .PHONY: files-clean
 files-clean: files-dirty
 	$(call set_files_env,$(VENV_FOLDER),$(SCRIPTS_FOLDER),$(CONFIG_FOLDER))
-	@test -e $(VENV_FOLDER)/bin/mxenv &&
+	@test -e $(VENV_FOLDER)/bin/mxenv && \
 		$(VENV_FOLDER)/bin/mxenv -c $(PROJECT_CONFIG) --clean
 	$(call unset_files_env,$(VENV_FOLDER),$(SCRIPTS_FOLDER),$(CONFIG_FOLDER))
 	@rm -f constraints-mxdev.txt requirements-mxdev.txt
