@@ -1,13 +1,36 @@
+from mxenv.templates import template
+from mxenv.utils import list_value
+from mxenv.utils import ns_name
 import argparse
 import logging
 import mxdev
 import sys
-from mxenv.templates import template
-from mxenv.utils import ns_name
-from mxenv.utils import list_value
+import typing
 
 
 logger = logging.getLogger('mxenv')
+
+
+def read_configuration(tio: typing.TextIO) -> mxdev.Configuration:
+    hooks = mxdev.load_hooks()
+    configuration = mxdev.Configuration(tio=tio, hooks=hooks)
+    state = mxdev.State(configuration=configuration)
+    mxdev.read(state)
+    mxdev.read_hooks(state, hooks)
+    return configuration
+
+
+def clean_files(configuration: mxdev.Configuration) -> None:
+    logger.info('mxenv: clean generated files')
+    templates = list_value(configuration.settings.get(ns_name('templates')))
+    if not templates:
+        logger.info('mxenv: No templates defined')
+    else:
+        for name in templates:
+            factory = template.lookup(name)
+            instance = factory(configuration)
+            if instance.remove():
+                logger.info(f'mxenv: removed "{instance.target_name}"')
 
 
 def main() -> None:
@@ -28,22 +51,8 @@ def main() -> None:
     )
     args = parser.parse_args()
     if args.clean:
-        logger.info('mxenv: clean generated files')
-        hooks = mxdev.load_hooks()
-        configuration = mxdev.Configuration(tio=args.configuration, hooks=hooks)
-        state = mxdev.State(configuration=configuration)
-        mxdev.read(state)
-        mxdev.read_hooks(state, hooks)
-        config = state.configuration
-        templates = list_value(config.settings.get(ns_name('templates')))
-        if not templates:
-            logger.info('mxenv: No templates defined')
-        else:
-            for name in templates:
-                factory = template.lookup(name)
-                instance = factory(config)
-                if instance.remove():
-                    logger.info(f'mxenv: removed "{instance.target_name}"')
+        configuration = read_configuration(args.configuration)
+        clean_files(configuration)
         sys.exit(0)
     logger.info('mxenv: no action given')
     sys.exit(1)

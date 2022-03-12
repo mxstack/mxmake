@@ -2,6 +2,7 @@ from contextlib import contextmanager
 from jinja2 import Environment
 from jinja2 import FileSystemLoader
 from mxenv import hook
+from mxenv import main
 from mxenv import templates
 from mxenv import utils
 import doctest
@@ -377,6 +378,96 @@ class TestTemplates(RenderTestCase):
 
             exit 0
             """, f.read())
+
+
+###############################################################################
+# Test hook
+###############################################################################
+
+class TestHook(unittest.TestCase):
+
+    @template_directory()
+    def test_Hook(self, tempdir):
+        config_file = io.StringIO()
+        config_file.write(
+            '[settings]\n'
+            'mxenv-templates = run-tests run-coverage inexistent'
+        )
+        config_file.seek(0)
+
+        hook_ = hook.Hook()
+        configuration = mxdev.Configuration(config_file, [hook_])
+        state = mxdev.State(configuration=configuration)
+        hook_.write(state)
+        self.assertEqual(
+            sorted(os.listdir(tempdir)),
+            ['run-coverage.sh', 'run-tests.sh']
+        )
+
+
+###############################################################################
+# Test main
+###############################################################################
+
+class TestMain(unittest.TestCase):
+
+    @template_directory()
+    def test_read_configuration(self, tempdir):
+        config_file = io.StringIO()
+        config_file.write(
+            '[settings]\n'
+            'mxenv-templates = run-tests run-coverage'
+        )
+        config_file.seek(0)
+        configuration = main.read_configuration(config_file)
+        self.assertIsInstance(configuration, mxdev.Configuration)
+        templates = utils.list_value(
+            configuration.settings.get(utils.ns_name('templates'))
+        )
+        self.assertEqual(templates, ['run-tests', 'run-coverage'])
+
+    @template_directory()
+    def test_clean_files(self, tempdir):
+        config_file = io.StringIO()
+        config_file.write(
+            '[settings]\n'
+        )
+        config_file.seek(0)
+        configuration = main.read_configuration(config_file)
+        with self.assertLogs() as captured:
+            main.clean_files(configuration)
+            self.assertEqual(len(captured.records), 2)
+            self.assertEqual(
+                captured.records[0].getMessage(),
+                'mxenv: clean generated files'
+            )
+            self.assertEqual(
+                captured.records[1].getMessage(),
+                'mxenv: No templates defined'
+            )
+
+        with open(os.path.join(tempdir, 'run-tests.sh'), 'w') as f:
+            f.write('')
+        config_file = io.StringIO()
+        config_file.write(
+            '[settings]\n'
+            'mxenv-templates = run-tests\n'
+        )
+        config_file.seek(0)
+        configuration = main.read_configuration(config_file)
+        with self.assertLogs() as captured:
+            main.clean_files(configuration)
+            self.assertEqual(len(captured.records), 2)
+            self.assertEqual(
+                captured.records[0].getMessage(),
+                'mxenv: clean generated files'
+            )
+            self.assertEqual(
+                captured.records[1].getMessage(),
+                'mxenv: removed "run-tests.sh"',
+            )
+        self.assertEqual(sorted(os.listdir(tempdir)), [])
+
 
 if __name__ == '__main__':
     unittest.main()
