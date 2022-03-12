@@ -26,5 +26,5 @@ jobs:
       - name: Install project
         run: make install
 
-      - name: Run tests an collect code coverage
+      - name: Run tests
         run: make test
