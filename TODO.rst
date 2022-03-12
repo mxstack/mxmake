@@ -1,7 +1,5 @@
 TODO
 ====
 
-- `files-clean` target should remove generated templates. Add a mxenv
-  command for this task.
-
-- `clean-runtime` target (*.pyc, *.pyo)
+- Extent test and coverage script generation to support zope-testrunner and/or
+  pytest

@@ -208,6 +208,13 @@ clean: venv-clean files-clean docs-clean coverage-clean
 .PHONY: full-clean
 full-clean: clean sources-clean
 
+.PHONY: runtime-clean
+runtime-clean:
+	@echo "Remove runtime artifacts, like byte-code and caches."
+	@find . -name '*.py[c|o]' -delete
+	@find . -name '*~' -exec rm -f {} +
+	@find . -name '__pycache__' -exec rm -fr {} +
+
 ###############################################################################
 # Include custom make files
 ###############################################################################

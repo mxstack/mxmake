@@ -368,6 +368,14 @@ full-clean
 Cleanup project environment including sources.
 
 
+.. runtime-clean:
+
+runtime-clean
++++++++++++++
+
+Remove runtime artifacts, like byte-code and caches.
+
+
 .. _Templates:
 
 Templates
