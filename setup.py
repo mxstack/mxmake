@@ -33,9 +33,10 @@ setup(
     author_email='dev@conestack.org',
     url='http://github.com/conestack/mxenv',
     license='Simplified BSD',
-    py_modules=['mxenv'],
+    py_packages=['mxenv'],
     test_suite='tests',
     zip_safe=False,
+    include_package_data=True,
     install_requires=[
         'Jinja2',
         'mxdev',
