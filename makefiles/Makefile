@@ -134,7 +134,8 @@ SYSTEM_DEPENDENCIES?=
 system-dependencies:
 	@echo "Install system dependencies"
 	@test -z "$(SYSTEM_DEPENDENCIES)" && echo "No System dependencies defined"
-	@test -z "$(SYSTEM_DEPENDENCIES)" || sudo apt-get install -y $(SYSTEM_DEPENDENCIES)
+	@test -z "$(SYSTEM_DEPENDENCIES)" \
+		|| sudo apt-get install -y $(SYSTEM_DEPENDENCIES)
 
 ###############################################################################
 # docs
@@ -158,7 +159,7 @@ docs-clean:
 # test
 ###############################################################################
 
-TEST_SCRIPT=$(SCRIPTS_FOLDER)/run-tests.sh
+TEST_SCRIPT?=$(SCRIPTS_FOLDER)/run-tests.sh
 
 .PHONY: test
 test: $(FILES_SENTINEL) $(SOURCES_SENTINEL) $(INSTALL_SENTINEL)
@@ -170,7 +171,7 @@ test: $(FILES_SENTINEL) $(SOURCES_SENTINEL) $(INSTALL_SENTINEL)
 # coverage
 ###############################################################################
 
-COVERAGE_SCRIPT=$(SCRIPTS_FOLDER)/run-coverage.sh
+COVERAGE_SCRIPT?=$(SCRIPTS_FOLDER)/run-coverage.sh
 
 .PHONY: coverage
 coverage: $(FILES_SENTINEL) $(SOURCES_SENTINEL) $(INSTALL_SENTINEL)

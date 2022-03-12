@@ -1,0 +1,6 @@
+include *.rst
+recursive-include templates *
+recursive-exclude *.pyc *.pyo
+prune docs
+prune examples
+prune makefiles

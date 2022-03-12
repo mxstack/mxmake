@@ -2,7 +2,7 @@ mxenv - Create development environments for python packages
 ===========================================================
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
    :caption: Contents:
 
 
@@ -35,8 +35,18 @@ to your project folder:
 
 .. code-block:: sh
 
-    $ wget https://raw.githubusercontent.com/conestack/mxenv/master/files/Makefile
-    $ wget https://raw.githubusercontent.com/conestack/mxenv/master/files/mxdev.ini
+    $ wget https://raw.githubusercontent.com/conestack/mxenv/master/makefiles/Makefile
+    $ wget https://raw.githubusercontent.com/conestack/mxenv/master/examples/mxdev.ini
+
+Optionally create ``mk`` folder and inside create ``project.mk`` for project
+specific settings, includes and custom make targets. If this file is present it
+gets included when running make:
+
+.. code-block:: sh
+
+    $ mkdir mk
+    $ cd mk
+    $ wget https://raw.githubusercontent.com/conestack/mxenv/master/examples/project.mk
 
 After proper :ref:`Configuration` of the ini file, run:
 
@@ -100,22 +110,28 @@ named after ``mxenv-<templatename>``:
 
 See :ref:`Templates` for documations about the available templates.
 
-See `here <https://github.com/bluedynamics/mxdev>`_ for more
-documentation about config file.
+See `here <https://github.com/bluedynamics/mxdev>`_ for more documentation
+about the ``mxdev`` config file.
 
 
 Make
 ----
 
-The ``Makefile`` contains a set of targets for working on your project.
+``mxenv`` provides a generic `Makefile` for managing common install and
+development tasks. This file contains a set of unified make targets for working
+on your project.
 
-At the end of the ``Makefile``, a make file named ``project.mk`` contained in
-the ``config`` folder is included if present. This is supposed to be used for
-overriding project settings and adding cutom targets.
+At the end of the `Makefile`, a file named `project.mk` gets included if
+present. It is expected in the `mk` folder of your project. This file is
+supposed to contain project specific includes, setting overrides and additional
+cutom targets.
 
-An example ``project.mk`` and some read-to-use include files can be found in
-the `files <https://github.com/conestack/mxenv/tree/master/files/cfg>`_ folder
-of ``mxenv``.
+An example `project.mk` can be found
+`here <https://github.com/conestack/mxenv/tree/master/examples>`_.
+
+The generic ``mxenv`` `Makefile` and a set of useful domain specific make files
+to be included in your project can be found
+`here <https://github.com/conestack/mxenv/tree/master/makefiles>`_.
 
 
 .. _Targets:
@@ -125,7 +141,11 @@ Targets
 
 The available make targets are build with ``make <targetname>``.
 
-**venv**
+
+.. _venv:
+
+venv
+++++
 
 Create python virtual environment. The following python packages are installed
 respective updated:
@@ -136,127 +156,214 @@ respective updated:
 - mxdev
 - mxenv
 
-Configuration options:
+**Configuration options**:
 
-- PYTHON: The python interpreter to use for creating the virtual environment.
-  Defaults to ``python3``.
-- VENV_FOLDER: The folder where the virtual environment get created. Defaults
-  to ``venv``.
+- ``PYTHON``: The python interpreter to use for creating the virtual environment.
+  Defaults to `python3`.
+- ``VENV_FOLDER``: The folder where the virtual environment get created.
+  Defaults to `venv`.
 
-**venv-dirty**
 
-Build ``venv`` target on next make run.
+.. _venv-dirty:
 
-**venv-clean**
+venv-dirty
+++++++++++
+
+Build :ref:`venv` target on next make run.
+
+
+.. _venv-clean:
+
+venv-clean
+++++++++++
 
 Removes virtual environment.
 
-**files**
+
+.. _files:
+
+files
++++++
 
 Create all project files by running ``mxdev``. It does not checkout sources.
 
-Dependency targets:
+**Dependency targets**:
 
-- venv
+- :ref:`venv``
 
-Configuration options:
+**Configuration options**:
 
-- PROJECT_CONFIG: The config file to use. Defaults to ``mxdev.ini``.
-- SCRIPTS_FOLDER: Target folder for generated scripts. Defaults to ``venv/bin``.
-- CONFIG_FOLDER: Target folder for generated config files. Defaults to ``cfg``.
+- ``PROJECT_CONFIG``: The config file to use. Defaults to `mxdev.ini`.
+- ``SCRIPTS_FOLDER``: Target folder for generated scripts. Defaults to `venv/bin`.
+- ``CONFIG_FOLDER``: Target folder for generated config files. Defaults to `cfg`.
 
-**files-dirty**
 
-Build ``files`` target on next make run.
+.. _files-dirty:
 
-**files-clean**
+files-dirty
++++++++++++
+
+Build :ref:`files` target on next make run.
+
+
+.. _files-clean:
+
+files-clean
++++++++++++
 
 Remove generated project files.
 
-**sources**
+
+.. _sources:
+
+sources
++++++++
 
 Checkout sources by running ``mxdev``. It does not generate project files.
 
-Dependency targets:
+**Dependency targets**:
 
-- files
+- :ref:`files``
 
-Configuration options:
+**Configuration options**:
 
-- PROJECT_CONFIG: The config file to use. Defaults to ``mxdev.ini``.
+- ``PROJECT_CONFIG``: The config file to use. Defaults to `mxdev.ini`.
 
-**sources-dirty**
 
-Build ``sources`` target on next make run.
+.. _sources-dirty:
 
-**sources-clean**
+sources-dirty
++++++++++++++
+
+Build :ref:`sources` target on next make run.
+
+
+.. _sources-clean:
+
+sources-clean
++++++++++++++
 
 Removes sources folder.
 
-**install**
+
+.. _install:
+
+install
++++++++
 
 Install packages with pip after creating files and checking out sources.
 
-Dependency targets:
+**Dependency targets**:
 
-- sources
+- :ref:`sources``
 
-**install-dirty**
 
-Build ``install`` target on next make run.
+.. _install-dirty:
 
-**system-dependencies**
+install-dirty
++++++++++++++
+
+Build :ref:`install` target on next make run.
+
+
+.. _system-dependencies:
+
+system-dependencies
++++++++++++++++++++
 
 Install system dependencies.
 
-Configuration options:
+**Configuration options**:
 
-- SYSTEM_DEPENDENCIES: Space separated system package names.
+- ``SYSTEM_DEPENDENCIES``: Space separated system package names.
 
-**docs**
+
+.. _docs:
+
+docs
+++++
 
 Generate sphinx docs. Sphinx is expected to be installed. This is not done
 automatically.
 
-Configuration options:
+**Configuration options**:
 
-- DOCS_BIN: The Sphinx build executable. Defaults to  ``bin/sphinx-build``.
-- DOCS_SOURCE: Documentation source folder. Defaults to ``docs/source``.
-- DOCS_TARGET: Documentation generation target folder. Defaults to ``docs/html``.
+- ``DOCS_BIN``: The Sphinx build executable. Defaults to
+  `$(VENV_FOLDER)/bin/sphinx-build`.
+- ``DOCS_SOURCE``: Documentation source folder. Defaults to `docs/source`.
+- ``DOCS_TARGET``: Documentation generation target folder. Defaults to `docs/html`.
 
-**docs-clean**
+
+.. _docs-clean:
+
+docs-clean
+++++++++++
 
 Removes generated docs.
 
-**test**
 
-Run project tests.
+.. _test:
 
-Dependency targets:
+test
+++++
 
-- install
+Run project tests. The :ref:`run-tests` template can be used for automatic
+test script creation.
 
-**coverage**
+**Dependency targets**:
 
-Run project coverage.
+- :ref:`install``
 
-Dependency targets:
+**Configuration options**:
 
-- install
+- ``TEST_SCRIPT``: The script which gets executed. Defaults to
+  `$(SCRIPTS_FOLDER)/run-tests.sh`, which is the default location the
+  :ref:`run-tests` template gets rendered to if configured.
 
-**coverage-clean**
+
+.. _coverage:
+
+coverage
+++++++++
+
+Run project coverage. :ref:`run-coverage` template can be used for automatic
+coverage script creation.
+
+**Dependency targets**:
+
+- :ref:`install``
+
+**Configuration options**:
+
+- ``COVERAGE_SCRIPT``: The script which gets executed. Defaults to
+  `$(SCRIPTS_FOLDER)/run-coverage.sh`, which is the default location the
+  :ref:`run-coverage` template gets rendered to if configured.
+
+
+.. _coverage-clean:
+
+coverage-clean
+++++++++++++++
 
 Remove coverage related files and directories.
 
-**clean**
+
+.. _clean:
+
+clean
++++++
 
 Cleanup project environment.
 
-Configuration options:
+**Configuration options**:
 
-- CLEAN_TARGETS: Space separated list of files and folders to remove.
+- ``CLEAN_TARGETS``: Space separated list of files and folders to remove.
 
-**full-clean**
+
+.. _full-clean:
+
+full-clean
+++++++++++
 
 Cleanup project environment including sources.
 
@@ -266,18 +373,20 @@ Cleanup project environment including sources.
 Templates
 ---------
 
-The following section describes the templates which can be build by mxenv.
+The following section describes the templates which can be build by ``mxenv``.
 
+
+.. _run-tests:
 
 run-tests
 ~~~~~~~~~
 
-A script for running tests of python packages defined as mxdev sources. It
+A script for running tests of python packages defined as ``mxdev`` sources. It
 utilizes ``zope-testrunner``, thus expects it to be installed.
 
 The generation target is ``scripts/run-tests.sh``.
 
-Invocation of the test run is done via ``make tests``.
+Invocation of the test run is done via :ref:`test` make target.
 
 Configuration looks like so:
 
@@ -302,16 +411,18 @@ Configuration looks like so:
     mxenv-test-path = src
 
 
+.. _run-coverage:
+
 run-coverage
 ~~~~~~~~~~~~
 
-A script for running coverage tests of python packages defined as mxdev sources.
-It utilizes ``zope-testrunner`` and ``coverage``, thus expects these packages to
-be installed.
+A script for running coverage tests of python packages defined as ``mxdev``
+sources. It utilizes ``zope-testrunner`` and ``coverage``, thus expects these
+packages to be installed.
 
 The generation target is ``scripts/run-coverage.sh``.
 
-Invocation of the coverage run is done via ``make coverage``.
+Invocation of the coverage run is done via :ref:`coverage` make target.
 
 Configuration looks like so:
 

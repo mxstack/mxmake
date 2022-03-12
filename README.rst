@@ -1,3 +1,5 @@
+**``mxenv`` - Create development environments for python packages.**
+
 .. image:: https://img.shields.io/pypi/v/mxenv.svg
     :target: https://pypi.python.org/pypi/mxenv
     :alt: Latest PyPI version
@@ -5,8 +7,6 @@
 .. image:: https://img.shields.io/pypi/dm/mxenv.svg
     :target: https://pypi.python.org/pypi/mxenv
     :alt: Number of PyPI downloads
-
-**``mxenv`` - Create development environments for python packages.**
 
 
 Detailed Documentation

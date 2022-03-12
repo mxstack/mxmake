@@ -31,6 +31,12 @@
 #DOCS_SOURCE=docs/source
 #DOCS_TARGET=docs/html
 
+## ``test`` target
+#TEST_SCRIPT?=$(SCRIPTS_FOLDER)/run-tests.sh
+
+## ``coverage`` target
+#COVERAGE_SCRIPT?=$(SCRIPTS_FOLDER)/run-coverage.sh
+
 ## ``clean`` target
 #CLEAN_TARGETS=file-or-folder-a file-or-folder-b
 
