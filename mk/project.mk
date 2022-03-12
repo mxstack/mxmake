@@ -7,10 +7,13 @@
 ###############################################################################
 
 ## ``venv`` target
-MXENV=-e .
+MXENV=-e .[docs]
 
 ## ``test`` target
 TEST_COMMAND=$(VENV_FOLDER)/bin/python setup.py test
 
 ## ``coverage`` target
 COVERAGE_COMMAND=
+
+## ``clean`` target
+CLEAN_TARGETS+=dist mxenv.egg-info
