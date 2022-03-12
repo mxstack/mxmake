@@ -1,13 +1,23 @@
+{% extends "script.sh" %}
+
+{% block script_content %}
 function setenv() {
-{setenv}
+{% for name, value in env.items() %}
+    export {{ name }}="{{ value }}"
+{% endfor %}
 }
 
 function unsetenv() {
-{unsetenv}
+{% for name in env %}
+    unset {{ name }}
+{% endfor %}
 }
 
 trap unsetenv ERR INT
 
 setenv
-{content}
+
+{% block env_content %}{% endblock %}
+
 unsetenv
+{% endblock %}
