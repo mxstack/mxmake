@@ -1,12 +1,20 @@
+from jinja2 import Environment
+from jinja2 import PackageLoader
 from mxdev import Hook
 from mxdev import State
 import abc
 import logging
 import os
 
+
 logger = logging.getLogger('mxenv')
 
 NAMESPACE = 'mxenv-'
+
+
+env = Environment(
+    loader=PackageLoader('mxenv', 'templates')
+)
 
 
 ###############################################################################

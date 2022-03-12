@@ -34,12 +34,20 @@ setup(
     url='http://github.com/conestack/mxenv',
     license='Simplified BSD',
     py_modules=['mxenv'],
-    zip_safe=True,
+    test_suite='tests',
+    zip_safe=False,
     install_requires=[
+        'Jinja2',
         'mxdev',
         'setuptools'
     ],
-    entry_points={
-        'mxdev': ['hook = mxenv:MxEnv']
-    }
+    extras_require=dict(
+        docs=[
+            'Sphinx',
+            'sphinx-conestack-theme'
+        ]
+    ),
+    entry_points=dict(
+        mxdev=['hook = mxenv:MxEnv']
+    )
 )
