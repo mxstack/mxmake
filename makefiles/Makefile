@@ -91,7 +91,8 @@ files-dirty:
 .PHONY: files-clean
 files-clean: files-dirty
 	$(call set_files_env,$(VENV_FOLDER),$(SCRIPTS_FOLDER),$(CONFIG_FOLDER))
-	@$(VENV_FOLDER)/bin/mxenv -c $(PROJECT_CONFIG) --clean
+	@test -e $(VENV_FOLDER)/bin/mxenv &&
+		$(VENV_FOLDER)/bin/mxenv -c $(PROJECT_CONFIG) --clean
 	$(call unset_files_env,$(VENV_FOLDER),$(SCRIPTS_FOLDER),$(CONFIG_FOLDER))
 	@rm -f constraints-mxdev.txt requirements-mxdev.txt
 
@@ -202,7 +203,7 @@ coverage-clean:
 CLEAN_TARGETS?=
 
 .PHONY: clean
-clean: venv-clean files-clean docs-clean coverage-clean
+clean: files-clean venv-clean docs-clean coverage-clean
 	@rm -rf $(CLEAN_TARGETS) .sentinels .installed.txt
 
 .PHONY: full-clean
