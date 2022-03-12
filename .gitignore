@@ -1,6 +1,11 @@
 *.egg-info
 *.pyc
 __pycache__
+/.installed.txt
+/.sentinels/
 /build/
+/constraints-mxdev.txt
 /dist/
 /docs/html/
+/requirements-mxdev.txt
+/venv/

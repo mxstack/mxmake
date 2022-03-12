@@ -183,8 +183,8 @@ TEST_COMMAND?=$(SCRIPTS_FOLDER)/run-tests.sh
 .PHONY: test
 test: $(FILES_SENTINEL) $(SOURCES_SENTINEL) $(INSTALL_SENTINEL)
 	@echo "Run tests"
-	@test -e $(TEST_COMMAND) && $(TEST_COMMAND)
-	@test -e $(TEST_COMMAND) || echo "Test script not exists"
+	@test -z "$(TEST_COMMAND)" && echo "No test command defined"
+	@test -z "$(TEST_COMMAND)" || bash -c "$(TEST_COMMAND)"
 
 ###############################################################################
 # coverage
@@ -195,8 +195,8 @@ COVERAGE_COMMAND?=$(SCRIPTS_FOLDER)/run-coverage.sh
 .PHONY: coverage
 coverage: $(FILES_SENTINEL) $(SOURCES_SENTINEL) $(INSTALL_SENTINEL)
 	@echo "Run coverage"
-	@test -e $(COVERAGE_COMMAND) && $(COVERAGE_COMMAND)
-	@test -e $(COVERAGE_COMMAND) || echo "Coverage script not exists"
+	@test -z "$(COVERAGE_COMMAND)" && echo "No coverage command defined"
+	@test -z "$(COVERAGE_COMMAND)" || bash -c "$(COVERAGE_COMMAND)"
 
 .PHONY: coverage-clean
 coverage-clean:
