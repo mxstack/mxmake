@@ -34,7 +34,7 @@ setup(
     url='http://github.com/conestack/mxenv',
     license='Simplified BSD',
     py_packages=['mxenv'],
-    test_suite='tests',
+    test_suite='mxenv.tests',
     zip_safe=False,
     include_package_data=True,
     install_requires=[
@@ -49,7 +49,7 @@ setup(
         ]
     ),
     entry_points=dict(
-        console_scripts=['mxenv = mxenv:main'],
-        mxdev=['hook = mxenv:Hook']
+        console_scripts=['mxenv = mxenv.main:main'],
+        mxdev=['hook = mxenv.hook:Hook']
     )
 )
