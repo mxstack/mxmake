@@ -316,7 +316,7 @@ test script creation.
 
 **Configuration options**:
 
-- ``TEST_SCRIPT``: The script which gets executed. Defaults to
+- ``TEST_COMMAND``: The command which gets executed. Defaults to
   `$(SCRIPTS_FOLDER)/run-tests.sh`, which is the default location the
   :ref:`run-tests` template gets rendered to if configured.
 
@@ -335,7 +335,7 @@ coverage script creation.
 
 **Configuration options**:
 
-- ``COVERAGE_SCRIPT``: The script which gets executed. Defaults to
+- ``COVERAGE_COMMAND``: The command which gets executed. Defaults to
   `$(SCRIPTS_FOLDER)/run-coverage.sh`, which is the default location the
   :ref:`run-coverage` template gets rendered to if configured.
 

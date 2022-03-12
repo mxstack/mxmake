@@ -1,9 +1,7 @@
 TODO
 ====
 
-- more fine granular clean functionality
-    - clean
-    - clean-runtime *.pyc, *.pyo
-    - clean-full sources
+- `files-clean` target should remove generated templates. Add a mxenv
+  command for this task.
 
-- <target>-dirty
+- `clean-runtime` target (*.pyc, *.pyo)

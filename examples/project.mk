@@ -24,7 +24,7 @@
 #PROJECT_CONFIG=mxdev.ini
 
 ## ``system-dependencie``s target
-#SYSTEM_DEPENDENCIES=package-a package-b
+#SYSTEM_DEPENDENCIES+=package-a package-b
 
 ## ``docs`` target
 #DOCS_BIN=$(VENV_FOLDER)/bin/sphinx-build
@@ -32,13 +32,13 @@
 #DOCS_TARGET=docs/html
 
 ## ``test`` target
-#TEST_SCRIPT?=$(SCRIPTS_FOLDER)/run-tests.sh
+#TEST_COMMAND=$(SCRIPTS_FOLDER)/run-tests.sh
 
 ## ``coverage`` target
-#COVERAGE_SCRIPT?=$(SCRIPTS_FOLDER)/run-coverage.sh
+#COVERAGE_COMMAND=$(SCRIPTS_FOLDER)/run-coverage.sh
 
 ## ``clean`` target
-#CLEAN_TARGETS=file-or-folder-a file-or-folder-b
+#CLEAN_TARGETS+=file-or-folder-a file-or-folder-b
 
 ###############################################################################
 # Project specific targets

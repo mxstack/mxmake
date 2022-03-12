@@ -80,8 +80,7 @@ files-dirty:
 
 .PHONY: files-clean
 files-clean: files-dirty
-	@rm -f $(TEST_SCRIPT) $(COVERAGE_SCRIPT) \
-		constraints-mxdev.txt requirements-mxdev.txt
+	@rm -f constraints-mxdev.txt requirements-mxdev.txt
 
 ###############################################################################
 # sources
@@ -159,25 +158,25 @@ docs-clean:
 # test
 ###############################################################################
 
-TEST_SCRIPT?=$(SCRIPTS_FOLDER)/run-tests.sh
+TEST_COMMAND?=$(SCRIPTS_FOLDER)/run-tests.sh
 
 .PHONY: test
 test: $(FILES_SENTINEL) $(SOURCES_SENTINEL) $(INSTALL_SENTINEL)
 	@echo "Run tests"
-	@test -e $(TEST_SCRIPT) && $(TEST_SCRIPT)
-	@test -e $(TEST_SCRIPT) || echo "Test script not exists"
+	@test -e $(TEST_COMMAND) && $(TEST_COMMAND)
+	@test -e $(TEST_COMMAND) || echo "Test script not exists"
 
 ###############################################################################
 # coverage
 ###############################################################################
 
-COVERAGE_SCRIPT?=$(SCRIPTS_FOLDER)/run-coverage.sh
+COVERAGE_COMMAND?=$(SCRIPTS_FOLDER)/run-coverage.sh
 
 .PHONY: coverage
 coverage: $(FILES_SENTINEL) $(SOURCES_SENTINEL) $(INSTALL_SENTINEL)
 	@echo "Run coverage"
-	@test -e $(COVERAGE_SCRIPT) && $(COVERAGE_SCRIPT)
-	@test -e $(COVERAGE_SCRIPT) || echo "Coverage script not exists"
+	@test -e $(COVERAGE_COMMAND) && $(COVERAGE_COMMAND)
+	@test -e $(COVERAGE_COMMAND) || echo "Coverage script not exists"
 
 .PHONY: coverage-clean
 coverage-clean:
