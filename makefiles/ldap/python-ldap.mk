@@ -2,7 +2,7 @@
 # python-ldap
 ###############################################################################
 
-include $(CONFIG_FOLDER)/openldap.mk
+include $(INCLUDE_FOLDER)/openldap.mk
 
 PYTHON_LDAP_SENTINEL:=$(SENTINEL_FOLDER)/python-ldap.sentinel
 $(PYTHON_LDAP_SENTINEL): $(VENV_SENTINEL) $(OPENLDAP_SENTINEL)

@@ -3,7 +3,7 @@
 ###############################################################################
 
 ## Includes of other makefiles goes here
-#include $(CONFIG_FOLDER)/<file>.mk
+#include $(INCLUDE_FOLDER)/<file>.mk
 
 ###############################################################################
 # Project specific settings
@@ -18,6 +18,7 @@
 
 ## ``files`` target
 #SCRIPTS_FOLDER=$(VENV_FOLDER)/bin
+#CONFIG_FOLDER=cfg
 
 ## ``files`` and ``sources`` targets
 #PROJECT_CONFIG=mxdev.ini

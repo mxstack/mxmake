@@ -199,4 +199,6 @@ full-clean: clean sources-clean
 # Include custom make files
 ###############################################################################
 
--include $(CONFIG_FOLDER)/project.mk
+INCLUDE_FOLDER?=mk
+
+-include $(INCLUDE_FOLDER)/project.mk
