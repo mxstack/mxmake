@@ -33,7 +33,7 @@ setup(
     author_email='dev@conestack.org',
     url='http://github.com/conestack/mxenv',
     license='Simplified BSD',
-    py_packages=['mxenv'],
+    packages=['mxenv'],
     test_suite='mxenv.tests',
     zip_safe=False,
     include_package_data=True,
