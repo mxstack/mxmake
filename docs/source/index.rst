@@ -1,5 +1,5 @@
-mxenv - Create development environmets for python packages
-==========================================================
+mxenv - Create development environments for python packages
+===========================================================
 
 .. toctree::
    :maxdepth: 2
@@ -337,6 +337,19 @@ Configuration looks like so:
     mxenv-test-path = src
     # relative path to package checkout directory to define coverage source path
     mxenv-source-path = src/node
+
+
+Source Code
+===========
+
+The sources are in a GIT DVCS with its main branches at
+`github <http://github.com/conestack/mxenv>`_.
+
+
+Copyright
+=========
+
+- Copyright (c) 2022 Cone Contributors
 
 
 Contributors
