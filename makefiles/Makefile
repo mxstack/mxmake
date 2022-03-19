@@ -23,7 +23,7 @@ $(SENTINEL):
 # venv
 ###############################################################################
 
-PYTHON?=python3
+HOST_PYTHON?=python3
 VENV_FOLDER?=venv
 PIP_BIN:=$(VENV_FOLDER)/bin/pip
 
@@ -40,7 +40,7 @@ MXENV?=https://github.com/conestack/mxenv/archive/master.zip
 VENV_SENTINEL:=$(SENTINEL_FOLDER)/venv.sentinel
 $(VENV_SENTINEL): $(SENTINEL)
 	@echo "Setup Python Virtual Environment under '$(VENV_FOLDER)'"
-	@$(PYTHON) -m venv $(VENV_FOLDER)
+	@$(HOST_PYTHON) -m venv $(VENV_FOLDER)
 	@$(PIP_BIN) install -U pip setuptools wheel
 	@$(PIP_BIN) install -U $(MXDEV)
 	@$(PIP_BIN) install -U $(MXENV)
@@ -63,16 +63,16 @@ venv-clean: venv-dirty
 
 # set environment variables for mxenv
 define set_files_env
-	export MXENV_VENV_FOLDER=$(1)
-	export MXENV_SCRIPTS_FOLDER=$(2)
-	export MXENV_CONFIG_FOLDER=$(3)
+	@export MXENV_VENV_FOLDER=$(1)
+	@export MXENV_SCRIPTS_FOLDER=$(2)
+	@export MXENV_CONFIG_FOLDER=$(3)
 endef
 
 # unset environment variables for mxenv
 define unset_files_env
-	unset MXENV_VENV_FOLDER
-	unset MXENV_SCRIPTS_FOLDER
-	unset MXENV_CONFIG_FOLDER
+	@unset MXENV_VENV_FOLDER
+	@unset MXENV_SCRIPTS_FOLDER
+	@unset MXENV_CONFIG_FOLDER
 endef
 
 PROJECT_CONFIG?=mxdev.ini
@@ -127,13 +127,13 @@ sources-clean: sources-dirty
 # install
 ###############################################################################
 
-PIP_PACKAGES=.installed.txt
+INSTALLED_PACKAGES=.installed.txt
 
 INSTALL_SENTINEL:=$(SENTINEL_FOLDER)/install.sentinel
 $(INSTALL_SENTINEL): $(SOURCES_SENTINEL)
 	@echo "Install python packages"
 	@$(PIP_BIN) install -r requirements-mxdev.txt
-	@$(PIP_BIN) freeze > $(PIP_PACKAGES)
+	@$(PIP_BIN) freeze > $(INSTALLED_PACKAGES)
 	@touch $(INSTALL_SENTINEL)
 
 .PHONY: install

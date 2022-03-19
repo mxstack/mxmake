@@ -13,7 +13,7 @@
 ## See ``mxenv`` documentation for details.
 
 ## ``venv`` target
-#PYTHON=python3
+#HOST_PYTHON=python3
 #VENV_FOLDER=venv
 
 ## ``files`` target
