@@ -1,5 +1,5 @@
 ###############################################################################
-# Makefile for mxenv projects.
+# Makefile for mxmake projects.
 ###############################################################################
 
 # Defensive settings for make: https://tech.davis-hansson.com/p/make/
@@ -32,10 +32,10 @@ PIP_BIN:=$(VENV_FOLDER)/bin/pip
 #MXDEV?=mxdev
 MXDEV?=https://github.com/bluedynamics/mxdev/archive/master.zip
 
-# This setting is for customizing the installation of mxenv. Normally only
-# needed if working on mxenv development
-#MXENV?=mxenv
-MXENV?=https://github.com/conestack/mxenv/archive/master.zip
+# This setting is for customizing the installation of mxmake. Normally only
+# needed if working on mxmake development
+#MXMAKE?=mxmake
+MXMAKE?=https://github.com/mxstack/mxmake/archive/master.zip
 
 VENV_SENTINEL:=$(SENTINEL_FOLDER)/venv.sentinel
 $(VENV_SENTINEL): $(SENTINEL)
@@ -43,7 +43,7 @@ $(VENV_SENTINEL): $(SENTINEL)
 	@$(HOST_PYTHON) -m venv $(VENV_FOLDER)
 	@$(PIP_BIN) install -U pip setuptools wheel
 	@$(PIP_BIN) install -U $(MXDEV)
-	@$(PIP_BIN) install -U $(MXENV)
+	@$(PIP_BIN) install -U $(MXMAKE)
 	@touch $(VENV_SENTINEL)
 
 .PHONY: venv
@@ -61,18 +61,18 @@ venv-clean: venv-dirty
 # files
 ###############################################################################
 
-# set environment variables for mxenv
+# set environment variables for mxmake
 define set_files_env
-	@export MXENV_VENV_FOLDER=$(1)
-	@export MXENV_SCRIPTS_FOLDER=$(2)
-	@export MXENV_CONFIG_FOLDER=$(3)
+	@export MXMAKE_VENV_FOLDER=$(1)
+	@export MXMAKE_SCRIPTS_FOLDER=$(2)
+	@export MXMAKE_CONFIG_FOLDER=$(3)
 endef
 
-# unset environment variables for mxenv
+# unset environment variables for mxmake
 define unset_files_env
-	@unset MXENV_VENV_FOLDER
-	@unset MXENV_SCRIPTS_FOLDER
-	@unset MXENV_CONFIG_FOLDER
+	@unset MXMAKE_VENV_FOLDER
+	@unset MXMAKE_SCRIPTS_FOLDER
+	@unset MXMAKE_CONFIG_FOLDER
 endef
 
 PROJECT_CONFIG?=mxdev.ini
@@ -97,8 +97,8 @@ files-dirty:
 .PHONY: files-clean
 files-clean: files-dirty
 	$(call set_files_env,$(VENV_FOLDER),$(SCRIPTS_FOLDER),$(CONFIG_FOLDER))
-	@test -e $(VENV_FOLDER)/bin/mxenv && \
-		$(VENV_FOLDER)/bin/mxenv -c $(PROJECT_CONFIG) --clean
+	@test -e $(VENV_FOLDER)/bin/mxmake && \
+		$(VENV_FOLDER)/bin/mxmake -c $(PROJECT_CONFIG) --clean
 	$(call unset_files_env,$(VENV_FOLDER),$(SCRIPTS_FOLDER),$(CONFIG_FOLDER))
 	@rm -f constraints-mxdev.txt requirements-mxdev.txt
 

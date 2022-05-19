@@ -1,4 +1,4 @@
-mxenv - Create development environments for python packages
+mxmake - Create development environments for python packages
 ===========================================================
 
 .. toctree::
@@ -17,11 +17,11 @@ on `make <https://www.gnu.org/software/make>`_ and
 to work on. See `here <https://github.com/bluedynamics/mxdev>`_ for detailed
 documentation.
 
-``mxenv`` provides generating helper scripts for development and a Makefile for
+``mxmake`` provides generating helper scripts for development and a Makefile for
 running tasks like project installation or tests.
 
 It's initial target is for development of the repositories contained in the
-`conestack <https://github.com/conestack>`_ organization on github.
+`mxstack <https://github.com/mxstack>`_ organization on github.
 
 
 Usage
@@ -30,13 +30,13 @@ Usage
 Basics
 ~~~~~~
 
-To bootstrap a new project with mxenv, download ``Makefile`` and ``mxdev.ini``
+To bootstrap a new project with mxmake, download ``Makefile`` and ``mxdev.ini``
 to your project folder:
 
 .. code-block:: sh
 
-    $ wget https://raw.githubusercontent.com/conestack/mxenv/master/makefiles/Makefile
-    $ wget https://raw.githubusercontent.com/conestack/mxenv/master/examples/mxdev.ini
+    $ wget https://raw.githubusercontent.com/mxstack/mxmake/master/makefiles/Makefile
+    $ wget https://raw.githubusercontent.com/mxstack/mxmake/master/examples/mxdev.ini
 
 Optionally create ``mk`` folder and inside create ``project.mk`` for project
 specific settings, includes and custom make targets. If this file is present it
@@ -46,7 +46,7 @@ gets included when running make:
 
     $ mkdir mk
     $ cd mk
-    $ wget https://raw.githubusercontent.com/conestack/mxenv/master/examples/project.mk
+    $ wget https://raw.githubusercontent.com/mxstack/mxmake/master/examples/project.mk
 
 After proper :ref:`Configuration` of the ini file, run:
 
@@ -98,14 +98,14 @@ Helper scripts are generated from templates which are defined in the
 .. code-block:: ini
 
     [settings]
-    mxenv-templates = name1 name2
+    mxmake-templates = name1 name2
 
 Additional template related settings are defined in dedicated config sections
-named after ``mxenv-<templatename>``:
+named after ``mxmake-<templatename>``:
 
 .. code-block:: ini
 
-    [mxenv-name1]
+    [mxmake-name1]
     setting = value
 
 See :ref:`Templates` for documations about the available templates.
@@ -117,7 +117,7 @@ about the ``mxdev`` config file.
 Make
 ----
 
-``mxenv`` provides a generic `Makefile` for managing common install and
+``mxmake`` provides a generic `Makefile` for managing common install and
 development tasks. This file contains a set of unified make targets for working
 on your project.
 
@@ -127,11 +127,11 @@ supposed to contain project specific includes, setting overrides and additional
 cutom targets.
 
 An example `project.mk` can be found
-`here <https://github.com/conestack/mxenv/tree/master/examples>`_.
+`here <https://github.com/mxstack/mxmake/tree/master/examples>`_.
 
-The generic ``mxenv`` `Makefile` and a set of useful domain specific make files
+The generic ``mxmake`` `Makefile` and a set of useful domain specific make files
 to be included in your project can be found
-`here <https://github.com/conestack/mxenv/tree/master/makefiles>`_.
+`here <https://github.com/mxstack/mxmake/tree/master/makefiles>`_.
 
 
 .. _Targets:
@@ -154,7 +154,7 @@ respective updated:
 - setuptools
 - wheel
 - mxdev
-- mxenv
+- mxmake
 
 **Configuration options**:
 
@@ -381,7 +381,7 @@ Remove runtime artifacts, like byte-code and caches.
 Templates
 ---------
 
-The following section describes the templates which can be build by ``mxenv``.
+The following section describes the templates which can be build by ``mxmake``.
 
 
 .. _run-tests:
@@ -401,22 +401,22 @@ Configuration looks like so:
 .. code-block:: ini
 
     [settings]
-    # tell mxenv to generate test script
-    mxenv-templates = run-tests
+    # tell mxmake to generate test script
+    mxmake-templates = run-tests
 
     # optional system variables to set before running the tests
-    [mxenv-env]
+    [mxmake-env]
     ENVVAR = value
 
     # test script related settings
-    [mxenv-run-tests]
+    [mxmake-run-tests]
     # the section to use for environment variables
     environment = env
 
     # package related
     [packagename]
     # relative path to package checkout directory to search for tests
-    mxenv-test-path = src
+    mxmake-test-path = src
 
 
 .. _run-coverage:
@@ -437,15 +437,15 @@ Configuration looks like so:
 .. code-block:: ini
 
     [settings]
-    # tell mxenv to generate coverage script
-    mxenv-templates = run-coverage
+    # tell mxmake to generate coverage script
+    mxmake-templates = run-coverage
 
     # optional system variables to set before running tests and coverage
-    [mxenv-env]
+    [mxmake-env]
     ENVVAR = value
 
     # coverage script related settings
-    [mxenv-run-coverage]
+    [mxmake-run-coverage]
     # the section to use for environment variables
     environment = env
 
@@ -453,16 +453,16 @@ Configuration looks like so:
     [packagename]
     # relative path to package checkout directory to search for tests
     # also used by ``run-tests``
-    mxenv-test-path = src
+    mxmake-test-path = src
     # relative path to package checkout directory to define coverage source path
-    mxenv-source-path = src/node
+    mxmake-source-path = src/node
 
 
 Source Code
 ===========
 
 The sources are in a GIT DVCS with its main branches at
-`github <http://github.com/conestack/mxenv>`_.
+`github <http://github.com/mxstack/mxmake>`_.
 
 
 Copyright

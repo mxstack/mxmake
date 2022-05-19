@@ -1,6 +1,6 @@
-from mxenv.templates import template
-from mxenv.utils import list_value
-from mxenv.utils import ns_name
+from mxmake.templates import template
+from mxmake.utils import list_value
+from mxmake.utils import ns_name
 import argparse
 import logging
 import mxdev
@@ -8,7 +8,7 @@ import sys
 import typing
 
 
-logger = logging.getLogger('mxenv')
+logger = logging.getLogger('mxmake')
 
 
 def read_configuration(tio: typing.TextIO) -> mxdev.Configuration:
@@ -21,16 +21,16 @@ def read_configuration(tio: typing.TextIO) -> mxdev.Configuration:
 
 
 def clean_files(configuration: mxdev.Configuration) -> None:
-    logger.info('mxenv: clean generated files')
+    logger.info('mxmake: clean generated files')
     templates = list_value(configuration.settings.get(ns_name('templates')))
     if not templates:
-        logger.info('mxenv: No templates defined')
+        logger.info('mxmake: No templates defined')
     else:
         for name in templates:
             factory = template.lookup(name)
             instance = factory(configuration)
             if instance.remove():
-                logger.info(f'mxenv: removed "{instance.target_name}"')
+                logger.info(f'mxmake: removed "{instance.target_name}"')
 
 
 def main() -> None:
@@ -54,5 +54,5 @@ def main() -> None:
         configuration = read_configuration(args.configuration)
         clean_files(configuration)
         sys.exit(0)
-    logger.info('mxenv: no action given')
+    logger.info('mxmake: no action given')
     sys.exit(1)

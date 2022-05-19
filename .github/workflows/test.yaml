@@ -1,4 +1,4 @@
-name: Test mxenv
+name: Test mxmake
 
 on:
   push:

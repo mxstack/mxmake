@@ -1,5 +1,5 @@
 include *.rst
-recursive-include mxenv/templates *
+recursive-include mxmake/templates *
 recursive-exclude *.pyc *.pyo
 prune docs
 prune examples

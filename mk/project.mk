@@ -1,13 +1,13 @@
 ###############################################################################
-# mxenv specific make file.
+# mxmake specific make file.
 #
-# This project file is for mxenv development itself.
+# This project file is for mxmake development itself.
 #
 # If you're searching for an examples, see examples folder.
 ###############################################################################
 
 ## ``venv`` target
-MXENV=-e .[docs]
+MXMAKE=-e .[docs]
 
 ## ``test`` target
 TEST_COMMAND=$(VENV_FOLDER)/bin/python setup.py test
@@ -16,4 +16,4 @@ TEST_COMMAND=$(VENV_FOLDER)/bin/python setup.py test
 COVERAGE_COMMAND=
 
 ## ``clean`` target
-CLEAN_TARGETS+=dist mxenv.egg-info
+CLEAN_TARGETS+=dist mxmake.egg-info

@@ -1,7 +1,7 @@
 from jinja2 import Environment
-from mxenv.utils import ns_name
-from mxenv.utils import scripts_folder
-from mxenv.utils import venv_folder
+from mxmake.utils import ns_name
+from mxmake.utils import scripts_folder
+from mxmake.utils import venv_folder
 import abc
 import mxdev
 import os

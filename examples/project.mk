@@ -10,7 +10,7 @@
 ###############################################################################
 
 ## Target specific setting overrides goes here
-## See ``mxenv`` documentation for details.
+## See ``mxmake`` documentation for details.
 
 ## ``venv`` target
 #HOST_PYTHON=python3

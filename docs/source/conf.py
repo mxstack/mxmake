@@ -17,9 +17,9 @@
 
 # -- Project information -----------------------------------------------------
 
-project = 'mxenv'
-copyright = '2022, Conestack Contributors'
-author = 'Conestack Contributors'
+project = 'mxmake'
+copyright = '2022, mxstack Contributors'
+author = 'mxstack Contributors'
 
 # The full version, including alpha/beta/rc tags
 release = '1.0'
@@ -47,7 +47,7 @@ exclude_patterns = []
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = 'conestack'
+html_theme = 'mxstack'
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
