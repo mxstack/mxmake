@@ -1,4 +1,6 @@
 #:[openldap]
+#:title = OpenLDAP
+#:description = Builds OpenLDAP from source
 #:depends =
 #:
 #:[OPENLDAP_VERSION]

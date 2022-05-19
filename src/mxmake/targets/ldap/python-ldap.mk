@@ -1,4 +1,6 @@
 #:[python-ldap]
+#:title = Python LDAP
+#:description = Builds and installs python-ldap against local OpenLDAP
 #:depends = openldap
 
 ###############################################################################
