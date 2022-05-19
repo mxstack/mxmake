@@ -30,7 +30,7 @@ PIP_BIN:=$(VENV_FOLDER)/bin/pip
 # This setting is for customizing the installation of mxdev. Normally only
 # needed if working on mxdev development.
 #MXDEV?=mxdev
-MXDEV?=https://github.com/bluedynamics/mxdev/archive/master.zip
+MXDEV?=https://github.com/mxstack/mxdev/archive/remove_libvcs.zip
 
 # This setting is for customizing the installation of mxmake. Normally only
 # needed if working on mxmake development
