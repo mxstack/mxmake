@@ -1,7 +1,9 @@
 from dataclasses import dataclass
 from pkg_resources import iter_entry_points
 import configparser
+import functools
 import io
+import os
 import typing
 
 
@@ -85,6 +87,7 @@ class Target:
                     leading_blankline = False
                 f.write(line)
 
+
 @dataclass
 class Domain:
     name: str
@@ -92,14 +95,25 @@ class Domain:
 
     @property
     def targets(self) -> typing.List[Target]:
-        return []
+        return [
+            Target(
+                name=name.rstrip('.mk'),
+                file=os.path.join(self.directory, name)
+            )
+            for name in sorted(os.listdir(self.directory))
+            if name.endswith('.mk')
+        ]
 
 
+@functools.lru_cache(maxsize=4096)
 def load_domains() -> typing.List[Domain]:
     return [ep.load() for ep in iter_entry_points("mxmake.domains")]
 
 
+targets_dir = os.path.join(os.path.dirname(__file__), 'targets')
+
+
 LDAP = Domain(
     name='ldap',
-    directory='targets/ldap'
+    directory=os.path.join(targets_dir, 'ldap')
 )

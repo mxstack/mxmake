@@ -499,6 +499,23 @@ class TestTargets(unittest.TestCase):
         self.assertEqual(out_content[0], 'TARGET_SETTING_A?=A\n')
         self.assertEqual(out_content[-1], '\t@rm -f $(TARGET_SENTINEL)\n')
 
+    @temp_directory
+    def test_Domain(self, tmpdir):
+        domaindir = os.path.join(tmpdir, 'domain')
+        os.mkdir(domaindir)
+        with open(os.path.join(domaindir, 'target-a.mk'), 'w') as f:
+            f.write('\n')
+        with open(os.path.join(domaindir, 'target-b.mk'), 'w') as f:
+            f.write('\n')
+        with open(os.path.join(domaindir, 'somethinelse'), 'w') as f:
+            f.write('\n')
+
+        domain = targets.Domain(name='domain', directory=domaindir)
+        domain_targets = domain.targets
+        self.assertEqual(len(domain_targets), 2)
+        self.assertEqual(domain_targets[0].name, 'target-a')
+        self.assertEqual(domain_targets[1].name, 'target-b')
+
 
 ###############################################################################
 # Test main
