@@ -1,4 +1,6 @@
+from collections import Counter
 from contextlib import contextmanager
+from dataclasses import dataclass
 from jinja2 import Environment
 from jinja2 import FileSystemLoader
 from mxmake import hook
@@ -455,6 +457,15 @@ target-clean:
 	@rm -f $(TARGET_SENTINEL)
 """
 
+
+@dataclass
+class TestTarget(targets.Target):
+    depends_: str
+    @property
+    def depends(self) -> str:
+        return self.depends_
+
+
 class TestTargets(unittest.TestCase):
 
     def test_load_domains(self):
@@ -515,6 +526,69 @@ class TestTargets(unittest.TestCase):
         self.assertEqual(len(domain_targets), 2)
         self.assertEqual(domain_targets[0].name, 'target-a')
         self.assertEqual(domain_targets[1].name, 'target-b')
+
+    def test_TargetConflictError(self):
+        counter = Counter(['a', 'b', 'b', 'c', 'c'])
+        err = targets.TargetConflictError(counter)
+        self.assertEqual(str(err), 'Conflicting target names: [\'b\', \'c\']')
+
+    def test_CircularDependencyTargetError(self):
+        target = TestTarget(name='t1', depends_='t2', file='t1.mk')
+        err = targets.CircularDependencyTargetError([target])
+        self.assertEqual(str(err), (
+            "Targets define circular dependencies: "
+            "[TestTarget(name='t1', file='t1.mk', depends_='t2')]"
+        ))
+
+    def test_MissingDependencyTargetError(self):
+        target = TestTarget(name='t', depends_='missing', file='t.mk')
+        err = targets.MissingDependencyTargetError(target)
+        self.assertEqual(str(err), (
+            "Target define missing dependency: "
+            "TestTarget(name='t', file='t.mk', depends_='missing')"
+        ))
+
+    def test_TargetResolver(self):
+        self.assertRaises(
+            targets.TargetConflictError,
+            targets.resolve_target_dependencies,
+            [
+                TestTarget(name='t', depends_='t1', file='t.mk'),
+                TestTarget(name='t', depends_='t1', file='t.mk')
+            ]
+        )
+
+        t1 = TestTarget(name='t1', depends_='t2', file='t1.mk')
+        t2 = TestTarget(name='t2', depends_='t3', file='t2.mk')
+        t3 = TestTarget(name='t3', depends_='', file='t3.mk')
+        self.assertEqual(
+            targets.resolve_target_dependencies([t1, t2, t3]),
+            [t3, t2, t1]
+        )
+        self.assertEqual(
+            targets.resolve_target_dependencies([t2, t1, t3]),
+            [t3, t2, t1]
+        )
+        self.assertEqual(
+            targets.resolve_target_dependencies([t1, t3, t2]),
+            [t3, t2, t1]
+        )
+
+        t1 = TestTarget(name='t1', depends_='t2', file='t1.mk')
+        t2 = TestTarget(name='t2', depends_='t1', file='t2.mk')
+        self.assertRaises(
+            targets.CircularDependencyTargetError,
+            targets.resolve_target_dependencies,
+            [t1, t2]
+        )
+
+        t1 = TestTarget(name='t1', depends_='2', file='t1.mk')
+        t2 = TestTarget(name='t2', depends_='missing', file='t2.mk')
+        self.assertRaises(
+            targets.MissingDependencyTargetError,
+            targets.resolve_target_dependencies,
+            [t1, t2]
+        )
 
 
 ###############################################################################

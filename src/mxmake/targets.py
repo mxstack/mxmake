@@ -1,3 +1,4 @@
+from collections import Counter
 from dataclasses import dataclass
 from pkg_resources import iter_entry_points
 import configparser
@@ -109,6 +110,73 @@ class Domain:
 def load_domains() -> typing.List[Domain]:
     return [ep.load() for ep in iter_entry_points("mxmake.domains")]
 
+
+class TargetConflictError(Exception):
+
+    def __init__(self, counter: Counter):
+        conflicting = list()
+        for name, count in counter.items():
+            if count > 1:
+                conflicting.append(name)
+        msg = 'Conflicting target names: {}'.format(sorted(conflicting))
+        super(TargetConflictError, self).__init__(msg)
+
+
+class CircularDependencyTargetError(Exception):
+
+    def __init__(self, targets: typing.List[Target]):
+        msg = 'Targets define circular dependencies: {}'.format(targets)
+        super(CircularDependencyTargetError, self).__init__(msg)
+
+
+class MissingDependencyTargetError(Exception):
+
+    def __init__(self, target: Target):
+        msg = 'Target define missing dependency: {}'.format(target)
+        super(MissingDependencyTargetError, self).__init__(msg)
+
+
+def resolve_target_dependencies(
+    targets: typing.List[Target]
+) -> typing.List[Target]:
+    """Return given targets ordered by dependencies.
+
+    :raise TargetConflictError: Target list contains conflicting names.
+    :raise MissingDependencyTargetError: Dependency target not included.
+    :raise CircularDependencyTargetError: Circular dependencies defined.
+    """
+    names = [res.name for res in targets]
+    counter = Counter(names)
+    if len(targets) != len(counter):
+        raise TargetConflictError(counter)
+    ret = []
+    handled = {}
+    for target in targets[:]:
+        if not target.depends:
+            ret.append(target)
+            handled[target.name] = target
+            targets.remove(target)
+        elif target.depends not in names:
+            raise MissingDependencyTargetError(target)
+    count = len(targets)
+    while count > 0:
+        count -= 1
+        for target in targets[:]:
+            if target.depends in handled:
+                dependency = handled[target.depends]
+                index = ret.index(dependency)
+                ret.insert(index + 1, target)
+                handled[target.name] = target
+                targets.remove(target)
+                break
+    if targets:
+        raise CircularDependencyTargetError(targets)
+    return ret
+
+
+##############################################################################
+# domains shipped within mxenv
+##############################################################################
 
 targets_dir = os.path.join(os.path.dirname(__file__), 'targets')
 
