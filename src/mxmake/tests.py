@@ -407,6 +407,17 @@ class TestHook(unittest.TestCase):
 
 
 ###############################################################################
+# Test targets
+###############################################################################
+
+class TestTargets(unittest.TestCase):
+
+    def test_load_domains(self):
+        domains = targets.load_domains()
+        self.assertTrue(targets.LDAP in domains)
+
+
+###############################################################################
 # Test main
 ###############################################################################
 

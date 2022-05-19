@@ -29,7 +29,7 @@ class Domain:
 
 
 def load_domains() -> typing.List[Domain]:
-    return [ep.load()() for ep in iter_entry_points("mxmake") if ep.name == "mxmake.domains"]
+    return [ep.load() for ep in iter_entry_points("mxmake.domains")]
 
 
 LDAP = Domain(
