@@ -3,6 +3,7 @@ from jinja2 import Environment
 from jinja2 import FileSystemLoader
 from mxmake import hook
 from mxmake import main
+from mxmake import targets
 from mxmake import templates
 from mxmake import utils
 import doctest
