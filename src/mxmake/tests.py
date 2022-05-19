@@ -6,6 +6,7 @@ from mxmake import main
 from mxmake import targets
 from mxmake import templates
 from mxmake import utils
+import configparser
 import doctest
 import io
 import mxdev
@@ -19,6 +20,16 @@ import unittest
 ###############################################################################
 # helpers
 ###############################################################################
+
+def temp_directory(fn):
+    tempdir = tempfile.mkdtemp()
+    def wrapper(self):
+        try:
+            fn(self, tempdir)
+        finally:
+            shutil.rmtree(tempdir)
+    return wrapper
+
 
 @contextmanager
 def reset_template_registry():
@@ -410,11 +421,83 @@ class TestHook(unittest.TestCase):
 # Test targets
 ###############################################################################
 
+TARGET_TEMPLATE = """
+#:[target]
+#:title = Title
+#:description = Description
+#:depends = other-target
+#:
+#:[TARGET_SETTING_A]
+#:description = Setting A
+#:default = A
+#:
+#:[TARGET_SETTING_B]
+#:description = Setting B
+#:default = B
+
+TARGET_SETTING_A?=A
+TARGET_SETTING_B?=B
+
+TARGET_SENTINEL:=$(SENTINEL_FOLDER)/target.sentinel
+$(TARGET_SENTINEL): $(SENTINEL)
+	@echo "Building target"
+	@touch $(TARGET_SENTINEL)
+
+.PHONY: target
+openldap: $(TARGET_SENTINEL)
+
+.PHONY: target-dirty
+target-dirty:
+	@rm -f $(TARGET_SENTINEL)
+
+.PHONY: target-clean
+target-clean:
+	@rm -f $(TARGET_SENTINEL)
+"""
+
 class TestTargets(unittest.TestCase):
 
     def test_load_domains(self):
         domains = targets.load_domains()
         self.assertTrue(targets.LDAP in domains)
+
+    @temp_directory
+    def test_Target(self, tmpdir):
+        target_path = os.path.join(tmpdir, 'target.mk')
+        with open(target_path, 'w') as f:
+            f.write(TARGET_TEMPLATE)
+
+        target = targets.Target(name='target', file=target_path)
+        self.assertTrue(len(target.file_data) > 0)
+        self.assertTrue(target._file_data is target.file_data)
+
+        config = target.config
+        self.assertIsInstance(config, configparser.ConfigParser)
+        self.assertTrue(target._config is config)
+        self.assertEqual(config['target']['title'], 'Title')
+        self.assertEqual(config['target']['description'], 'Description')
+        self.assertEqual(config['target']['depends'], 'other-target')
+        self.assertEqual(config['TARGET_SETTING_A']['description'], 'Setting A')
+        self.assertEqual(config['TARGET_SETTING_A']['default'], 'A')
+        self.assertEqual(config['TARGET_SETTING_B']['description'], 'Setting B')
+        self.assertEqual(config['TARGET_SETTING_B']['default'], 'B')
+
+        self.assertEqual(target.title, 'Title')
+        self.assertEqual(target.description, 'Description')
+        self.assertEqual(target.depends, 'other-target')
+
+        settings = target.settings
+        self.assertEqual(len(settings), 2)
+        self.assertEqual(settings[0].name, 'TARGET_SETTING_A')
+        self.assertEqual(settings[0].description, 'Setting A')
+        self.assertEqual(settings[0].default, 'A')
+
+        out_path = os.path.join(tmpdir, 'target_out.mk')
+        target.write_to(out_path)
+        with open(out_path) as f:
+            out_content = f.readlines()
+        self.assertEqual(out_content[0], 'TARGET_SETTING_A?=A\n')
+        self.assertEqual(out_content[-1], '\t@rm -f $(TARGET_SENTINEL)\n')
 
 
 ###############################################################################
