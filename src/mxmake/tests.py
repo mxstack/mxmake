@@ -243,7 +243,7 @@ class TestTemplates(RenderTestCase):
         )
         config_file.seek(0)
 
-        configuration = mxdev.Configuration(config_file, [hook.Hook()])
+        configuration = mxdev.Configuration(config_file, hooks=[hook.Hook()])
         factory = templates.template.lookup('run-tests')
         template = factory(configuration, hook.get_template_environment())
 
@@ -311,7 +311,7 @@ class TestTemplates(RenderTestCase):
         )
         config_file.seek(0)
 
-        configuration = mxdev.Configuration(config_file, [hook.Hook()])
+        configuration = mxdev.Configuration(config_file, hooks=[hook.Hook()])
         factory = templates.template.lookup('run-coverage')
         template = factory(configuration, hook.get_template_environment())
 
@@ -396,7 +396,7 @@ class TestHook(unittest.TestCase):
         config_file.seek(0)
 
         hook_ = hook.Hook()
-        configuration = mxdev.Configuration(config_file, [hook_])
+        configuration = mxdev.Configuration(config_file, hooks=[hook_])
         state = mxdev.State(configuration=configuration)
         hook_.write(state)
         self.assertEqual(
