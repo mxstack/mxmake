@@ -23,7 +23,7 @@ $(SENTINEL):
 # venv
 ###############################################################################
 
-HOST_PYTHON?=python3
+PYTHON_BIN?=python3
 VENV_FOLDER?=venv
 PIP_BIN:=$(VENV_FOLDER)/bin/pip
 
@@ -40,7 +40,7 @@ MXMAKE?=https://github.com/mxstack/mxmake/archive/master.zip
 VENV_SENTINEL:=$(SENTINEL_FOLDER)/venv.sentinel
 $(VENV_SENTINEL): $(SENTINEL)
 	@echo "Setup Python Virtual Environment under '$(VENV_FOLDER)'"
-	@$(HOST_PYTHON) -m venv $(VENV_FOLDER)
+	@$(PYTHON_BIN) -m venv $(VENV_FOLDER)
 	@$(PIP_BIN) install -U pip setuptools wheel
 	@$(PIP_BIN) install -U $(MXDEV)
 	@$(PIP_BIN) install -U $(MXMAKE)

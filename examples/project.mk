@@ -13,7 +13,7 @@
 ## See ``mxmake`` documentation for details.
 
 ## ``venv`` target
-#HOST_PYTHON=python3
+#PYTHON_BIN=python3
 #VENV_FOLDER=venv
 
 ## ``files`` target

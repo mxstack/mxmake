@@ -175,7 +175,7 @@ def resolve_target_dependencies(
 
 
 ##############################################################################
-# domains shipped within mxenv
+# domains shipped within mxmake
 ##############################################################################
 
 targets_dir = os.path.join(os.path.dirname(__file__), 'targets')

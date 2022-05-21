@@ -158,7 +158,7 @@ respective updated:
 
 **Configuration options**:
 
-- ``HOST_PYTHON``: The python interpreter to use for creating the virtual
+- ``PYTHON_BIN``: The python interpreter to use for creating the virtual
   environment. Defaults to `python3`.
 - ``VENV_FOLDER``: The folder where the virtual environment get created.
   Defaults to `venv`.
