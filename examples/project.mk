@@ -21,7 +21,7 @@
 #CONFIG_FOLDER=cfg
 
 ## ``files`` and ``sources`` targets
-#PROJECT_CONFIG=mxdev.ini
+#PROJECT_CONFIG=mx.ini
 
 ## ``system-dependencie``s target
 #SYSTEM_DEPENDENCIES+=package-a package-b

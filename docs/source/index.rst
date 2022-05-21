@@ -30,13 +30,13 @@ Usage
 Basics
 ~~~~~~
 
-To bootstrap a new project with mxmake, download ``Makefile`` and ``mxdev.ini``
+To bootstrap a new project with mxmake, download ``Makefile`` and ``mx.ini``
 to your project folder:
 
 .. code-block:: sh
 
     $ wget https://raw.githubusercontent.com/mxstack/mxmake/master/makefiles/Makefile
-    $ wget https://raw.githubusercontent.com/mxstack/mxmake/master/examples/mxdev.ini
+    $ wget https://raw.githubusercontent.com/mxstack/mxmake/master/examples/mx.ini
 
 Optionally create ``mk`` folder and inside create ``project.mk`` for project
 specific settings, includes and custom make targets. If this file is present it
@@ -55,7 +55,7 @@ After proper :ref:`Configuration` of the ini file, run:
     $ make install
 
 This installs a Python virtual environment, generates the relevant files,
-checks out the sources defined in ``mxdev.ini`` and installs everything using
+checks out the sources defined in ``mx.ini`` and installs everything using
 pip.
 
 To run the test suite, type:
@@ -90,7 +90,7 @@ See :ref:`Targets` for more information about the available make targets.
 Configuration
 ~~~~~~~~~~~~~
 
-Additional project configuration is located in ``mxdev.ini``.
+Additional project configuration is located in ``mx.ini``.
 
 Helper scripts are generated from templates which are defined in the
 ``settings`` section the ini file:
@@ -193,7 +193,7 @@ Create all project files by running ``mxdev``. It does not checkout sources.
 
 **Configuration options**:
 
-- ``PROJECT_CONFIG``: The config file to use. Defaults to `mxdev.ini`.
+- ``PROJECT_CONFIG``: The config file to use. Defaults to `mx.ini`.
 - ``SCRIPTS_FOLDER``: Target folder for generated scripts. Defaults to `venv/bin`.
 - ``CONFIG_FOLDER``: Target folder for generated config files. Defaults to `cfg`.
 
@@ -227,7 +227,7 @@ Checkout sources by running ``mxdev``. It does not generate project files.
 
 **Configuration options**:
 
-- ``PROJECT_CONFIG``: The config file to use. Defaults to `mxdev.ini`.
+- ``PROJECT_CONFIG``: The config file to use. Defaults to `mx.ini`.
 
 
 .. _sources-dirty:

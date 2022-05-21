@@ -75,7 +75,7 @@ define unset_files_env
 	@unset MXMAKE_CONFIG_FOLDER
 endef
 
-PROJECT_CONFIG?=mxdev.ini
+PROJECT_CONFIG?=mx.ini
 SCRIPTS_FOLDER?=$(VENV_FOLDER)/bin
 CONFIG_FOLDER?=cfg
 
