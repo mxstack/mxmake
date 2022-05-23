@@ -1,8 +1,10 @@
 #:[test]
 #:title = Test
-#:description = Run project tests. The :ref:`run-tests` template can be used
-#:  for automatic test script creation.
+#:description = Project testing.
 #:depends = install
+#:
+#:target.test = Run project tests. The :ref:`run-tests` template can be used
+#:  for automatic test script creation.
 #:
 #:[TEST_COMMAND]
 #:description = The command which gets executed. Defaults to the location the

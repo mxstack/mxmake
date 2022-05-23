@@ -1,7 +1,9 @@
 #:[system-dependencies]
 #:title = System dependencies
-#:description = Install system dependencies.
+#:description = System dependency management.
 #:depends = base
+#:
+#:target.system-dependencies = Install system dependencies.
 #:
 #:[SYSTEM_DEPENDENCIES]
 #:description = Space separated system package names.

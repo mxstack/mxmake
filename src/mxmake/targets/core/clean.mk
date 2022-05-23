@@ -1,7 +1,13 @@
 #:[clean]
 #:title = Clean
-#:description = Cleanup project environment.
+#:description = Project cleanup.
 #:depends = coverage
+#:
+#:target.clean = Cleanup project environment.
+#:
+#:target.full-clean = Cleanup project environment including sources.
+#:
+#:target.runtime-clean = Remove runtime artifacts, like byte-code and caches.
 #:
 #:[CLEAN_TARGETS]
 #:description = Space separated list of files and folders to remove.

@@ -1,13 +1,19 @@
 #:[venv]
-#:title = Virtual environment
-#:description = Create python virtual environment. The following python
+#:title = Venv
+#:description = Virtual environment management.
+#:depends = base
+#:
+#:target.venv = Create python virtual environment. The following python
 #:  packages are installed respective updated:
 #:    - pip
 #:    - setuptools
 #:    - wheel
 #:    - mxdev
 #:    - mxmake
-#:depends = base
+#:
+#:target.venv-dirty = Build :ref:`venv` target on next make run.
+#:
+#:target.venv-clean = Removes virtual environment.
 #:
 #:[PYTHON_BIN]
 #:description = Python interpreter to use for creating the virtual environment.

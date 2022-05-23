@@ -1,8 +1,12 @@
 #:[docs]
 #:title = Documentation
-#:description = Generate sphinx docs. Sphinx is expected to be installed. This
-#:  is not done automatically.
+#:description = Documentation generation with Sphinx.
 #:depends = venv
+#:
+#:target.docs = Generate sphinx docs. Sphinx is expected to be installed. This
+#:  is not done automatically.
+#:
+#:target.docs-clean = Removes generated docs.
 #:
 #:[DOCS_BIN]
 #:description = The Sphinx build executable.

@@ -1,8 +1,14 @@
 #:[files]
 #:title = Files
-#:description = Create all project files by running ``mxdev``. It does not
-#:  checkout sources.
+#:description = Project file generation.
 #:depends = venv
+#:
+#:target.files = Create all project files by running ``mxdev``. It does not
+#:  checkout sources.
+#:
+#:target.files-dirty = Build :ref:`files` target on next make run.
+#:
+#:target.files-clean = Remove generated project files.
 #:
 #:[PROJECT_CONFIG]
 #:description = The config file to use.
