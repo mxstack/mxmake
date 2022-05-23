@@ -1,5 +1,5 @@
-from mxmake.targets import get_domain
-from mxmake.targets import load_domains
+from mxmake.domains import get_domain
+from mxmake.domains import load_domains
 from mxmake.templates import template
 from mxmake.utils import list_value
 from mxmake.utils import ns_name
@@ -66,14 +66,14 @@ clean_parser.add_argument(
 def list_command(args: argparse.Namespace):
     if not args.domain:
         domains = load_domains()
-        sys.stdout.write('Available Domains:\n')
+        sys.stdout.write('Available domains:\n')
         for domain in domains:
             sys.stdout.write(f'  * {domain.name}\n')
     else:
         domain = get_domain(args.domain)
-        sys.stdout.write(f'Available Targets in {domain.name}:\n')
-        for target in domain.targets:
-            sys.stdout.write(f'  * {target.name} - {target.description}\n')
+        sys.stdout.write(f'Available makefiles in domain {domain.name}:\n')
+        for makefile in domain.makefiles:
+            sys.stdout.write(f'  * {makefile.name} - {makefile.description}\n')
 
 
 list_parser = command_parsers.add_parser(

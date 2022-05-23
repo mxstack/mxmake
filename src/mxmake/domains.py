@@ -9,7 +9,7 @@ import typing
 
 
 @dataclass
-class TargetSetting:
+class Setting:
     name: str
     description: str
     default: str
@@ -17,6 +17,12 @@ class TargetSetting:
 
 @dataclass
 class Target:
+    name: str
+    description: str
+
+
+@dataclass
+class Makefile:
     name: str
     file: str
 
@@ -66,14 +72,24 @@ class Target:
         return self.config[self.name].get('depends', '')
 
     @property
-    def settings(self) -> typing.List[TargetSetting]:
+    def settings(self) -> typing.List[Setting]:
         config = self.config
         return [
-            TargetSetting(
-                name=name,
+            Setting(
+                name=name[8:],
                 description=config[name].get('description', 'No Description'),
                 default=config[name].get('default', 'No Default')
-            ) for name in config.sections()
+            ) for name in config.sections() if name.startswith('setting.')
+        ]
+
+    @property
+    def targets(self) -> typing.List[Target]:
+        config = self.config
+        return [
+            Target(
+                name=name[7:],
+                description=config[name].get('description', 'No Description')
+            ) for name in config.sections() if name.startswith('target.')
         ]
 
     def write_to(self, path: str):
@@ -95,9 +111,9 @@ class Domain:
     directory: str
 
     @property
-    def targets(self) -> typing.List[Target]:
+    def makefiles(self) -> typing.List[Makefile]:
         return [
-            Target(
+            Makefile(
                 name=name.rstrip('.mk'),
                 file=os.path.join(self.directory, name)
             )
@@ -117,66 +133,66 @@ def get_domain(name: str) -> Domain:
             return domain
 
 
-class TargetConflictError(Exception):
+class MakefileConflictError(Exception):
 
     def __init__(self, counter: Counter):
         conflicting = list()
         for name, count in counter.items():
             if count > 1:
                 conflicting.append(name)
-        msg = 'Conflicting target names: {}'.format(sorted(conflicting))
-        super(TargetConflictError, self).__init__(msg)
+        msg = 'Conflicting makefile names: {}'.format(sorted(conflicting))
+        super(MakefileConflictError, self).__init__(msg)
 
 
-class CircularDependencyTargetError(Exception):
+class CircularDependencyMakefileError(Exception):
 
-    def __init__(self, targets: typing.List[Target]):
-        msg = 'Targets define circular dependencies: {}'.format(targets)
-        super(CircularDependencyTargetError, self).__init__(msg)
-
-
-class MissingDependencyTargetError(Exception):
-
-    def __init__(self, target: Target):
-        msg = 'Target define missing dependency: {}'.format(target)
-        super(MissingDependencyTargetError, self).__init__(msg)
+    def __init__(self, makefiles: typing.List[Makefile]):
+        msg = 'Makefiles define circular dependencies: {}'.format(makefiles)
+        super(CircularDependencyMakefileError, self).__init__(msg)
 
 
-def resolve_target_dependencies(
-    targets: typing.List[Target]
-) -> typing.List[Target]:
-    """Return given targets ordered by dependencies.
+class MissingDependencyMakefileError(Exception):
 
-    :raise TargetConflictError: Target list contains conflicting names.
-    :raise MissingDependencyTargetError: Dependency target not included.
-    :raise CircularDependencyTargetError: Circular dependencies defined.
+    def __init__(self, makefile: Makefile):
+        msg = 'Makefile define missing dependency: {}'.format(makefile)
+        super(MissingDependencyMakefileError, self).__init__(msg)
+
+
+def resolve_makefile_dependencies(
+    makefiles: typing.List[Makefile]
+) -> typing.List[Makefile]:
+    """Return given makefiles ordered by dependencies.
+
+    :raise MakefileConflictError: Makefile list contains conflicting names.
+    :raise MissingDependencyMakefileError: Dependency makefile not included.
+    :raise CircularDependencyMakefileError: Circular dependencies defined.
     """
-    names = [res.name for res in targets]
+    names = [res.name for res in makefiles]
     counter = Counter(names)
-    if len(targets) != len(counter):
-        raise TargetConflictError(counter)
+    if len(makefiles) != len(counter):
+        raise MakefileConflictError(counter)
     ret = []
     handled = {}
-    for target in targets[:]:
-        if not target.depends:
-            ret.append(target)
-            handled[target.name] = target
-            targets.remove(target)
-        elif target.depends not in names:
-            raise MissingDependencyTargetError(target)
-    count = len(targets)
+    for makefile in makefiles[:]:
+        if not makefile.depends:
+            ret.append(makefile)
+            handled[makefile.name] = makefile
+            makefiles.remove(makefile)
+        elif makefile.depends not in names:
+            raise MissingDependencyMakefileError(makefile)
+    count = len(makefiles)
     while count > 0:
         count -= 1
-        for target in targets[:]:
-            if target.depends in handled:
-                dependency = handled[target.depends]
+        for makefile in makefiles[:]:
+            if makefile.depends in handled:
+                dependency = handled[makefile.depends]
                 index = ret.index(dependency)
-                ret.insert(index + 1, target)
-                handled[target.name] = target
-                targets.remove(target)
+                ret.insert(index + 1, makefile)
+                handled[makefile.name] = makefile
+                makefiles.remove(makefile)
                 break
-    if targets:
-        raise CircularDependencyTargetError(targets)
+    if makefiles:
+        raise CircularDependencyMakefileError(makefiles)
     return ret
 
 
@@ -184,13 +200,13 @@ def resolve_target_dependencies(
 # domains shipped within mxmake
 ##############################################################################
 
-targets_dir = os.path.join(os.path.dirname(__file__), 'targets')
+domains_dir = os.path.join(os.path.dirname(__file__), 'domains')
 
 core = Domain(
     name='core',
-    directory=os.path.join(targets_dir, 'core')
+    directory=os.path.join(domains_dir, 'core')
 )
 ldap = Domain(
     name='ldap',
-    directory=os.path.join(targets_dir, 'ldap')
+    directory=os.path.join(domains_dir, 'ldap')
 )

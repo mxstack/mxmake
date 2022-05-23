@@ -19,7 +19,6 @@ The detailed ``mxmake`` documentation is available
 TODO
 ====
 
-- Domain -> Makefile -> Target
 - Makefile dependencies prefixed with domain
 
 Source Code
