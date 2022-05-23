@@ -98,7 +98,7 @@ files-dirty:
 files-clean: files-dirty
 	$(call set_files_env,$(VENV_FOLDER),$(SCRIPTS_FOLDER),$(CONFIG_FOLDER))
 	@test -e $(VENV_FOLDER)/bin/mxmake && \
-		$(VENV_FOLDER)/bin/mxmake -c $(PROJECT_CONFIG) --clean
+		$(VENV_FOLDER)/bin/mxmake clean -c $(PROJECT_CONFIG)
 	$(call unset_files_env,$(VENV_FOLDER),$(SCRIPTS_FOLDER),$(CONFIG_FOLDER))
 	@rm -f constraints-mxdev.txt requirements-mxdev.txt
 

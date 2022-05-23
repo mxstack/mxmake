@@ -111,6 +111,12 @@ def load_domains() -> typing.List[Domain]:
     return [ep.load() for ep in iter_entry_points("mxmake.domains")]
 
 
+def get_domain(name: str) -> Domain:
+    for domain in load_domains():
+        if domain.name == name:
+            return domain
+
+
 class TargetConflictError(Exception):
 
     def __init__(self, counter: Counter):
