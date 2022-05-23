@@ -468,7 +468,7 @@ The sources are in a GIT DVCS with its main branches at
 Copyright
 =========
 
-- Copyright (c) 2022 Cone Contributors
+- Copyright (c) 2022 MXStack Contributors
 
 
 Contributors

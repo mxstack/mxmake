@@ -180,8 +180,11 @@ def resolve_target_dependencies(
 
 targets_dir = os.path.join(os.path.dirname(__file__), 'targets')
 
-
-LDAP = Domain(
+core = Domain(
+    name='core',
+    directory=os.path.join(targets_dir, 'core')
+)
+ldap = Domain(
     name='ldap',
     directory=os.path.join(targets_dir, 'ldap')
 )

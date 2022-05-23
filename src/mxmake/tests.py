@@ -470,7 +470,8 @@ class TestTargets(unittest.TestCase):
 
     def test_load_domains(self):
         domains = targets.load_domains()
-        self.assertTrue(targets.LDAP in domains)
+        self.assertTrue(targets.core in domains)
+        self.assertTrue(targets.ldap in domains)
 
     @temp_directory
     def test_Target(self, tmpdir):
