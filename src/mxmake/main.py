@@ -83,6 +83,22 @@ list_parser = command_parsers.add_parser(
 list_parser.set_defaults(func=list_command)
 list_parser.add_argument('-d', '--domain', help='Domain name')
 
+
+##############################################################################
+# init
+##############################################################################
+
+def init_command(args: argparse.Namespace):
+    ...
+
+
+init_parser = command_parsers.add_parser(
+    'init',
+    help='Initialize project'
+)
+init_parser.set_defaults(func=init_command)
+
+
 ##############################################################################
 # main
 ##############################################################################
