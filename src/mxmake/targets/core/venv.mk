@@ -1,9 +1,10 @@
 #:[venv]
 #:title = Venv
 #:description = Virtual environment management.
-#:depends = base
+#:depends = core.base
 #:
-#:target.venv = Create python virtual environment. The following python
+#:[target.venv]
+#:description = Create python virtual environment. The following python
 #:  packages are installed respective updated:
 #:    - pip
 #:    - setuptools
@@ -11,24 +12,26 @@
 #:    - mxdev
 #:    - mxmake
 #:
-#:target.venv-dirty = Build :ref:`venv` target on next make run.
+#:[target.venv-dirty]
+#:description = Build :ref:`venv` target on next make run.
 #:
-#:target.venv-clean = Removes virtual environment.
+#:[target.venv-clean]
+#:description = Removes virtual environment.
 #:
-#:[PYTHON_BIN]
+#:[setting.PYTHON_BIN]
 #:description = Python interpreter to use for creating the virtual environment.
 #:default = python3
 #:
-#:[VENV_FOLDER]
+#:[setting.VENV_FOLDER]
 #:description = The folder where the virtual environment get created.
 #:default = venv
 #:
-#:[MXDEV]
-#:description = mxdev to install in virtual environment
+#:[setting.MXDEV]
+#:description = mxdev to install in virtual environment.
 #:default = https://github.com/mxstack/mxdev/archive/remove_libvcs.zip
 #:
-#:[MXMAKE]
-#:description = mxmake to install in virtual environment
+#:[setting.MXMAKE]
+#:description = mxmake to install in virtual environment.
 #:default = https://github.com/mxstack/mxmake/archive/master.zip
 
 ###############################################################################

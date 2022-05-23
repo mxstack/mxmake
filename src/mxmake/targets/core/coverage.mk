@@ -3,12 +3,14 @@
 #:description = Project coverage testing.
 #:depends = install
 #:
-#:target.coverage = Run project coverage. :ref:`run-coverage` template can be
+#:[target.coverage]
+#:description = Run project coverage. :ref:`run-coverage` template can be
 #:  used for automatic coverage script creation.
 #:
-#:target.coverage-clean = Remove coverage related files and directories.
+#:[target.coverage-clean]
+#:description = Remove coverage related files and directories.
 #:
-#:[COVERAGE_COMMAND]
+#:[setting.COVERAGE_COMMAND]
 #:description = The command which gets executed. Defaults to the location the
 #:  :ref:`run-coverage` template gets rendered to if configured.
 #:default = $(SCRIPTS_FOLDER)/run-coverage.sh

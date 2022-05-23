@@ -16,6 +16,12 @@ The detailed ``mxmake`` documentation is available
 `here <https://mxmake.readthedocs.io>`_.
 
 
+TODO
+====
+
+- Domain -> Makefile -> Target
+- Makefile dependencies prefixed with domain
+
 Source Code
 ===========
 

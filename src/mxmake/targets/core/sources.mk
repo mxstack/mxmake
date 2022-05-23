@@ -3,12 +3,15 @@
 #:description = Source package management.
 #:depends = files
 #:
-#:target.sources = Checkout sources by running ``mxdev``. It does not generate
+#:[target.sources]
+#:description = Checkout sources by running ``mxdev``. It does not generate
 #:  project files.
 #:
-#:target.sources-dirty = Build :ref:`sources` target on next make run.
+#:[target.sources-dirty]
+#:description = Build :ref:`sources` target on next make run.
 #:
-#:target.sources-clean = Removes sources folder.
+#:[target.sources-clean]
+#:description = Removes sources folder.
 
 ###############################################################################
 # sources

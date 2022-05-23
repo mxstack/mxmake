@@ -3,20 +3,22 @@
 #:description = Documentation generation with Sphinx.
 #:depends = venv
 #:
-#:target.docs = Generate sphinx docs. Sphinx is expected to be installed. This
+#:[target.docs]
+#:description = Generate sphinx docs. Sphinx is expected to be installed. This
 #:  is not done automatically.
 #:
-#:target.docs-clean = Removes generated docs.
+#:[target.docs-clean]
+#:description = Removes generated docs.
 #:
-#:[DOCS_BIN]
+#:[setting.DOCS_BIN]
 #:description = The Sphinx build executable.
 #:default = $(VENV_FOLDER)/bin/sphinx-build
 #:
-#:[DOCS_SOURCE]
+#:[setting.DOCS_SOURCE]
 #:description = Documentation source folder.
 #:default = docs/source
 #:
-#:[DOCS_TARGET]
+#:[setting.DOCS_TARGET]
 #:description = Documentation generation target folder.
 #:default = docs/html
 

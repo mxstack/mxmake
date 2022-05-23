@@ -3,9 +3,10 @@
 #:description = System dependency management.
 #:depends = base
 #:
-#:target.system-dependencies = Install system dependencies.
+#:[target.system-dependencies]
+#:description = Install system dependencies.
 #:
-#:[SYSTEM_DEPENDENCIES]
+#:[setting.SYSTEM_DEPENDENCIES]
 #:description = Space separated system package names.
 #:default =
 

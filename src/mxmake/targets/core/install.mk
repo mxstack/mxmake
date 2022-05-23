@@ -3,10 +3,12 @@
 #:description = Project installation.
 #:depends = sources
 #:
-#:target.install = Install packages with pip after creating files and checking
+#:[target.install]
+#:description = Install packages with pip after creating files and checking
 #:  out sources.
 #:
-#:target.install-dirty = Build :ref:`install` target on next make run.
+#:[target.install-dirty]
+#:description = Build :ref:`install` target on next make run.
 
 ###############################################################################
 # install

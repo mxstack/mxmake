@@ -3,22 +3,25 @@
 #:description = Project file generation.
 #:depends = venv
 #:
-#:target.files = Create all project files by running ``mxdev``. It does not
+#:[target.files]
+#:description = Create all project files by running ``mxdev``. It does not
 #:  checkout sources.
 #:
-#:target.files-dirty = Build :ref:`files` target on next make run.
+#:[target.files-dirty]
+#:description = Build :ref:`files` target on next make run.
 #:
-#:target.files-clean = Remove generated project files.
+#:[target.files-clean]
+#:description = Remove generated project files.
 #:
-#:[PROJECT_CONFIG]
+#:[setting.PROJECT_CONFIG]
 #:description = The config file to use.
 #:default = mx.ini
 #:
-#:[SCRIPTS_FOLDER]
+#:[setting.SCRIPTS_FOLDER]
 #:description = Target folder for generated scripts.
 #:default = $(VENV_FOLDER)/bin
 #:
-#:[CONFIG_FOLDER]
+#:[setting.CONFIG_FOLDER]
 #:description = Target folder for generated config files.
 #:default = cfg
 
