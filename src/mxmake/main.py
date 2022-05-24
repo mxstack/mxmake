@@ -3,6 +3,7 @@ from mxmake.domains import load_domains
 from mxmake.templates import template
 from mxmake.utils import list_value
 from mxmake.utils import ns_name
+from textwrap import indent
 
 import argparse
 import logging
@@ -67,58 +68,55 @@ clean_parser.add_argument(
 ##############################################################################
 
 
-def indent_text(text, indent=4):
-    return "\n".join([" " * indent + line for line in text.split("\n")]).strip()
-
-
 def list_command(args: argparse.Namespace):
     if not args.domain:
         domains = load_domains()
         sys.stdout.write("Domains:\n")
-        for domain in domains:
-            sys.stdout.write(f"  - {domain.name}\n")
-    elif not args.makefile:
-        domain = get_domain(args.domain)
-        if not domain:
-            sys.stdout.write(f"Requested domain not found {args.domain}:\n")
-            sys.exit(1)
+        for domain_ in domains:
+            sys.stdout.write(f"  - {domain_.name}\n")
+        return
+
+    domain = get_domain(args.domain)
+    if domain is None:
+        sys.stdout.write(f"Requested domain not found: {args.domain}\n")
+        sys.exit(1)
+
+    if not args.makefile:
         sys.stdout.write(f"Makefiles in domain {domain.name}:\n")
-        for makefile in domain.makefiles:
-            description = indent_text(makefile.description, indent=6)
-            sys.stdout.write(f"  - {makefile.name}: {description}\n")
+        for makefile_ in domain.makefiles:
+            description = indent(makefile_.description, 4 * " ")
+            sys.stdout.write(f"  - {makefile_.name}: {description}\n")
+        return
+
+    makefile = domain.makefile(args.makefile)
+    if makefile is None:
+        sys.stdout.write(f"Requested makefile not found: {args.makefile}\n")
+        sys.exit(1)
+
+    sys.stdout.write(f"Makefile {domain.name}.{makefile.name}:\n")
+    depends = makefile.depends if makefile.depends else "No dependencies"
+    sys.stdout.write(f"  Depends: {depends}\n")
+    sys.stdout.write(f"  Targets:")
+    targets = makefile.targets
+    if not targets:
+        sys.stdout.write(f" No targets provided\n")
     else:
-        domain = get_domain(args.domain)
-        if not domain:
-            sys.stdout.write(f"Requested domain not found {args.domain}:\n")
-            sys.exit(1)
-        makefile = domain.makefile(args.makefile)
-        if not makefile:
-            sys.stdout.write(f"Requested makefile not found {args.makefile}:\n")
-            sys.exit(1)
-        sys.stdout.write(f"Makefile {domain.name}.{makefile.name}:\n")
-        depends = makefile.depends if makefile.depends else "No dependencies"
-        sys.stdout.write(f"  Depends: {depends}\n")
-        sys.stdout.write(f"  Targets:")
-        targets = makefile.targets
-        if not targets:
-            sys.stdout.write(f" No targets provided\n")
-        else:
-            sys.stdout.write(f"\n")
-            for target in targets:
-                description = indent_text(target.description, indent=6)
-                sys.stdout.write(f"    {target.name}: {description}\n")
-        sys.stdout.write(f"  Settings:")
-        settings = makefile.settings
-        if not settings:
-            sys.stdout.write(f" No settings provided\n")
-        else:
-            sys.stdout.write(f"\n")
-            for setting in settings:
-                description = indent_text(setting.description, indent=8)
-                sys.stdout.write(
-                    f"    - {setting.name}: {setting.description}\n"
-                    f"      - default value: {setting.default}\n"
-                )
+        sys.stdout.write(f"\n")
+        for target in targets:
+            description = indent(target.description, 6 * " ")
+            sys.stdout.write(f"    {target.name}: {description}\n")
+    sys.stdout.write(f"  Settings:")
+    settings = makefile.settings
+    if not settings:
+        sys.stdout.write(f" No settings provided\n")
+    else:
+        sys.stdout.write(f"\n")
+        for setting in settings:
+            description = indent(setting.description, 8 * " ")
+            sys.stdout.write(
+                f"    - {setting.name}: {setting.description}\n"
+                f"      - default value: {setting.default}\n"
+            )
 
 
 list_parser = command_parsers.add_parser("list", help="List stuff")
