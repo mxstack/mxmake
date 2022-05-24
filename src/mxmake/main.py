@@ -38,7 +38,7 @@ def clean_files(configuration: mxdev.Configuration) -> None:
     else:
         for name in templates:
             factory = template.lookup(name)
-            instance = factory(configuration)
+            instance = factory(configuration)  # type: ignore
             if instance.remove():
                 logger.info(f'mxmake: removed "{instance.target_name}"')
 

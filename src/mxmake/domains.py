@@ -124,6 +124,7 @@ class Domain:
         for makefile in self.makefiles:
             if makefile.name == name:
                 return makefile
+        raise ValueError(f"No such Makefile with name '{name}'")
 
 
 @functools.lru_cache(maxsize=4096)
@@ -135,6 +136,7 @@ def get_domain(name: str) -> Domain:
     for domain in load_domains():
         if domain.name == name:
             return domain
+    raise ValueError(f"No such Domain with name '{name}'")
 
 
 class MakefileConflictError(Exception):

@@ -176,7 +176,7 @@ class TestTemplates(RenderTestCase):
     def test_Template(self, tempdir: str):
         # cannot instantiate abstract template
         with self.assertRaises(TypeError):
-            templates.Template()
+            templates.Template()  # type: ignore
 
         # create test template
         class Template(templates.Template):
@@ -187,7 +187,7 @@ class TestTemplates(RenderTestCase):
             template_variables = dict(param='value')
 
         # cannot write template without template environment
-        hooks = {}
+        hooks: typing.Dict[str, typing.Dict] = {}
         template = Template(TestConfiguration(hooks=hooks))
         with self.assertRaises(RuntimeError):
             template.write()

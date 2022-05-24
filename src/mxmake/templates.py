@@ -109,7 +109,9 @@ class TestScript(ShellScriptTemplate, EnvironmentTemplate):
     def target_name(self) -> str:
         return f'{self.name}.sh'
 
-    template_name = target_name
+    @property
+    def template_name(self) -> str:
+        return self.target_name
 
     @property
     def template_variables(self) -> typing.Dict[str, typing.Any]:
