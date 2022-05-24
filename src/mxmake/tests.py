@@ -553,11 +553,11 @@ class TestMakefiles(unittest.TestCase):
         self.assertEqual(str(err), 'Conflicting makefile names: [\'b\', \'c\']')
 
     def test_CircularDependencyMakefileError(self):
-        makefile = TestMakefile(name='t1', depends_='t2', file='t1.mk')
+        makefile = TestMakefile(name='f1', depends_='f2', file='f1.mk')
         err = domains.CircularDependencyMakefileError([makefile])
         self.assertEqual(str(err), (
             "Makefiles define circular dependencies: "
-            "[TestMakefile(name='t1', file='t1.mk', depends_='t2')]"
+            "[TestMakefile(name='f1', file='f1.mk', depends_='f2')]"
         ))
 
     def test_MissingDependencyMakefileError(self):
@@ -573,41 +573,41 @@ class TestMakefiles(unittest.TestCase):
             domains.MakefileConflictError,
             domains.resolve_makefile_dependencies,
             [
-                TestMakefile(name='t', depends_='t1', file='t.mk'),
-                TestMakefile(name='t', depends_='t1', file='t.mk')
+                TestMakefile(name='f', depends_='f1', file='t.mk'),
+                TestMakefile(name='f', depends_='f1', file='t.mk')
             ]
         )
 
-        t1 = TestMakefile(name='t1', depends_='t2', file='t1.mk')
-        t2 = TestMakefile(name='t2', depends_='t3', file='t2.mk')
-        t3 = TestMakefile(name='t3', depends_='', file='t3.mk')
+        f1 = TestMakefile(name='f1', depends_='f2', file='f1.mk')
+        f2 = TestMakefile(name='f2', depends_='f3', file='f2.mk')
+        f3 = TestMakefile(name='f3', depends_='', file='f3.mk')
         self.assertEqual(
-            domains.resolve_makefile_dependencies([t1, t2, t3]),
-            [t3, t2, t1]
+            domains.resolve_makefile_dependencies([f1, f2, f3]),
+            [f3, f2, f1]
         )
         self.assertEqual(
-            domains.resolve_makefile_dependencies([t2, t1, t3]),
-            [t3, t2, t1]
+            domains.resolve_makefile_dependencies([f2, f1, f3]),
+            [f3, f2, f1]
         )
         self.assertEqual(
-            domains.resolve_makefile_dependencies([t1, t3, t2]),
-            [t3, t2, t1]
+            domains.resolve_makefile_dependencies([f1, f3, f2]),
+            [f3, f2, f1]
         )
 
-        t1 = TestMakefile(name='t1', depends_='t2', file='t1.mk')
-        t2 = TestMakefile(name='t2', depends_='t1', file='t2.mk')
+        f1 = TestMakefile(name='f1', depends_='f2', file='f1.mk')
+        f2 = TestMakefile(name='f2', depends_='f1', file='f2.mk')
         self.assertRaises(
             domains.CircularDependencyMakefileError,
             domains.resolve_makefile_dependencies,
-            [t1, t2]
+            [f1, f2]
         )
 
-        t1 = TestMakefile(name='t1', depends_='2', file='t1.mk')
-        t2 = TestMakefile(name='t2', depends_='missing', file='t2.mk')
+        f1 = TestMakefile(name='f1', depends_='f2', file='f1.mk')
+        f2 = TestMakefile(name='f2', depends_='missing', file='f2.mk')
         self.assertRaises(
             domains.MissingDependencyMakefileError,
             domains.resolve_makefile_dependencies,
-            [t1, t2]
+            [f1, f2]
         )
 
 
