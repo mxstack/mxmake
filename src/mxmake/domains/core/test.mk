@@ -1,7 +1,7 @@
 #:[test]
 #:title = Test
 #:description = Project testing.
-#:depends = install
+#:depends = core.install
 #:
 #:[target.test]
 #:description = Run project tests. The :ref:`run-tests` template can be used

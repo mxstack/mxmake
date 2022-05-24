@@ -1,7 +1,7 @@
 #:[docs]
 #:title = Documentation
 #:description = Documentation generation with Sphinx.
-#:depends = venv
+#:depends = core.venv
 #:
 #:[target.docs]
 #:description = Generate sphinx docs. Sphinx is expected to be installed. This

@@ -1,7 +1,16 @@
 #:[python-ldap]
 #:title = Python LDAP
 #:description = Builds and installs python-ldap against local OpenLDAP
-#:depends = openldap
+#:depends = ldap.openldap
+#:
+#:[target.python-ldap]
+#:descriptions = Build and install python-ldap
+#:
+#:[target.python-ldap-dirty]
+#:descriptions = Rebuild python-ldap on next make run.
+#:
+#:[target.python-ldap-clean]
+#:descriptions = Uninstall python-ldap
 
 ###############################################################################
 # python-ldap

@@ -1,7 +1,7 @@
 #:[system-dependencies]
 #:title = System dependencies
 #:description = System dependency management.
-#:depends = base
+#:depends = core.base
 #:
 #:[target.system-dependencies]
 #:description = Install system dependencies.

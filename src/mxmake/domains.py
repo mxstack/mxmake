@@ -48,8 +48,7 @@ class Makefile:
                 data.write(line[2:])
         data.seek(0)
         config = self.config = configparser.ConfigParser(
-            default_section=self.name,
-            interpolation=configparser.ExtendedInterpolation()
+            default_section=self.name
         )
         config.optionxform = str  # type: ignore
         config.read_file(data)
@@ -114,12 +113,17 @@ class Domain:
     def makefiles(self) -> typing.List[Makefile]:
         return [
             Makefile(
-                name=name.rstrip('.mk'),
+                name=name[:-3],
                 file=os.path.join(self.directory, name)
             )
             for name in sorted(os.listdir(self.directory))
             if name.endswith('.mk')
         ]
+
+    def makefile(self, name: str) -> Makefile:
+        for makefile in self.makefiles:
+            if makefile.name == name:
+                return makefile
 
 
 @functools.lru_cache(maxsize=4096)

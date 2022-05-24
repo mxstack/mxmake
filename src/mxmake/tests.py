@@ -547,6 +547,9 @@ class TestMakefiles(unittest.TestCase):
         self.assertEqual(domain_makefiles[0].name, 'makefile-a')
         self.assertEqual(domain_makefiles[1].name, 'makefile-b')
 
+        self.assertEqual(domain.makefile('makefile-a').name, 'makefile-a')
+        self.assertEqual(domain.makefile('inexistent'), None)
+
     def test_MakefileConflictError(self):
         counter = Counter(['a', 'b', 'b', 'c', 'c'])
         err = domains.MakefileConflictError(counter)

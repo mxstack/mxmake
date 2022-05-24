@@ -1,7 +1,7 @@
 #:[install]
 #:title = Install
 #:description = Project installation.
-#:depends = sources
+#:depends = core.sources
 #:
 #:[target.install]
 #:description = Install packages with pip after creating files and checking

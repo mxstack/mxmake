@@ -1,7 +1,7 @@
 #:[coverage]
 #:title = Coverage
 #:description = Project coverage testing.
-#:depends = install
+#:depends = core.install
 #:
 #:[target.coverage]
 #:description = Run project coverage. :ref:`run-coverage` template can be

@@ -1,21 +1,30 @@
 #:[openldap]
 #:title = OpenLDAP
 #:description = Builds OpenLDAP from source
-#:depends = base
+#:depends = core.base
 #:
-#:[OPENLDAP_VERSION]
+#:[target.openldap]
+#:description = Download and build OpenLDAP from source.
+#:
+#:[target.openldap-dirty]
+#:description = Rebuild OpenLDAP on next make run.
+#:
+#:[target.openldap-clean]
+#:description = Remove local OpenLDAP build.
+#:
+#:[setting.OPENLDAP_VERSION]
 #:description = OpenLDAP version to download
 #:default = 2.4.59
 #:
-#:[OPENLDAP_URL]
+#:[setting.OPENLDAP_URL]
 #:description = OpenLDAP base download URL
 #:default = https://www.openldap.org/software/download/OpenLDAP/openldap-release/
 #:
-#:[OPENLDAP_DIR]
+#:[setting.OPENLDAP_DIR]
 #:description = Build directory for OpenLDAP
 #:default = $(shell echo $(realpath .))/openldap
 #:
-#:[OPENLDAP_ENV]
+#:[setting.OPENLDAP_ENV]
 #:description = Build environment for OpenLDAP
 #:default = PATH=/usr/local/bin:/usr/bin:/bin
 

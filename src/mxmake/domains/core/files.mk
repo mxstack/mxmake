@@ -1,7 +1,7 @@
 #:[files]
 #:title = Files
 #:description = Project file generation.
-#:depends = venv
+#:depends = core.venv
 #:
 #:[target.files]
 #:description = Create all project files by running ``mxdev``. It does not
