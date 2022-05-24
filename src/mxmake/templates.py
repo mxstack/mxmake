@@ -17,13 +17,13 @@ class template:
     def __init__(self, name: str) -> None:
         self.name = name
 
-    def __call__(self, ob: typing.Type['Template']) -> typing.Type['Template']:
+    def __call__(self, ob: typing.Type["Template"]) -> typing.Type["Template"]:
         ob.name = self.name
         self._registry[self.name] = ob
         return ob
 
     @classmethod
-    def lookup(cls, name: str) -> typing.Union[typing.Type['Template'], None]:
+    def lookup(cls, name: str) -> typing.Union[typing.Type["Template"], None]:
         return cls._registry.get(name)
 
 
@@ -34,7 +34,7 @@ class Template(abc.ABC):
     def __init__(
         self,
         config: mxdev.Configuration,
-        environment: typing.Union[Environment, None] = None
+        environment: typing.Union[Environment, None] = None,
     ) -> None:
         self.config = config
         self.environment = environment
@@ -62,12 +62,12 @@ class Template(abc.ABC):
     def write(self) -> None:
         """Render template and write result to file system."""
         if not self.environment:
-            raise RuntimeError('Cannot write template without environment')
+            raise RuntimeError("Cannot write template without environment")
         target_folder = self.target_folder
         os.makedirs(target_folder, exist_ok=True)
         target_path = os.path.join(target_folder, self.target_name)
         template = self.environment.get_template(self.template_name)
-        with open(target_path, 'w') as f:
+        with open(target_path, "w") as f:
             f.write(template.render(**self.template_variables))
         os.chmod(target_path, self.file_mode)
 
@@ -81,16 +81,15 @@ class Template(abc.ABC):
 
 
 class ShellScriptTemplate(Template):
-    description: str = ''
+    description: str = ""
     file_mode: int = 0o755
 
 
 class EnvironmentTemplate(Template):
-
     @property
     def env(self) -> typing.Dict[str, str]:
         """Dict containing environment variables."""
-        env_name = self.settings.get('environment')
+        env_name = self.settings.get("environment")
         return self.config.hooks.get(ns_name(env_name), {}) if env_name else {}
 
 
@@ -98,9 +97,10 @@ class EnvironmentTemplate(Template):
 # test script template
 ###############################################################################
 
-@template('run-tests')
+
+@template("run-tests")
 class TestScript(ShellScriptTemplate, EnvironmentTemplate):
-    description: str = 'Run tests'
+    description: str = "Run tests"
 
     @property
     def target_folder(self) -> str:
@@ -108,7 +108,7 @@ class TestScript(ShellScriptTemplate, EnvironmentTemplate):
 
     @property
     def target_name(self) -> str:
-        return f'{self.name}.sh'
+        return f"{self.name}.sh"
 
     @property
     def template_name(self) -> str:
@@ -120,7 +120,7 @@ class TestScript(ShellScriptTemplate, EnvironmentTemplate):
             description=self.description,
             env=self.env,
             venv=venv_folder(),
-            testpaths=self.package_paths(ns_name('test-path'))
+            testpaths=self.package_paths(ns_name("test-path")),
         )
 
     def package_paths(self, attr: str) -> typing.List[str]:
@@ -128,7 +128,7 @@ class TestScript(ShellScriptTemplate, EnvironmentTemplate):
         for name, package in self.config.packages.items():
             if attr not in package:
                 continue
-            path = f"{package['target']}/{name}/{package[attr]}".rstrip('/')
+            path = f"{package['target']}/{name}/{package[attr]}".rstrip("/")
             paths.append(path)
         return paths
 
@@ -137,12 +137,13 @@ class TestScript(ShellScriptTemplate, EnvironmentTemplate):
 # coverage script template
 ###############################################################################
 
-@template('run-coverage')
+
+@template("run-coverage")
 class CoverageScript(TestScript):
-    description: str = 'Run coverage'
+    description: str = "Run coverage"
 
     @property
     def template_variables(self) -> typing.Dict[str, typing.Any]:
         variables = super().template_variables
-        variables['sourcepaths'] = self.package_paths(ns_name('source-path'))
+        variables["sourcepaths"] = self.package_paths(ns_name("source-path"))
         return variables
