@@ -84,7 +84,7 @@ def list_command(args: argparse.Namespace):
     if not args.makefile:
         sys.stdout.write(f"Makefiles in domain {domain.name}:\n")
         for makefile_ in domain.makefiles:
-            description = indent(makefile_.description, 4 * " ")
+            description = indent(makefile_.description, 4 * " ").strip()
             sys.stdout.write(f"  - {makefile_.name}: {description}\n")
         return
 
@@ -94,7 +94,11 @@ def list_command(args: argparse.Namespace):
         sys.exit(1)
 
     sys.stdout.write(f"Makefile {domain.name}.{makefile.name}:\n")
-    depends = makefile.depends if makefile.depends else "No dependencies"
+    depends = (
+        ", ".join(makefile.depends)
+        if makefile.depends
+        else "No dependencies"
+    )
     sys.stdout.write(f"  Depends: {depends}\n")
     sys.stdout.write(f"  Targets:")
     targets = makefile.targets
@@ -103,7 +107,7 @@ def list_command(args: argparse.Namespace):
     else:
         sys.stdout.write(f"\n")
         for target in targets:
-            description = indent(target.description, 6 * " ")
+            description = indent(target.description, 6 * " ").strip()
             sys.stdout.write(f"    {target.name}: {description}\n")
     sys.stdout.write(f"  Settings:")
     settings = makefile.settings
@@ -112,7 +116,7 @@ def list_command(args: argparse.Namespace):
     else:
         sys.stdout.write(f"\n")
         for setting in settings:
-            description = indent(setting.description, 8 * " ")
+            description = indent(setting.description, 8 * " ").strip()
             sys.stdout.write(
                 f"    - {setting.name}: {setting.description}\n"
                 f"      - default value: {setting.default}\n"

@@ -66,8 +66,12 @@ class Makefile:
         return self.config[self.name].get("description", "No Description")
 
     @property
-    def depends(self) -> str:
-        return self.config[self.name].get("depends", "")
+    def depends(self) -> typing.List[str]:
+        return [
+            dep.strip() for dep
+            in self.config[self.name].get("depends", "").split('\n')
+            if dep
+        ]
 
     @property
     def settings(self) -> typing.List[Setting]:
@@ -181,19 +185,30 @@ def resolve_makefile_dependencies(
             ret.append(makefile)
             handled[makefile.name] = makefile
             makefiles.remove(makefile)
-        elif makefile.depends not in names:
-            raise MissingDependencyMakefileError(makefile)
+        else:
+            for dependency_name in makefile.depends:
+                if dependency_name not in names:
+                    raise MissingDependencyMakefileError(makefile)
     count = len(makefiles)
     while count > 0:
         count -= 1
         for makefile in makefiles[:]:
-            if makefile.depends in handled:
-                dependency = handled[makefile.depends]
-                index = ret.index(dependency)
-                ret.insert(index + 1, makefile)
-                handled[makefile.name] = makefile
-                makefiles.remove(makefile)
-                break
+            hook_idx = 0
+            not_yet = False
+            for dependency_name in makefile.depends:
+                if dependency_name in handled:
+                    dependency = handled[dependency_name]
+                    dep_idx = ret.index(dependency)
+                    hook_idx = dep_idx if dep_idx > hook_idx else hook_idx
+                else:
+                    not_yet = True
+                    break
+            if not_yet:
+                continue
+            ret.insert(hook_idx + 1, makefile)
+            handled[makefile.name] = makefile
+            makefiles.remove(makefile)
+            break
     if makefiles:
         raise CircularDependencyMakefileError(makefiles)
     return ret

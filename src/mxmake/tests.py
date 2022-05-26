@@ -434,7 +434,9 @@ MAKEFILE_TEMPLATE = """
 #:[topic]
 #:title = Title
 #:description = Description
-#:depends = other-makefile
+#:depends =
+#:    dependency-1
+#:    dependency-2
 #:
 #:[target.topic]
 #:description = Build topic
@@ -476,10 +478,10 @@ topic-clean:
 
 @dataclass
 class TestMakefile(domains.Makefile):
-    depends_: str
+    depends_: typing.List[str]
 
     @property
-    def depends(self) -> str:
+    def depends(self) -> typing.List[str]:
         return self.depends_
 
 
@@ -504,7 +506,10 @@ class TestMakefiles(unittest.TestCase):
         self.assertTrue(makefile._config is config)
         self.assertEqual(config["topic"]["title"], "Title")
         self.assertEqual(config["topic"]["description"], "Description")
-        self.assertEqual(config["topic"]["depends"], "other-makefile")
+        self.assertEqual(
+            config["topic"]["depends"],
+            "\ndependency-1\ndependency-2"
+        )
 
         self.assertEqual(config["target.topic"]["description"], "Build topic")
         self.assertEqual(
@@ -520,7 +525,10 @@ class TestMakefiles(unittest.TestCase):
 
         self.assertEqual(makefile.title, "Title")
         self.assertEqual(makefile.description, "Description")
-        self.assertEqual(makefile.depends, "other-makefile")
+        self.assertEqual(makefile.depends, ['dependency-1', 'dependency-2'])
+
+        config["topic"]["depends"] = ""
+        self.assertEqual(makefile.depends, [])
 
         targets = makefile.targets
         self.assertEqual(len(targets), 3)
@@ -566,24 +574,24 @@ class TestMakefiles(unittest.TestCase):
         self.assertEqual(str(err), "Conflicting makefile names: ['b', 'c']")
 
     def test_CircularDependencyMakefileError(self):
-        makefile = TestMakefile(name="f1", depends_="f2", file="f1.mk")
+        makefile = TestMakefile(name="f1", depends_=["f2"], file="f1.mk")
         err = domains.CircularDependencyMakefileError([makefile])
         self.assertEqual(
             str(err),
             (
                 "Makefiles define circular dependencies: "
-                "[TestMakefile(name='f1', file='f1.mk', depends_='f2')]"
+                "[TestMakefile(name='f1', file='f1.mk', depends_=['f2'])]"
             ),
         )
 
     def test_MissingDependencyMakefileError(self):
-        makefile = TestMakefile(name="t", depends_="missing", file="t.mk")
+        makefile = TestMakefile(name="t", depends_=["missing"], file="t.mk")
         err = domains.MissingDependencyMakefileError(makefile)
         self.assertEqual(
             str(err),
             (
                 "Makefile define missing dependency: "
-                "TestMakefile(name='t', file='t.mk', depends_='missing')"
+                "TestMakefile(name='t', file='t.mk', depends_=['missing'])"
             ),
         )
 
@@ -592,14 +600,14 @@ class TestMakefiles(unittest.TestCase):
             domains.MakefileConflictError,
             domains.resolve_makefile_dependencies,
             [
-                TestMakefile(name="f", depends_="f1", file="t.mk"),
-                TestMakefile(name="f", depends_="f1", file="t.mk"),
+                TestMakefile(name="f", depends_=["f1"], file="t.mk"),
+                TestMakefile(name="f", depends_=["f1"], file="t.mk"),
             ],
         )
 
-        f1 = TestMakefile(name="f1", depends_="f2", file="f1.mk")
-        f2 = TestMakefile(name="f2", depends_="f3", file="f2.mk")
-        f3 = TestMakefile(name="f3", depends_="", file="f3.mk")
+        f1 = TestMakefile(name="f1", depends_=["f2"], file="f1.mk")
+        f2 = TestMakefile(name="f2", depends_=["f3"], file="f2.mk")
+        f3 = TestMakefile(name="f3", depends_=[], file="f3.mk")
         self.assertEqual(
             domains.resolve_makefile_dependencies([f1, f2, f3]), [f3, f2, f1]
         )
@@ -610,20 +618,60 @@ class TestMakefiles(unittest.TestCase):
             domains.resolve_makefile_dependencies([f1, f3, f2]), [f3, f2, f1]
         )
 
-        f1 = TestMakefile(name="f1", depends_="f2", file="f1.mk")
-        f2 = TestMakefile(name="f2", depends_="f1", file="f2.mk")
+        f1 = TestMakefile(name="f1", depends_=["f2"], file="f1.mk")
+        f2 = TestMakefile(name="f2", depends_=["f1"], file="f2.mk")
         self.assertRaises(
             domains.CircularDependencyMakefileError,
             domains.resolve_makefile_dependencies,
             [f1, f2],
         )
 
-        f1 = TestMakefile(name="f1", depends_="f2", file="f1.mk")
-        f2 = TestMakefile(name="f2", depends_="missing", file="f2.mk")
+        f1 = TestMakefile(name="f1", depends_=["f2"], file="f1.mk")
+        f2 = TestMakefile(name="f2", depends_=["missing"], file="f2.mk")
         self.assertRaises(
             domains.MissingDependencyMakefileError,
             domains.resolve_makefile_dependencies,
             [f1, f2],
+        )
+
+        f1 = TestMakefile(name="f1", depends_=["f2", "f4"], file="f1.mk")
+        f2 = TestMakefile(name="f2", depends_=["f3", "f4"], file="f2.mk")
+        f3 = TestMakefile(name="f3", depends_=["f4", "f5"], file="f3.mk")
+        f4 = TestMakefile(name="f4", depends_=["f5"], file="f4.mk")
+        f5 = TestMakefile(name="f5", depends_=[], file="f5.mk")
+        self.assertEqual(
+            domains.resolve_makefile_dependencies([f1, f2, f3, f4, f5]),
+            [f5, f4, f3, f2, f1]
+        )
+        self.assertEqual(
+            domains.resolve_makefile_dependencies([f5, f4, f3, f2, f1]),
+            [f5, f4, f3, f2, f1]
+        )
+        self.assertEqual(
+            domains.resolve_makefile_dependencies([f4, f5, f2, f3, f1]),
+            [f5, f4, f3, f2, f1]
+        )
+        self.assertEqual(
+            domains.resolve_makefile_dependencies([f1, f3, f2, f5, f4]),
+            [f5, f4, f3, f2, f1]
+        )
+
+        f1 = TestMakefile(name="f1", depends_=["f2", "f3"], file="f1.mk")
+        f2 = TestMakefile(name="f2", depends_=["f1", "f3"], file="f2.mk")
+        f3 = TestMakefile(name="f3", depends_=["f1", "f2"], file="f3.mk")
+        self.assertRaises(
+            domains.CircularDependencyMakefileError,
+            domains.resolve_makefile_dependencies,
+            [f1, f2, f3]
+        )
+
+        f1 = TestMakefile(name="f1", depends_=["f2", "f3"], file="f1.ext")
+        f2 = TestMakefile(name="f2", depends_=["f1", "f3"], file="f2.ext")
+        f3 = TestMakefile(name="f3", depends_=["f1", "f4"], file="f3.ext")
+        self.assertRaises(
+            domains.MissingDependencyMakefileError,
+            domains.resolve_makefile_dependencies,
+            [f1, f2, f3]
         )
 
 
