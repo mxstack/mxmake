@@ -454,8 +454,10 @@ Configuration looks like so:
     # relative path to package checkout directory to search for tests
     # also used by ``run-tests``
     mxmake-test-path = src
-    # relative path to package checkout directory to define coverage source path
-    mxmake-source-path = src/node
+    # relative path(s) to package checkout directory to define coverage source path
+    mxmake-source-path = src/packagename
+    # relative path(s) to package checkout directory to define coverage omit path
+    mxmake-omit-path = src/packagename/file.py
 
 
 Source Code

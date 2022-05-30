@@ -128,8 +128,11 @@ class TestScript(ShellScriptTemplate, EnvironmentTemplate):
         for name, package in self.config.packages.items():
             if attr not in package:
                 continue
-            path = f"{package['target']}/{name}/{package[attr]}".rstrip("/")
-            paths.append(path)
+            for line in package[attr].split("\n"):
+                if not line:
+                    continue
+                path = f"{package['target']}/{name}/{line}".rstrip("/")
+                paths.append(path)
         return paths
 
 
@@ -146,4 +149,5 @@ class CoverageScript(TestScript):
     def template_variables(self) -> typing.Dict[str, typing.Any]:
         variables = super().template_variables
         variables["sourcepaths"] = self.package_paths(ns_name("source-path"))
+        variables["omitpaths"] = self.package_paths(ns_name("omit-path"))
         return variables

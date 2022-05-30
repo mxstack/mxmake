@@ -358,6 +358,9 @@ class TestTemplates(RenderTestCase):
             "url = https://github.com/org/package\n"
             "mxmake-test-path = src\n"
             "mxmake-source-path = src/package\n"
+            "mxmake-omit-path =\n"
+            "    src/package/file1.py\n"
+            "    src/package/file2.py\n"
         )
         config_file.seek(0)
 
@@ -376,6 +379,10 @@ class TestTemplates(RenderTestCase):
                 "env": {"ENV_PARAM": "env_value"},
                 "testpaths": ["sources/package/src"],
                 "sourcepaths": ["sources/package/src/package"],
+                "omitpaths": [
+                    "sources/package/src/package/file1.py",
+                    "sources/package/src/package/file2.py"
+                ],
                 "venv": tempdir,
             },
         )
@@ -386,6 +393,13 @@ class TestTemplates(RenderTestCase):
         self.assertEqual(
             template.package_paths(utils.ns_name("source-path")),
             ["sources/package/src/package"],
+        )
+        self.assertEqual(
+            template.package_paths(utils.ns_name("omit-path")),
+            [
+                "sources/package/src/package/file1.py",
+                "sources/package/src/package/file2.py",
+            ],
         )
 
         template.write()
@@ -419,8 +433,17 @@ class TestTemplates(RenderTestCase):
                 sources=$(printf ",%s" "${sources[@]}")
                 sources=${sources:1}
 
+                omits=(
+                    sources/package/src/package/file1.py
+                    sources/package/src/package/file2.py
+                )
+
+                omits=$(printf ",%s" "${omits[@]}")
+                omits=${omits:1}
+
                 /.../bin/coverage run \\
                     --source=$sources \\
+                    --omit=$omits \\
                     -m zope.testrunner --auto-color --auto-progress \\
                     --test-path=sources/package/src
 
