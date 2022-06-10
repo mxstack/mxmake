@@ -3,6 +3,7 @@
 __pycache__
 /.installed.txt
 /.sentinels/
+/.vscode/
 /build/
 /constraints-mxdev.txt
 /dist/
