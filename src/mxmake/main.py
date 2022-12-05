@@ -24,7 +24,6 @@ command_parsers = parser.add_subparsers(dest="command", required=True)
 # clean
 ##############################################################################
 
-
 def read_configuration(tio: typing.TextIO) -> mxdev.Configuration:
     hooks = mxdev.load_hooks()
     configuration = mxdev.Configuration(tio=tio, hooks=hooks)
@@ -67,7 +66,6 @@ clean_parser.add_argument(
 ##############################################################################
 # list
 ##############################################################################
-
 
 def list_command(args: argparse.Namespace):
     if not args.domain:
@@ -134,7 +132,6 @@ list_parser.add_argument("-m", "--makefile", help="Makefile name")
 # init
 ##############################################################################
 
-
 def init_command(args: argparse.Namespace):
     domains = load_domains()
     domain_choice = inquirer.prompt([
@@ -171,9 +168,6 @@ def init_command(args: argparse.Namespace):
                     )
                 )
             makefile_settings = inquirer.prompt(makefile_settings_questions)
-            print('##################')
-            print(makefile_settings)
-            print('##################')
 
 
 init_parser = command_parsers.add_parser("init", help="Initialize project")
@@ -183,7 +177,6 @@ init_parser.set_defaults(func=init_command)
 ##############################################################################
 # main
 ##############################################################################
-
 
 def main() -> None:
     mxdev.setup_logger(logging.INFO)

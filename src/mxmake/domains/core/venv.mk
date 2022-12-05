@@ -13,7 +13,7 @@
 #:    - mxmake
 #:
 #:[target.venv-dirty]
-#:description = Build :ref:`venv` target on next make run.
+#:description = Build "venv" target on next make run.
 #:
 #:[target.venv-clean]
 #:description = Removes virtual environment.
