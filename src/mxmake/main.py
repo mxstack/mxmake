@@ -137,27 +137,43 @@ list_parser.add_argument("-m", "--makefile", help="Makefile name")
 
 def init_command(args: argparse.Namespace):
     domains = load_domains()
-    questions = [
+    domain_choice = inquirer.prompt([
         inquirer.Checkbox(
             'domain',
-            message='Domains to include',
+            message='Include domains',
             choices=[d.name for d in domains]
         )
-    ]
-    domain_choice = inquirer.prompt(questions)
+    ])
     for domain_name in domain_choice['domain']:
         domain = get_domain(domain_name)
-        makefiles = [mf.name for mf in domain.makefiles]
-        questions = [
+        makefiles = {}
+        for makefile in domain.makefiles:
+            makefiles[makefile.name] = makefile
+        makefiles_choice = inquirer.prompt([
             inquirer.Checkbox(
                 'makefiles',
-                message=f'Include makefiles from domain {domain_name}',
-                choices=makefiles,
-                default=makefiles
+                message=f'Include makefiles from domain "{domain_name}"',
+                choices=makefiles.keys(),
+                default=makefiles.keys()
             )
-        ]
-        makefiles_choice = inquirer.prompt(questions)
-        print(makefiles_choice)
+        ])
+        for makefile_name in makefiles_choice['makefiles']:
+            makefile_settings_questions = []
+            for setting in makefiles[makefile_name].settings:
+                makefile_settings_questions.append(
+                    inquirer.Text(
+                        setting.name,
+                        message=(
+                            f'{makefile_name}.{setting.name} \n'
+                            f'    {setting.description}'
+                        ),
+                        default=setting.default
+                    )
+                )
+            makefile_settings = inquirer.prompt(makefile_settings_questions)
+            print('##################')
+            print(makefile_settings)
+            print('##################')
 
 
 init_parser = command_parsers.add_parser("init", help="Initialize project")
