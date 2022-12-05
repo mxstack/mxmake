@@ -6,6 +6,7 @@ from mxmake.utils import ns_name
 from textwrap import indent
 
 import argparse
+import inquirer
 import logging
 import mxdev
 import sys
@@ -135,7 +136,28 @@ list_parser.add_argument("-m", "--makefile", help="Makefile name")
 
 
 def init_command(args: argparse.Namespace):
-    ...
+    domains = load_domains()
+    questions = [
+        inquirer.Checkbox(
+            'domain',
+            message='Domains to include',
+            choices=[d.name for d in domains]
+        )
+    ]
+    domain_choice = inquirer.prompt(questions)
+    for domain_name in domain_choice['domain']:
+        domain = get_domain(domain_name)
+        makefiles = [mf.name for mf in domain.makefiles]
+        questions = [
+            inquirer.Checkbox(
+                'makefiles',
+                message=f'Include makefiles from domain {domain_name}',
+                choices=makefiles,
+                default=makefiles
+            )
+        ]
+        makefiles_choice = inquirer.prompt(questions)
+        print(makefiles_choice)
 
 
 init_parser = command_parsers.add_parser("init", help="Initialize project")
