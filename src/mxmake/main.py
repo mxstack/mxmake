@@ -146,6 +146,7 @@ def init_command(args: argparse.Namespace):
         makefiles = {}
         for makefile in domain.makefiles:
             makefiles[makefile.name] = makefile
+        print("")
         makefiles_choice = inquirer.prompt([
             inquirer.Checkbox(
                 'makefiles',
@@ -157,16 +158,21 @@ def init_command(args: argparse.Namespace):
         for makefile_name in makefiles_choice['makefiles']:
             makefile_settings_questions = []
             for setting in makefiles[makefile_name].settings:
+                setting_description = setting.description.replace("\n", " ")
                 makefile_settings_questions.append(
                     inquirer.Text(
                         setting.name,
                         message=(
-                            f'{makefile_name}.{setting.name} \n'
-                            f'    {setting.description}'
+                            f'{setting_description}\n'
+                            f'    {setting.name}'
                         ),
                         default=setting.default
                     )
                 )
+            if not makefile_settings_questions:
+                continue
+            print("")
+            print(f'Makefile: {makefile_name}')
             makefile_settings = inquirer.prompt(makefile_settings_questions)
 
 

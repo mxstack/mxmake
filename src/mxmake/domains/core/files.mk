@@ -8,7 +8,7 @@
 #:  checkout sources.
 #:
 #:[target.files-dirty]
-#:description = Build "files" target on next make run.
+#:description = Build :ref:`files` target on next make run.
 #:
 #:[target.files-clean]
 #:description = Remove generated project files.

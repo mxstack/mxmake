@@ -4,12 +4,12 @@
 #:depends = core.install
 #:
 #:[target.test]
-#:description = Run project tests. The "run-tests" template can be used
+#:description = Run project tests. The :ref:`run-tests` template can be used
 #:  for automatic test script creation.
 #:
 #:[setting.TEST_COMMAND]
 #:description = The command which gets executed. Defaults to the location the
-#:  "run-tests" template gets rendered to if configured.
+#:  :ref:`run-tests` template gets rendered to if configured.
 #:default = $(SCRIPTS_FOLDER)/run-tests.sh
 
 ###############################################################################

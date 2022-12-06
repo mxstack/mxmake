@@ -8,7 +8,7 @@
 #:  project files.
 #:
 #:[target.sources-dirty]
-#:description = Build "sources" target on next make run.
+#:description = Build :ref:`sources` target on next make run.
 #:
 #:[target.sources-clean]
 #:description = Removes sources folder.

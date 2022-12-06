@@ -8,7 +8,7 @@
 #:  out sources.
 #:
 #:[target.install-dirty]
-#:description = Build "install" target on next make run.
+#:description = Build :ref:`install` target on next make run.
 
 ###############################################################################
 # install
