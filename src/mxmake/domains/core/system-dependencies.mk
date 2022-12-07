@@ -14,8 +14,6 @@
 # system dependencies
 ###############################################################################
 
-SYSTEM_DEPENDENCIES?=
-
 .PHONY: system-dependencies
 system-dependencies:
 	@echo "Install system dependencies"

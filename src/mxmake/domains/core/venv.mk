@@ -28,28 +28,15 @@
 #:
 #:[setting.MXDEV]
 #:description = mxdev to install in virtual environment.
-#:default = https://github.com/mxstack/mxdev/archive/remove_libvcs.zip
+#:default = https://github.com/mxstack/mxdev/archive/main.zip
 #:
 #:[setting.MXMAKE]
 #:description = mxmake to install in virtual environment.
-#:default = https://github.com/mxstack/mxmake/archive/master.zip
+#:default = https://github.com/mxstack/mxmake/archive/main.zip
 
 ###############################################################################
 # venv
 ###############################################################################
-
-PYTHON_BIN?=python3
-VENV_FOLDER?=venv
-
-# This setting is for customizing the installation of mxdev. Normally only
-# needed if working on mxdev development.
-#MXDEV?=mxdev
-MXDEV?=https://github.com/mxstack/mxdev/archive/remove_libvcs.zip
-
-# This setting is for customizing the installation of mxmake. Normally only
-# needed if working on mxmake development
-#MXMAKE?=mxmake
-MXMAKE?=https://github.com/mxstack/mxmake/archive/master.zip
 
 VENV_SENTINEL:=$(SENTINEL_FOLDER)/venv.sentinel
 $(VENV_SENTINEL): $(SENTINEL)

@@ -26,10 +26,6 @@
 # docs
 ###############################################################################
 
-DOCS_BIN?=$(VENV_FOLDER)/bin/sphinx-build
-DOCS_SOURCE?=docs/source
-DOCS_TARGET?=docs/html
-
 .PHONY: docs
 docs:
 	@echo "Build sphinx docs"

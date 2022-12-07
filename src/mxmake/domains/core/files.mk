@@ -43,10 +43,6 @@ define unset_files_env
 	@unset MXMAKE_CONFIG_FOLDER
 endef
 
-PROJECT_CONFIG?=mx.ini
-SCRIPTS_FOLDER?=$(VENV_FOLDER)/bin
-CONFIG_FOLDER?=cfg
-
 FILES_SENTINEL:=$(SENTINEL_FOLDER)/files.sentinel
 $(FILES_SENTINEL): $(PROJECT_CONFIG) $(VENV_SENTINEL)
 	@echo "Create project files"

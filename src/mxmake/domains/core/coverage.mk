@@ -19,8 +19,6 @@
 # coverage
 ###############################################################################
 
-COVERAGE_COMMAND?=$(SCRIPTS_FOLDER)/run-coverage.sh
-
 .PHONY: coverage
 coverage: $(FILES_SENTINEL) $(SOURCES_SENTINEL) $(INSTALL_SENTINEL)
 	@echo "Run coverage"

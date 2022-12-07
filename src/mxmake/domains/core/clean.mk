@@ -20,8 +20,6 @@
 # clean
 ###############################################################################
 
-CLEAN_TARGETS?=
-
 .PHONY: clean
 clean: files-clean venv-clean docs-clean coverage-clean
 	@rm -rf $(CLEAN_TARGETS) .sentinels .installed.txt

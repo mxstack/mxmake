@@ -32,11 +32,6 @@
 # openldap
 ###############################################################################
 
-OPENLDAP_VERSION?="2.4.59"
-OPENLDAP_URL?="https://www.openldap.org/software/download/OpenLDAP/openldap-release/"
-OPENLDAP_DIR?=$(shell echo $(realpath .))/openldap
-OPENLDAP_ENV?="PATH=/usr/local/bin:/usr/bin:/bin"
-
 OPENLDAP_SENTINEL:=$(SENTINEL_FOLDER)/openldap.sentinel
 $(OPENLDAP_SENTINEL): $(SENTINEL)
 	@echo "Building openldap server in '$(OPENLDAP_DIR)'"

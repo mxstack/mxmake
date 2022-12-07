@@ -16,8 +16,6 @@
 # test
 ###############################################################################
 
-TEST_COMMAND?=$(SCRIPTS_FOLDER)/run-tests.sh
-
 .PHONY: test
 test: $(FILES_SENTINEL) $(SOURCES_SENTINEL) $(INSTALL_SENTINEL)
 	@echo "Run tests"
