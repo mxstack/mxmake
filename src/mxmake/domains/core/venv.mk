@@ -32,7 +32,7 @@
 #:
 #:[setting.MXMAKE]
 #:description = mxmake to install in virtual environment.
-#:default = https://github.com/mxstack/mxmake/archive/main.zip
+#:default = https://github.com/mxstack/mxmake/archive/inquirer-sandbox.zip
 
 ###############################################################################
 # venv
