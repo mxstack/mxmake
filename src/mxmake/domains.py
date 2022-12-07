@@ -73,8 +73,8 @@ class Makefile:
     @property
     def depends(self) -> typing.List[str]:
         return [
-            dep.strip() for dep
-            in self.config[self.name].get("depends", "").split('\n')
+            dep.strip()
+            for dep in self.config[self.name].get("depends", "").split("\n")
             if dep
         ]
 
@@ -152,7 +152,7 @@ def get_domain(name: str) -> typing.Optional[Domain]:
 
 
 def get_makefile(fqn: str) -> Makefile:
-    domain, name = fqn.split('.')
+    domain, name = fqn.split(".")
     return get_domain(domain).makefile(name)
 
 

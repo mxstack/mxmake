@@ -1,8 +1,8 @@
-from mxmake.domains import MissingDependencyMakefileError
 from mxmake.domains import collect_missing_dependencies
 from mxmake.domains import get_domain
 from mxmake.domains import get_makefile
 from mxmake.domains import load_domains
+from mxmake.domains import MissingDependencyMakefileError
 from mxmake.domains import resolve_makefile_dependencies
 from mxmake.templates import template
 from mxmake.utils import list_value
@@ -27,6 +27,7 @@ command_parsers = parser.add_subparsers(dest="command", required=True)
 ##############################################################################
 # clean
 ##############################################################################
+
 
 def read_configuration(tio: typing.TextIO) -> mxdev.Configuration:
     hooks = mxdev.load_hooks()
@@ -71,6 +72,7 @@ clean_parser.add_argument(
 # list
 ##############################################################################
 
+
 def list_command(args: argparse.Namespace):
     if not args.domain:
         domains = load_domains()
@@ -97,11 +99,7 @@ def list_command(args: argparse.Namespace):
         sys.exit(1)
 
     sys.stdout.write(f"Makefile {domain.name}.{makefile.name}:\n")
-    depends = (
-        ", ".join(makefile.depends)
-        if makefile.depends
-        else "No dependencies"
-    )
+    depends = ", ".join(makefile.depends) if makefile.depends else "No dependencies"
     sys.stdout.write(f"  Depends: {depends}\n")
     sys.stdout.write(f"  Targets:")
     targets = makefile.targets
@@ -136,28 +134,31 @@ list_parser.add_argument("-m", "--makefile", help="Makefile name")
 # init
 ##############################################################################
 
+
 def init_command(args: argparse.Namespace):
     domains = load_domains()
-    domain_choice = inquirer.prompt([
-        inquirer.Checkbox(
-            'domain',
-            message='Include domains',
-            choices=[d.name for d in domains]
-        )
-    ])
+    domain_choice = inquirer.prompt(
+        [
+            inquirer.Checkbox(
+                "domain", message="Include domains", choices=[d.name for d in domains]
+            )
+        ]
+    )
     makefiles = []
-    for domain_name in domain_choice['domain']:
+    for domain_name in domain_choice["domain"]:
         domain = get_domain(domain_name)
         fqns = [makefile.fqn for makefile in domain.makefiles]
-        makefiles_choice = inquirer.prompt([
-            inquirer.Checkbox(
-                'makefiles',
-                message=f'Include makefiles from domain "{domain_name}"',
-                choices=fqns,
-                default=fqns
-            )
-        ])
-        for fqn in makefiles_choice['makefiles']:
+        makefiles_choice = inquirer.prompt(
+            [
+                inquirer.Checkbox(
+                    "makefiles",
+                    message=f'Include makefiles from domain "{domain_name}"',
+                    choices=fqns,
+                    default=fqns,
+                )
+            ]
+        )
+        for fqn in makefiles_choice["makefiles"]:
             makefiles.append(get_makefile(fqn))
     makefiles = collect_missing_dependencies(makefiles)
     makefiles = resolve_makefile_dependencies(makefiles)
@@ -171,31 +172,28 @@ def init_command(args: argparse.Namespace):
     except MissingDependencyMakefileError as e:
         print(e)
         return
-    print('ääääääääääääääää')
+    print("ääääääääääääääää")
     print(resolved_makefiles)
 
     return
-    
-    for domain_name in domain_choice['domain']:
+
+    for domain_name in domain_choice["domain"]:
         makefile_settings = {}
-        for makefile_name in makefiles_choice['makefiles']:
+        for makefile_name in makefiles_choice["makefiles"]:
             makefile_settings_questions = []
             for setting in makefiles[makefile_name].settings:
                 setting_description = setting.description.replace("\n", " ")
                 makefile_settings_questions.append(
                     inquirer.Text(
                         setting.name,
-                        message=(
-                            f'{setting_description}\n'
-                            f'    {setting.name}'
-                        ),
-                        default=setting.default
+                        message=(f"{setting_description}\n    {setting.name}"),
+                        default=setting.default,
                     )
                 )
             if not makefile_settings_questions:
                 continue
             print("")
-            print(f'Makefile: {makefile_name}')
+            print(f"Makefile: {makefile_name}")
             makefile_settings[makefile_name] = inquirer.prompt(
                 makefile_settings_questions
             )
@@ -209,6 +207,7 @@ init_parser.set_defaults(func=init_command)
 ##############################################################################
 # main
 ##############################################################################
+
 
 def main() -> None:
     mxdev.setup_logger(logging.INFO)
