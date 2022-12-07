@@ -590,13 +590,21 @@ class TestMakefiles(unittest.TestCase):
         self.assertTrue(domains.core in domains_)
         self.assertTrue(domains.ldap in domains_)
 
+    def test_get_domain(self):
+        domain = domains.get_domain('core')
+        self.assertEqual(domain.name, 'core')
+
+    def test_get_makefile(self):
+        makefile = domains.get_makefile('core.venv')
+        self.assertEqual(makefile.fqn, 'core.venv')
+
     @temp_directory
     def test_Makefile(self, tmpdir):
         makefile_path = os.path.join(tmpdir, "makefile.mk")
         with open(makefile_path, "w") as f:
             f.write(MAKEFILE_TEMPLATE)
 
-        makefile = domains.Makefile(name="topic", file=makefile_path)
+        makefile = domains.Makefile(domain='domain', name="topic", file=makefile_path)
         self.assertTrue(len(makefile.file_data) > 0)
         self.assertTrue(makefile._file_data is makefile.file_data)
 
@@ -641,9 +649,10 @@ class TestMakefiles(unittest.TestCase):
         self.assertEqual(settings[0].default, "A")
 
         out_path = os.path.join(tmpdir, "makefile_out.mk")
-        makefile.write_to(out_path)
-        with open(out_path) as f:
-            out_content = f.readlines()
+        with open(out_path, 'w') as fd:
+            makefile.write_to(fd)
+        with open(out_path) as fd:
+            out_content = fd.readlines()
         self.assertEqual(out_content[0], "SETTING_A?=A\n")
         self.assertEqual(out_content[-1], "\t@rm -f $(TOPIC_SENTINEL)\n")
 
@@ -663,6 +672,7 @@ class TestMakefiles(unittest.TestCase):
         self.assertEqual(len(domain_makefiles), 2)
         self.assertEqual(domain_makefiles[0].name, "makefile-a")
         self.assertEqual(domain_makefiles[1].name, "makefile-b")
+        self.assertEqual(domain_makefiles[1].domain, "domain")
 
         self.assertEqual(domain.makefile("makefile-a").name, "makefile-a")
         self.assertEqual(domain.makefile("inexistent"), None)
@@ -673,24 +683,24 @@ class TestMakefiles(unittest.TestCase):
         self.assertEqual(str(err), "Conflicting makefile names: ['b', 'c']")
 
     def test_CircularDependencyMakefileError(self):
-        makefile = TestMakefile(name="f1", depends_=["f2"], file="f1.mk")
+        makefile = TestMakefile(domain="d1", name="f1", depends_=["f2"], file="f1.mk")
         err = domains.CircularDependencyMakefileError([makefile])
         self.assertEqual(
             str(err),
             (
                 "Makefiles define circular dependencies: "
-                "[TestMakefile(name='f1', file='f1.mk', depends_=['f2'])]"
+                "[TestMakefile(domain='d1', name='f1', file='f1.mk', depends_=['f2'])]"
             ),
         )
 
     def test_MissingDependencyMakefileError(self):
-        makefile = TestMakefile(name="t", depends_=["missing"], file="t.mk")
+        makefile = TestMakefile(domain="d", name="t", depends_=["missing"], file="t.mk")
         err = domains.MissingDependencyMakefileError(makefile)
         self.assertEqual(
             str(err),
             (
                 "Makefile define missing dependency: "
-                "TestMakefile(name='t', file='t.mk', depends_=['missing'])"
+                "TestMakefile(domain='d', name='t', file='t.mk', depends_=['missing'])"
             ),
         )
 
@@ -699,14 +709,14 @@ class TestMakefiles(unittest.TestCase):
             domains.MakefileConflictError,
             domains.resolve_makefile_dependencies,
             [
-                TestMakefile(name="f", depends_=["f1"], file="t.mk"),
-                TestMakefile(name="f", depends_=["f1"], file="t.mk"),
+                TestMakefile(domain="d", name="f", depends_=["d.f1"], file="t.mk"),
+                TestMakefile(domain="d", name="f", depends_=["d.f1"], file="t.mk"),
             ],
         )
 
-        f1 = TestMakefile(name="f1", depends_=["f2"], file="f1.mk")
-        f2 = TestMakefile(name="f2", depends_=["f3"], file="f2.mk")
-        f3 = TestMakefile(name="f3", depends_=[], file="f3.mk")
+        f1 = TestMakefile(domain="d", name="f1", depends_=["d.f2"], file="f1.mk")
+        f2 = TestMakefile(domain="d", name="f2", depends_=["d.f3"], file="f2.mk")
+        f3 = TestMakefile(domain="d", name="f3", depends_=[], file="f3.mk")
         self.assertEqual(
             domains.resolve_makefile_dependencies([f1, f2, f3]), [f3, f2, f1]
         )
@@ -717,27 +727,27 @@ class TestMakefiles(unittest.TestCase):
             domains.resolve_makefile_dependencies([f1, f3, f2]), [f3, f2, f1]
         )
 
-        f1 = TestMakefile(name="f1", depends_=["f2"], file="f1.mk")
-        f2 = TestMakefile(name="f2", depends_=["f1"], file="f2.mk")
+        f1 = TestMakefile(domain="d", name="f1", depends_=["d.f2"], file="f1.mk")
+        f2 = TestMakefile(domain="d", name="f2", depends_=["d.f1"], file="f2.mk")
         self.assertRaises(
             domains.CircularDependencyMakefileError,
             domains.resolve_makefile_dependencies,
             [f1, f2],
         )
 
-        f1 = TestMakefile(name="f1", depends_=["f2"], file="f1.mk")
-        f2 = TestMakefile(name="f2", depends_=["missing"], file="f2.mk")
+        f1 = TestMakefile(domain="d", name="f1", depends_=["d.f2"], file="f1.mk")
+        f2 = TestMakefile(domain="d", name="f2", depends_=["d.missing"], file="f2.mk")
         self.assertRaises(
             domains.MissingDependencyMakefileError,
             domains.resolve_makefile_dependencies,
             [f1, f2],
         )
 
-        f1 = TestMakefile(name="f1", depends_=["f2", "f4"], file="f1.mk")
-        f2 = TestMakefile(name="f2", depends_=["f3", "f4"], file="f2.mk")
-        f3 = TestMakefile(name="f3", depends_=["f4", "f5"], file="f3.mk")
-        f4 = TestMakefile(name="f4", depends_=["f5"], file="f4.mk")
-        f5 = TestMakefile(name="f5", depends_=[], file="f5.mk")
+        f1 = TestMakefile(domain="d", name="f1", depends_=["d.f2", "d.f4"], file="f1.mk")
+        f2 = TestMakefile(domain="d", name="f2", depends_=["d.f3", "d.f4"], file="f2.mk")
+        f3 = TestMakefile(domain="d", name="f3", depends_=["d.f4", "d.f5"], file="f3.mk")
+        f4 = TestMakefile(domain="d", name="f4", depends_=["d.f5"], file="f4.mk")
+        f5 = TestMakefile(domain="d", name="f5", depends_=[], file="f5.mk")
         self.assertEqual(
             domains.resolve_makefile_dependencies([f1, f2, f3, f4, f5]),
             [f5, f4, f3, f2, f1]
@@ -755,22 +765,36 @@ class TestMakefiles(unittest.TestCase):
             [f5, f4, f3, f2, f1]
         )
 
-        f1 = TestMakefile(name="f1", depends_=["f2", "f3"], file="f1.mk")
-        f2 = TestMakefile(name="f2", depends_=["f1", "f3"], file="f2.mk")
-        f3 = TestMakefile(name="f3", depends_=["f1", "f2"], file="f3.mk")
+        f1 = TestMakefile(domain="d", name="f1", depends_=["d.f2", "d.f3"], file="f1.mk")
+        f2 = TestMakefile(domain="d", name="f2", depends_=["d.f1", "d.f3"], file="f2.mk")
+        f3 = TestMakefile(domain="d", name="f3", depends_=["d.f1", "d.f2"], file="f3.mk")
         self.assertRaises(
             domains.CircularDependencyMakefileError,
             domains.resolve_makefile_dependencies,
             [f1, f2, f3]
         )
 
-        f1 = TestMakefile(name="f1", depends_=["f2", "f3"], file="f1.ext")
-        f2 = TestMakefile(name="f2", depends_=["f1", "f3"], file="f2.ext")
-        f3 = TestMakefile(name="f3", depends_=["f1", "f4"], file="f3.ext")
+        f1 = TestMakefile(domain="d", name="f1", depends_=["d.f2", "d.f3"], file="f1.ext")
+        f2 = TestMakefile(domain="d", name="f2", depends_=["d.f1", "d.f3"], file="f2.ext")
+        f3 = TestMakefile(domain="d", name="f3", depends_=["d.f1", "d.f4"], file="f3.ext")
         self.assertRaises(
             domains.MissingDependencyMakefileError,
             domains.resolve_makefile_dependencies,
             [f1, f2, f3]
+        )
+
+    def test_collect_missing_dependencies(self):
+        makefiles = [
+            domains.get_makefile('ldap.python-ldap'),
+            domains.get_makefile('core.files')
+        ]
+        all_dependencies = domains.collect_missing_dependencies(makefiles)
+        self.assertEqual(
+            sorted(makefile.fqn for makefile in all_dependencies),
+            [
+                'core.base', 'core.files', 'core.venv',
+                'ldap.openldap', 'ldap.python-ldap'
+            ]
         )
 
 

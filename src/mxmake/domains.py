@@ -24,8 +24,13 @@ class Target:
 
 @dataclass
 class Makefile:
+    domain: str
     name: str
     file: str
+
+    @property
+    def fqn(self):
+        return f"{self.domain}.{self.name}"
 
     @property
     def file_data(self) -> typing.List[str]:
@@ -98,17 +103,16 @@ class Makefile:
             if name.startswith("target.")
         ]
 
-    def write_to(self, path: str):
+    def write_to(self, fd: typing.TextIO):
         leading_blankline = True
-        with open(path, "w") as f:
-            for line in self.file_data:
-                if line.startswith("#:"):
-                    continue
-                if not line.strip().strip("\n") and leading_blankline:
-                    continue
-                else:
-                    leading_blankline = False
-                f.write(line)
+        for line in self.file_data:
+            if line.startswith("#:"):
+                continue
+            if not line.strip().strip("\n") and leading_blankline:
+                continue
+            else:
+                leading_blankline = False
+            fd.write(line)
 
 
 @dataclass
@@ -119,7 +123,11 @@ class Domain:
     @property
     def makefiles(self) -> typing.List[Makefile]:
         return [
-            Makefile(name=name[:-3], file=os.path.join(self.directory, name))
+            Makefile(
+                domain=self.name,
+                name=name[:-3],
+                file=os.path.join(self.directory, name),
+            )
             for name in sorted(os.listdir(self.directory))
             if name.endswith(".mk")
         ]
@@ -141,6 +149,11 @@ def get_domain(name: str) -> typing.Optional[Domain]:
         if domain.name == name:
             return domain
     return None
+
+
+def get_makefile(fqn: str) -> Makefile:
+    domain, name = fqn.split('.')
+    return get_domain(domain).makefile(name)
 
 
 class MakefileConflictError(Exception):
@@ -174,7 +187,7 @@ def resolve_makefile_dependencies(
     :raise MissingDependencyMakefileError: Dependency makefile not included.
     :raise CircularDependencyMakefileError: Circular dependencies defined.
     """
-    names = [res.name for res in makefiles]
+    names = [res.fqn for res in makefiles]
     counter = Counter(names)
     if len(makefiles) != len(counter):
         raise MakefileConflictError(counter)
@@ -183,7 +196,7 @@ def resolve_makefile_dependencies(
     for makefile in makefiles[:]:
         if not makefile.depends:
             ret.append(makefile)
-            handled[makefile.name] = makefile
+            handled[makefile.fqn] = makefile
             makefiles.remove(makefile)
         else:
             for dependency_name in makefile.depends:
@@ -206,12 +219,29 @@ def resolve_makefile_dependencies(
             if not_yet:
                 continue
             ret.insert(hook_idx + 1, makefile)
-            handled[makefile.name] = makefile
+            handled[makefile.fqn] = makefile
             makefiles.remove(makefile)
             break
     if makefiles:
         raise CircularDependencyMakefileError(makefiles)
     return ret
+
+
+def collect_missing_dependencies(
+    makefiles: typing.List[Makefile],
+) -> typing.List[Makefile]:
+    """Expect a list of makefile instances, and add all missing depencecy
+    makefiles.
+    """
+    to_check = {makefile.fqn for makefile in makefiles}
+    checked = set()
+    while to_check:
+        current_fqn = to_check.pop()
+        checked.add(current_fqn)
+        new_depends = set(get_makefile(current_fqn).depends) - checked
+        if new_depends:
+            to_check.update(new_depends)
+    return [get_makefile(makefile_name) for makefile_name in checked]
 
 
 ##############################################################################

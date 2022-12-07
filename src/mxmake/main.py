@@ -1,5 +1,9 @@
+from mxmake.domains import MissingDependencyMakefileError
+from mxmake.domains import collect_missing_dependencies
 from mxmake.domains import get_domain
+from mxmake.domains import get_makefile
 from mxmake.domains import load_domains
+from mxmake.domains import resolve_makefile_dependencies
 from mxmake.templates import template
 from mxmake.utils import list_value
 from mxmake.utils import ns_name
@@ -141,20 +145,39 @@ def init_command(args: argparse.Namespace):
             choices=[d.name for d in domains]
         )
     ])
+    makefiles = []
     for domain_name in domain_choice['domain']:
         domain = get_domain(domain_name)
-        makefiles = {}
-        for makefile in domain.makefiles:
-            makefiles[makefile.name] = makefile
-        print("")
+        fqns = [makefile.fqn for makefile in domain.makefiles]
         makefiles_choice = inquirer.prompt([
             inquirer.Checkbox(
                 'makefiles',
                 message=f'Include makefiles from domain "{domain_name}"',
-                choices=makefiles.keys(),
-                default=makefiles.keys()
+                choices=fqns,
+                default=fqns
             )
         ])
+        for fqn in makefiles_choice['makefiles']:
+            makefiles.append(get_makefile(fqn))
+    makefiles = collect_missing_dependencies(makefiles)
+    makefiles = resolve_makefile_dependencies(makefiles)
+
+    return
+
+    try:
+        breakpoint()
+        print(selected_makefiles)
+        resolved_makefiles = resolve_makefile_dependencies(selected_makefiles)
+    except MissingDependencyMakefileError as e:
+        print(e)
+        return
+    print('ääääääääääääääää')
+    print(resolved_makefiles)
+
+    return
+    
+    for domain_name in domain_choice['domain']:
+        makefile_settings = {}
         for makefile_name in makefiles_choice['makefiles']:
             makefile_settings_questions = []
             for setting in makefiles[makefile_name].settings:
@@ -173,7 +196,10 @@ def init_command(args: argparse.Namespace):
                 continue
             print("")
             print(f'Makefile: {makefile_name}')
-            makefile_settings = inquirer.prompt(makefile_settings_questions)
+            makefile_settings[makefile_name] = inquirer.prompt(
+                makefile_settings_questions
+            )
+        print(makefile_settings)
 
 
 init_parser = command_parsers.add_parser("init", help="Initialize project")
