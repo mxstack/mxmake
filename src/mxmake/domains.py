@@ -144,17 +144,20 @@ def load_domains() -> typing.List[Domain]:
     return [ep.load() for ep in iter_entry_points("mxmake.domains")]
 
 
-def get_domain(name: str) -> typing.Optional[Domain]:
+def get_domain(name: str) -> Domain:
     for domain in load_domains():
         if domain.name == name:
             return domain
-    return None
+    raise AttributeError(f"No such domain: {name}")
 
 
 def get_makefile(fqn: str) -> Makefile:
-    domain, name = fqn.split(".")
-    return get_domain(domain).makefile(name)
-
+    domain_name, name = fqn.split(".")
+    domain = get_domain(domain_name)
+    makefile = domain.makefile(name)
+    if not makefile:
+        raise AttributeError(f"No such makefile: {fqn}")
+    return makefile
 
 class MakefileConflictError(Exception):
     def __init__(self, counter: Counter):
