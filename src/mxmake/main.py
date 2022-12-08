@@ -139,6 +139,10 @@ list_parser.add_argument("-m", "--makefile", help="Makefile name")
 
 
 def init_command(args: argparse.Namespace):
+    print("\n#######################")
+    print("# mxmake initialization")
+    print("#######################\n")
+
     # obtain makefile target folder
     target_folder = os.getcwd()
 
@@ -157,6 +161,8 @@ def init_command(args: argparse.Namespace):
             )
         ]
     )
+    if domain_choice is None:
+        return
 
     # obtain makefiles to include
     makefiles = []
@@ -183,33 +189,63 @@ def init_command(args: argparse.Namespace):
                 )
             ]
         )
+        if makefiles_choice is None:
+            return
         for fqn in makefiles_choice["makefiles"]:
             makefiles.append(get_makefile(fqn))
     makefiles = collect_missing_dependencies(makefiles)
     makefiles = resolve_makefile_dependencies(makefiles)
 
     # obtain settings
-    settings_question = []
+    makefile_settings = {}
     for makefile in sorted(makefiles, key=attrgetter("fqn")):
-        for setting in makefile.settings:
+        settings = makefile.settings
+        if not settings:
+            continue
+        settings_question = []
+        for setting in settings:
             sfqn = f"{makefile.fqn}.{setting.name}"
             setting_default = setting.default
+            # use configured setting from parser if set
             if sfqn in parser.settings:
                 setting_default = parser.settings[sfqn]
+            makefile_settings[sfqn] = setting_default
             settings_question.append(
                 inquirer.Text(sfqn, message=sfqn, default=setting_default)
             )
-    makefile_settings = inquirer.prompt(settings_question)
+        print(f"Edit Settings for {makefile.fqn}?")
+        yn = inquirer.text(message="y/N")
+        if yn in ['Y', 'y']:
+            makefile_settings.update(inquirer.prompt(settings_question))
+        print("")
 
-    # generate makefile
-    factory = template.lookup("makefile")
-    makefile_template = factory(
-        target_folder,
-        makefiles,
-        makefile_settings,
-        get_template_environment()
-    )
-    makefile_template.write()
+    if makefiles:
+        # generate makefile
+        factory = template.lookup("makefile")
+        makefile_template = factory(
+            target_folder,
+            makefiles,
+            makefile_settings,
+            get_template_environment()
+        )
+        makefile_template.write()
+    else:
+        print("Skip generation of Makefile, nothing selected")
+
+    # mx ini generation
+    if not os.path.exists(os.path.join(target_folder, "mx.ini")):
+        print("\n``mx.ini`` configuration file not exists. Create One?")
+        yn = inquirer.text(message="Y/n")
+        if yn not in ['n', 'N']:
+            factory = template.lookup("mx.ini")
+            mx_ini_template = factory(
+                target_folder,
+                makefiles,
+                get_template_environment()
+            )
+            mx_ini_template.write()
+    else:
+        print("Skip generation of mx configuration file, file already exists")
 
 
 init_parser = command_parsers.add_parser("init", help="Initialize project")

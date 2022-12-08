@@ -180,9 +180,9 @@ class CoverageScript(TestScript):
 
 @template("makefile")
 class Makefile(Template):
-    description: str = "Run coverage"
-    target_name = 'Makefile'
-    template_name = 'Makefile'
+    description: str = "Makefile"
+    target_name = "Makefile"
+    template_name = "Makefile"
     target_folder = None
 
     def __init__(
@@ -231,3 +231,36 @@ class Makefile(Template):
             sections=sections,
             fqns=fqns
         )
+
+
+##############################################################################
+# mx.ini template
+##############################################################################
+
+
+@template("mx.ini")
+class MxIni(Template):
+    description: str = "mx configutation file"
+    target_name = "mx.ini"
+    template_name = "mx.ini"
+    target_folder = None
+
+    def __init__(
+        self,
+        target_folder: str,
+        makefiles: typing.List[Makefile],
+        environment: typing.Union[Environment, None] = None,
+    ) -> None:
+        super().__init__(environment)
+        self.target_folder = target_folder
+        self.makefiles = makefiles
+
+    @property
+    def template_variables(self) -> typing.Dict[str, typing.Any]:
+        mxmake_templates = []
+        for makefile in self.makefiles:
+            if makefile.fqn == 'core.test':
+                mxmake_templates.append('run-tests')
+            if makefile.fqn == 'core.coverage':
+                mxmake_templates.append('run-coverage')
+        return dict(mxmake_templates=mxmake_templates)

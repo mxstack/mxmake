@@ -1,5 +1,6 @@
 from mxmake.domains import get_makefile
 
+import os
 import typing
 
 
@@ -31,6 +32,8 @@ class MakefileParser:
                         self.settings[f"{fqn}.{setting.name}"] = value
 
     def parse(self):
+        if not os.path.exists(self.path):
+            return
         with open(self.path) as fd:
             lines = [line.strip().strip("\n") for line in fd.readlines() if line]
             self.parse_fqns(lines)

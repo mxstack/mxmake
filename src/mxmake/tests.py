@@ -174,6 +174,7 @@ class TestTemplates(RenderTestCase):
             templates.template._registry,
             {
                 "makefile": templates.Makefile,
+                "mx.ini": templates.MxIni,
                 "run-coverage": templates.CoverageScript,
                 "run-tests": templates.TestScript,
             },
@@ -562,9 +563,10 @@ class TestTemplates(RenderTestCase):
                 # default: https://github.com/mxstack/mxmake/archive/inquirer-sandbox.zip
                 MXMAKE?=mxmake
 
-                ###############################################################################
+
+                ##############################################################################
                 # Makefile for mxmake projects.
-                ###############################################################################
+                ##############################################################################
 
                 # Defensive settings for make: https://tech.davis-hansson.com/p/make/
                 SHELL:=bash
@@ -583,9 +585,9 @@ class TestTemplates(RenderTestCase):
                     @mkdir -p $(SENTINEL_FOLDER)
                     @echo "Sentinels for the Makefile process." > $(SENTINEL)
 
-                ###############################################################################
+                ##############################################################################
                 # venv
-                ###############################################################################
+                ##############################################################################
 
                 VENV_SENTINEL:=$(SENTINEL_FOLDER)/venv.sentinel
                 $(VENV_SENTINEL): $(SENTINEL)
@@ -611,6 +613,50 @@ class TestTemplates(RenderTestCase):
                 #: core.base
                 #: core.venv
                 ##############################################################################
+                """,
+                f.read()
+            )
+
+    @temp_directory
+    def test_MxIni(self, tempdir):
+        makefiles = [
+            domains.get_makefile('core.test'),
+            domains.get_makefile('core.coverage'),
+        ]
+        makefiles = domains.collect_missing_dependencies(makefiles)
+
+        factory = templates.template.lookup("mx.ini")
+        template = factory(
+            tempdir,
+            makefiles,
+            templates.get_template_environment()
+        )
+
+        template.write()
+        with open(os.path.join(tempdir, "mx.ini")) as f:
+            self.checkOutput(
+                """
+                [settings]
+                threads = 5
+                version-overrides =
+
+                # mxmake related mxdev extensions
+
+                # templates to generate
+                mxmake-templates =
+                    run-coverage
+                    run-tests
+
+                # environment variables
+                [mxmake-env]
+                # VAR = value
+
+                [mxmake-run-coverage]
+                environment = env
+
+                [mxmake-run-tests]
+                environment = env
+
                 """,
                 f.read()
             )
