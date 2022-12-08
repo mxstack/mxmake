@@ -264,3 +264,39 @@ class MxIni(Template):
             if makefile.fqn == 'core.coverage':
                 mxmake_templates.append('run-coverage')
         return dict(mxmake_templates=mxmake_templates)
+
+
+##############################################################################
+# domains.rst template
+##############################################################################
+
+
+@template("domains.rst")
+class Domains(Template):
+    description: str = "Domains documentation for sphinx"
+    target_name = None
+    template_name = "domains.rst"
+    target_folder = None
+
+    def __init__(
+        self,
+        makefiles: typing.List[Makefile],
+        environment: typing.Union[Environment, None] = None,
+    ) -> None:
+        super().__init__(environment)
+        self.makefiles = makefiles
+
+    @property
+    def template_variables(self) -> typing.Dict[str, typing.Any]:
+        return dict()
+
+    def render(self):
+        if not self.environment:
+            raise RuntimeError("Cannot write template without environment")
+        template = self.environment.get_template(self.template_name)
+        return template.render(**self.template_variables)
+
+    def write(self) -> None:
+        raise NotImplementedError(
+            "Domains template is not supposed to be written to file system"
+        )
