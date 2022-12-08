@@ -35,7 +35,7 @@ MXDEV?=https://github.com/mxstack/mxdev/archive/main.zip
 
 # mxmake to install in virtual environment.
 # default: https://github.com/mxstack/mxmake/archive/inquirer-sandbox.zip
-MXMAKE?=
+MXMAKE?=-e .[docs]
 
 ## core.files
 
