@@ -19,13 +19,13 @@ omits=(
 
 omits=$(printf ",%s" "${omits[@]}")
 omits=${omits:1}
-{%- endif%}
+{%- endif %}
 
 {{ venv }}/bin/coverage run \
     --source=$sources \
 {% if omitpaths %}
     --omit=$omits \
-{% endif%}
+{% endif %}
     -m zope.testrunner --auto-color --auto-progress \
 {% for path in testpaths %}
     --test-path={{ path }}{% if not loop.last %} \{% endif %}

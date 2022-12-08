@@ -172,6 +172,7 @@ class TestTemplates(RenderTestCase):
         self.assertEqual(
             templates.template._registry,
             {
+                "makefile": templates.Makefile,
                 "run-coverage": templates.CoverageScript,
                 "run-tests": templates.TestScript,
             },
@@ -192,21 +193,15 @@ class TestTemplates(RenderTestCase):
             template_variables = dict(param="value")
 
         # cannot write template without template environment
-        hooks: typing.Dict[str, typing.Dict] = {}
-        template = Template(TestConfiguration(hooks=hooks))
+        template = Template()
         with self.assertRaises(RuntimeError):
             template.write()
-
-        # template settings
-        self.assertEqual(template.settings, dict())
-        hooks["mxmake-template"] = dict(key="val")
-        self.assertEqual(template.settings, dict(key="val"))
 
         # write template
         with open(os.path.join(tempdir, "target.in"), "w") as f:
             f.write("{{ param }}")
         environment = Environment(loader=FileSystemLoader(tempdir))
-        template = Template(TestConfiguration(hooks={}), environment)
+        template = Template(environment)
         template.write()
         with open(os.path.join(tempdir, "target.out")) as f:
             self.assertEqual(f.read(), "value")
@@ -220,6 +215,23 @@ class TestTemplates(RenderTestCase):
         self.assertTrue(removed)
         self.assertFalse(os.path.exists(os.path.join(tempdir, "target.out")))
         self.assertFalse(template.remove())
+
+    @template_directory()
+    def test_MxIniBoundTemplate(self, tempdir: str):
+        # create test template
+        class Template(templates.MxIniBoundTemplate):
+            name = "template"
+            target_folder = ""
+            target_name = ""
+            template_name = ""
+            template_variables = {}
+
+        # template settings
+        hooks: typing.Dict[str, typing.Dict] = {}
+        template = Template(TestConfiguration(hooks=hooks))
+        self.assertEqual(template.settings, dict())
+        hooks["mxmake-template"] = dict(key="val")
+        self.assertEqual(template.settings, dict(key="val"))
 
     def test_ShellScriptTemplate(self):
         self.assertEqual(templates.ShellScriptTemplate.description, "")
@@ -258,7 +270,7 @@ class TestTemplates(RenderTestCase):
 
         configuration = mxdev.Configuration(config_file, hooks=[hook.Hook()])
         factory = templates.template.lookup("run-tests")
-        template = factory(configuration, hook.get_template_environment())
+        template = factory(configuration, templates.get_template_environment())
 
         self.assertEqual(template.description, "Run tests")
         self.assertEqual(template.target_folder, utils.scripts_folder())
@@ -323,7 +335,7 @@ class TestTemplates(RenderTestCase):
         config_file.seek(0)
 
         configuration = mxdev.Configuration(config_file, hooks=[hook.Hook()])
-        template = factory(configuration, hook.get_template_environment())
+        template = factory(configuration, templates.get_template_environment())
         template.write()
         with open(os.path.join(tempdir, "run-tests.sh")) as f:
             self.checkOutput(
@@ -366,7 +378,7 @@ class TestTemplates(RenderTestCase):
 
         configuration = mxdev.Configuration(config_file, hooks=[hook.Hook()])
         factory = templates.template.lookup("run-coverage")
-        template = factory(configuration, hook.get_template_environment())
+        template = factory(configuration, templates.get_template_environment())
 
         self.assertEqual(template.description, "Run coverage")
         self.assertEqual(template.target_folder, utils.scripts_folder())
@@ -468,7 +480,7 @@ class TestTemplates(RenderTestCase):
         config_file.seek(0)
 
         configuration = mxdev.Configuration(config_file, hooks=[hook.Hook()])
-        template = factory(configuration, hook.get_template_environment())
+        template = factory(configuration, templates.get_template_environment())
         template.write()
         with open(os.path.join(tempdir, "run-coverage.sh")) as f:
             self.checkOutput(
@@ -499,6 +511,107 @@ class TestTemplates(RenderTestCase):
                 exit 0
                 """,
                 f.read(),
+            )
+
+    @template_directory()
+    def test_Makefile(self, tempdir):
+        makefiles = [domains.get_makefile('core.venv')]
+        makefiles = domains.collect_missing_dependencies(makefiles)
+        makefiles = domains.resolve_makefile_dependencies(makefiles)
+        makefile_settings = {
+            'core.venv.PYTHON_BIN': 'python3',
+            'core.venv.VENV_FOLDER': 'venv',
+            'core.venv.MXDEV': 'mxdev',
+            'core.venv.MXMAKE': 'mxmake'
+        }
+
+        factory = templates.template.lookup("makefile")
+        template = factory(
+            tempdir,
+            makefiles,
+            makefile_settings,
+            templates.get_template_environment()
+        )
+
+        template.write()
+        with open(os.path.join(tempdir, "Makefile")) as f:
+            self.checkOutput(
+                """
+                ##############################################################################
+                # THIS FILE IS GENERATED BY MXMAKE
+                #
+                # SETTINGS (ALL CHANGES MADE BELOW SETTINGS WILL BE LOST)
+                ##############################################################################
+
+                ## core.venv
+
+                # Python interpreter to use for creating the virtual environment.
+                # default: python3
+                PYTHON_BIN?=python3
+
+                # The folder where the virtual environment get created.
+                # default: venv
+                VENV_FOLDER?=venv
+
+                # mxdev to install in virtual environment.
+                # default: https://github.com/mxstack/mxdev/archive/main.zip
+                MXDEV?=mxdev
+
+                # mxmake to install in virtual environment.
+                # default: https://github.com/mxstack/mxmake/archive/inquirer-sandbox.zip
+                MXMAKE?=mxmake
+
+                ###############################################################################
+                # Makefile for mxmake projects.
+                ###############################################################################
+
+                # Defensive settings for make: https://tech.davis-hansson.com/p/make/
+                SHELL:=bash
+                .ONESHELL:
+                # for Makefile debugging purposes add -x to the .SHELLFLAGS
+                .SHELLFLAGS:=-eu -o pipefail -O inherit_errexit -c
+                .SILENT:
+                .DELETE_ON_ERROR:
+                MAKEFLAGS+=--warn-undefined-variables
+                MAKEFLAGS+=--no-builtin-rules
+
+                # Sentinel files
+                SENTINEL_FOLDER?=.sentinels
+                SENTINEL?=$(SENTINEL_FOLDER)/about.txt
+                $(SENTINEL):
+                    @mkdir -p $(SENTINEL_FOLDER)
+                    @echo "Sentinels for the Makefile process." > $(SENTINEL)
+
+                ###############################################################################
+                # venv
+                ###############################################################################
+
+                VENV_SENTINEL:=$(SENTINEL_FOLDER)/venv.sentinel
+                $(VENV_SENTINEL): $(SENTINEL)
+                    @echo "Setup Python Virtual Environment under '$(VENV_FOLDER)'"
+                    @$(PYTHON_BIN) -m venv $(VENV_FOLDER)
+                    @$(VENV_FOLDER)/bin/pip install -U pip setuptools wheel
+                    @$(VENV_FOLDER)/bin/pip install -U $(MXDEV)
+                    @$(VENV_FOLDER)/bin/pip install -U $(MXMAKE)
+                    @touch $(VENV_SENTINEL)
+
+                .PHONY: venv
+                venv: $(VENV_SENTINEL)
+
+                .PHONY: venv-dirty
+                venv-dirty:
+                    @rm -f $(VENV_SENTINEL)
+
+                .PHONY: venv-clean
+                venv-clean: venv-dirty
+                    @rm -rf $(VENV_FOLDER)
+
+                ##############################################################################
+                #: core.base
+                #: core.venv
+                ##############################################################################
+                """,
+                f.read()
             )
 
 

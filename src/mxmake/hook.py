@@ -1,8 +1,7 @@
-from jinja2 import Environment
-from jinja2 import PackageLoader
+from mxmake.templates import get_template_environment
 from mxmake.templates import template
-from mxmake.utils import list_value
 from mxmake.utils import NAMESPACE
+from mxmake.utils import list_value
 from mxmake.utils import ns_name
 
 import logging
@@ -10,14 +9,6 @@ import mxdev
 
 
 logger = logging.getLogger("mxmake")
-
-
-def get_template_environment() -> Environment:
-    return Environment(
-        loader=PackageLoader("mxmake", "templates"),
-        trim_blocks=True,
-        keep_trailing_newline=True,
-    )
 
 
 class Hook(mxdev.Hook):

@@ -1,12 +1,23 @@
 from jinja2 import Environment
+from jinja2 import PackageLoader
+from mxmake.domains import Makefile
 from mxmake.utils import ns_name
 from mxmake.utils import scripts_folder
 from mxmake.utils import venv_folder
 
 import abc
+import io
 import mxdev
 import os
 import typing
+
+
+def get_template_environment() -> Environment:
+    return Environment(
+        loader=PackageLoader("mxmake", "templates"),
+        trim_blocks=True,
+        keep_trailing_newline=True,
+    )
 
 
 class template:
@@ -33,15 +44,9 @@ class Template(abc.ABC):
 
     def __init__(
         self,
-        config: mxdev.Configuration,
         environment: typing.Union[Environment, None] = None,
     ) -> None:
-        self.config = config
         self.environment = environment
-
-    @property
-    def settings(self) -> typing.Dict[str, str]:
-        return self.config.hooks.get(ns_name(self.name), {})
 
     @abc.abstractproperty
     def target_folder(self) -> str:
@@ -80,12 +85,27 @@ class Template(abc.ABC):
         return False
 
 
+class MxIniBoundTemplate(Template):
+
+    def __init__(
+        self,
+        config: mxdev.Configuration,
+        environment: typing.Union[Environment, None] = None,
+    ) -> None:
+        super().__init__(environment)
+        self.config = config
+
+    @property
+    def settings(self) -> typing.Dict[str, str]:
+        return self.config.hooks.get(ns_name(self.name), {})
+
+
 class ShellScriptTemplate(Template):
     description: str = ""
     file_mode: int = 0o755
 
 
-class EnvironmentTemplate(Template):
+class EnvironmentTemplate(MxIniBoundTemplate):
     @property
     def env(self) -> typing.Dict[str, str]:
         """Dict containing environment variables."""
@@ -93,13 +113,13 @@ class EnvironmentTemplate(Template):
         return self.config.hooks.get(ns_name(env_name), {}) if env_name else {}
 
 
-###############################################################################
+##############################################################################
 # test script template
-###############################################################################
+##############################################################################
 
 
 @template("run-tests")
-class TestScript(ShellScriptTemplate, EnvironmentTemplate):
+class TestScript(EnvironmentTemplate, ShellScriptTemplate):
     description: str = "Run tests"
 
     @property
@@ -136,9 +156,9 @@ class TestScript(ShellScriptTemplate, EnvironmentTemplate):
         return paths
 
 
-###############################################################################
+##############################################################################
 # coverage script template
-###############################################################################
+##############################################################################
 
 
 @template("run-coverage")
@@ -151,3 +171,63 @@ class CoverageScript(TestScript):
         variables["sourcepaths"] = self.package_paths(ns_name("source-path"))
         variables["omitpaths"] = self.package_paths(ns_name("omit-path"))
         return variables
+
+
+##############################################################################
+# makefile template
+##############################################################################
+
+
+@template("makefile")
+class Makefile(Template):
+    description: str = "Run coverage"
+    target_name = 'Makefile'
+    template_name = 'Makefile'
+    target_folder = None
+
+    def __init__(
+        self,
+        target_folder: str,
+        makefiles: typing.List[Makefile],
+        makefile_settings: typing.Dict[str, str],
+        environment: typing.Union[Environment, None] = None,
+    ) -> None:
+        super().__init__(environment)
+        self.target_folder = target_folder
+        self.makefiles = makefiles
+        self.makefile_settings = makefile_settings
+
+    @property
+    def template_variables(self) -> typing.Dict[str, typing.Any]:
+        # collect makefile settings
+        settings = []
+        for makefile in self.makefiles:
+            if not makefile.settings:
+                continue
+            makefile_setting = dict(
+                fqn=makefile.fqn,
+                settings=[]
+            )
+            settings.append(makefile_setting)
+            for setting in makefile.settings:
+                sfqn = f"{makefile.fqn}.{setting.name}"
+                makefile_setting['settings'].append(dict(
+                    name=setting.name,
+                    description=setting.description.split('\n'),
+                    default=setting.default,
+                    value=self.makefile_settings[sfqn]
+                ))
+        # render makefile sections
+        sections = io.StringIO()
+        for makefile in self.makefiles:
+            sections.write("\n")
+            makefile.write_to(sections)
+        sections.seek(0)
+        # collect fqns of used makefiles
+        fqns = [makefile.fqn for makefile in self.makefiles]
+        # return template variables
+        return dict(
+            settings=settings,
+            sections=sections,
+            fqns=fqns
+        )
