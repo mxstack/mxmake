@@ -6,6 +6,7 @@ from jinja2 import FileSystemLoader
 from mxmake import domains
 from mxmake import hook
 from mxmake import main
+from mxmake import parser
 from mxmake import templates
 from mxmake import utils
 
@@ -513,7 +514,7 @@ class TestTemplates(RenderTestCase):
                 f.read(),
             )
 
-    @template_directory()
+    @temp_directory
     def test_Makefile(self, tempdir):
         makefiles = [domains.get_makefile('core.venv')]
         makefiles = domains.collect_missing_dependencies(makefiles)
@@ -613,6 +614,46 @@ class TestTemplates(RenderTestCase):
                 """,
                 f.read()
             )
+
+
+###############################################################################
+# Test parser
+###############################################################################
+
+
+class TestParser(unittest.TestCase):
+
+    @temp_directory
+    def test_MakefileParser(self, tempdir):
+        makefiles = [domains.get_makefile('core.venv')]
+        makefiles = domains.collect_missing_dependencies(makefiles)
+        makefiles = domains.resolve_makefile_dependencies(makefiles)
+        makefile_settings = {
+            'core.venv.PYTHON_BIN': 'python3',
+            'core.venv.VENV_FOLDER': 'venv',
+            'core.venv.MXDEV': 'mxdev',
+            'core.venv.MXMAKE': 'mxmake'
+        }
+
+        factory = templates.template.lookup("makefile")
+        template = factory(
+            tempdir,
+            makefiles,
+            makefile_settings,
+            templates.get_template_environment()
+        )
+
+        template.write()
+
+        makefile_path = os.path.join(tempdir, "Makefile")
+        makefile_parser = parser.MakefileParser(makefile_path)
+        self.assertEqual(makefile_parser.fqns, ['core.base', 'core.venv'])
+        self.assertEqual(makefile_parser.settings, {
+            'core.venv.PYTHON_BIN': 'python3',
+            'core.venv.VENV_FOLDER': 'venv',
+            'core.venv.MXDEV': 'mxdev',
+            'core.venv.MXMAKE': 'mxmake'
+        })
 
 
 ###############################################################################
