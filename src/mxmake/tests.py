@@ -654,6 +654,7 @@ class TestParser(unittest.TestCase):
             'core.venv.MXDEV': 'mxdev',
             'core.venv.MXMAKE': 'mxmake'
         })
+        self.assertEqual(makefile_parser.domains, {'core': ['base', 'venv']})
 
 
 ###############################################################################

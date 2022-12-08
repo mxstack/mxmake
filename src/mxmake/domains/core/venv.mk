@@ -34,9 +34,9 @@
 #:description = mxmake to install in virtual environment.
 #:default = https://github.com/mxstack/mxmake/archive/inquirer-sandbox.zip
 
-###############################################################################
+##############################################################################
 # venv
-###############################################################################
+##############################################################################
 
 VENV_SENTINEL:=$(SENTINEL_FOLDER)/venv.sentinel
 $(VENV_SENTINEL): $(SENTINEL)

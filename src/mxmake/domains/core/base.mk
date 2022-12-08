@@ -2,9 +2,9 @@
 #:title = Base
 #:description = Defines basic settings and provides sentinel target
 
-###############################################################################
+##############################################################################
 # Makefile for mxmake projects.
-###############################################################################
+##############################################################################
 
 # Defensive settings for make: https://tech.davis-hansson.com/p/make/
 SHELL:=bash

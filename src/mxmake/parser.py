@@ -8,13 +8,18 @@ class MakefileParser:
     def __init__(self, path: str):
         self.path = path
         self.fqns = []
+        self.domains = {}
         self.settings = {}
         self.parse()
 
     def parse_fqns(self, lines: typing.List[str]):
         for line in lines:
             if line.startswith("#:"):
-                self.fqns.append(line[2:].strip())
+                fqn = line[2:].strip()
+                self.fqns.append(fqn)
+                domain, name = fqn.split('.')
+                self.domains.setdefault(domain, [])
+                self.domains[domain].append(name)
 
     def parse_settings(self, lines: typing.List[str]):
         for fqn in self.fqns:

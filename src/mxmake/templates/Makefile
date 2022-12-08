@@ -13,9 +13,9 @@
 {% endfor %}
 # default: {{ setting.default }}
 {{ setting.name }}?={{ setting.value }}
-{% endfor -%}
-{% endfor -%}
 
+{% endfor -%}
+{% endfor -%}
 {{ sections.read() }}
 ##############################################################################
 {% for fqn in fqns %}
