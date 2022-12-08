@@ -5,6 +5,7 @@ from pkg_resources import iter_entry_points
 import configparser
 import functools
 import io
+import operator
 import os
 import typing
 
@@ -245,7 +246,10 @@ def collect_missing_dependencies(
         new_depends = set(get_makefile(current_fqn).depends) - checked
         if new_depends:
             to_check.update(new_depends)
-    return [get_makefile(makefile_name) for makefile_name in checked]
+    return sorted(
+        [get_makefile(makefile_name) for makefile_name in checked],
+        key=operator.attrgetter("fqn"),
+    )
 
 
 ##############################################################################
