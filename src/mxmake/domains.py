@@ -159,6 +159,7 @@ def get_makefile(fqn: str) -> Makefile:
         raise AttributeError(f"No such makefile: {fqn}")
     return makefile
 
+
 class MakefileConflictError(Exception):
     def __init__(self, counter: Counter):
         conflicting = list()
