@@ -157,7 +157,7 @@ def init_command(args: argparse.Namespace):
                 "domain",
                 message="Include domains",
                 choices=[d.name for d in domains],
-                default=parser.domains.keys()
+                default=parser.domains.keys(),
             )
         ]
     )
@@ -215,7 +215,7 @@ def init_command(args: argparse.Namespace):
             )
         print(f"Edit Settings for {makefile.fqn}?")
         yn = inquirer.text(message="y/N")
-        if yn in ['Y', 'y']:
+        if yn in ["Y", "y"]:
             makefile_settings.update(inquirer.prompt(settings_question))
         print("")
 
@@ -223,10 +223,7 @@ def init_command(args: argparse.Namespace):
         # generate makefile
         factory = template.lookup("makefile")
         makefile_template = factory(
-            target_folder,
-            makefiles,
-            makefile_settings,
-            get_template_environment()
+            target_folder, makefiles, makefile_settings, get_template_environment()
         )
         makefile_template.write()
     else:
@@ -236,12 +233,10 @@ def init_command(args: argparse.Namespace):
     if not os.path.exists(os.path.join(target_folder, "mx.ini")):
         print("\n``mx.ini`` configuration file not exists. Create One?")
         yn = inquirer.text(message="Y/n")
-        if yn not in ['n', 'N']:
+        if yn not in ["n", "N"]:
             factory = template.lookup("mx.ini")
             mx_ini_template = factory(
-                target_folder,
-                makefiles,
-                get_template_environment()
+                target_folder, makefiles, get_template_environment()
             )
             mx_ini_template.write()
     else:

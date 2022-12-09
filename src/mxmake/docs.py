@@ -7,13 +7,9 @@ from sphinx.util.nodes import nested_parse_with_titles
 
 
 class DomainsDirective(SphinxDirective):
-
     def run(self):
         factory = template.lookup("domains.rst")
-        domains_template = factory(
-            [],
-            get_template_environment()
-        )
+        domains_template = factory([], get_template_environment())
         # XXX: this not works yet
         #     - figure out how to correctly parse and hook document to sphinx
         #       including toctree

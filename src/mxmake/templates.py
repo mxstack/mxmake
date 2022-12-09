@@ -86,7 +86,6 @@ class Template(abc.ABC):
 
 
 class MxIniBoundTemplate(Template):
-
     def __init__(
         self,
         config: mxdev.Configuration,
@@ -204,19 +203,18 @@ class Makefile(Template):
         for makefile in self.makefiles:
             if not makefile.settings:
                 continue
-            makefile_setting = dict(
-                fqn=makefile.fqn,
-                settings=[]
-            )
+            makefile_setting = dict(fqn=makefile.fqn, settings=[])
             settings.append(makefile_setting)
             for setting in makefile.settings:
                 sfqn = f"{makefile.fqn}.{setting.name}"
-                makefile_setting['settings'].append(dict(
-                    name=setting.name,
-                    description=setting.description.split('\n'),
-                    default=setting.default,
-                    value=self.makefile_settings[sfqn]
-                ))
+                makefile_setting["settings"].append(
+                    dict(
+                        name=setting.name,
+                        description=setting.description.split("\n"),
+                        default=setting.default,
+                        value=self.makefile_settings[sfqn],
+                    )
+                )
         # render makefile sections
         sections = io.StringIO()
         for makefile in self.makefiles:
@@ -226,11 +224,7 @@ class Makefile(Template):
         # collect fqns of used makefiles
         fqns = [makefile.fqn for makefile in self.makefiles]
         # return template variables
-        return dict(
-            settings=settings,
-            sections=sections,
-            fqns=fqns
-        )
+        return dict(settings=settings, sections=sections, fqns=fqns)
 
 
 ##############################################################################
@@ -259,10 +253,10 @@ class MxIni(Template):
     def template_variables(self) -> typing.Dict[str, typing.Any]:
         mxmake_templates = []
         for makefile in self.makefiles:
-            if makefile.fqn == 'core.test':
-                mxmake_templates.append('run-tests')
-            if makefile.fqn == 'core.coverage':
-                mxmake_templates.append('run-coverage')
+            if makefile.fqn == "core.test":
+                mxmake_templates.append("run-tests")
+            if makefile.fqn == "core.coverage":
+                mxmake_templates.append("run-coverage")
         return dict(mxmake_templates=mxmake_templates)
 
 

@@ -517,22 +517,19 @@ class TestTemplates(RenderTestCase):
 
     @temp_directory
     def test_Makefile(self, tempdir):
-        makefiles = [domains.get_makefile('core.venv')]
+        makefiles = [domains.get_makefile("core.venv")]
         makefiles = domains.collect_missing_dependencies(makefiles)
         makefiles = domains.resolve_makefile_dependencies(makefiles)
         makefile_settings = {
-            'core.venv.PYTHON_BIN': 'python3',
-            'core.venv.VENV_FOLDER': 'venv',
-            'core.venv.MXDEV': 'mxdev',
-            'core.venv.MXMAKE': 'mxmake'
+            "core.venv.PYTHON_BIN": "python3",
+            "core.venv.VENV_FOLDER": "venv",
+            "core.venv.MXDEV": "mxdev",
+            "core.venv.MXMAKE": "mxmake",
         }
 
         factory = templates.template.lookup("makefile")
         template = factory(
-            tempdir,
-            makefiles,
-            makefile_settings,
-            templates.get_template_environment()
+            tempdir, makefiles, makefile_settings, templates.get_template_environment()
         )
 
         template.write()
@@ -614,23 +611,19 @@ class TestTemplates(RenderTestCase):
                 #: core.venv
                 ##############################################################################
                 """,
-                f.read()
+                f.read(),
             )
 
     @temp_directory
     def test_MxIni(self, tempdir):
         makefiles = [
-            domains.get_makefile('core.test'),
-            domains.get_makefile('core.coverage'),
+            domains.get_makefile("core.test"),
+            domains.get_makefile("core.coverage"),
         ]
         makefiles = domains.collect_missing_dependencies(makefiles)
 
         factory = templates.template.lookup("mx.ini")
-        template = factory(
-            tempdir,
-            makefiles,
-            templates.get_template_environment()
-        )
+        template = factory(tempdir, makefiles, templates.get_template_environment())
 
         template.write()
         with open(os.path.join(tempdir, "mx.ini")) as f:
@@ -658,7 +651,7 @@ class TestTemplates(RenderTestCase):
                 environment = env
 
                 """,
-                f.read()
+                f.read(),
             )
 
 
@@ -668,39 +661,38 @@ class TestTemplates(RenderTestCase):
 
 
 class TestParser(unittest.TestCase):
-
     @temp_directory
     def test_MakefileParser(self, tempdir):
-        makefiles = [domains.get_makefile('core.venv')]
+        makefiles = [domains.get_makefile("core.venv")]
         makefiles = domains.collect_missing_dependencies(makefiles)
         makefiles = domains.resolve_makefile_dependencies(makefiles)
         makefile_settings = {
-            'core.venv.PYTHON_BIN': 'python3',
-            'core.venv.VENV_FOLDER': 'venv',
-            'core.venv.MXDEV': 'mxdev',
-            'core.venv.MXMAKE': 'mxmake'
+            "core.venv.PYTHON_BIN": "python3",
+            "core.venv.VENV_FOLDER": "venv",
+            "core.venv.MXDEV": "mxdev",
+            "core.venv.MXMAKE": "mxmake",
         }
 
         factory = templates.template.lookup("makefile")
         template = factory(
-            tempdir,
-            makefiles,
-            makefile_settings,
-            templates.get_template_environment()
+            tempdir, makefiles, makefile_settings, templates.get_template_environment()
         )
 
         template.write()
 
         makefile_path = os.path.join(tempdir, "Makefile")
         makefile_parser = parser.MakefileParser(makefile_path)
-        self.assertEqual(makefile_parser.fqns, ['core.base', 'core.venv'])
-        self.assertEqual(makefile_parser.settings, {
-            'core.venv.PYTHON_BIN': 'python3',
-            'core.venv.VENV_FOLDER': 'venv',
-            'core.venv.MXDEV': 'mxdev',
-            'core.venv.MXMAKE': 'mxmake'
-        })
-        self.assertEqual(makefile_parser.domains, {'core': ['base', 'venv']})
+        self.assertEqual(makefile_parser.fqns, ["core.base", "core.venv"])
+        self.assertEqual(
+            makefile_parser.settings,
+            {
+                "core.venv.PYTHON_BIN": "python3",
+                "core.venv.VENV_FOLDER": "venv",
+                "core.venv.MXDEV": "mxdev",
+                "core.venv.MXMAKE": "mxmake",
+            },
+        )
+        self.assertEqual(makefile_parser.domains, {"core": ["base", "venv"]})
 
 
 ###############################################################################

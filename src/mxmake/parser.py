@@ -5,7 +5,6 @@ import typing
 
 
 class MakefileParser:
-
     def __init__(self, path: str):
         self.path = path
         self.fqns = []
@@ -18,7 +17,7 @@ class MakefileParser:
             if line.startswith("#:"):
                 fqn = line[2:].strip()
                 self.fqns.append(fqn)
-                domain, name = fqn.split('.')
+                domain, name = fqn.split(".")
                 self.domains.setdefault(domain, [])
                 self.domains[domain].append(name)
 
@@ -28,7 +27,7 @@ class MakefileParser:
             for setting in makefile.settings:
                 for line in lines:
                     if line.startswith(f"{setting.name}?="):
-                        value = line[line.find("?=") + 2:]
+                        value = line[line.find("?=") + 2 :]
                         self.settings[f"{fqn}.{setting.name}"] = value
 
     def parse(self):

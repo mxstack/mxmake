@@ -1,7 +1,7 @@
 from mxmake.templates import get_template_environment
 from mxmake.templates import template
-from mxmake.utils import NAMESPACE
 from mxmake.utils import list_value
+from mxmake.utils import NAMESPACE
 from mxmake.utils import ns_name
 
 import logging
