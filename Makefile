@@ -20,7 +20,7 @@ MXDEV?=https://github.com/mxstack/mxdev/archive/main.zip
 
 # mxmake to install in virtual environment.
 # default: https://github.com/mxstack/mxmake/archive/inquirer-sandbox.zip
-MXMAKE?=-e .[docs]
+MXMAKE?=-e .
 
 ## core.files
 
@@ -66,6 +66,10 @@ CLEAN_TARGETS?=dist mxmake.egg-info
 # default: $(VENV_FOLDER)/bin/sphinx-build
 DOCS_BIN?=$(VENV_FOLDER)/bin/sphinx-build
 
+# The Sphinx auto build executable.
+# default: $(VENV_FOLDER)/bin/sphinx-autobuild
+DOCS_AUTOBUILD_BIN?=$(VENV_FOLDER)/bin/sphinx-autobuild
+
 # Documentation source folder.
 # default: docs/source
 DOCS_SOURCE?=docs/source
@@ -73,6 +77,10 @@ DOCS_SOURCE?=docs/source
 # Documentation generation target folder.
 # default: docs/html
 DOCS_TARGET?=docs/html
+
+# Documentation Python requirements to be installed (via pip).
+# default: 
+DOCS_REQUIREMENTS?=sphinx-conestack-theme myst-parser
 
 ## core.system-dependencies
 
@@ -258,11 +266,21 @@ runtime-clean:
 # docs
 ##############################################################################
 
+docs-install: venv
+	@echo "Install Sphinx"
+	@$(VENV_FOLDER)/bin/pip install -U sphinx sphinx-autobuild $(DOCS_REQUIREMENTS)
+
 .PHONY: docs
-docs:
+docs: docs-install
 	@echo "Build sphinx docs"
 	@test -e $(DOCS_BIN) && $(DOCS_BIN) $(DOCS_SOURCE) $(DOCS_TARGET)
 	@test -e $(DOCS_BIN) || echo "Sphinx binary not exists"
+
+.PHONY: docs-live
+docs-live: docs-install
+	@echo "Rebuild Sphinx documentation on changes, with live-reload in the browser"
+	@test -e $(DOCS_AUTOBUILD_BIN) && $(DOCS_AUTOBUILD_BIN) $(DOCS_SOURCE) $(DOCS_TARGET)
+	@test -e $(DOCS_AUTOBUILD_BIN) || echo "Sphinx autobuild binary not exists"
 
 .PHONY: docs-clean
 docs-clean:
