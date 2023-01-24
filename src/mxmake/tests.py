@@ -173,6 +173,7 @@ class TestTemplates(RenderTestCase):
         self.assertEqual(
             templates.template._registry,
             {
+                "domains.rst": templates.Domains,
                 "makefile": templates.Makefile,
                 "mx.ini": templates.MxIni,
                 "run-coverage": templates.CoverageScript,
@@ -559,6 +560,10 @@ class TestTemplates(RenderTestCase):
                 # mxmake to install in virtual environment.
                 # default: https://github.com/mxstack/mxmake/archive/inquirer-sandbox.zip
                 MXMAKE?=mxmake
+
+                ##############################################################################
+                # END OF SETTINGS - DO NOT EDIT BELOW THIS LINE
+                ##############################################################################
 
 
                 ##############################################################################
