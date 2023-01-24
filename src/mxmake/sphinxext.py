@@ -18,10 +18,10 @@ class TopicsDirective(SphinxDirective):
         return node
 
     def run(self):
+        # call uses the Topics class in templates.py to render the template
         factory = template.lookup("topics.rst")
-        tpl = factory([], get_template_environment())
+        tpl = factory(get_template_environment())
         node = self._rest2node(tpl.render())
-        breakpoint()
         return node.children
 
 

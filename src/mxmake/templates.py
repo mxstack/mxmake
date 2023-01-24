@@ -1,6 +1,7 @@
 from jinja2 import Environment
 from jinja2 import PackageLoader
 from mxmake.topics import Domain
+from mxmake.topics import load_topics
 from mxmake.utils import ns_name
 from mxmake.utils import scripts_folder
 from mxmake.utils import venv_folder
@@ -274,15 +275,14 @@ class Topics(Template):
 
     def __init__(
         self,
-        domains: typing.List[Domain],
         environment: typing.Union[Environment, None] = None,
     ) -> None:
         super().__init__(environment)
-        self.domains = domains
 
     @property
     def template_variables(self) -> typing.Dict[str, typing.Any]:
-        return dict()
+        topics = load_topics()
+        return {"topics": topics}
 
     def render(self):
         if not self.environment:

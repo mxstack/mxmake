@@ -1,10 +1,48 @@
---------
-Topic A
---------
+{% for topic in topics %}
 
-I am Domain 1 and 2
+-------------------------
+{{ topic.name }}
+-------------------------
 
-Domain A.1
-----------
+{% for domain in topic.domains %}
 
-bla
+{{ domain.title }}
+--------------------------
+
+{{ domain.description }}
+
+FQN
+    ``{{ domain.fqn }}``
+
+{% if domain.depends %}
+Depends on:
+{% for depend in domain.depends %}
+    - ``{{ depend }}``
+{% endfor %}
+{% endif %}
+
+{% if domain.targets %}
+Targets
+{% for target in domain.targets %}
+    ``{{ target.name }}``
+        {{ target.description | indent(8) }}
+{% endfor %}
+
+{% endif %}
+
+{% if domain.settings %}
+Settings
+{% for setting in domain.settings %}
+    ``{{ setting.name }}``
+        {{ setting.description | indent(8) }}
+
+        Default: ``{{ setting.default | indent(8) }}``
+
+{% endfor %}
+
+{% endif %}
+
+
+{% endfor %}
+
+{% endfor %}
