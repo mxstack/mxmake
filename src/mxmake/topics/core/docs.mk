@@ -4,8 +4,11 @@
 #:depends = core.venv
 #:
 #:[target.docs]
-#:description = Generate sphinx docs. Sphinx is expected to be installed. This
+#:description = Generate Sphinx docs. Sphinx is expected to be installed. This
 #:  is not done automatically.
+#:
+#:[target.docs-live]
+#:description = Rebuild Sphinx documentation on changes, with live-reload in the browser.
 #:
 #:[target.docs-clean]
 #:description = Removes generated docs.
