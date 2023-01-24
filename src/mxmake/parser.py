@@ -1,4 +1,4 @@
-from mxmake.domains import get_makefile
+from mxmake.topics import get_makefile
 
 import os
 import typing
@@ -8,7 +8,7 @@ class MakefileParser:
     def __init__(self, path: str):
         self.path = path
         self.fqns = []
-        self.domains = {}
+        self.topics = {}
         self.settings = {}
         self.parse()
 
@@ -17,9 +17,9 @@ class MakefileParser:
             if line.startswith("#:"):
                 fqn = line[2:].strip()
                 self.fqns.append(fqn)
-                domain, name = fqn.split(".")
-                self.domains.setdefault(domain, [])
-                self.domains[domain].append(name)
+                topic, name = fqn.split(".")
+                self.topics.setdefault(topic, [])
+                self.topics[topic].append(name)
 
     def parse_settings(self, lines: typing.List[str]):
         for fqn in self.fqns:

@@ -1,6 +1,6 @@
 from jinja2 import Environment
 from jinja2 import PackageLoader
-from mxmake.domains import Makefile
+from mxmake.topics import Makefile
 from mxmake.utils import ns_name
 from mxmake.utils import scripts_folder
 from mxmake.utils import venv_folder
@@ -261,15 +261,15 @@ class MxIni(Template):
 
 
 ##############################################################################
-# domains.rst template
+# topics.rst template
 ##############################################################################
 
 
-@template("domains.rst")
-class Domains(Template):
-    description: str = "Domains documentation for sphinx"
+@template("topics.rst")
+class Topics(Template):
+    description: str = "Topics documentation for sphinx"
     target_name = None
-    template_name = "domains.rst"
+    template_name = "topics.rst"
     target_folder = None
 
     def __init__(
@@ -292,5 +292,5 @@ class Domains(Template):
 
     def write(self) -> None:
         raise NotImplementedError(
-            "Domains template is not supposed to be written to file system"
+            "Topics template is not supposed to be written to file system"
         )

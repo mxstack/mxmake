@@ -3,7 +3,7 @@ from contextlib import contextmanager
 from dataclasses import dataclass
 from jinja2 import Environment
 from jinja2 import FileSystemLoader
-from mxmake import domains
+from mxmake import topics
 from mxmake import hook
 from mxmake import main
 from mxmake import parser
@@ -173,7 +173,7 @@ class TestTemplates(RenderTestCase):
         self.assertEqual(
             templates.template._registry,
             {
-                "domains.rst": templates.Domains,
+                "topics.rst": templates.Topics,
                 "makefile": templates.Makefile,
                 "mx.ini": templates.MxIni,
                 "run-coverage": templates.CoverageScript,
@@ -518,9 +518,9 @@ class TestTemplates(RenderTestCase):
 
     @temp_directory
     def test_Makefile(self, tempdir):
-        makefiles = [domains.get_makefile("core.venv")]
-        makefiles = domains.collect_missing_dependencies(makefiles)
-        makefiles = domains.resolve_makefile_dependencies(makefiles)
+        makefiles = [topics.get_makefile("core.venv")]
+        makefiles = topics.collect_missing_dependencies(makefiles)
+        makefiles = topics.resolve_makefile_dependencies(makefiles)
         makefile_settings = {
             "core.venv.PYTHON_BIN": "python3",
             "core.venv.VENV_FOLDER": "venv",
@@ -622,10 +622,10 @@ class TestTemplates(RenderTestCase):
     @temp_directory
     def test_MxIni(self, tempdir):
         makefiles = [
-            domains.get_makefile("core.test"),
-            domains.get_makefile("core.coverage"),
+            topics.get_makefile("core.test"),
+            topics.get_makefile("core.coverage"),
         ]
-        makefiles = domains.collect_missing_dependencies(makefiles)
+        makefiles = topics.collect_missing_dependencies(makefiles)
 
         factory = templates.template.lookup("mx.ini")
         template = factory(tempdir, makefiles, templates.get_template_environment())
@@ -668,9 +668,9 @@ class TestTemplates(RenderTestCase):
 class TestParser(unittest.TestCase):
     @temp_directory
     def test_MakefileParser(self, tempdir):
-        makefiles = [domains.get_makefile("core.venv")]
-        makefiles = domains.collect_missing_dependencies(makefiles)
-        makefiles = domains.resolve_makefile_dependencies(makefiles)
+        makefiles = [topics.get_makefile("core.venv")]
+        makefiles = topics.collect_missing_dependencies(makefiles)
+        makefiles = topics.resolve_makefile_dependencies(makefiles)
         makefile_settings = {
             "core.venv.PYTHON_BIN": "python3",
             "core.venv.VENV_FOLDER": "venv",
@@ -697,7 +697,7 @@ class TestParser(unittest.TestCase):
                 "core.venv.MXMAKE": "mxmake",
             },
         )
-        self.assertEqual(makefile_parser.domains, {"core": ["base", "venv"]})
+        self.assertEqual(makefile_parser.topics, {"core": ["base", "venv"]})
 
 
 ###############################################################################
@@ -724,7 +724,7 @@ class TestHook(unittest.TestCase):
 
 
 ###############################################################################
-# Test domains
+# Test topics
 ###############################################################################
 
 MAKEFILE_TEMPLATE = """
@@ -774,7 +774,7 @@ example-clean:
 
 
 @dataclass
-class TestMakefile(domains.Makefile):
+class TestMakefile(topics.Makefile):
     depends_: typing.List[str]
 
     @property
@@ -783,17 +783,17 @@ class TestMakefile(domains.Makefile):
 
 
 class TestMakefiles(unittest.TestCase):
-    def test_load_domains(self):
-        domains_ = domains.load_domains()
-        self.assertTrue(domains.core in domains_)
-        self.assertTrue(domains.ldap in domains_)
+    def test_load_topics(self):
+        topics_ = topics.load_topics()
+        self.assertTrue(topics.core in topics_)
+        self.assertTrue(topics.ldap in topics_)
 
-    def test_get_domain(self):
-        domain = domains.get_domain("core")
-        self.assertEqual(domain.name, "core")
+    def test_get_topic(self):
+        topic = topics.get_topic("core")
+        self.assertEqual(topic.name, "core")
 
     def test_get_makefile(self):
-        makefile = domains.get_makefile("core.venv")
+        makefile = topics.get_makefile("core.venv")
         self.assertEqual(makefile.fqn, "core.venv")
 
     @temp_directory
@@ -802,7 +802,7 @@ class TestMakefiles(unittest.TestCase):
         with open(makefile_path, "w") as f:
             f.write(MAKEFILE_TEMPLATE)
 
-        makefile = domains.Makefile(domain="domain", name="example", file=makefile_path)
+        makefile = topics.Makefile(topic="topic", name="example", file=makefile_path)
         self.assertTrue(len(makefile.file_data) > 0)
         self.assertTrue(makefile._file_data is makefile.file_data)
 
@@ -852,156 +852,156 @@ class TestMakefiles(unittest.TestCase):
         self.assertEqual(out_content[-1], "\t@rm -f $(EXAMPLE_SENTINEL)\n")
 
     @temp_directory
-    def test_Domain(self, tmpdir):
-        domaindir = os.path.join(tmpdir, "domain")
-        os.mkdir(domaindir)
-        with open(os.path.join(domaindir, "makefile-a.mk"), "w") as f:
+    def test_Topic(self, tmpdir):
+        topicdir = os.path.join(tmpdir, "topic")
+        os.mkdir(topicdir)
+        with open(os.path.join(topicdir, "makefile-a.mk"), "w") as f:
             f.write("\n")
-        with open(os.path.join(domaindir, "makefile-b.mk"), "w") as f:
+        with open(os.path.join(topicdir, "makefile-b.mk"), "w") as f:
             f.write("\n")
-        with open(os.path.join(domaindir, "somethinelse"), "w") as f:
+        with open(os.path.join(topicdir, "somethinelse"), "w") as f:
             f.write("\n")
 
-        domain = domains.Domain(name="domain", directory=domaindir)
-        domain_makefiles = domain.makefiles
-        self.assertEqual(len(domain_makefiles), 2)
-        self.assertEqual(domain_makefiles[0].name, "makefile-a")
-        self.assertEqual(domain_makefiles[1].name, "makefile-b")
-        self.assertEqual(domain_makefiles[1].domain, "domain")
+        topic = topics.Topic(name="topic", directory=topicdir)
+        topic_makefiles = topic.makefiles
+        self.assertEqual(len(topic_makefiles), 2)
+        self.assertEqual(topic_makefiles[0].name, "makefile-a")
+        self.assertEqual(topic_makefiles[1].name, "makefile-b")
+        self.assertEqual(topic_makefiles[1].topic, "topic")
 
-        self.assertEqual(domain.makefile("makefile-a").name, "makefile-a")
-        self.assertEqual(domain.makefile("inexistent"), None)
+        self.assertEqual(topic.makefile("makefile-a").name, "makefile-a")
+        self.assertEqual(topic.makefile("inexistent"), None)
 
     def test_MakefileConflictError(self):
         counter = Counter(["a", "b", "b", "c", "c"])
-        err = domains.MakefileConflictError(counter)
+        err = topics.MakefileConflictError(counter)
         self.assertEqual(str(err), "Conflicting makefile names: ['b', 'c']")
 
     def test_CircularDependencyMakefileError(self):
-        makefile = TestMakefile(domain="d1", name="f1", depends_=["f2"], file="f1.mk")
-        err = domains.CircularDependencyMakefileError([makefile])
+        makefile = TestMakefile(topic="t1", name="f1", depends_=["f2"], file="f1.mk")
+        err = topics.CircularDependencyMakefileError([makefile])
         self.assertEqual(
             str(err),
             (
                 "Makefiles define circular dependencies: "
-                "[TestMakefile(domain='d1', name='f1', file='f1.mk', depends_=['f2'])]"
+                "[TestMakefile(topic='t1', name='f1', file='f1.mk', depends_=['f2'])]"
             ),
         )
 
     def test_MissingDependencyMakefileError(self):
-        makefile = TestMakefile(domain="d", name="t", depends_=["missing"], file="t.mk")
-        err = domains.MissingDependencyMakefileError(makefile)
+        makefile = TestMakefile(topic="t", name="t", depends_=["missing"], file="t.mk")
+        err = topics.MissingDependencyMakefileError(makefile)
         self.assertEqual(
             str(err),
             (
                 "Makefile define missing dependency: "
-                "TestMakefile(domain='d', name='t', file='t.mk', depends_=['missing'])"
+                "TestMakefile(topic='t', name='t', file='t.mk', depends_=['missing'])"
             ),
         )
 
     def test_MakefileResolver(self):
         self.assertRaises(
-            domains.MakefileConflictError,
-            domains.resolve_makefile_dependencies,
+            topics.MakefileConflictError,
+            topics.resolve_makefile_dependencies,
             [
-                TestMakefile(domain="d", name="f", depends_=["d.f1"], file="t.mk"),
-                TestMakefile(domain="d", name="f", depends_=["d.f1"], file="t.mk"),
+                TestMakefile(topic="t", name="f", depends_=["t.f1"], file="t.mk"),
+                TestMakefile(topic="t", name="f", depends_=["t.f1"], file="t.mk"),
             ],
         )
 
-        f1 = TestMakefile(domain="d", name="f1", depends_=["d.f2"], file="f1.mk")
-        f2 = TestMakefile(domain="d", name="f2", depends_=["d.f3"], file="f2.mk")
-        f3 = TestMakefile(domain="d", name="f3", depends_=[], file="f3.mk")
+        f1 = TestMakefile(topic="t", name="f1", depends_=["t.f2"], file="f1.mk")
+        f2 = TestMakefile(topic="t", name="f2", depends_=["t.f3"], file="f2.mk")
+        f3 = TestMakefile(topic="t", name="f3", depends_=[], file="f3.mk")
         self.assertEqual(
-            domains.resolve_makefile_dependencies([f1, f2, f3]), [f3, f2, f1]
+            topics.resolve_makefile_dependencies([f1, f2, f3]), [f3, f2, f1]
         )
         self.assertEqual(
-            domains.resolve_makefile_dependencies([f2, f1, f3]), [f3, f2, f1]
+            topics.resolve_makefile_dependencies([f2, f1, f3]), [f3, f2, f1]
         )
         self.assertEqual(
-            domains.resolve_makefile_dependencies([f1, f3, f2]), [f3, f2, f1]
+            topics.resolve_makefile_dependencies([f1, f3, f2]), [f3, f2, f1]
         )
 
-        f1 = TestMakefile(domain="d", name="f1", depends_=["d.f2"], file="f1.mk")
-        f2 = TestMakefile(domain="d", name="f2", depends_=["d.f1"], file="f2.mk")
+        f1 = TestMakefile(topic="t", name="f1", depends_=["t.f2"], file="f1.mk")
+        f2 = TestMakefile(topic="t", name="f2", depends_=["t.f1"], file="f2.mk")
         self.assertRaises(
-            domains.CircularDependencyMakefileError,
-            domains.resolve_makefile_dependencies,
+            topics.CircularDependencyMakefileError,
+            topics.resolve_makefile_dependencies,
             [f1, f2],
         )
 
-        f1 = TestMakefile(domain="d", name="f1", depends_=["d.f2"], file="f1.mk")
-        f2 = TestMakefile(domain="d", name="f2", depends_=["d.missing"], file="f2.mk")
+        f1 = TestMakefile(topic="t", name="f1", depends_=["t.f2"], file="f1.mk")
+        f2 = TestMakefile(topic="t", name="f2", depends_=["t.missing"], file="f2.mk")
         self.assertRaises(
-            domains.MissingDependencyMakefileError,
-            domains.resolve_makefile_dependencies,
+            topics.MissingDependencyMakefileError,
+            topics.resolve_makefile_dependencies,
             [f1, f2],
         )
 
         f1 = TestMakefile(
-            domain="d", name="f1", depends_=["d.f2", "d.f4"], file="f1.mk"
+            topic="t", name="f1", depends_=["t.f2", "t.f4"], file="f1.mk"
         )
         f2 = TestMakefile(
-            domain="d", name="f2", depends_=["d.f3", "d.f4"], file="f2.mk"
+            topic="t", name="f2", depends_=["t.f3", "t.f4"], file="f2.mk"
         )
         f3 = TestMakefile(
-            domain="d", name="f3", depends_=["d.f4", "d.f5"], file="f3.mk"
+            topic="t", name="f3", depends_=["t.f4", "t.f5"], file="f3.mk"
         )
-        f4 = TestMakefile(domain="d", name="f4", depends_=["d.f5"], file="f4.mk")
-        f5 = TestMakefile(domain="d", name="f5", depends_=[], file="f5.mk")
+        f4 = TestMakefile(topic="t", name="f4", depends_=["t.f5"], file="f4.mk")
+        f5 = TestMakefile(topic="t", name="f5", depends_=[], file="f5.mk")
         self.assertEqual(
-            domains.resolve_makefile_dependencies([f1, f2, f3, f4, f5]),
+            topics.resolve_makefile_dependencies([f1, f2, f3, f4, f5]),
             [f5, f4, f3, f2, f1],
         )
         self.assertEqual(
-            domains.resolve_makefile_dependencies([f5, f4, f3, f2, f1]),
+            topics.resolve_makefile_dependencies([f5, f4, f3, f2, f1]),
             [f5, f4, f3, f2, f1],
         )
         self.assertEqual(
-            domains.resolve_makefile_dependencies([f4, f5, f2, f3, f1]),
+            topics.resolve_makefile_dependencies([f4, f5, f2, f3, f1]),
             [f5, f4, f3, f2, f1],
         )
         self.assertEqual(
-            domains.resolve_makefile_dependencies([f1, f3, f2, f5, f4]),
+            topics.resolve_makefile_dependencies([f1, f3, f2, f5, f4]),
             [f5, f4, f3, f2, f1],
         )
 
         f1 = TestMakefile(
-            domain="d", name="f1", depends_=["d.f2", "d.f3"], file="f1.mk"
+            topic="t", name="f1", depends_=["t.f2", "t.f3"], file="f1.mk"
         )
         f2 = TestMakefile(
-            domain="d", name="f2", depends_=["d.f1", "d.f3"], file="f2.mk"
+            topic="t", name="f2", depends_=["t.f1", "t.f3"], file="f2.mk"
         )
         f3 = TestMakefile(
-            domain="d", name="f3", depends_=["d.f1", "d.f2"], file="f3.mk"
+            topic="t", name="f3", depends_=["t.f1", "t.f2"], file="f3.mk"
         )
         self.assertRaises(
-            domains.CircularDependencyMakefileError,
-            domains.resolve_makefile_dependencies,
+            topics.CircularDependencyMakefileError,
+            topics.resolve_makefile_dependencies,
             [f1, f2, f3],
         )
 
         f1 = TestMakefile(
-            domain="d", name="f1", depends_=["d.f2", "d.f3"], file="f1.ext"
+            topic="t", name="f1", depends_=["t.f2", "t.f3"], file="f1.ext"
         )
         f2 = TestMakefile(
-            domain="d", name="f2", depends_=["d.f1", "d.f3"], file="f2.ext"
+            topic="t", name="f2", depends_=["t.f1", "t.f3"], file="f2.ext"
         )
         f3 = TestMakefile(
-            domain="d", name="f3", depends_=["d.f1", "d.f4"], file="f3.ext"
+            topic="t", name="f3", depends_=["t.f1", "t.f4"], file="f3.ext"
         )
         self.assertRaises(
-            domains.MissingDependencyMakefileError,
-            domains.resolve_makefile_dependencies,
+            topics.MissingDependencyMakefileError,
+            topics.resolve_makefile_dependencies,
             [f1, f2, f3],
         )
 
     def test_collect_missing_dependencies(self):
         makefiles = [
-            domains.get_makefile("ldap.python-ldap"),
-            domains.get_makefile("core.files"),
+            topics.get_makefile("ldap.python-ldap"),
+            topics.get_makefile("core.files"),
         ]
-        all_dependencies = domains.collect_missing_dependencies(makefiles)
+        all_dependencies = topics.collect_missing_dependencies(makefiles)
         self.assertEqual(
             sorted(makefile.fqn for makefile in all_dependencies),
             [

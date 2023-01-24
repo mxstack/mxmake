@@ -1,8 +1,8 @@
-from mxmake.domains import collect_missing_dependencies
-from mxmake.domains import get_domain
-from mxmake.domains import get_makefile
-from mxmake.domains import load_domains
-from mxmake.domains import resolve_makefile_dependencies
+from mxmake.topics import collect_missing_dependencies
+from mxmake.topics import get_topic
+from mxmake.topics import get_makefile
+from mxmake.topics import load_topics
+from mxmake.topics import resolve_makefile_dependencies
 from mxmake.parser import MakefileParser
 from mxmake.templates import get_template_environment
 from mxmake.templates import template
@@ -77,31 +77,31 @@ clean_parser.add_argument(
 
 
 def list_command(args: argparse.Namespace):
-    if not args.domain:
-        domains = load_domains()
-        sys.stdout.write("Domains:\n")
-        for domain_ in domains:
-            sys.stdout.write(f"  - {domain_.name}\n")
+    if not args.topic:
+        topics = load_topics()
+        sys.stdout.write("Topics:\n")
+        for topic_ in topics:
+            sys.stdout.write(f"  - {topic_.name}\n")
         return
 
-    domain = get_domain(args.domain)
-    if domain is None:
-        sys.stdout.write(f"Requested domain not found: {args.domain}\n")
+    topic = get_topic(args.topic)
+    if topic is None:
+        sys.stdout.write(f"Requested topic not found: {args.topic}\n")
         sys.exit(1)
 
     if not args.makefile:
-        sys.stdout.write(f"Makefiles in domain {domain.name}:\n")
-        for makefile_ in domain.makefiles:
+        sys.stdout.write(f"Makefiles in topic {topic.name}:\n")
+        for makefile_ in topic.makefiles:
             description = indent(makefile_.description, 4 * " ").strip()
             sys.stdout.write(f"  - {makefile_.name}: {description}\n")
         return
 
-    makefile = domain.makefile(args.makefile)
+    makefile = topic.makefile(args.makefile)
     if makefile is None:
         sys.stdout.write(f"Requested makefile not found: {args.makefile}\n")
         sys.exit(1)
 
-    sys.stdout.write(f"Makefile {domain.name}.{makefile.name}:\n")
+    sys.stdout.write(f"Makefile {topic.name}.{makefile.name}:\n")
     depends = ", ".join(makefile.depends) if makefile.depends else "No dependencies"
     sys.stdout.write(f"  Depends: {depends}\n")
     sys.stdout.write(f"  Targets:")
@@ -129,7 +129,7 @@ def list_command(args: argparse.Namespace):
 
 list_parser = command_parsers.add_parser("list", help="List stuff")
 list_parser.set_defaults(func=list_command)
-list_parser.add_argument("-d", "--domain", help="Domain name")
+list_parser.add_argument("-t", "--topic", help="Topic name")
 list_parser.add_argument("-m", "--makefile", help="Makefile name")
 
 
@@ -149,41 +149,41 @@ def init_command(args: argparse.Namespace):
     # parse existing makefile
     parser = MakefileParser(os.path.join(target_folder, "Makefile"))
 
-    # obtain domains to include
-    domains = load_domains()
-    domain_choice = inquirer.prompt(
+    # obtain topics to include
+    topics = load_topics()
+    topic_choice = inquirer.prompt(
         [
             inquirer.Checkbox(
-                "domain",
-                message="Include domains",
-                choices=[d.name for d in domains],
-                default=parser.domains.keys(),
+                "topic",
+                message="Include topics",
+                choices=[d.name for d in topics],
+                default=parser.topics.keys(),
             )
         ]
     )
-    if domain_choice is None:
+    if topic_choice is None:
         return
 
     # obtain makefiles to include
     makefiles = []
-    for domain_name in domain_choice["domain"]:
-        domain = get_domain(domain_name)
-        all_fqns = [makefile.fqn for makefile in domain.makefiles]
-        # use already configured makefiles from domain if present in existing
+    for topic_name in topic_choice["topic"]:
+        topic = get_topic(topic_name)
+        all_fqns = [makefile.fqn for makefile in topic.makefiles]
+        # use already configured makefiles from topic if present in existing
         # makefile
-        if parser.domains.get(domain_name):
+        if parser.topics.get(topic_name):
             selected_fqns = [
-                f"{domain_name}.{name}" for name in parser.domains[domain_name]
+                f"{topic_name}.{name}" for name in parser.topics[topic_name]
             ]
-        # fallback to all makefiles of domain if not configured yet or no
+        # fallback to all makefiles of topic if not configured yet or no
         # makefile generated yet
         else:
-            selected_fqns = [makefile.fqn for makefile in domain.makefiles]
+            selected_fqns = [makefile.fqn for makefile in topic.makefiles]
         makefiles_choice = inquirer.prompt(
             [
                 inquirer.Checkbox(
                     "makefiles",
-                    message=f'Include makefiles from domain "{domain_name}"',
+                    message=f'Include makefiles from topic "{topic_name}"',
                     choices=all_fqns,
                     default=selected_fqns,
                 )

@@ -25,13 +25,13 @@ class Target:
 
 @dataclass
 class Makefile:
-    domain: str
+    topic: str
     name: str
     file: str
 
     @property
     def fqn(self):
-        return f"{self.domain}.{self.name}"
+        return f"{self.topic}.{self.name}"
 
     @property
     def file_data(self) -> typing.List[str]:
@@ -117,7 +117,7 @@ class Makefile:
 
 
 @dataclass
-class Domain:
+class Topic:
     name: str
     directory: str
 
@@ -125,7 +125,7 @@ class Domain:
     def makefiles(self) -> typing.List[Makefile]:
         return [
             Makefile(
-                domain=self.name,
+                topic=self.name,
                 name=name[:-3],
                 file=os.path.join(self.directory, name),
             )
@@ -141,21 +141,21 @@ class Domain:
 
 
 @functools.lru_cache(maxsize=4096)
-def load_domains() -> typing.List[Domain]:
-    return [ep.load() for ep in iter_entry_points("mxmake.domains")]
+def load_topics() -> typing.List[Topic]:
+    return [ep.load() for ep in iter_entry_points("mxmake.topics")]
 
 
-def get_domain(name: str) -> Domain:
-    for domain in load_domains():
-        if domain.name == name:
-            return domain
-    raise AttributeError(f"No such domain: {name}")
+def get_topic(name: str) -> Topic:
+    for topic in load_topics():
+        if topic.name == name:
+            return topic
+    raise AttributeError(f"No such topic: {name}")
 
 
 def get_makefile(fqn: str) -> Makefile:
-    domain_name, name = fqn.split(".")
-    domain = get_domain(domain_name)
-    makefile = domain.makefile(name)
+    topic_name, name = fqn.split(".")
+    topic = get_topic(topic_name)
+    makefile = topic.makefile(name)
     if not makefile:
         raise AttributeError(f"No such makefile: {fqn}")
     return makefile
@@ -253,10 +253,10 @@ def collect_missing_dependencies(
 
 
 ##############################################################################
-# domains shipped within mxmake
+# topics shipped within mxmake
 ##############################################################################
 
-domains_dir = os.path.join(os.path.dirname(__file__), "domains")
+topics_dir = os.path.join(os.path.dirname(__file__), "topics")
 
-core = Domain(name="core", directory=os.path.join(domains_dir, "core"))
-ldap = Domain(name="ldap", directory=os.path.join(domains_dir, "ldap"))
+core = Topic(name="core", directory=os.path.join(topics_dir, "core"))
+ldap = Topic(name="ldap", directory=os.path.join(topics_dir, "ldap"))
