@@ -52,7 +52,7 @@ TEST_DEPENDENCY_TARGETS?=
 # The command which gets executed. Defaults to the location the
 # :ref:`run-coverage` template gets rendered to if configured.
 # default: $(SCRIPTS_FOLDER)/run-coverage.sh
-COVERAGE_COMMAND?=
+COVERAGE_COMMAND?=$(VENV_FOLDER)/bin/coverage run -m mxmake.tests
 
 ## core.clean
 
@@ -234,8 +234,12 @@ test: $(FILES_SENTINEL) $(SOURCES_SENTINEL) $(INSTALL_SENTINEL) $(TEST_DEPENDENC
 # coverage
 ##############################################################################
 
+coverage-install: venv
+	@echo "Install Coverage"
+	@$(VENV_FOLDER)/bin/pip install -U coverage
+
 .PHONY: coverage
-coverage: $(FILES_SENTINEL) $(SOURCES_SENTINEL) $(INSTALL_SENTINEL)
+coverage: $(FILES_SENTINEL) $(SOURCES_SENTINEL) $(INSTALL_SENTINEL) coverage-install
 	@echo "Run coverage"
 	@test -z "$(COVERAGE_COMMAND)" && echo "No coverage command defined"
 	@test -z "$(COVERAGE_COMMAND)" || bash -c "$(COVERAGE_COMMAND)"
