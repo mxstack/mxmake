@@ -1,8 +1,8 @@
 from mxmake.topics import collect_missing_dependencies
 from mxmake.topics import get_topic
-from mxmake.topics import get_makefile
+from mxmake.topics import get_domain
 from mxmake.topics import load_topics
-from mxmake.topics import resolve_makefile_dependencies
+from mxmake.topics import resolve_domain_dependencies
 from mxmake.parser import MakefileParser
 from mxmake.templates import get_template_environment
 from mxmake.templates import template
@@ -89,23 +89,23 @@ def list_command(args: argparse.Namespace):
         sys.stdout.write(f"Requested topic not found: {args.topic}\n")
         sys.exit(1)
 
-    if not args.makefile:
-        sys.stdout.write(f"Makefiles in topic {topic.name}:\n")
-        for makefile_ in topic.makefiles:
-            description = indent(makefile_.description, 4 * " ").strip()
-            sys.stdout.write(f"  - {makefile_.name}: {description}\n")
+    if not args.domain:
+        sys.stdout.write(f"Domains in topic {topic.name}:\n")
+        for domain_ in topic.domains:
+            description = indent(domain_.description, 4 * " ").strip()
+            sys.stdout.write(f"  - {domain_.name}: {description}\n")
         return
 
-    makefile = topic.makefile(args.makefile)
-    if makefile is None:
-        sys.stdout.write(f"Requested makefile not found: {args.makefile}\n")
+    domain = topic.domain(args.domain)
+    if domain is None:
+        sys.stdout.write(f"Requested domain not found: {args.domain}\n")
         sys.exit(1)
 
-    sys.stdout.write(f"Makefile {topic.name}.{makefile.name}:\n")
-    depends = ", ".join(makefile.depends) if makefile.depends else "No dependencies"
+    sys.stdout.write(f"Domain {topic.name}.{domain.name}:\n")
+    depends = ", ".join(domain.depends) if domain.depends else "No dependencies"
     sys.stdout.write(f"  Depends: {depends}\n")
     sys.stdout.write(f"  Targets:")
-    targets = makefile.targets
+    targets = domain.targets
     if not targets:
         sys.stdout.write(f" No targets provided\n")
     else:
@@ -114,7 +114,7 @@ def list_command(args: argparse.Namespace):
             description = indent(target.description, 6 * " ").strip()
             sys.stdout.write(f"    {target.name}: {description}\n")
     sys.stdout.write(f"  Settings:")
-    settings = makefile.settings
+    settings = domain.settings
     if not settings:
         sys.stdout.write(f" No settings provided\n")
     else:
@@ -130,7 +130,7 @@ def list_command(args: argparse.Namespace):
 list_parser = command_parsers.add_parser("list", help="List stuff")
 list_parser.set_defaults(func=list_command)
 list_parser.add_argument("-t", "--topic", help="Topic name")
-list_parser.add_argument("-m", "--makefile", help="Makefile name")
+list_parser.add_argument("-d", "--domain", help="Domain name")
 
 
 ##############################################################################
@@ -143,7 +143,7 @@ def init_command(args: argparse.Namespace):
     print("# mxmake initialization")
     print("#######################\n")
 
-    # obtain makefile target folder
+    # obtain target folder
     target_folder = os.getcwd()
 
     # parse existing makefile
@@ -164,66 +164,66 @@ def init_command(args: argparse.Namespace):
     if topic_choice is None:
         return
 
-    # obtain makefiles to include
-    makefiles = []
+    # obtain domains to include
+    domains = []
     for topic_name in topic_choice["topic"]:
         topic = get_topic(topic_name)
-        all_fqns = [makefile.fqn for makefile in topic.makefiles]
-        # use already configured makefiles from topic if present in existing
-        # makefile
+        all_fqns = [domain.fqn for domain in topic.domains]
+        # use already configured domains from topic if present in existing
+        # domain
         if parser.topics.get(topic_name):
             selected_fqns = [
                 f"{topic_name}.{name}" for name in parser.topics[topic_name]
             ]
-        # fallback to all makefiles of topic if not configured yet or no
-        # makefile generated yet
+        # fallback to all domains of topic if not configured yet or no
+        # domain generated yet
         else:
-            selected_fqns = [makefile.fqn for makefile in topic.makefiles]
-        makefiles_choice = inquirer.prompt(
+            selected_fqns = [domain.fqn for domain in topic.domains]
+        domains_choice = inquirer.prompt(
             [
                 inquirer.Checkbox(
-                    "makefiles",
-                    message=f'Include makefiles from topic "{topic_name}"',
+                    "domains",
+                    message=f'Include domains from topic "{topic_name}"',
                     choices=all_fqns,
                     default=selected_fqns,
                 )
             ]
         )
-        if makefiles_choice is None:
+        if domains_choice is None:
             return
-        for fqn in makefiles_choice["makefiles"]:
-            makefiles.append(get_makefile(fqn))
-    makefiles = collect_missing_dependencies(makefiles)
-    makefiles = resolve_makefile_dependencies(makefiles)
+        for fqn in domains_choice["domains"]:
+            domains.append(get_domain(fqn))
+    domains = collect_missing_dependencies(domains)
+    domains = resolve_domain_dependencies(domains)
 
     # obtain settings
-    makefile_settings = {}
-    for makefile in sorted(makefiles, key=attrgetter("fqn")):
-        settings = makefile.settings
+    domain_settings = {}
+    for domain in sorted(domains, key=attrgetter("fqn")):
+        settings = domain.settings
         if not settings:
             continue
         settings_question = []
         for setting in settings:
-            sfqn = f"{makefile.fqn}.{setting.name}"
+            sfqn = f"{domain.fqn}.{setting.name}"
             setting_default = setting.default
             # use configured setting from parser if set
             if sfqn in parser.settings:
                 setting_default = parser.settings[sfqn]
-            makefile_settings[sfqn] = setting_default
+            domain_settings[sfqn] = setting_default
             settings_question.append(
                 inquirer.Text(sfqn, message=sfqn, default=setting_default)
             )
-        print(f"Edit Settings for {makefile.fqn}?")
+        print(f"Edit Settings for {domain.fqn}?")
         yn = inquirer.text(message="y/N")
         if yn in ["Y", "y"]:
-            makefile_settings.update(inquirer.prompt(settings_question))
+            domain_settings.update(inquirer.prompt(settings_question))
         print("")
 
-    if makefiles:
+    if domains:
         # generate makefile
         factory = template.lookup("makefile")
         makefile_template = factory(
-            target_folder, makefiles, makefile_settings, get_template_environment()
+            target_folder, domains, domain_settings, get_template_environment()
         )
         makefile_template.write()
     else:
@@ -236,7 +236,7 @@ def init_command(args: argparse.Namespace):
         if yn not in ["n", "N"]:
             factory = template.lookup("mx.ini")
             mx_ini_template = factory(
-                target_folder, makefiles, get_template_environment()
+                target_folder, domains, get_template_environment()
             )
             mx_ini_template.write()
     else:

@@ -4,10 +4,10 @@
 # SETTINGS (ALL CHANGES MADE BELOW SETTINGS WILL BE LOST)
 ##############################################################################
 
-{% for makefile_settings in settings %}
-## {{ makefile_settings.fqn }}
+{% for domain_settings in settings %}
+## {{ domain_settings.fqn }}
 
-{% for setting in makefile_settings.settings %}
+{% for setting in domain_settings.settings %}
 {% for line in setting.description %}
 # {{ line }}
 {% endfor %}

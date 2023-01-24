@@ -1,6 +1,6 @@
 from jinja2 import Environment
 from jinja2 import PackageLoader
-from mxmake.topics import Makefile
+from mxmake.topics import Domain
 from mxmake.utils import ns_name
 from mxmake.utils import scripts_folder
 from mxmake.utils import venv_folder
@@ -187,42 +187,42 @@ class Makefile(Template):
     def __init__(
         self,
         target_folder: str,
-        makefiles: typing.List[Makefile],
-        makefile_settings: typing.Dict[str, str],
+        domains: typing.List[Domain],
+        domain_settings: typing.Dict[str, str],
         environment: typing.Union[Environment, None] = None,
     ) -> None:
         super().__init__(environment)
         self.target_folder = target_folder
-        self.makefiles = makefiles
-        self.makefile_settings = makefile_settings
+        self.domains = domains
+        self.domain_settings = domain_settings
 
     @property
     def template_variables(self) -> typing.Dict[str, typing.Any]:
-        # collect makefile settings
+        # collect domain settings
         settings = []
-        for makefile in self.makefiles:
-            if not makefile.settings:
+        for domain in self.domains:
+            if not domain.settings:
                 continue
-            makefile_setting = dict(fqn=makefile.fqn, settings=[])
-            settings.append(makefile_setting)
-            for setting in makefile.settings:
-                sfqn = f"{makefile.fqn}.{setting.name}"
-                makefile_setting["settings"].append(
+            domain_setting = dict(fqn=domain.fqn, settings=[])
+            settings.append(domain_setting)
+            for setting in domain.settings:
+                sfqn = f"{domain.fqn}.{setting.name}"
+                domain_setting["settings"].append(
                     dict(
                         name=setting.name,
                         description=setting.description.split("\n"),
                         default=setting.default,
-                        value=self.makefile_settings[sfqn],
+                        value=self.domain_settings[sfqn],
                     )
                 )
-        # render makefile sections
+        # render domain sections
         sections = io.StringIO()
-        for makefile in self.makefiles:
+        for domain in self.domains:
             sections.write("\n")
-            makefile.write_to(sections)
+            domain.write_to(sections)
         sections.seek(0)
-        # collect fqns of used makefiles
-        fqns = [makefile.fqn for makefile in self.makefiles]
+        # collect fqns of used domains
+        fqns = [domain.fqn for domain in self.domains]
         # return template variables
         return dict(settings=settings, sections=sections, fqns=fqns)
 
@@ -242,20 +242,20 @@ class MxIni(Template):
     def __init__(
         self,
         target_folder: str,
-        makefiles: typing.List[Makefile],
+        domains: typing.List[Domain],
         environment: typing.Union[Environment, None] = None,
     ) -> None:
         super().__init__(environment)
         self.target_folder = target_folder
-        self.makefiles = makefiles
+        self.domains = domains
 
     @property
     def template_variables(self) -> typing.Dict[str, typing.Any]:
         mxmake_templates = []
-        for makefile in self.makefiles:
-            if makefile.fqn == "core.test":
+        for domain in self.domains:
+            if domain.fqn == "core.test":
                 mxmake_templates.append("run-tests")
-            if makefile.fqn == "core.coverage":
+            if domain.fqn == "core.coverage":
                 mxmake_templates.append("run-coverage")
         return dict(mxmake_templates=mxmake_templates)
 
@@ -274,11 +274,11 @@ class Topics(Template):
 
     def __init__(
         self,
-        makefiles: typing.List[Makefile],
+        domains: typing.List[Domain],
         environment: typing.Union[Environment, None] = None,
     ) -> None:
         super().__init__(environment)
-        self.makefiles = makefiles
+        self.domains = domains
 
     @property
     def template_variables(self) -> typing.Dict[str, typing.Any]:

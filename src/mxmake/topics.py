@@ -24,7 +24,7 @@ class Target:
 
 
 @dataclass
-class Makefile:
+class Domain:
     topic: str
     name: str
     file: str
@@ -122,9 +122,9 @@ class Topic:
     directory: str
 
     @property
-    def makefiles(self) -> typing.List[Makefile]:
+    def domains(self) -> typing.List[Domain]:
         return [
-            Makefile(
+            Domain(
                 topic=self.name,
                 name=name[:-3],
                 file=os.path.join(self.directory, name),
@@ -133,10 +133,10 @@ class Topic:
             if name.endswith(".mk")
         ]
 
-    def makefile(self, name: str) -> typing.Optional[Makefile]:
-        for makefile in self.makefiles:
-            if makefile.name == name:
-                return makefile
+    def domain(self, name: str) -> typing.Optional[Domain]:
+        for domain in self.domains:
+            if domain.name == name:
+                return domain
         return None
 
 
@@ -152,68 +152,68 @@ def get_topic(name: str) -> Topic:
     raise AttributeError(f"No such topic: {name}")
 
 
-def get_makefile(fqn: str) -> Makefile:
+def get_domain(fqn: str) -> Domain:
     topic_name, name = fqn.split(".")
     topic = get_topic(topic_name)
-    makefile = topic.makefile(name)
-    if not makefile:
-        raise AttributeError(f"No such makefile: {fqn}")
-    return makefile
+    domain = topic.domain(name)
+    if not domain:
+        raise AttributeError(f"No such domain: {fqn}")
+    return domain
 
 
-class MakefileConflictError(Exception):
+class DomainConflictError(Exception):
     def __init__(self, counter: Counter):
         conflicting = list()
         for name, count in counter.items():
             if count > 1:
                 conflicting.append(name)
-        msg = "Conflicting makefile names: {}".format(sorted(conflicting))
-        super(MakefileConflictError, self).__init__(msg)
+        msg = "Conflicting domain names: {}".format(sorted(conflicting))
+        super(DomainConflictError, self).__init__(msg)
 
 
-class CircularDependencyMakefileError(Exception):
-    def __init__(self, makefiles: typing.List[Makefile]):
-        msg = "Makefiles define circular dependencies: {}".format(makefiles)
-        super(CircularDependencyMakefileError, self).__init__(msg)
+class CircularDependencyDomainError(Exception):
+    def __init__(self, domains: typing.List[Domain]):
+        msg = "Domains define circular dependencies: {}".format(domains)
+        super(CircularDependencyDomainError, self).__init__(msg)
 
 
-class MissingDependencyMakefileError(Exception):
-    def __init__(self, makefile: Makefile):
-        msg = "Makefile define missing dependency: {}".format(makefile)
-        super(MissingDependencyMakefileError, self).__init__(msg)
+class MissingDependencyDomainError(Exception):
+    def __init__(self, domain: Domain):
+        msg = "Domain define missing dependency: {}".format(domain)
+        super(MissingDependencyDomainError, self).__init__(msg)
 
 
-def resolve_makefile_dependencies(
-    makefiles: typing.List[Makefile],
-) -> typing.List[Makefile]:
-    """Return given makefiles ordered by dependencies.
+def resolve_domain_dependencies(
+    domains: typing.List[Domain],
+) -> typing.List[Domain]:
+    """Return given domains ordered by dependencies.
 
-    :raise MakefileConflictError: Makefile list contains conflicting names.
-    :raise MissingDependencyMakefileError: Dependency makefile not included.
-    :raise CircularDependencyMakefileError: Circular dependencies defined.
+    :raise DomainConflictError: Domain list contains conflicting names.
+    :raise MissingDependencyDomainError: Dependency domain not included.
+    :raise CircularDependencyDomainError: Circular dependencies defined.
     """
-    names = [res.fqn for res in makefiles]
+    names = [res.fqn for res in domains]
     counter = Counter(names)
-    if len(makefiles) != len(counter):
-        raise MakefileConflictError(counter)
+    if len(domains) != len(counter):
+        raise DomainConflictError(counter)
     ret = []
     handled = {}
-    for makefile in makefiles[:]:
-        if not makefile.depends:
-            ret.append(makefile)
-            handled[makefile.fqn] = makefile
-            makefiles.remove(makefile)
+    for domain in domains[:]:
+        if not domain.depends:
+            ret.append(domain)
+            handled[domain.fqn] = domain
+            domains.remove(domain)
         else:
-            for dependency_name in makefile.depends:
+            for dependency_name in domain.depends:
                 if dependency_name not in names:
-                    raise MissingDependencyMakefileError(makefile)
-    count = len(makefiles)
+                    raise MissingDependencyDomainError(domain)
+    count = len(domains)
     while count > 0:
         count -= 1
-        for makefile in makefiles[:]:
+        for domain in domains[:]:
             hook_idx = 0
             not_yet = False
-            for dependency_name in makefile.depends:
+            for dependency_name in domain.depends:
                 if dependency_name in handled:
                     dependency = handled[dependency_name]
                     dep_idx = ret.index(dependency)
@@ -223,31 +223,31 @@ def resolve_makefile_dependencies(
                     break
             if not_yet:
                 continue
-            ret.insert(hook_idx + 1, makefile)
-            handled[makefile.fqn] = makefile
-            makefiles.remove(makefile)
+            ret.insert(hook_idx + 1, domain)
+            handled[domain.fqn] = domain
+            domains.remove(domain)
             break
-    if makefiles:
-        raise CircularDependencyMakefileError(makefiles)
+    if domains:
+        raise CircularDependencyDomainError(domains)
     return ret
 
 
 def collect_missing_dependencies(
-    makefiles: typing.List[Makefile],
-) -> typing.List[Makefile]:
-    """Expect a list of makefile instances, and add all missing depencecy
-    makefiles.
+    domains: typing.List[Domain],
+) -> typing.List[Domain]:
+    """Expect a list of domain instances, and add all missing depencecy
+    domains.
     """
-    to_check = {makefile.fqn for makefile in makefiles}
+    to_check = {domain.fqn for domain in domains}
     checked = set()
     while to_check:
         current_fqn = to_check.pop()
         checked.add(current_fqn)
-        new_depends = set(get_makefile(current_fqn).depends) - checked
+        new_depends = set(get_domain(current_fqn).depends) - checked
         if new_depends:
             to_check.update(new_depends)
     return sorted(
-        [get_makefile(makefile_name) for makefile_name in checked],
+        [get_domain(domain_name) for domain_name in checked],
         key=operator.attrgetter("fqn"),
     )
 

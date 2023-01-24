@@ -1,4 +1,4 @@
-from mxmake.topics import get_makefile
+from mxmake.topics import get_domain
 
 import os
 import typing
@@ -23,8 +23,8 @@ class MakefileParser:
 
     def parse_settings(self, lines: typing.List[str]):
         for fqn in self.fqns:
-            makefile = get_makefile(fqn)
-            for setting in makefile.settings:
+            domain = get_domain(fqn)
+            for setting in domain.settings:
                 for line in lines:
                     if line.startswith(f"{setting.name}?="):
                         value = line[line.find("?=") + 2 :]
