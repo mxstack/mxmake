@@ -728,21 +728,21 @@ class TestHook(unittest.TestCase):
 ###############################################################################
 
 MAKEFILE_TEMPLATE = """
-#:[topic]
+#:[example]
 #:title = Title
 #:description = Description
 #:depends =
 #:    dependency-1
 #:    dependency-2
 #:
-#:[target.topic]
-#:description = Build topic
+#:[target.example]
+#:description = Build example
 #:
-#:[target.topic-dirty]
-#:description = Rebuild topic on next make run
+#:[target.example-dirty]
+#:description = Rebuild example on next make run
 #:
-#:[target.topic-clean]
-#:description = Clean topic
+#:[target.example-clean]
+#:description = Clean example
 #:
 #:[setting.SETTING_A]
 #:description = Setting A
@@ -755,21 +755,21 @@ MAKEFILE_TEMPLATE = """
 SETTING_A?=A
 SETTING_B?=B
 
-TOPIC_SENTINEL:=$(SENTINEL_FOLDER)/topic.sentinel
-$(TOPIC_SENTINEL): $(SENTINEL)
-	@echo "Building topic"
-	@touch $(TOPIC_SENTINEL)
+EXAMPLE_SENTINEL:=$(SENTINEL_FOLDER)/example.sentinel
+$(EXAMPLE_SENTINEL): $(SENTINEL)
+	@echo "Building example"
+	@touch $(EXAMPLE_SENTINEL)
 
-.PHONY: topic
-openldap: $(TOPIC_SENTINEL)
+.PHONY: example
+example: $(EXAMPLE_SENTINEL)
 
-.PHONY: topic-dirty
-topic-dirty:
-	@rm -f $(TOPIC_SENTINEL)
+.PHONY: example-dirty
+example-dirty:
+	@rm -f $(EXAMPLE_SENTINEL)
 
-.PHONY: topic-clean
-topic-clean:
-	@rm -f $(TOPIC_SENTINEL)
+.PHONY: example-clean
+example-clean:
+	@rm -f $(EXAMPLE_SENTINEL)
 """
 
 
@@ -802,23 +802,23 @@ class TestMakefiles(unittest.TestCase):
         with open(makefile_path, "w") as f:
             f.write(MAKEFILE_TEMPLATE)
 
-        makefile = domains.Makefile(domain="domain", name="topic", file=makefile_path)
+        makefile = domains.Makefile(domain="domain", name="example", file=makefile_path)
         self.assertTrue(len(makefile.file_data) > 0)
         self.assertTrue(makefile._file_data is makefile.file_data)
 
         config = makefile.config
         self.assertIsInstance(config, configparser.ConfigParser)
         self.assertTrue(makefile._config is config)
-        self.assertEqual(config["topic"]["title"], "Title")
-        self.assertEqual(config["topic"]["description"], "Description")
-        self.assertEqual(config["topic"]["depends"], "\ndependency-1\ndependency-2")
+        self.assertEqual(config["example"]["title"], "Title")
+        self.assertEqual(config["example"]["description"], "Description")
+        self.assertEqual(config["example"]["depends"], "\ndependency-1\ndependency-2")
 
-        self.assertEqual(config["target.topic"]["description"], "Build topic")
+        self.assertEqual(config["target.example"]["description"], "Build example")
         self.assertEqual(
-            config["target.topic-dirty"]["description"],
-            "Rebuild topic on next make run",
+            config["target.example-dirty"]["description"],
+            "Rebuild example on next make run",
         )
-        self.assertEqual(config["target.topic-clean"]["description"], "Clean topic")
+        self.assertEqual(config["target.example-clean"]["description"], "Clean example")
 
         self.assertEqual(config["setting.SETTING_A"]["description"], "Setting A")
         self.assertEqual(config["setting.SETTING_A"]["default"], "A")
@@ -829,13 +829,13 @@ class TestMakefiles(unittest.TestCase):
         self.assertEqual(makefile.description, "Description")
         self.assertEqual(makefile.depends, ["dependency-1", "dependency-2"])
 
-        config["topic"]["depends"] = ""
+        config["example"]["depends"] = ""
         self.assertEqual(makefile.depends, [])
 
         targets = makefile.targets
         self.assertEqual(len(targets), 3)
-        self.assertEqual(targets[0].name, "topic")
-        self.assertEqual(targets[0].description, "Build topic")
+        self.assertEqual(targets[0].name, "example")
+        self.assertEqual(targets[0].description, "Build example")
 
         settings = makefile.settings
         self.assertEqual(len(settings), 2)
@@ -849,7 +849,7 @@ class TestMakefiles(unittest.TestCase):
         with open(out_path) as fd:
             out_content = fd.readlines()
         self.assertEqual(out_content[0], "SETTING_A?=A\n")
-        self.assertEqual(out_content[-1], "\t@rm -f $(TOPIC_SENTINEL)\n")
+        self.assertEqual(out_content[-1], "\t@rm -f $(EXAMPLE_SENTINEL)\n")
 
     @temp_directory
     def test_Domain(self, tmpdir):
