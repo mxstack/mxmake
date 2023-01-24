@@ -1,5 +1,5 @@
 mxmake - Create development environments for python packages
-===========================================================
+============================================================
 
 Table of Contents
 -----------------
@@ -9,7 +9,7 @@ Table of Contents
     :caption: Contents:
 
     overview
-    domains
+    topics
     contributing
 
 
