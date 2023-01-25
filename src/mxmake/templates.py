@@ -266,11 +266,11 @@ class MxIni(Template):
 ##############################################################################
 
 
-@template("topics.rst")
+@template("topics.md")
 class Topics(Template):
     description: str = "Topics documentation for sphinx"
     target_name = None
-    template_name = "topics.rst"
+    template_name = "topics.md"
     target_folder = None
 
     def __init__(

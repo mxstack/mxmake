@@ -1,41 +1,41 @@
 {% for topic in topics %}
 
--------------------------
-{{ topic.name }}
--------------------------
+# {{ topic.name }}
 
 {% for domain in topic.domains %}
 
-{{ domain.title }}
---------------------------
+## {{ domain.title }}
 
 {{ domain.description }}
 
 FQN
-    ``{{ domain.fqn }}``
+: `{{ domain.fqn }}`
 
 {% if domain.depends %}
-Depends on:
+Depends on
 {% for depend in domain.depends %}
-    - ``{{ depend }}``
+: `{{ depend }}`
 {% endfor %}
 {% endif %}
 
 {% if domain.targets %}
 Targets
 {% for target in domain.targets %}
-    ``{{ target.name }}``
-        {{ target.description | indent(8) }}
+: `{{ target.name }}`
+
+  : {{ target.description | indent(4) }}
+
 {% endfor %}
 {% endif %}
 
 {% if domain.settings %}
 Settings
 {% for setting in domain.settings %}
-    ``{{ setting.name }}``
-        {{ setting.description | indent(8) }}
+: `{{ setting.name }}`
 
-        Default: ``{{ setting.default | indent(8) }}``
+  : {{ setting.description | indent(4) }}
+
+  : Default: `{{ setting.default | indent(4) }}`
 
 {% endfor %}
 {% endif %}

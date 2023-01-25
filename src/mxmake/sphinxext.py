@@ -1,28 +1,32 @@
 from docutils import nodes
-from docutils.statemachine import ViewList
 from mxmake.templates import get_template_environment
 from mxmake.templates import template
-from sphinx.util.docstrings import prepare_docstring
 from sphinx.util.docutils import SphinxDirective
-from sphinx.util.nodes import nested_parse_with_titles
+from myst_parser.parsers.mdit import create_md_parser
+from myst_parser.mdit_to_docutils.sphinx_ import SphinxRenderer
 
 
 class TopicsDirective(SphinxDirective):
-    def _rest2node(self, rest, container=None):
-        vl = ViewList(prepare_docstring(rest))
-        if container is None:
-            node = nodes.compound()
-        else:
-            node = container()
-        nested_parse_with_titles(self.state, vl, node)
-        return node
 
     def run(self):
         # call uses the Topics class in templates.py to render the template
-        factory = template.lookup("topics.rst")
+        factory = template.lookup("topics.md")
         tpl = factory(get_template_environment())
-        node = self._rest2node(tpl.render())
-        return node.children
+
+        # create a new parser with the sphinx myst renderer
+        config = self.state.document.settings.env.myst_config
+        parser = create_md_parser(config, SphinxRenderer)
+
+        # create a new helper document to parse the template into
+        doc = nodes.document(self.state.document.settings, self.state.document.reporter)
+        doc["source"] = ""
+        parser.options["document"] = doc
+
+        # parse the template into the new document
+        parser.render(tpl.render())
+
+        # return the parsed nodes, but not the helper document
+        return doc.children
 
 
 def setup(app):
