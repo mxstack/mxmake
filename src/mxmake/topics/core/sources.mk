@@ -20,7 +20,7 @@
 SOURCES_SENTINEL:=$(SENTINEL_FOLDER)/sources.sentinel
 $(SOURCES_SENTINEL): $(FILES_SENTINEL)
 	@echo "Checkout project sources"
-	@$(VENV_FOLDER)/bin/mxdev -o -c $(PROJECT_CONFIG)
+	@$(VENV_SCRIPTS)mxdev -o -c $(PROJECT_CONFIG)
 	@touch $(SOURCES_SENTINEL)
 
 .PHONY: sources

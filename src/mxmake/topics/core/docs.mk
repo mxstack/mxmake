@@ -15,11 +15,11 @@
 #:
 #:[setting.DOCS_BIN]
 #:description = The Sphinx build executable.
-#:default = $(VENV_FOLDER)/bin/sphinx-build
+#:default = $(VENV_SCRIPTS)sphinx-build
 #:
 #:[setting.DOCS_AUTOBUILD_BIN]
 #:description = The Sphinx auto build executable.
-#:default = $(VENV_FOLDER)/bin/sphinx-autobuild
+#:default = $(VENV_SCRIPTS)sphinx-autobuild
 #:
 #:[setting.DOCS_SOURCE]
 #:description = Documentation source folder.
@@ -40,7 +40,7 @@
 
 docs-install: venv
 	@echo "Install Sphinx"
-	@$(VENV_FOLDER)/bin/pip install -U sphinx sphinx-autobuild $(DOCS_REQUIREMENTS)
+	@$(VENV_SCRIPTS)pip install -U sphinx sphinx-autobuild $(DOCS_REQUIREMENTS)
 
 .PHONY: docs
 docs: docs-install

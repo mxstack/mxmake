@@ -22,6 +22,14 @@
 #:description = Python interpreter to use for creating the virtual environment.
 #:default = python3
 #:
+#:[setting.PYTHON_MIN_VERSION]
+#:description = Minimum required Python version.
+#:default = 3.7
+#:
+#:[setting.VENV_CREATE]
+#:description = Whether to use a VENV or not; "true" or "false".
+#:default = true
+#:
 #:[setting.VENV_FOLDER]
 #:description = The folder where the virtual environment get created.
 #:default = venv
@@ -38,13 +46,38 @@
 # venv
 ##############################################################################
 
+VENV_SCRIPTS=
+
+# determine the VENV
+ifeq ("${VENV_CREATE}", "true")
+	VENV_SCRIPTS=${VENV_FOLDER}/bin/
+else
+# given we have an existing venv folder, we use it, otherwise expect scripts
+# in system PATH.
+	ifneq ("${VENV_FOLDER}", "")
+		VENV_SCRIPTS=${VENV_FOLDER}/bin/
+	endif
+endif
+
+# Check if given Python is installed?
+ifeq (, $(shell which $(PYTHON_BIN) ))
+  $(error "PYTHON=$(PYTHON_BIN) not found in $(PATH)")
+endif
+
+# Check if given Python version is ok?
+PYTHON_MIN_VERSION=3.7
+PYTHON_VERSION_OK=$(shell $(PYTHON_BIN) -c "import sys; print((int(sys.version_info[0]), int(sys.version_info[1])) >= tuple(map(int, '$(PYTHON_MIN_VERSION)'.split('.'))))")
+ifeq ($(PYTHON_VERSION_OK),0)
+  $(error "Need Python >= $(PYTHON_MIN_VERSION)")
+endif
+
 VENV_SENTINEL:=$(SENTINEL_FOLDER)/venv.sentinel
 $(VENV_SENTINEL): $(SENTINEL)
 	@echo "Setup Python Virtual Environment under '$(VENV_FOLDER)'"
 	@$(PYTHON_BIN) -m venv $(VENV_FOLDER)
-	@$(VENV_FOLDER)/bin/pip install -U pip setuptools wheel
-	@$(VENV_FOLDER)/bin/pip install -U $(MXDEV)
-	@$(VENV_FOLDER)/bin/pip install -U $(MXMAKE)
+	@$(VENV_SCRIPTS)pip install -U pip setuptools wheel
+	@$(VENV_SCRIPTS)pip install -U $(MXDEV)
+	@$(VENV_SCRIPTS)pip install -U $(MXMAKE)
 	@touch $(VENV_SENTINEL)
 
 .PHONY: venv

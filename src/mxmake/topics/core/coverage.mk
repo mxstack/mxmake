@@ -21,7 +21,7 @@
 
 coverage-install: venv
 	@echo "Install Coverage"
-	@$(VENV_FOLDER)/bin/pip install -U coverage
+	@$(VENV_SCRIPTS)pip install -U coverage
 
 .PHONY: coverage
 coverage: $(FILES_SENTINEL) $(SOURCES_SENTINEL) $(INSTALL_SENTINEL) coverage-install

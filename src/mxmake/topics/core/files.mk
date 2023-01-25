@@ -19,7 +19,7 @@
 #:
 #:[setting.SCRIPTS_FOLDER]
 #:description = Target folder for generated scripts.
-#:default = $(VENV_FOLDER)/bin
+#:default = $(VENV_SCRIPTS)
 #:
 #:[setting.CONFIG_FOLDER]
 #:description = Target folder for generated config files.
@@ -47,7 +47,7 @@ FILES_SENTINEL:=$(SENTINEL_FOLDER)/files.sentinel
 $(FILES_SENTINEL): $(PROJECT_CONFIG) $(VENV_SENTINEL)
 	@echo "Create project files"
 	$(call set_files_env,$(VENV_FOLDER),$(SCRIPTS_FOLDER),$(CONFIG_FOLDER))
-	@$(VENV_FOLDER)/bin/mxdev -n -c $(PROJECT_CONFIG)
+	@$(VENV_SCRIPTS)mxdev -n -c $(PROJECT_CONFIG)
 	$(call unset_files_env,$(VENV_FOLDER),$(SCRIPTS_FOLDER),$(CONFIG_FOLDER))
 	@touch $(FILES_SENTINEL)
 
@@ -61,7 +61,7 @@ files-dirty:
 .PHONY: files-clean
 files-clean: files-dirty
 	$(call set_files_env,$(VENV_FOLDER),$(SCRIPTS_FOLDER),$(CONFIG_FOLDER))
-	@test -e $(VENV_FOLDER)/bin/mxmake && \
-		$(VENV_FOLDER)/bin/mxmake clean -c $(PROJECT_CONFIG)
+	@test -e $(VENV_SCRIPTS)mxmake && \
+		$(VENV_SCRIPTS)mxmake clean -c $(PROJECT_CONFIG)
 	$(call unset_files_env,$(VENV_FOLDER),$(SCRIPTS_FOLDER),$(CONFIG_FOLDER))
 	@rm -f constraints-mxdev.txt requirements-mxdev.txt

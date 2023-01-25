@@ -11,7 +11,12 @@
 {% for line in setting.description %}
 # {{ line }}
 {% endfor %}
+{% if setting.default %}
 # default: {{ setting.default }}
+{% else %}
+# no default value
+
+{% endif %}
 {{ setting.name }}?={{ setting.value }}
 
 {% endfor -%}
