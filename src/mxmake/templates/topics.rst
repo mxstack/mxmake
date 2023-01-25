@@ -27,7 +27,6 @@ Targets
     ``{{ target.name }}``
         {{ target.description | indent(8) }}
 {% endfor %}
-
 {% endif %}
 
 {% if domain.settings %}
@@ -39,10 +38,7 @@ Settings
         Default: ``{{ setting.default | indent(8) }}``
 
 {% endfor %}
-
 {% endif %}
 
-
 {% endfor %}
-
 {% endfor %}
