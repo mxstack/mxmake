@@ -6,8 +6,8 @@ from sphinx.util.docstrings import prepare_docstring
 from sphinx.util.docutils import SphinxDirective
 from sphinx.util.nodes import nested_parse_with_titles
 
-class TopicsDirective(SphinxDirective):
 
+class TopicsDirective(SphinxDirective):
     def _rest2node(self, rest, container=None):
         vl = ViewList(prepare_docstring(rest))
         if container is None:
@@ -27,4 +27,3 @@ class TopicsDirective(SphinxDirective):
 
 def setup(app):
     app.add_directive("mxmaketopics", TopicsDirective)
-
