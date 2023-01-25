@@ -1,7 +1,7 @@
-License
-=======
+# License
 
-Copyright (c) 2022-2023, Cone Contributors
+Copyright (c) 2022-2023, mxstack Contributors
+
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without

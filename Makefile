@@ -41,10 +41,10 @@ CONFIG_FOLDER?=cfg
 # The command which gets executed. Defaults to the location the
 # :ref:`run-tests` template gets rendered to if configured.
 # default: $(SCRIPTS_FOLDER)/run-tests.sh
-TEST_COMMAND?=$(VENV_FOLDER)/bin/python setup.py test
+TEST_COMMAND?=$(VENV_FOLDER)/bin/python -m mxmake.tests
 
 # Additional make targets the test target depends on.
-# default: 
+# default:
 TEST_DEPENDENCY_TARGETS?=
 
 ## core.coverage
@@ -57,7 +57,7 @@ COVERAGE_COMMAND?=$(VENV_FOLDER)/bin/coverage run -m mxmake.tests
 ## core.clean
 
 # Space separated list of files and folders to remove.
-# default: 
+# default:
 CLEAN_TARGETS?=dist mxmake.egg-info
 
 ## core.docs
@@ -79,13 +79,13 @@ DOCS_SOURCE?=docs/source
 DOCS_TARGET?=docs/html
 
 # Documentation Python requirements to be installed (via pip).
-# default: 
+# default:
 DOCS_REQUIREMENTS?=sphinx-conestack-theme myst-parser
 
 ## core.system-dependencies
 
 # Space separated system package names.
-# default: 
+# default:
 SYSTEM_DEPENDENCIES?=
 
 ##############################################################################

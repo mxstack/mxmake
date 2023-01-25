@@ -1,0 +1,81 @@
+[project]
+name = "mxmake"
+description = "Generates a Python project-specific Makefile by using an extensible library of configurable Makefile snippets."
+version = "0.2.dev0"
+keywords = ["development", "deployment", "environment"]
+authors = [
+  {name = "MA Stack Developers", email = "dev@bluedynamics.com" }
+]
+requires-python = ">=3.7"
+license = { text = "BSD 2-Clause License" }
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Topic :: Software Development :: Build Tools",
+    "License :: OSI Approved :: BSD License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+]
+dependencies = [
+    "Jinja2",
+    "mxdev",
+    "inquirer",
+]
+dynamic = ["readme"]
+
+[project.optional-dependencies]
+test = [
+    "pytest",
+    "pytest-mock",
+    "types-setuptools",
+]
+docs = ["Sphinx"]
+
+[project.urls]
+Homepage = "https://github.com/mxstack/mxmake"
+Documentation = "https://mxmake.readthedocs.io"
+"Bug Reports" = "https://github.com/mxstack/mxmake/issues"
+Source = "https://github.com/mxstack/mxmake/"
+
+[project.scripts]
+mxmake = "mxmake.main:main"
+
+[project.entry-points.mxdev]
+hook = "mxmake.hook:Hook"
+
+[project.entry-points."mxmake.topics"]
+core = "mxmake.topics:core"
+ldap = "mxmake.topics:ldap"
+
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+zip-safe = false
+
+[tool.setuptools.dynamic]
+readme = {file = ["README.md", "CHANGES.md", "LICENSE.md"]}
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+addopts = "-ra -q"
+testpaths = [
+    "src",
+]
+
+[tool.isort]
+profile = "black"
+force_alphabetical_sort = true
+force_single_line = true
+lines_after_imports = 2
+
+[tool.mypy]
+ignore_missing_imports = true
+
+
