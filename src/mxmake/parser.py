@@ -7,9 +7,9 @@ import typing
 class MakefileParser:
     def __init__(self, path: str):
         self.path = path
-        self.fqns = []
-        self.topics = {}
-        self.settings = {}
+        self.fqns: typing.List = []
+        self.topics: typing.Dict = {}
+        self.settings: typing.Dict = {}
         self.parse()
 
     def parse_fqns(self, lines: typing.List[str]):

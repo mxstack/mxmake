@@ -35,7 +35,9 @@ class template:
         return ob
 
     @classmethod
-    def lookup(cls, name: str) -> typing.Union[typing.Type["Template"], None]:
+    def lookup(cls, name: str) -> typing.Any:
+        # mypy reports errors if we define abstract ``Template`` as return
+        # type, return type is always a subclass of ``Template``.
         return cls._registry.get(name)
 
 
@@ -47,6 +49,12 @@ class Template(abc.ABC):
         self,
         environment: typing.Union[Environment, None] = None,
     ) -> None:
+        # XXX: Subclasses of template have different signatures. template
+        #      registry was initially created to be able to lookup templates
+        #      by name defined in mx.ini by mxdev hook. Now templates are
+        #      also used for Makefile, mx.ini and docs generation, which
+        #      differ from the initial usecase. We need to make this explicit
+        #      at some point.
         self.environment = environment
 
     @abc.abstractproperty
@@ -183,7 +191,7 @@ class Makefile(Template):
     description: str = "Makefile"
     target_name = "Makefile"
     template_name = "Makefile"
-    target_folder = None
+    target_folder = ""
 
     def __init__(
         self,
@@ -238,7 +246,7 @@ class MxIni(Template):
     description: str = "mx configutation file"
     target_name = "mx.ini"
     template_name = "mx.ini"
-    target_folder = None
+    target_folder = ""
 
     def __init__(
         self,
@@ -269,9 +277,9 @@ class MxIni(Template):
 @template("topics.md")
 class Topics(Template):
     description: str = "Topics documentation for sphinx"
-    target_name = None
+    target_name = ""
     template_name = "topics.md"
-    target_folder = None
+    target_folder = ""
 
     def __init__(
         self,
