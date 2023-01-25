@@ -912,15 +912,9 @@ class TestDomains(unittest.TestCase):
         f1 = TestDomain(topic="t", name="f1", depends_=["t.f2"], file="f1.mk")
         f2 = TestDomain(topic="t", name="f2", depends_=["t.f3"], file="f2.mk")
         f3 = TestDomain(topic="t", name="f3", depends_=[], file="f3.mk")
-        self.assertEqual(
-            topics.resolve_domain_dependencies([f1, f2, f3]), [f3, f2, f1]
-        )
-        self.assertEqual(
-            topics.resolve_domain_dependencies([f2, f1, f3]), [f3, f2, f1]
-        )
-        self.assertEqual(
-            topics.resolve_domain_dependencies([f1, f3, f2]), [f3, f2, f1]
-        )
+        self.assertEqual(topics.resolve_domain_dependencies([f1, f2, f3]), [f3, f2, f1])
+        self.assertEqual(topics.resolve_domain_dependencies([f2, f1, f3]), [f3, f2, f1])
+        self.assertEqual(topics.resolve_domain_dependencies([f1, f3, f2]), [f3, f2, f1])
 
         f1 = TestDomain(topic="t", name="f1", depends_=["t.f2"], file="f1.mk")
         f2 = TestDomain(topic="t", name="f2", depends_=["t.f1"], file="f2.mk")
@@ -938,15 +932,9 @@ class TestDomains(unittest.TestCase):
             [f1, f2],
         )
 
-        f1 = TestDomain(
-            topic="t", name="f1", depends_=["t.f2", "t.f4"], file="f1.mk"
-        )
-        f2 = TestDomain(
-            topic="t", name="f2", depends_=["t.f3", "t.f4"], file="f2.mk"
-        )
-        f3 = TestDomain(
-            topic="t", name="f3", depends_=["t.f4", "t.f5"], file="f3.mk"
-        )
+        f1 = TestDomain(topic="t", name="f1", depends_=["t.f2", "t.f4"], file="f1.mk")
+        f2 = TestDomain(topic="t", name="f2", depends_=["t.f3", "t.f4"], file="f2.mk")
+        f3 = TestDomain(topic="t", name="f3", depends_=["t.f4", "t.f5"], file="f3.mk")
         f4 = TestDomain(topic="t", name="f4", depends_=["t.f5"], file="f4.mk")
         f5 = TestDomain(topic="t", name="f5", depends_=[], file="f5.mk")
         self.assertEqual(
@@ -966,30 +954,18 @@ class TestDomains(unittest.TestCase):
             [f5, f4, f3, f2, f1],
         )
 
-        f1 = TestDomain(
-            topic="t", name="f1", depends_=["t.f2", "t.f3"], file="f1.mk"
-        )
-        f2 = TestDomain(
-            topic="t", name="f2", depends_=["t.f1", "t.f3"], file="f2.mk"
-        )
-        f3 = TestDomain(
-            topic="t", name="f3", depends_=["t.f1", "t.f2"], file="f3.mk"
-        )
+        f1 = TestDomain(topic="t", name="f1", depends_=["t.f2", "t.f3"], file="f1.mk")
+        f2 = TestDomain(topic="t", name="f2", depends_=["t.f1", "t.f3"], file="f2.mk")
+        f3 = TestDomain(topic="t", name="f3", depends_=["t.f1", "t.f2"], file="f3.mk")
         self.assertRaises(
             topics.CircularDependencyDomainError,
             topics.resolve_domain_dependencies,
             [f1, f2, f3],
         )
 
-        f1 = TestDomain(
-            topic="t", name="f1", depends_=["t.f2", "t.f3"], file="f1.ext"
-        )
-        f2 = TestDomain(
-            topic="t", name="f2", depends_=["t.f1", "t.f3"], file="f2.ext"
-        )
-        f3 = TestDomain(
-            topic="t", name="f3", depends_=["t.f1", "t.f4"], file="f3.ext"
-        )
+        f1 = TestDomain(topic="t", name="f1", depends_=["t.f2", "t.f3"], file="f1.ext")
+        f2 = TestDomain(topic="t", name="f2", depends_=["t.f1", "t.f3"], file="f2.ext")
+        f3 = TestDomain(topic="t", name="f3", depends_=["t.f1", "t.f4"], file="f3.ext")
         self.assertRaises(
             topics.MissingDependencyDomainError,
             topics.resolve_domain_dependencies,
