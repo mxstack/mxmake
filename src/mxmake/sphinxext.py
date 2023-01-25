@@ -1,13 +1,12 @@
 from docutils import nodes
 from mxmake.templates import get_template_environment
 from mxmake.templates import template
-from sphinx.util.docutils import SphinxDirective
-from myst_parser.parsers.mdit import create_md_parser
 from myst_parser.mdit_to_docutils.sphinx_ import SphinxRenderer
+from myst_parser.parsers.mdit import create_md_parser
+from sphinx.util.docutils import SphinxDirective
 
 
 class TopicsDirective(SphinxDirective):
-
     def run(self):
         # call uses the Topics class in templates.py to render the template
         factory = template.lookup("topics.md")
