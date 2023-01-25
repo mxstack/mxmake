@@ -173,7 +173,7 @@ class TestTemplates(RenderTestCase):
         self.assertEqual(
             templates.template._registry,
             {
-                "topics.rst": templates.Topics,
+                "topics.md": templates.Topics,
                 "makefile": templates.Makefile,
                 "mx.ini": templates.MxIni,
                 "run-coverage": templates.CoverageScript,
@@ -523,11 +523,12 @@ class TestTemplates(RenderTestCase):
         domains = topics.resolve_domain_dependencies(domains)
         domain_settings = {
             "core.venv.PYTHON_BIN": "python3",
+            "core.venv.PYTHON_MIN_VERSION": "3.7",
             "core.venv.VENV_FOLDER": "venv",
+            "core.venv.VENV_CREATE": "true",
             "core.venv.MXDEV": "mxdev",
             "core.venv.MXMAKE": "mxmake",
         }
-
         factory = templates.template.lookup("makefile")
         template = factory(
             tempdir, domains, domain_settings, templates.get_template_environment()
@@ -548,6 +549,14 @@ class TestTemplates(RenderTestCase):
                 # Python interpreter to use for creating the virtual environment.
                 # default: python3
                 PYTHON_BIN?=python3
+
+                # Minimum required Python version.
+                # default: 3.7
+                PYTHON_MIN_VERSION?=3.7
+
+                # Whether to use a VENV or not; "true" or "false".
+                # default: true
+                VENV_CREATE?=true
 
                 # The folder where the virtual environment get created.
                 # default: venv
@@ -591,13 +600,38 @@ class TestTemplates(RenderTestCase):
                 # venv
                 ##############################################################################
 
+                VENV_SCRIPTS=
+
+                # determine the VENV
+                ifeq ("${VENV_CREATE}", "true")
+                    VENV_SCRIPTS=${VENV_FOLDER}/bin/
+                else
+                # given we have an existing venv folder, we use it, otherwise expect scripts
+                # in system PATH.
+                    ifneq ("${VENV_FOLDER}", "")
+                        VENV_SCRIPTS=${VENV_FOLDER}/bin/
+                    endif
+                endif
+
+                # Check if given Python is installed?
+                ifeq (, $(shell which $(PYTHON_BIN) ))
+                $(error "PYTHON=$(PYTHON_BIN) not found in $(PATH)")
+                endif
+
+                # Check if given Python version is ok?
+                PYTHON_MIN_VERSION=3.7
+                PYTHON_VERSION_OK=$(shell $(PYTHON_BIN) -c "import sys; print((int(sys.version_info[0]), int(sys.version_info[1])) >= tuple(map(int, '$(PYTHON_MIN_VERSION)'.split('.'))))")
+                ifeq ($(PYTHON_VERSION_OK),0)
+                $(error "Need Python >= $(PYTHON_MIN_VERSION)")
+                endif
+
                 VENV_SENTINEL:=$(SENTINEL_FOLDER)/venv.sentinel
                 $(VENV_SENTINEL): $(SENTINEL)
                     @echo "Setup Python Virtual Environment under '$(VENV_FOLDER)'"
                     @$(PYTHON_BIN) -m venv $(VENV_FOLDER)
-                    @$(VENV_FOLDER)/bin/pip install -U pip setuptools wheel
-                    @$(VENV_FOLDER)/bin/pip install -U $(MXDEV)
-                    @$(VENV_FOLDER)/bin/pip install -U $(MXMAKE)
+                    @$(VENV_SCRIPTS)pip install -U pip setuptools wheel
+                    @$(VENV_SCRIPTS)pip install -U $(MXDEV)
+                    @$(VENV_SCRIPTS)pip install -U $(MXMAKE)
                     @touch $(VENV_SENTINEL)
 
                 .PHONY: venv
@@ -673,7 +707,9 @@ class TestParser(unittest.TestCase):
         domains = topics.resolve_domain_dependencies(domains)
         domain_settings = {
             "core.venv.PYTHON_BIN": "python3",
+            "core.venv.PYTHON_MIN_VERSION": "3.7",
             "core.venv.VENV_FOLDER": "venv",
+            "core.venv.VENV_CREATE": "true",
             "core.venv.MXDEV": "mxdev",
             "core.venv.MXMAKE": "mxmake",
         }
@@ -692,7 +728,9 @@ class TestParser(unittest.TestCase):
             makefile_parser.settings,
             {
                 "core.venv.PYTHON_BIN": "python3",
+                "core.venv.PYTHON_MIN_VERSION": "3.7",
                 "core.venv.VENV_FOLDER": "venv",
+                "core.venv.VENV_CREATE": "true",
                 "core.venv.MXDEV": "mxdev",
                 "core.venv.MXMAKE": "mxmake",
             },
