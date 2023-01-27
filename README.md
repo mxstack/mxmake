@@ -14,7 +14,7 @@ It targets the development environments for Python packages but may be used outs
 
 # Documentation
 
-The detailed `mxmake` documentation is available [mxmake.readthedocs.io](https://mxmake.readthedocs.io).
+The detailed `mxmake` documentation is available [mxstack.github.io/mxmake](https://mxstack.github.io/mxmake).
 
 
 # Copyright
