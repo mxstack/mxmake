@@ -21,11 +21,11 @@
 #:description = The Sphinx auto build executable.
 #:default = $(VENV_SCRIPTS)sphinx-autobuild
 #:
-#:[setting.DOCS_SOURCE]
+#:[setting.DOCS_SOURCE_FOLDER]
 #:description = Documentation source folder.
 #:default = docs/source
 #:
-#:[setting.DOCS_TARGET]
+#:[setting.DOCS_TARGET_FOLDER]
 #:description = Documentation generation target folder.
 #:default = docs/html
 #:
@@ -45,15 +45,15 @@ docs-install: venv
 .PHONY: docs
 docs: docs-install
 	@echo "Build sphinx docs"
-	@test -e $(DOCS_BIN) && $(DOCS_BIN) $(DOCS_SOURCE) $(DOCS_TARGET)
+	@test -e $(DOCS_BIN) && $(DOCS_BIN) $(DOCS_SOURCE_FOLDER) $(DOCS_TARGET_FOLDER)
 	@test -e $(DOCS_BIN) || echo "Sphinx binary not exists"
 
 .PHONY: docs-live
 docs-live: docs-install
 	@echo "Rebuild Sphinx documentation on changes, with live-reload in the browser"
-	@test -e $(DOCS_AUTOBUILD_BIN) && $(DOCS_AUTOBUILD_BIN) $(DOCS_SOURCE) $(DOCS_TARGET)
+	@test -e $(DOCS_AUTOBUILD_BIN) && $(DOCS_AUTOBUILD_BIN) $(DOCS_SOURCE_FOLDER) $(DOCS_TARGET_FOLDER)
 	@test -e $(DOCS_AUTOBUILD_BIN) || echo "Sphinx autobuild binary not exists"
 
 .PHONY: docs-clean
 docs-clean:
-	@rm -rf $(DOCS_TARGET)
+	@rm -rf $(DOCS_TARGET_FOLDER)
