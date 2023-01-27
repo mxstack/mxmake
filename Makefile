@@ -82,11 +82,11 @@ DOCS_AUTOBUILD_BIN?=$(VENV_FOLDER)/bin/sphinx-autobuild
 
 # Documentation source folder.
 # default: docs/source
-DOCS_SOURCE?=docs/source
+DOCS_SOURCE_FOLDER?=docs/source
 
 # Documentation generation target folder.
 # default: docs/html
-DOCS_TARGET?=docs/html
+DOCS_TARGET_FOLDER?=docs/html
 
 # Documentation Python requirements to be installed (via pip).
 # no default value
@@ -154,21 +154,21 @@ ifeq ($(PYTHON_VERSION_OK),0)
   $(error "Need Python >= $(PYTHON_MIN_VERSION)")
 endif
 
-VENV_SENTINEL:=$(SENTINEL_FOLDER)/venv.sentinel
-$(VENV_SENTINEL): $(SENTINEL)
+VENV_TARGET:=$(SENTINEL_FOLDER)/venv.sentinel
+$(VENV_TARGET): $(SENTINEL)
 	@echo "Setup Python Virtual Environment under '$(VENV_FOLDER)'"
 	@$(PYTHON_BIN) -m venv $(VENV_FOLDER)
 	@$(VENV_SCRIPTS)pip install -U pip setuptools wheel
 	@$(VENV_SCRIPTS)pip install -U $(MXDEV)
 	@$(VENV_SCRIPTS)pip install -U $(MXMAKE)
-	@touch $(VENV_SENTINEL)
+	@touch $(VENV_TARGET)
 
 .PHONY: venv
-venv: $(VENV_SENTINEL)
+venv: $(VENV_TARGET)
 
 .PHONY: venv-dirty
 venv-dirty:
-	@rm -f $(VENV_SENTINEL)
+	@rm -f $(VENV_TARGET)
 
 .PHONY: venv-clean
 venv-clean: venv-dirty
@@ -192,20 +192,20 @@ define unset_files_env
 	@unset MXMAKE_CONFIG_FOLDER
 endef
 
-FILES_SENTINEL:=$(SENTINEL_FOLDER)/files.sentinel
-$(FILES_SENTINEL): $(PROJECT_CONFIG) $(VENV_SENTINEL)
+FILES_TARGET:=$(SENTINEL_FOLDER)/files.sentinel
+$(FILES_TARGET): $(PROJECT_CONFIG) $(VENV_TARGET)
 	@echo "Create project files"
 	$(call set_files_env,$(VENV_FOLDER),$(SCRIPTS_FOLDER),$(CONFIG_FOLDER))
 	@$(VENV_SCRIPTS)mxdev -n -c $(PROJECT_CONFIG)
 	$(call unset_files_env,$(VENV_FOLDER),$(SCRIPTS_FOLDER),$(CONFIG_FOLDER))
-	@touch $(FILES_SENTINEL)
+	@touch $(FILES_TARGET)
 
 .PHONY: files
-files: $(FILES_SENTINEL)
+files: $(FILES_TARGET)
 
 .PHONY: files-dirty
 files-dirty:
-	@rm -f $(FILES_SENTINEL)
+	@rm -f $(FILES_TARGET)
 
 .PHONY: files-clean
 files-clean: files-dirty
@@ -219,18 +219,18 @@ files-clean: files-dirty
 # sources
 ##############################################################################
 
-SOURCES_SENTINEL:=$(SENTINEL_FOLDER)/sources.sentinel
-$(SOURCES_SENTINEL): $(FILES_SENTINEL)
+SOURCES_TARGET:=$(SENTINEL_FOLDER)/sources.sentinel
+$(SOURCES_TARGET): $(FILES_TARGET)
 	@echo "Checkout project sources"
 	@$(VENV_SCRIPTS)mxdev -o -c $(PROJECT_CONFIG)
-	@touch $(SOURCES_SENTINEL)
+	@touch $(SOURCES_TARGET)
 
 .PHONY: sources
-sources: $(SOURCES_SENTINEL)
+sources: $(SOURCES_TARGET)
 
 .PHONY: sources-dirty
 sources-dirty:
-	@rm -f $(SOURCES_SENTINEL)
+	@rm -f $(SOURCES_TARGET)
 
 .PHONY: sources-clean
 sources-clean: sources-dirty
@@ -242,26 +242,26 @@ sources-clean: sources-dirty
 
 INSTALLED_PACKAGES=.installed.txt
 
-INSTALL_SENTINEL:=$(SENTINEL_FOLDER)/install.sentinel
-$(INSTALL_SENTINEL): $(SOURCES_SENTINEL)
+INSTALL_TARGET:=$(SENTINEL_FOLDER)/install.sentinel
+$(INSTALL_TARGET): $(SOURCES_TARGET)
 	@echo "Install python packages"
 	@$(VENV_SCRIPTS)pip install -r requirements-mxdev.txt
 	@$(VENV_SCRIPTS)pip freeze > $(INSTALLED_PACKAGES)
-	@touch $(INSTALL_SENTINEL)
+	@touch $(INSTALL_TARGET)
 
 .PHONY: install
-install: $(INSTALL_SENTINEL)
+install: $(INSTALL_TARGET)
 
 .PHONY: install-dirty
 install-dirty:
-	@rm -f $(INSTALL_SENTINEL)
+	@rm -f $(INSTALL_TARGET)
 
 ##############################################################################
 # test
 ##############################################################################
 
 .PHONY: test
-test: $(FILES_SENTINEL) $(SOURCES_SENTINEL) $(INSTALL_SENTINEL) $(TEST_DEPENDENCY_TARGETS)
+test: $(FILES_TARGET) $(SOURCES_TARGET) $(INSTALL_TARGET) $(TEST_DEPENDENCY_TARGETS)
 	@echo "Run tests"
 	@test -z "$(TEST_COMMAND)" && echo "No test command defined"
 	@test -z "$(TEST_COMMAND)" || bash -c "$(TEST_COMMAND)"
@@ -275,7 +275,7 @@ coverage-install: venv
 	@$(VENV_SCRIPTS)pip install -U coverage
 
 .PHONY: coverage
-coverage: $(FILES_SENTINEL) $(SOURCES_SENTINEL) $(INSTALL_SENTINEL) coverage-install
+coverage: $(FILES_TARGET) $(SOURCES_TARGET) $(INSTALL_TARGET) coverage-install
 	@echo "Run coverage"
 	@test -z "$(COVERAGE_COMMAND)" && echo "No coverage command defined"
 	@test -z "$(COVERAGE_COMMAND)" || bash -c "$(COVERAGE_COMMAND)"
@@ -313,18 +313,18 @@ docs-install: venv
 .PHONY: docs
 docs: docs-install
 	@echo "Build sphinx docs"
-	@test -e $(DOCS_BIN) && $(DOCS_BIN) $(DOCS_SOURCE) $(DOCS_TARGET)
+	@test -e $(DOCS_BIN) && $(DOCS_BIN) $(DOCS_SOURCE_FOLDER) $(DOCS_TARGET_FOLDER)
 	@test -e $(DOCS_BIN) || echo "Sphinx binary not exists"
 
 .PHONY: docs-live
 docs-live: docs-install
 	@echo "Rebuild Sphinx documentation on changes, with live-reload in the browser"
-	@test -e $(DOCS_AUTOBUILD_BIN) && $(DOCS_AUTOBUILD_BIN) $(DOCS_SOURCE) $(DOCS_TARGET)
+	@test -e $(DOCS_AUTOBUILD_BIN) && $(DOCS_AUTOBUILD_BIN) $(DOCS_SOURCE_FOLDER) $(DOCS_TARGET_FOLDER)
 	@test -e $(DOCS_AUTOBUILD_BIN) || echo "Sphinx autobuild binary not exists"
 
 .PHONY: docs-clean
 docs-clean:
-	@rm -rf $(DOCS_TARGET)
+	@rm -rf $(DOCS_TARGET_FOLDER)
 
 ##############################################################################
 # system dependencies

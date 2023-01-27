@@ -70,21 +70,21 @@ ifeq ($(PYTHON_VERSION_OK),0)
   $(error "Need Python >= $(PYTHON_MIN_VERSION)")
 endif
 
-VENV_SENTINEL:=$(SENTINEL_FOLDER)/venv.sentinel
-$(VENV_SENTINEL): $(SENTINEL)
+VENV_TARGET:=$(SENTINEL_FOLDER)/venv.sentinel
+$(VENV_TARGET): $(SENTINEL)
 	@echo "Setup Python Virtual Environment under '$(VENV_FOLDER)'"
 	@$(PYTHON_BIN) -m venv $(VENV_FOLDER)
 	@$(VENV_SCRIPTS)pip install -U pip setuptools wheel
 	@$(VENV_SCRIPTS)pip install -U $(MXDEV)
 	@$(VENV_SCRIPTS)pip install -U $(MXMAKE)
-	@touch $(VENV_SENTINEL)
+	@touch $(VENV_TARGET)
 
 .PHONY: venv
-venv: $(VENV_SENTINEL)
+venv: $(VENV_TARGET)
 
 .PHONY: venv-dirty
 venv-dirty:
-	@rm -f $(VENV_SENTINEL)
+	@rm -f $(VENV_TARGET)
 
 .PHONY: venv-clean
 venv-clean: venv-dirty

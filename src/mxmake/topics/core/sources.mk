@@ -17,18 +17,18 @@
 # sources
 ##############################################################################
 
-SOURCES_SENTINEL:=$(SENTINEL_FOLDER)/sources.sentinel
-$(SOURCES_SENTINEL): $(FILES_SENTINEL)
+SOURCES_TARGET:=$(SENTINEL_FOLDER)/sources.sentinel
+$(SOURCES_TARGET): $(FILES_TARGET)
 	@echo "Checkout project sources"
 	@$(VENV_SCRIPTS)mxdev -o -c $(PROJECT_CONFIG)
-	@touch $(SOURCES_SENTINEL)
+	@touch $(SOURCES_TARGET)
 
 .PHONY: sources
-sources: $(SOURCES_SENTINEL)
+sources: $(SOURCES_TARGET)
 
 .PHONY: sources-dirty
 sources-dirty:
-	@rm -f $(SOURCES_SENTINEL)
+	@rm -f $(SOURCES_TARGET)
 
 .PHONY: sources-clean
 sources-clean: sources-dirty

@@ -32,8 +32,8 @@
 # openldap
 ##############################################################################
 
-OPENLDAP_SENTINEL:=$(SENTINEL_FOLDER)/openldap.sentinel
-$(OPENLDAP_SENTINEL): $(SENTINEL)
+OPENLDAP_TARGET:=$(SENTINEL_FOLDER)/openldap.sentinel
+$(OPENLDAP_TARGET): $(SENTINEL)
 	@echo "Building openldap server in '$(OPENLDAP_DIR)'"
 	@test -d $(OPENLDAP_DIR) || curl -o openldap-$(OPENLDAP_VERSION).tgz \
 		$(OPENLDAP_URL)/openldap-$(OPENLDAP_VERSION).tgz
@@ -49,18 +49,18 @@ $(OPENLDAP_SENTINEL): $(SENTINEL)
 		&& make depend \
 		&& make -j4 \
 		&& make install'
-	@touch $(OPENLDAP_SENTINEL)
+	@touch $(OPENLDAP_TARGET)
 
 .PHONY: openldap
-openldap: $(OPENLDAP_SENTINEL)
+openldap: $(OPENLDAP_TARGET)
 
 .PHONY: openldap-dirty
 openldap-dirty:
 	@test -d $(OPENLDAP_DIR) \
 		&& env -i -C $(OPENLDAP_DIR) $(OPENLDAP_ENV) bash -c 'make clean'
-	@rm -f $(OPENLDAP_SENTINEL)
+	@rm -f $(OPENLDAP_TARGET)
 
 .PHONY: openldap-clean
 openldap-clean:
-	@rm -f $(OPENLDAP_SENTINEL)
+	@rm -f $(OPENLDAP_TARGET)
 	@rm -rf $(OPENLDAP_DIR)

@@ -16,16 +16,16 @@
 
 INSTALLED_PACKAGES=.installed.txt
 
-INSTALL_SENTINEL:=$(SENTINEL_FOLDER)/install.sentinel
-$(INSTALL_SENTINEL): $(SOURCES_SENTINEL)
+INSTALL_TARGET:=$(SENTINEL_FOLDER)/install.sentinel
+$(INSTALL_TARGET): $(SOURCES_TARGET)
 	@echo "Install python packages"
 	@$(VENV_SCRIPTS)pip install -r requirements-mxdev.txt
 	@$(VENV_SCRIPTS)pip freeze > $(INSTALLED_PACKAGES)
-	@touch $(INSTALL_SENTINEL)
+	@touch $(INSTALL_TARGET)
 
 .PHONY: install
-install: $(INSTALL_SENTINEL)
+install: $(INSTALL_TARGET)
 
 .PHONY: install-dirty
 install-dirty:
-	@rm -f $(INSTALL_SENTINEL)
+	@rm -f $(INSTALL_TARGET)

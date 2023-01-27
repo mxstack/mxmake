@@ -16,8 +16,8 @@
 # python-ldap
 ##############################################################################
 
-PYTHON_LDAP_SENTINEL:=$(SENTINEL_FOLDER)/python-ldap.sentinel
-$(PYTHON_LDAP_SENTINEL): $(VENV_SENTINEL) $(OPENLDAP_SENTINEL)
+PYTHON_LDAP_TARGET:=$(SENTINEL_FOLDER)/python-ldap.sentinel
+$(PYTHON_LDAP_TARGET): $(VENV_TARGET) $(OPENLDAP_TARGET)
 	@$(VENV_SCRIPTS)pip install \
 		--force-reinstall \
 		--no-use-pep517 \
@@ -26,14 +26,14 @@ $(PYTHON_LDAP_SENTINEL): $(VENV_SENTINEL) $(OPENLDAP_SENTINEL)
 		--global-option="-L$(OPENLDAP_DIR)/lib" \
 		--global-option="-R$(OPENLDAP_DIR)/lib" \
 		python-ldap
-	@touch $(PYTHON_LDAP_SENTINEL)
+	@touch $(PYTHON_LDAP_TARGET)
 
 .PHONY: python-ldap
-python-ldap: $(PYTHON_LDAP_SENTINEL)
+python-ldap: $(PYTHON_LDAP_TARGET)
 
 .PHONY: python-ldap-dirty
 python-ldap-dirty:
-	@rm -f $(PYTHON_LDAP_SENTINEL)
+	@rm -f $(PYTHON_LDAP_TARGET)
 
 .PHONY: python-ldap-clean
 python-ldap-clean: python-ldap-dirty

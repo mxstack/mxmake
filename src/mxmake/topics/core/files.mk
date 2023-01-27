@@ -43,20 +43,20 @@ define unset_files_env
 	@unset MXMAKE_CONFIG_FOLDER
 endef
 
-FILES_SENTINEL:=$(SENTINEL_FOLDER)/files.sentinel
-$(FILES_SENTINEL): $(PROJECT_CONFIG) $(VENV_SENTINEL)
+FILES_TARGET:=$(SENTINEL_FOLDER)/files.sentinel
+$(FILES_TARGET): $(PROJECT_CONFIG) $(VENV_TARGET)
 	@echo "Create project files"
 	$(call set_files_env,$(VENV_FOLDER),$(SCRIPTS_FOLDER),$(CONFIG_FOLDER))
 	@$(VENV_SCRIPTS)mxdev -n -c $(PROJECT_CONFIG)
 	$(call unset_files_env,$(VENV_FOLDER),$(SCRIPTS_FOLDER),$(CONFIG_FOLDER))
-	@touch $(FILES_SENTINEL)
+	@touch $(FILES_TARGET)
 
 .PHONY: files
-files: $(FILES_SENTINEL)
+files: $(FILES_TARGET)
 
 .PHONY: files-dirty
 files-dirty:
-	@rm -f $(FILES_SENTINEL)
+	@rm -f $(FILES_TARGET)
 
 .PHONY: files-clean
 files-clean: files-dirty

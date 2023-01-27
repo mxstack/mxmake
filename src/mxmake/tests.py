@@ -624,21 +624,21 @@ class TestTemplates(RenderTestCase):
                 $(error "Need Python >= $(PYTHON_MIN_VERSION)")
                 endif
 
-                VENV_SENTINEL:=$(SENTINEL_FOLDER)/venv.sentinel
-                $(VENV_SENTINEL): $(SENTINEL)
+                VENV_TARGET:=$(SENTINEL_FOLDER)/venv.sentinel
+                $(VENV_TARGET): $(SENTINEL)
                     @echo "Setup Python Virtual Environment under '$(VENV_FOLDER)'"
                     @$(PYTHON_BIN) -m venv $(VENV_FOLDER)
                     @$(VENV_SCRIPTS)pip install -U pip setuptools wheel
                     @$(VENV_SCRIPTS)pip install -U $(MXDEV)
                     @$(VENV_SCRIPTS)pip install -U $(MXMAKE)
-                    @touch $(VENV_SENTINEL)
+                    @touch $(VENV_TARGET)
 
                 .PHONY: venv
-                venv: $(VENV_SENTINEL)
+                venv: $(VENV_TARGET)
 
                 .PHONY: venv-dirty
                 venv-dirty:
-                    @rm -f $(VENV_SENTINEL)
+                    @rm -f $(VENV_TARGET)
 
                 .PHONY: venv-clean
                 venv-clean: venv-dirty
@@ -792,21 +792,21 @@ MAKEFILE_TEMPLATE = """
 SETTING_A?=A
 SETTING_B?=B
 
-EXAMPLE_SENTINEL:=$(SENTINEL_FOLDER)/example.sentinel
-$(EXAMPLE_SENTINEL): $(SENTINEL)
+EXAMPLE_TARGET:=$(SENTINEL_FOLDER)/example.sentinel
+$(EXAMPLE_TARGET): $(SENTINEL)
 	@echo "Building example"
-	@touch $(EXAMPLE_SENTINEL)
+	@touch $(EXAMPLE_TARGET)
 
 .PHONY: example
-example: $(EXAMPLE_SENTINEL)
+example: $(EXAMPLE_TARGET)
 
 .PHONY: example-dirty
 example-dirty:
-	@rm -f $(EXAMPLE_SENTINEL)
+	@rm -f $(EXAMPLE_TARGET)
 
 .PHONY: example-clean
 example-clean:
-	@rm -f $(EXAMPLE_SENTINEL)
+	@rm -f $(EXAMPLE_TARGET)
 """
 
 
@@ -886,7 +886,7 @@ class TestDomains(unittest.TestCase):
         with open(out_path) as fd:
             out_content = fd.readlines()
         self.assertEqual(out_content[0], "SETTING_A?=A\n")
-        self.assertEqual(out_content[-1], "\t@rm -f $(EXAMPLE_SENTINEL)\n")
+        self.assertEqual(out_content[-1], "\t@rm -f $(EXAMPLE_TARGET)\n")
 
     @temp_directory
     def test_Topic(self, tmpdir):
