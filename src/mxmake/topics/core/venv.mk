@@ -65,7 +65,6 @@ ifeq (, $(shell which $(PYTHON_BIN) ))
 endif
 
 # Check if given Python version is ok?
-PYTHON_MIN_VERSION=3.7
 PYTHON_VERSION_OK=$(shell $(PYTHON_BIN) -c "import sys; print((int(sys.version_info[0]), int(sys.version_info[1])) >= tuple(map(int, '$(PYTHON_MIN_VERSION)'.split('.'))))")
 ifeq ($(PYTHON_VERSION_OK),0)
   $(error "Need Python >= $(PYTHON_MIN_VERSION)")
