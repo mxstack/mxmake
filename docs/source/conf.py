@@ -69,7 +69,7 @@ html_static_path = ["_static"]
 # theme specific options
 html_theme_options = {
     'github_url': 'https://github.com/mxstack/mxmake',
-    'pypi_url': 'https://mxstack/mxmake',
+    'pypi_url': 'https://pypi.org/project/mxmake',
     'logo_url': "_static/mxmake-logo.svg",
     'logo_title': "mxmake",
     'logo_width': "40px",
