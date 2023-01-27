@@ -21,7 +21,7 @@
 ##############################################################################
 
 .PHONY: test
-test: files sources packages $(TEST_DEPENDENCY_TARGETS)
+test: $(FILES_TARGET) $(SOURCES_TARGET) $(PACKAGES_TARGET) $(TEST_DEPENDENCY_TARGETS)
 	@echo "Run tests"
 	@test -z "$(TEST_COMMAND)" && echo "No test command defined"
 	@test -z "$(TEST_COMMAND)" || bash -c "$(TEST_COMMAND)"

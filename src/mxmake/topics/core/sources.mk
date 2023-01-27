@@ -18,7 +18,7 @@
 ##############################################################################
 
 SOURCES_TARGET:=$(SENTINEL_FOLDER)/sources.sentinel
-$(SOURCES_TARGET): files
+$(SOURCES_TARGET): $(FILES_TARGET)
 	@echo "Checkout project sources"
 	@$(VENV_SCRIPTS)mxdev -o -c $(PROJECT_CONFIG)
 	@touch $(SOURCES_TARGET)

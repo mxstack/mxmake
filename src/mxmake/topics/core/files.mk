@@ -44,7 +44,7 @@ define unset_files_env
 endef
 
 FILES_TARGET:=$(SENTINEL_FOLDER)/files.sentinel
-$(FILES_TARGET): $(PROJECT_CONFIG) venv
+$(FILES_TARGET): $(PROJECT_CONFIG) $(VENV_TARGET)
 	@echo "Create project files"
 	$(call set_files_env,$(VENV_FOLDER),$(SCRIPTS_FOLDER),$(CONFIG_FOLDER))
 	@$(VENV_SCRIPTS)mxdev -n -c $(PROJECT_CONFIG)

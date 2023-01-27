@@ -17,7 +17,7 @@
 ##############################################################################
 
 PYTHON_LDAP_TARGET:=$(SENTINEL_FOLDER)/python-ldap.sentinel
-$(PYTHON_LDAP_TARGET): venv openldap
+$(PYTHON_LDAP_TARGET): $(VENV_TARGET) $(OPENLDAP_TARGET)
 	@$(VENV_SCRIPTS)pip install \
 		--force-reinstall \
 		--no-use-pep517 \

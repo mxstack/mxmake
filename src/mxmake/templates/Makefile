@@ -28,7 +28,7 @@
 # Default targets
 ##############################################################################
 
-ifeq ("${MXMAKE_MODE}", "dev")
+ifeq ("$(MXMAKE_MODE)", "dev")
 	INSTALL_TARGETS+=$(DEV_INSTALL_TARGETS)
 	DIRTY_TARGETS+=$(DEV_DIRTY_TARGETS)
 	CLEAN_TARGETS+=$(DEV_CLEAN_TARGETS)

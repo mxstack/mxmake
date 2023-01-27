@@ -239,7 +239,7 @@ define unset_files_env
 endef
 
 FILES_TARGET:=$(SENTINEL_FOLDER)/files.sentinel
-$(FILES_TARGET): $(PROJECT_CONFIG) venv
+$(FILES_TARGET): $(PROJECT_CONFIG) $(VENV_TARGET)
 	@echo "Create project files"
 	$(call set_files_env,$(VENV_FOLDER),$(SCRIPTS_FOLDER),$(CONFIG_FOLDER))
 	@$(VENV_SCRIPTS)mxdev -n -c $(PROJECT_CONFIG)
@@ -270,7 +270,7 @@ CLEAN_TARGETS+=files-clean
 ##############################################################################
 
 SOURCES_TARGET:=$(SENTINEL_FOLDER)/sources.sentinel
-$(SOURCES_TARGET): files
+$(SOURCES_TARGET): $(FILES_TARGET)
 	@echo "Checkout project sources"
 	@$(VENV_SCRIPTS)mxdev -o -c $(PROJECT_CONFIG)
 	@touch $(SOURCES_TARGET)
@@ -297,7 +297,7 @@ DEV_PURGE_TARGETS+=sources-purge
 INSTALLED_PACKAGES=.installed.txt
 
 PACKAGES_TARGET:=$(SENTINEL_FOLDER)/packages.sentinel
-$(PACKAGES_TARGET): sources
+$(PACKAGES_TARGET): $(SOURCES_TARGET)
 	@echo "Install python packages"
 	@$(VENV_SCRIPTS)pip install -r requirements-mxdev.txt
 	@$(VENV_SCRIPTS)pip freeze > $(INSTALLED_PACKAGES)
@@ -318,7 +318,7 @@ DIRTY_TARGETS+=packages-dirty
 ##############################################################################
 
 .PHONY: test
-test: files sources packages $(TEST_DEPENDENCY_TARGETS)
+test: $(FILES_TARGET) $(SOURCES_TARGET) $(PACKAGES_TARGET) $(TEST_DEPENDENCY_TARGETS)
 	@echo "Run tests"
 	@test -z "$(TEST_COMMAND)" && echo "No test command defined"
 	@test -z "$(TEST_COMMAND)" || bash -c "$(TEST_COMMAND)"
@@ -332,7 +332,7 @@ coverage-install: venv
 	@$(VENV_SCRIPTS)pip install -U coverage
 
 .PHONY: coverage
-coverage: files sources packages coverage-install
+coverage: $(FILES_TARGET) $(SOURCES_TARGET) $(PACKAGES_TARGET) coverage-install
 	@echo "Run coverage"
 	@test -z "$(COVERAGE_COMMAND)" && echo "No coverage command defined"
 	@test -z "$(COVERAGE_COMMAND)" || bash -c "$(COVERAGE_COMMAND)"
@@ -386,7 +386,7 @@ system-dependencies:
 # Default targets
 ##############################################################################
 
-ifeq ("${MXMAKE_MODE}", "dev")
+ifeq ("$(MXMAKE_MODE)", "dev")
 	INSTALL_TARGETS+=$(DEV_INSTALL_TARGETS)
 	DIRTY_TARGETS+=$(DEV_DIRTY_TARGETS)
 	CLEAN_TARGETS+=$(DEV_CLEAN_TARGETS)

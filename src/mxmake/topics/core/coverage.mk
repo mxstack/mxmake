@@ -24,7 +24,7 @@ coverage-install: venv
 	@$(VENV_SCRIPTS)pip install -U coverage
 
 .PHONY: coverage
-coverage: files sources packages coverage-install
+coverage: $(FILES_TARGET) $(SOURCES_TARGET) $(PACKAGES_TARGET) coverage-install
 	@echo "Run coverage"
 	@test -z "$(COVERAGE_COMMAND)" && echo "No coverage command defined"
 	@test -z "$(COVERAGE_COMMAND)" || bash -c "$(COVERAGE_COMMAND)"
