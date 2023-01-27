@@ -522,10 +522,24 @@ class TestTemplates(RenderTestCase):
         domains = topics.collect_missing_dependencies(domains)
         domains = topics.resolve_domain_dependencies(domains)
         domain_settings = {
+            "core.base.MXMAKE_MODE": "dev",
+            "core.base.INSTALL_TARGETS": "",
+            "core.base.DIRTY_TARGETS": "",
+            "core.base.CLEAN_TARGETS": "",
+            "core.base.PURGE_TARGETS": "",
+            "core.base.DEV_INSTALL_TARGETS": "",
+            "core.base.DEV_DIRTY_TARGETS": "",
+            "core.base.DEV_CLEAN_TARGETS": "",
+            "core.base.DEV_PURGE_TARGETS": "",
+            "core.base.PROD_INSTALL_TARGETS": "",
+            "core.base.PROD_DIRTY_TARGETS": "",
+            "core.base.PROD_CLEAN_TARGETS": "",
+            "core.base.PROD_PURGE_TARGETS": "",
             "core.venv.PYTHON_BIN": "python3",
             "core.venv.PYTHON_MIN_VERSION": "3.7",
-            "core.venv.VENV_FOLDER": "venv",
             "core.venv.VENV_CREATE": "true",
+            "core.venv.VENV_FOLDER": "venv",
+            "core.venv.VENV_SCRIPTS": "$(VENV_FOLDER)/bin/",
             "core.venv.MXDEV": "mxdev",
             "core.venv.MXMAKE": "mxmake",
         }
@@ -544,38 +558,93 @@ class TestTemplates(RenderTestCase):
                 # SETTINGS (ALL CHANGES MADE BELOW SETTINGS WILL BE LOST)
                 ##############################################################################
 
+                ## core.base
+
+                # Run mode. either ``dev`` or ``prod``.
+                # Default: dev
+                MXMAKE_MODE?=dev
+
+                # Default `install` target dependencies.
+                # No default value.
+                INSTALL_TARGETS?=
+
+                # Default `dirty` target dependencies.
+                # No default value.
+                DIRTY_TARGETS?=
+
+                # Default `clean` target dependencies.
+                # No default value.
+                CLEAN_TARGETS?=
+
+                # Default `purge` target dependencies.
+                # No default value.
+                PURGE_TARGETS?=
+
+                # Additional `install` target dependencies in development mode.
+                # No default value.
+                DEV_INSTALL_TARGETS?=
+
+                # Additional `dirty` target dependencies in development mode.
+                # No default value.
+                DEV_DIRTY_TARGETS?=
+
+                # Additional `clean` target dependencies in development mode.
+                # No default value.
+                DEV_CLEAN_TARGETS?=
+
+                # Additional `purge` target dependencies in development mode.
+                # No default value.
+                DEV_PURGE_TARGETS?=
+
+                # Additional `install` target dependencies in production mode.
+                # No default value.
+                PROD_INSTALL_TARGETS?=
+
+                # Additional `dirty` target dependencies in production mode.
+                # No default value.
+                PROD_DIRTY_TARGETS?=
+
+                # Additional `clean` target dependencies in production mode.
+                # No default value.
+                PROD_CLEAN_TARGETS?=
+
+                # Additional `purge` target dependencies in production mode.
+                # No default value.
+                PROD_PURGE_TARGETS?=
+
                 ## core.venv
 
                 # Python interpreter to use for creating the virtual environment.
-                # default: python3
+                # Default: python3
                 PYTHON_BIN?=python3
 
                 # Minimum required Python version.
-                # default: 3.7
+                # Default: 3.7
                 PYTHON_MIN_VERSION?=3.7
 
                 # Whether to use a VENV or not; "true" or "false".
-                # default: true
+                # Default: true
                 VENV_CREATE?=true
 
                 # The folder where the virtual environment get created.
-                # default: venv
+                # Default: venv
                 VENV_FOLDER?=venv
 
+                # The folder where the virtual environment contains the
+                # executables
+                # Default: $(VENV_FOLDER)/bin/
+                VENV_SCRIPTS?=$(VENV_FOLDER)/bin/
+
                 # mxdev to install in virtual environment.
-                # default: https://github.com/mxstack/mxdev/archive/main.zip
+                # Default: https://github.com/mxstack/mxdev/archive/main.zip
                 MXDEV?=mxdev
 
                 # mxmake to install in virtual environment.
-                # default: https://github.com/mxstack/mxmake/archive/develop.zip
+                # Default: https://github.com/mxstack/mxmake/archive/develop.zip
                 MXMAKE?=mxmake
 
                 ##############################################################################
                 # END SETTINGS - DO NOT EDIT BELOW THIS LINE
-                ##############################################################################
-
-                ##############################################################################
-                # Makefile for mxmake projects.
                 ##############################################################################
 
                 # Defensive settings for make: https://tech.davis-hansson.com/p/make/
@@ -599,16 +668,14 @@ class TestTemplates(RenderTestCase):
                 # venv
                 ##############################################################################
 
-                VENV_SCRIPTS=
-
                 # determine the VENV
-                ifeq ("${VENV_CREATE}", "true")
-                    VENV_SCRIPTS=${VENV_FOLDER}/bin/
+                ifeq ("$(VENV_CREATE)", "true")
+                    VENV_SCRIPTS=$(VENV_FOLDER)/bin/
                 else
                 # given we have an existing venv folder, we use it, otherwise expect scripts
                 # in system PATH.
-                    ifneq ("${VENV_FOLDER}", "")
-                        VENV_SCRIPTS=${VENV_FOLDER}/bin/
+                    ifeq ("$(VENV_FOLDER)", "")
+                        VENV_SCRIPTS=
                     endif
                 endif
 
@@ -642,6 +709,53 @@ class TestTemplates(RenderTestCase):
                 .PHONY: venv-clean
                 venv-clean: venv-dirty
                     @rm -rf $(VENV_FOLDER)
+
+                INSTALL_TARGETS+=venv
+                DIRTY_TARGETS+=venv-dirty
+                CLEAN_TARGETS+=venv-clean
+
+                ##############################################################################
+                # Default targets
+                ##############################################################################
+
+                ifeq ("$(MXMAKE_MODE)", "dev")
+                    INSTALL_TARGETS+=$(DEV_INSTALL_TARGETS)
+                    DIRTY_TARGETS+=$(DEV_DIRTY_TARGETS)
+                    CLEAN_TARGETS+=$(DEV_CLEAN_TARGETS)
+                    PURGE_TARGETS+=$(DEV_PURGE_TARGETS)
+                else
+                    INSTALL_TARGETS+=$(PROD_INSTALL_TARGETS)
+                    DIRTY_TARGETS+=$(PROD_DIRTY_TARGETS)
+                    CLEAN_TARGETS+=$(PROD_CLEAN_TARGETS)
+                    PURGE_TARGETS+=$(PROD_PURGE_TARGETS)
+                endif
+
+                INSTALL_TARGET:=$(SENTINEL_FOLDER)/install.sentinel
+                $(INSTALL_TARGET): $(INSTALL_TARGETS)
+                    @echo "Install $(MXMAKE_MODE)"
+                    @touch $(INSTALL_TARGET)
+
+                .PHONY: install
+                install: $(INSTALL_TARGET)
+                    @touch $(INSTALL_TARGET)
+
+                .PHONY: dirty
+                dirty: $(DIRTY_TARGETS)
+                    @rm -f $(INSTALL_TARGET)
+
+                .PHONY: clean
+                clean: $(CLEAN_TARGETS)
+                    @rm -rf $(CLEAN_TARGETS) .mxmake-sentinels
+
+                .PHONY: purge
+                purge: clean $(PURGE_TARGETS)
+
+                .PHONY: runtime-clean
+                runtime-clean:
+                    @echo "Remove runtime artifacts, like byte-code and caches."
+                    @find . -name '*.py[c|o]' -delete
+                    @find . -name '*~' -exec rm -f {} +
+                    @find . -name '__pycache__' -exec rm -fr {} +
 
                 ##############################################################################
                 #: core.base
@@ -704,10 +818,24 @@ class TestParser(unittest.TestCase):
         domains = topics.collect_missing_dependencies(domains)
         domains = topics.resolve_domain_dependencies(domains)
         domain_settings = {
+            "core.base.MXMAKE_MODE": "dev",
+            "core.base.INSTALL_TARGETS": "",
+            "core.base.DIRTY_TARGETS": "",
+            "core.base.CLEAN_TARGETS": "",
+            "core.base.PURGE_TARGETS": "",
+            "core.base.DEV_INSTALL_TARGETS": "",
+            "core.base.DEV_DIRTY_TARGETS": "",
+            "core.base.DEV_CLEAN_TARGETS": "",
+            "core.base.DEV_PURGE_TARGETS": "",
+            "core.base.PROD_INSTALL_TARGETS": "",
+            "core.base.PROD_DIRTY_TARGETS": "",
+            "core.base.PROD_CLEAN_TARGETS": "",
+            "core.base.PROD_PURGE_TARGETS": "",
             "core.venv.PYTHON_BIN": "python3",
             "core.venv.PYTHON_MIN_VERSION": "3.7",
-            "core.venv.VENV_FOLDER": "venv",
             "core.venv.VENV_CREATE": "true",
+            "core.venv.VENV_FOLDER": "venv",
+            "core.venv.VENV_SCRIPTS": "$(VENV_FOLDER)/bin/",
             "core.venv.MXDEV": "mxdev",
             "core.venv.MXMAKE": "mxmake",
         }
@@ -725,10 +853,24 @@ class TestParser(unittest.TestCase):
         self.assertEqual(
             makefile_parser.settings,
             {
+                "core.base.MXMAKE_MODE": "dev",
+                "core.base.INSTALL_TARGETS": "",
+                "core.base.DIRTY_TARGETS": "",
+                "core.base.CLEAN_TARGETS": "",
+                "core.base.PURGE_TARGETS": "",
+                "core.base.DEV_INSTALL_TARGETS": "",
+                "core.base.DEV_DIRTY_TARGETS": "",
+                "core.base.DEV_CLEAN_TARGETS": "",
+                "core.base.DEV_PURGE_TARGETS": "",
+                "core.base.PROD_INSTALL_TARGETS": "",
+                "core.base.PROD_DIRTY_TARGETS": "",
+                "core.base.PROD_CLEAN_TARGETS": "",
+                "core.base.PROD_PURGE_TARGETS": "",
                 "core.venv.PYTHON_BIN": "python3",
                 "core.venv.PYTHON_MIN_VERSION": "3.7",
-                "core.venv.VENV_FOLDER": "venv",
                 "core.venv.VENV_CREATE": "true",
+                "core.venv.VENV_FOLDER": "venv",
+                "core.venv.VENV_SCRIPTS": "$(VENV_FOLDER)/bin/",
                 "core.venv.MXDEV": "mxdev",
                 "core.venv.MXMAKE": "mxmake",
             },
