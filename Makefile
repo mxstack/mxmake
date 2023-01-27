@@ -4,108 +4,153 @@
 # SETTINGS (ALL CHANGES MADE BELOW SETTINGS WILL BE LOST)
 ##############################################################################
 
+## core.base
+
+# Run mode. either ``dev`` or ``prod``.
+# Default: dev
+MXMAKE_MODE?=dev
+
+# Default `install` target dependencies.
+# No default value.
+INSTALL_TARGETS?=
+
+# Default `dirty` target dependencies.
+# No default value.
+DIRTY_TARGETS?=
+
+# Default `clean` target dependencies.
+# No default value.
+CLEAN_TARGETS?=
+
+# Default `purge` target dependencies.
+# No default value.
+PURGE_TARGETS?=
+
+# Additional `install` target dependencies in development mode.
+# No default value.
+DEV_INSTALL_TARGETS?=
+
+# Additional `dirty` target dependencies in development mode.
+# No default value.
+DEV_DIRTY_TARGETS?=
+
+# Additional `clean` target dependencies in development mode.
+# No default value.
+DEV_CLEAN_TARGETS?=
+
+# Additional `purge` target dependencies in development mode.
+# No default value.
+DEV_PURGE_TARGETS?=
+
+# Additional `install` target dependencies in production mode.
+# No default value.
+PROD_INSTALL_TARGETS?=
+
+# Additional `dirty` target dependencies in production mode.
+# No default value.
+PROD_DIRTY_TARGETS?=
+
+# Additional `clean` target dependencies in production mode.
+# No default value.
+PROD_CLEAN_TARGETS?=
+
+# Additional `purge` target dependencies in production mode.
+# No default value.
+PROD_PURGE_TARGETS?=
+
 ## core.venv
 
 # Python interpreter to use for creating the virtual environment.
-# default: python3
+# Default: python3
 PYTHON_BIN?=python3
 
 # Minimum required Python version.
-# default: 3.7
+# Default: 3.7
 PYTHON_MIN_VERSION?=3.7
 
 # Whether to use a VENV or not; "true" or "false".
-# default: true
+# Default: true
 VENV_CREATE?=true
 
 # The folder where the virtual environment get created.
-# default: venv
+# Default: venv
 VENV_FOLDER?=venv
 
+# The folder where the virtual environment contains the
+# executables
+# Default: $(VENV_FOLDER)/bin/
+VENV_SCRIPTS?=$(VENV_FOLDER)/bin/
+
 # mxdev to install in virtual environment.
-# default: https://github.com/mxstack/mxdev/archive/main.zip
+# Default: https://github.com/mxstack/mxdev/archive/main.zip
 MXDEV?=https://github.com/mxstack/mxdev/archive/main.zip
 
 # mxmake to install in virtual environment.
-# default: https://github.com/mxstack/mxmake/archive/develop.zip
+# Default: https://github.com/mxstack/mxmake/archive/develop.zip
 MXMAKE?=-e .
 
 ## core.files
 
 # The config file to use.
-# default: mx.ini
+# Default: mx.ini
 PROJECT_CONFIG?=mx.ini
 
 # Target folder for generated scripts.
-# default: $(VENV_SCRIPTS)
-SCRIPTS_FOLDER?=$(VENV_FOLDER)/bin
+# Default: $(VENV_SCRIPTS)
+SCRIPTS_FOLDER?=$(VENV_SCRIPTS)
 
 # Target folder for generated config files.
-# default: cfg
+# Default: cfg
 CONFIG_FOLDER?=cfg
 
 ## core.test
 
 # The command which gets executed. Defaults to the location the
 # :ref:`run-tests` template gets rendered to if configured.
-# default: $(SCRIPTS_FOLDER)/run-tests.sh
-TEST_COMMAND?=$(VENV_FOLDER)/bin/python -m mxmake.tests
+# Default: $(SCRIPTS_FOLDER)run-tests.sh
+TEST_COMMAND?=$(SCRIPTS_FOLDER)python -m mxmake.tests
 
 # Additional make targets the test target depends on.
-# no default value
-
+# No default value.
 TEST_DEPENDENCY_TARGETS?=
 
 ## core.coverage
 
 # The command which gets executed. Defaults to the location the
 # :ref:`run-coverage` template gets rendered to if configured.
-# default: $(SCRIPTS_FOLDER)/run-coverage.sh
-COVERAGE_COMMAND?=$(VENV_FOLDER)/bin/coverage run -m mxmake.tests
-
-## core.clean
-
-# Space separated list of files and folders to remove.
-# no default value
-
-CLEAN_TARGETS?=dist mxmake.egg-info
+# Default: $(SCRIPTS_FOLDER)run-coverage.sh
+COVERAGE_COMMAND?=$(SCRIPTS_FOLDER)run-coverage.sh
 
 ## core.docs
 
 # The Sphinx build executable.
-# default: $(VENV_SCRIPTS)sphinx-build
-DOCS_BIN?=$(VENV_FOLDER)/bin/sphinx-build
+# Default: $(VENV_SCRIPTS)sphinx-build
+DOCS_BIN?=$(VENV_SCRIPTS)sphinx-build
 
 # The Sphinx auto build executable.
-# default: $(VENV_SCRIPTS)sphinx-autobuild
-DOCS_AUTOBUILD_BIN?=$(VENV_FOLDER)/bin/sphinx-autobuild
+# Default: $(VENV_SCRIPTS)sphinx-autobuild
+DOCS_AUTOBUILD_BIN?=$(VENV_SCRIPTS)sphinx-autobuild
 
 # Documentation source folder.
-# default: docs/source
+# Default: docs/source
 DOCS_SOURCE_FOLDER?=docs/source
 
 # Documentation generation target folder.
-# default: docs/html
+# Default: docs/html
 DOCS_TARGET_FOLDER?=docs/html
 
 # Documentation Python requirements to be installed (via pip).
-# no default value
-
+# No default value.
 DOCS_REQUIREMENTS?=sphinx-conestack-theme myst-parser
 
 ## core.system-dependencies
 
 # Space separated system package names.
-# no default value
-
+# No default value.
 SYSTEM_DEPENDENCIES?=
 
 ##############################################################################
 # END SETTINGS - DO NOT EDIT BELOW THIS LINE
-##############################################################################
-
-##############################################################################
-# Makefile for mxmake projects.
 ##############################################################################
 
 # Defensive settings for make: https://tech.davis-hansson.com/p/make/
@@ -129,16 +174,14 @@ $(SENTINEL):
 # venv
 ##############################################################################
 
-VENV_SCRIPTS=
-
 # determine the VENV
-ifeq ("${VENV_CREATE}", "true")
-	VENV_SCRIPTS=${VENV_FOLDER}/bin/
+ifeq ("$(VENV_CREATE)", "true")
+	VENV_SCRIPTS=$(VENV_FOLDER)/bin/
 else
 # given we have an existing venv folder, we use it, otherwise expect scripts
 # in system PATH.
-	ifneq ("${VENV_FOLDER}", "")
-		VENV_SCRIPTS=${VENV_FOLDER}/bin/
+	ifeq ("$(VENV_FOLDER)", "")
+		VENV_SCRIPTS=
 	endif
 endif
 
@@ -173,6 +216,10 @@ venv-dirty:
 venv-clean: venv-dirty
 	@rm -rf $(VENV_FOLDER)
 
+INSTALL_TARGETS+=venv
+DIRTY_TARGETS+=venv-dirty
+CLEAN_TARGETS+=venv-clean
+
 ##############################################################################
 # files
 ##############################################################################
@@ -192,7 +239,7 @@ define unset_files_env
 endef
 
 FILES_TARGET:=$(SENTINEL_FOLDER)/files.sentinel
-$(FILES_TARGET): $(PROJECT_CONFIG) $(VENV_TARGET)
+$(FILES_TARGET): $(PROJECT_CONFIG) venv
 	@echo "Create project files"
 	$(call set_files_env,$(VENV_FOLDER),$(SCRIPTS_FOLDER),$(CONFIG_FOLDER))
 	@$(VENV_SCRIPTS)mxdev -n -c $(PROJECT_CONFIG)
@@ -214,12 +261,16 @@ files-clean: files-dirty
 	$(call unset_files_env,$(VENV_FOLDER),$(SCRIPTS_FOLDER),$(CONFIG_FOLDER))
 	@rm -f constraints-mxdev.txt requirements-mxdev.txt
 
+INSTALL_TARGETS+=files
+DIRTY_TARGETS+=files-dirty
+CLEAN_TARGETS+=files-clean
+
 ##############################################################################
 # sources
 ##############################################################################
 
 SOURCES_TARGET:=$(SENTINEL_FOLDER)/sources.sentinel
-$(SOURCES_TARGET): $(FILES_TARGET)
+$(SOURCES_TARGET): files
 	@echo "Checkout project sources"
 	@$(VENV_SCRIPTS)mxdev -o -c $(PROJECT_CONFIG)
 	@touch $(SOURCES_TARGET)
@@ -231,36 +282,43 @@ sources: $(SOURCES_TARGET)
 sources-dirty:
 	@rm -f $(SOURCES_TARGET)
 
-.PHONY: sources-clean
-sources-clean: sources-dirty
+.PHONY: sources-purge
+sources-purge: sources-dirty
 	@rm -rf sources
 
+DEV_INSTALL_TARGETS+=sources
+DEV_DIRTY_TARGETS+=sources-dirty
+DEV_PURGE_TARGETS+=sources-purge
+
 ##############################################################################
-# install
+# packages
 ##############################################################################
 
 INSTALLED_PACKAGES=.installed.txt
 
-INSTALL_TARGET:=$(SENTINEL_FOLDER)/install.sentinel
-$(INSTALL_TARGET): $(SOURCES_TARGET)
+PACKAGES_TARGET:=$(SENTINEL_FOLDER)/packages.sentinel
+$(PACKAGES_TARGET): sources
 	@echo "Install python packages"
 	@$(VENV_SCRIPTS)pip install -r requirements-mxdev.txt
 	@$(VENV_SCRIPTS)pip freeze > $(INSTALLED_PACKAGES)
-	@touch $(INSTALL_TARGET)
+	@touch $(PACKAGES_TARGET)
 
-.PHONY: install
-install: $(INSTALL_TARGET)
+.PHONY: packages
+packages: $(PACKAGES_TARGET)
 
-.PHONY: install-dirty
-install-dirty:
-	@rm -f $(INSTALL_TARGET)
+.PHONY: packages-dirty
+packages-dirty:
+	@rm -f $(PACKAGES_TARGET)
+
+INSTALL_TARGETS+=packages
+DIRTY_TARGETS+=packages-dirty
 
 ##############################################################################
 # test
 ##############################################################################
 
 .PHONY: test
-test: $(FILES_TARGET) $(SOURCES_TARGET) $(INSTALL_TARGET) $(TEST_DEPENDENCY_TARGETS)
+test: files sources packages $(TEST_DEPENDENCY_TARGETS)
 	@echo "Run tests"
 	@test -z "$(TEST_COMMAND)" && echo "No test command defined"
 	@test -z "$(TEST_COMMAND)" || bash -c "$(TEST_COMMAND)"
@@ -274,7 +332,7 @@ coverage-install: venv
 	@$(VENV_SCRIPTS)pip install -U coverage
 
 .PHONY: coverage
-coverage: $(FILES_TARGET) $(SOURCES_TARGET) $(INSTALL_TARGET) coverage-install
+coverage: files sources packages coverage-install
 	@echo "Run coverage"
 	@test -z "$(COVERAGE_COMMAND)" && echo "No coverage command defined"
 	@test -z "$(COVERAGE_COMMAND)" || bash -c "$(COVERAGE_COMMAND)"
@@ -283,23 +341,8 @@ coverage: $(FILES_TARGET) $(SOURCES_TARGET) $(INSTALL_TARGET) coverage-install
 coverage-clean:
 	@rm -rf .coverage htmlcov
 
-##############################################################################
-# clean
-##############################################################################
-
-.PHONY: clean
-clean: files-clean venv-clean docs-clean coverage-clean
-	@rm -rf $(CLEAN_TARGETS) .mxmake-sentinels .installed.txt
-
-.PHONY: full-clean
-full-clean: clean sources-clean
-
-.PHONY: runtime-clean
-runtime-clean:
-	@echo "Remove runtime artifacts, like byte-code and caches."
-	@find . -name '*.py[c|o]' -delete
-	@find . -name '*~' -exec rm -f {} +
-	@find . -name '__pycache__' -exec rm -fr {} +
+DEV_INSTALL_TARGETS+=coverage-install
+DEV_CLEAN_TARGETS+=coverage-clean
 
 ##############################################################################
 # docs
@@ -325,6 +368,9 @@ docs-live: docs-install
 docs-clean:
 	@rm -rf $(DOCS_TARGET_FOLDER)
 
+DEV_INSTALL_TARGETS+=docs-install
+DEV_CLEAN_TARGETS+=docs-clean
+
 ##############################################################################
 # system dependencies
 ##############################################################################
@@ -337,14 +383,56 @@ system-dependencies:
 		|| sudo apt-get install -y $(SYSTEM_DEPENDENCIES)
 
 ##############################################################################
+# Default targets
+##############################################################################
+
+ifeq ("${MXMAKE_MODE}", "dev")
+	INSTALL_TARGETS+=$(DEV_INSTALL_TARGETS)
+	DIRTY_TARGETS+=$(DEV_DIRTY_TARGETS)
+	CLEAN_TARGETS+=$(DEV_CLEAN_TARGETS)
+	PURGE_TARGETS+=$(DEV_PURGE_TARGETS)
+else
+	INSTALL_TARGETS+=$(PROD_INSTALL_TARGETS)
+	DIRTY_TARGETS+=$(PROD_DIRTY_TARGETS)
+	CLEAN_TARGETS+=$(PROD_CLEAN_TARGETS)
+	PURGE_TARGETS+=$(PROD_PURGE_TARGETS)
+endif
+
+INSTALL_TARGET:=$(SENTINEL_FOLDER)/install.sentinel
+$(INSTALL_TARGET): $(INSTALL_TARGETS)
+	@echo "Install $(MXMAKE_MODE)"
+	@touch $(INSTALL_TARGET)
+
+.PHONY: install
+install: $(INSTALL_TARGET)
+	@touch $(INSTALL_TARGET)
+
+.PHONY: dirty
+dirty: $(DIRTY_TARGETS)
+	@rm -f $(INSTALL_TARGET)
+
+.PHONY: clean
+clean: $(CLEAN_TARGETS)
+	@rm -rf $(CLEAN_TARGETS) .mxmake-sentinels
+
+.PHONY: purge
+purge: clean $(PURGE_TARGETS)
+
+.PHONY: runtime-clean
+runtime-clean:
+	@echo "Remove runtime artifacts, like byte-code and caches."
+	@find . -name '*.py[c|o]' -delete
+	@find . -name '*~' -exec rm -f {} +
+	@find . -name '__pycache__' -exec rm -fr {} +
+
+##############################################################################
 #: core.base
 #: core.venv
 #: core.files
 #: core.sources
-#: core.install
+#: core.packages
 #: core.test
 #: core.coverage
-#: core.clean
 #: core.docs
 #: core.system-dependencies
 ##############################################################################

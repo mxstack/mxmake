@@ -13,7 +13,7 @@
 #:[setting.COVERAGE_COMMAND]
 #:description = The command which gets executed. Defaults to the location the
 #:  :ref:`run-coverage` template gets rendered to if configured.
-#:default = $(SCRIPTS_FOLDER)/run-coverage.sh
+#:default = $(SCRIPTS_FOLDER)run-coverage.sh
 
 ##############################################################################
 # coverage

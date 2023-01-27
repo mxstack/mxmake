@@ -20,61 +20,57 @@
 #:[target.runtime-clean]
 #:description = Remove runtime artifacts, like byte-code and caches.
 #:
-#:[base.MXMAKE_MODE]
+#:[setting.MXMAKE_MODE]
 #:description = Run mode. either ``dev`` or ``prod``.
 #:default = dev
 #:
-#:[base.INSTALL_TARGETS]
+#:[setting.INSTALL_TARGETS]
 #:description = Default `install` target dependencies.
 #:default =
 #:
-#:[base.DIRTY_TARGETS]
+#:[setting.DIRTY_TARGETS]
 #:description = Default `dirty` target dependencies.
 #:default =
 #:
-#:[base.CLEAN_TARGETS]
+#:[setting.CLEAN_TARGETS]
 #:description = Default `clean` target dependencies.
 #:default =
 #:
-#:[base.PURGE_TARGETS]
+#:[setting.PURGE_TARGETS]
 #:description = Default `purge` target dependencies.
 #:default =
 #:
-#:[base.DEV_INSTALL_TARGETS]
+#:[setting.DEV_INSTALL_TARGETS]
 #:description = Additional `install` target dependencies in development mode.
 #:default =
 #:
-#:[base.DEV_DIRTY_TARGETS]
+#:[setting.DEV_DIRTY_TARGETS]
 #:description = Additional `dirty` target dependencies in development mode.
 #:default =
 #:
-#:[base.DEV_CLEAN_TARGETS]
+#:[setting.DEV_CLEAN_TARGETS]
 #:description = Additional `clean` target dependencies in development mode.
 #:default =
 #:
-#:[base.DEV_PURGE_TARGETS]
+#:[setting.DEV_PURGE_TARGETS]
 #:description = Additional `purge` target dependencies in development mode.
 #:default =
 #:
-#:[base.PROD_INSTALL_TARGETS]
+#:[setting.PROD_INSTALL_TARGETS]
 #:description = Additional `install` target dependencies in production mode.
 #:default =
 #:
-#:[base.PROD_DIRTY_TARGETS]
+#:[setting.PROD_DIRTY_TARGETS]
 #:description = Additional `dirty` target dependencies in production mode.
 #:default =
 #:
-#:[base.PROD_CLEAN_TARGETS]
+#:[setting.PROD_CLEAN_TARGETS]
 #:description = Additional `clean` target dependencies in production mode.
 #:default =
 #:
-#:[base.PROD_PURGE_TARGETS]
+#:[setting.PROD_PURGE_TARGETS]
 #:description = Additional `purge` target dependencies in production mode.
 #:default =
-
-##############################################################################
-# Makefile for mxmake projects.
-##############################################################################
 
 # Defensive settings for make: https://tech.davis-hansson.com/p/make/
 SHELL:=bash

@@ -34,6 +34,11 @@
 #:description = The folder where the virtual environment get created.
 #:default = venv
 #:
+#:[setting.VENV_SCRIPTS]
+#:description = The folder where the virtual environment contains the
+#:  executables
+#:default = $(VENV_FOLDER)/bin/
+#:
 #:[setting.MXDEV]
 #:description = mxdev to install in virtual environment.
 #:default = https://github.com/mxstack/mxdev/archive/main.zip
@@ -46,16 +51,14 @@
 # venv
 ##############################################################################
 
-VENV_SCRIPTS=
-
 # determine the VENV
-ifeq ("${VENV_CREATE}", "true")
-	VENV_SCRIPTS=${VENV_FOLDER}/bin/
+ifeq ("$(VENV_CREATE)", "true")
+	VENV_SCRIPTS=$(VENV_FOLDER)/bin/
 else
 # given we have an existing venv folder, we use it, otherwise expect scripts
 # in system PATH.
-	ifneq ("${VENV_FOLDER}", "")
-		VENV_SCRIPTS=${VENV_FOLDER}/bin/
+	ifeq ("$(VENV_FOLDER)", "")
+		VENV_SCRIPTS=
 	endif
 endif
 
