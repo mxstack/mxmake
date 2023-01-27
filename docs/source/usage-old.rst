@@ -1,17 +1,16 @@
-Usage
-=====
+Usage (mostly outdated)
+=======================
 
 
 Basics
 ------
 
-To bootstrap a new project with mxmake, download ``Makefile`` and ``mx.ini``
-to your project folder:
+To bootstrap a new project with *mxmake*, create a project for your project:
 
 .. code-block:: sh
 
-    $ wget https://raw.githubusercontent.com/mxstack/mxmake/master/makefiles/Makefile
-    $ wget https://raw.githubusercontent.com/mxstack/mxmake/master/examples/mx.ini
+    $ wget https://raw.githubusercontent.com/mxstack/mxmake/main/makefiles/Makefile
+    $ wget https://raw.githubusercontent.com/mxstack/mxmake/main/examples/mx.ini
 
 Optionally create ``mk`` folder and inside create ``project.mk`` for project
 specific settings, includes and custom make targets. If this file is present it
@@ -21,7 +20,7 @@ gets included when running make:
 
     $ mkdir mk
     $ cd mk
-    $ wget https://raw.githubusercontent.com/mxstack/mxmake/master/examples/project.mk
+    $ wget https://raw.githubusercontent.com/mxstack/mxmake/main/examples/project.mk
 
 After proper :ref:`Configuration` of the ini file, run:
 

@@ -17,7 +17,8 @@ In addition to the Makefile, *mxmake* also creates helper scripts for developmen
 maxdepth: 2
 ---
 
-usage
+getting-started
+usage-oldrst
 topics
 contributing
 
