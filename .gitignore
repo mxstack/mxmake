@@ -2,7 +2,7 @@
 *.pyc
 __pycache__
 /.installed.txt
-/.make-sentinels/
+/.mxmake-sentinels/
 /.vscode/
 /build/
 /constraints-mxdev.txt

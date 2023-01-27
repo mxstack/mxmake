@@ -27,7 +27,7 @@ VENV_FOLDER?=venv
 MXDEV?=https://github.com/mxstack/mxdev/archive/main.zip
 
 # mxmake to install in virtual environment.
-# default: https://github.com/mxstack/mxmake/archive/inquirer-sandbox.zip
+# default: https://github.com/mxstack/mxmake/archive/develop.zip
 MXMAKE?=-e .
 
 ## core.files
@@ -120,7 +120,7 @@ MAKEFLAGS+=--warn-undefined-variables
 MAKEFLAGS+=--no-builtin-rules
 
 # Sentinel files
-SENTINEL_FOLDER?=.make-sentinels
+SENTINEL_FOLDER?=.mxmake-sentinels
 SENTINEL?=$(SENTINEL_FOLDER)/about.txt
 $(SENTINEL):
 	@mkdir -p $(SENTINEL_FOLDER)
@@ -149,7 +149,6 @@ ifeq (, $(shell which $(PYTHON_BIN) ))
 endif
 
 # Check if given Python version is ok?
-PYTHON_MIN_VERSION=3.7
 PYTHON_VERSION_OK=$(shell $(PYTHON_BIN) -c "import sys; print((int(sys.version_info[0]), int(sys.version_info[1])) >= tuple(map(int, '$(PYTHON_MIN_VERSION)'.split('.'))))")
 ifeq ($(PYTHON_VERSION_OK),0)
   $(error "Need Python >= $(PYTHON_MIN_VERSION)")
@@ -291,7 +290,7 @@ coverage-clean:
 
 .PHONY: clean
 clean: files-clean venv-clean docs-clean coverage-clean
-	@rm -rf $(CLEAN_TARGETS) .make-sentinels .installed.txt
+	@rm -rf $(CLEAN_TARGETS) .mxmake-sentinels .installed.txt
 
 .PHONY: full-clean
 full-clean: clean sources-clean

@@ -590,7 +590,7 @@ class TestTemplates(RenderTestCase):
                 MAKEFLAGS+=--no-builtin-rules
 
                 # Sentinel files
-                SENTINEL_FOLDER?=.make-sentinels
+                SENTINEL_FOLDER?=.mxmake-sentinels
                 SENTINEL?=$(SENTINEL_FOLDER)/about.txt
                 $(SENTINEL):
                     @mkdir -p $(SENTINEL_FOLDER)
