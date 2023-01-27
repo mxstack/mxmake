@@ -22,7 +22,7 @@
 
 .PHONY: clean
 clean: files-clean venv-clean docs-clean coverage-clean
-	@rm -rf $(CLEAN_TARGETS) .sentinels .installed.txt
+	@rm -rf $(CLEAN_TARGETS) .make-sentinels .installed.txt
 
 .PHONY: full-clean
 full-clean: clean sources-clean

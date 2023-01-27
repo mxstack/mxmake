@@ -120,7 +120,7 @@ MAKEFLAGS+=--warn-undefined-variables
 MAKEFLAGS+=--no-builtin-rules
 
 # Sentinel files
-SENTINEL_FOLDER?=.sentinels
+SENTINEL_FOLDER?=.make-sentinels
 SENTINEL?=$(SENTINEL_FOLDER)/about.txt
 $(SENTINEL):
 	@mkdir -p $(SENTINEL_FOLDER)
@@ -291,7 +291,7 @@ coverage-clean:
 
 .PHONY: clean
 clean: files-clean venv-clean docs-clean coverage-clean
-	@rm -rf $(CLEAN_TARGETS) .sentinels .installed.txt
+	@rm -rf $(CLEAN_TARGETS) .make-sentinels .installed.txt
 
 .PHONY: full-clean
 full-clean: clean sources-clean
