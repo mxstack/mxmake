@@ -1,7 +1,7 @@
 #:[coverage]
 #:title = Coverage
 #:description = Project coverage testing.
-#:depends = core.install
+#:depends = core.packages
 #:
 #:[target.coverage]
 #:description = Run project coverage. :ref:`run-coverage` template can be
@@ -24,7 +24,7 @@ coverage-install: venv
 	@$(VENV_SCRIPTS)pip install -U coverage
 
 .PHONY: coverage
-coverage: $(FILES_TARGET) $(SOURCES_TARGET) $(INSTALL_TARGET) coverage-install
+coverage: files sources packages coverage-install
 	@echo "Run coverage"
 	@test -z "$(COVERAGE_COMMAND)" && echo "No coverage command defined"
 	@test -z "$(COVERAGE_COMMAND)" || bash -c "$(COVERAGE_COMMAND)"
@@ -32,3 +32,6 @@ coverage: $(FILES_TARGET) $(SOURCES_TARGET) $(INSTALL_TARGET) coverage-install
 .PHONY: coverage-clean
 coverage-clean:
 	@rm -rf .coverage htmlcov
+
+DEV_INSTALL_TARGETS+=coverage-install
+DEV_CLEAN_TARGETS+=coverage-clean

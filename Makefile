@@ -101,9 +101,8 @@ DOCS_REQUIREMENTS?=sphinx-conestack-theme myst-parser
 SYSTEM_DEPENDENCIES?=
 
 ##############################################################################
-# END OF SETTINGS - DO NOT EDIT BELOW THIS LINE
+# END SETTINGS - DO NOT EDIT BELOW THIS LINE
 ##############################################################################
-
 
 ##############################################################################
 # Makefile for mxmake projects.

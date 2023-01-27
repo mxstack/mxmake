@@ -33,7 +33,6 @@
 #:description = Documentation Python requirements to be installed (via pip).
 #:default =
 
-
 ##############################################################################
 # docs
 ##############################################################################
@@ -57,3 +56,6 @@ docs-live: docs-install
 .PHONY: docs-clean
 docs-clean:
 	@rm -rf $(DOCS_TARGET_FOLDER)
+
+DEV_INSTALL_TARGETS+=docs-install
+DEV_CLEAN_TARGETS+=docs-clean

@@ -571,9 +571,8 @@ class TestTemplates(RenderTestCase):
                 MXMAKE?=mxmake
 
                 ##############################################################################
-                # END OF SETTINGS - DO NOT EDIT BELOW THIS LINE
+                # END SETTINGS - DO NOT EDIT BELOW THIS LINE
                 ##############################################################################
-
 
                 ##############################################################################
                 # Makefile for mxmake projects.

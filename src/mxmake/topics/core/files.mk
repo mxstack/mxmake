@@ -44,7 +44,7 @@ define unset_files_env
 endef
 
 FILES_TARGET:=$(SENTINEL_FOLDER)/files.sentinel
-$(FILES_TARGET): $(PROJECT_CONFIG) $(VENV_TARGET)
+$(FILES_TARGET): $(PROJECT_CONFIG) venv
 	@echo "Create project files"
 	$(call set_files_env,$(VENV_FOLDER),$(SCRIPTS_FOLDER),$(CONFIG_FOLDER))
 	@$(VENV_SCRIPTS)mxdev -n -c $(PROJECT_CONFIG)
@@ -65,3 +65,7 @@ files-clean: files-dirty
 		$(VENV_SCRIPTS)mxmake clean -c $(PROJECT_CONFIG)
 	$(call unset_files_env,$(VENV_FOLDER),$(SCRIPTS_FOLDER),$(CONFIG_FOLDER))
 	@rm -f constraints-mxdev.txt requirements-mxdev.txt
+
+INSTALL_TARGETS+=files
+DIRTY_TARGETS+=files-dirty
+CLEAN_TARGETS+=files-clean

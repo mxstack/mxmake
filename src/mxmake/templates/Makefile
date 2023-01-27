@@ -11,9 +11,9 @@
 {% for line in setting.description %}
 # {{ line }}
 {% endfor %}
-{% if setting.default %}
+{% if setting.default -%}
 # default: {{ setting.default }}
-{% else %}
+{% else -%}
 # no default value
 
 {% endif %}
@@ -22,10 +22,52 @@
 {% endfor -%}
 {% endfor -%}
 ##############################################################################
-# END OF SETTINGS - DO NOT EDIT BELOW THIS LINE
+# END SETTINGS - DO NOT EDIT BELOW THIS LINE
+##############################################################################
+{{ sections.read() }}
+##############################################################################
+# Default targets
 ##############################################################################
 
-{{ sections.read() }}
+ifeq ("${MXMAKE_MODE}", "dev")
+	INSTALL_TARGETS+=$(DEV_INSTALL_TARGETS)
+	DIRTY_TARGETS+=$(DEV_DIRTY_TARGETS)
+	CLEAN_TARGETS+=$(DEV_CLEAN_TARGETS)
+	PURGE_TARGETS+=$(DEV_PURGE_TARGETS)
+else
+	INSTALL_TARGETS+=$(PROD_INSTALL_TARGETS)
+	DIRTY_TARGETS+=$(PROD_DIRTY_TARGETS)
+	CLEAN_TARGETS+=$(PROD_CLEAN_TARGETS)
+	PURGE_TARGETS+=$(PROD_PURGE_TARGETS)
+endif
+
+INSTALL_TARGET:=$(SENTINEL_FOLDER)/install.sentinel
+$(INSTALL_TARGET): $(INSTALL_TARGETS)
+	@echo "Install $(MXMAKE_MODE)"
+	@touch $(INSTALL_TARGET)
+
+.PHONY: install
+install: $(INSTALL_TARGET)
+	@touch $(INSTALL_TARGET)
+
+.PHONY: dirty
+dirty: $(DIRTY_TARGETS)
+	@rm -f $(INSTALL_TARGET)
+
+.PHONY: clean
+clean: $(CLEAN_TARGETS)
+	@rm -rf $(CLEAN_TARGETS) .mxmake-sentinels
+
+.PHONY: purge
+purge: clean $(PURGE_TARGETS)
+
+.PHONY: runtime-clean
+runtime-clean:
+	@echo "Remove runtime artifacts, like byte-code and caches."
+	@find . -name '*.py[c|o]' -delete
+	@find . -name '*~' -exec rm -f {} +
+	@find . -name '__pycache__' -exec rm -fr {} +
+
 ##############################################################################
 {% for fqn in fqns %}
 #: {{ fqn }}

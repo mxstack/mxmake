@@ -10,7 +10,7 @@
 #:[target.sources-dirty]
 #:description = Build :ref:`sources` target on next make run.
 #:
-#:[target.sources-clean]
+#:[target.sources-purge]
 #:description = Removes sources folder.
 
 ##############################################################################
@@ -18,7 +18,7 @@
 ##############################################################################
 
 SOURCES_TARGET:=$(SENTINEL_FOLDER)/sources.sentinel
-$(SOURCES_TARGET): $(FILES_TARGET)
+$(SOURCES_TARGET): files
 	@echo "Checkout project sources"
 	@$(VENV_SCRIPTS)mxdev -o -c $(PROJECT_CONFIG)
 	@touch $(SOURCES_TARGET)
@@ -30,6 +30,10 @@ sources: $(SOURCES_TARGET)
 sources-dirty:
 	@rm -f $(SOURCES_TARGET)
 
-.PHONY: sources-clean
-sources-clean: sources-dirty
+.PHONY: sources-purge
+sources-purge: sources-dirty
 	@rm -rf sources
+
+DEV_INSTALL_TARGETS+=sources
+DEV_DIRTY_TARGETS+=sources-dirty
+DEV_PURGE_TARGETS+=sources-purge

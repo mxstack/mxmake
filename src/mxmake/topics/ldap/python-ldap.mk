@@ -17,7 +17,7 @@
 ##############################################################################
 
 PYTHON_LDAP_TARGET:=$(SENTINEL_FOLDER)/python-ldap.sentinel
-$(PYTHON_LDAP_TARGET): $(VENV_TARGET) $(OPENLDAP_TARGET)
+$(PYTHON_LDAP_TARGET): venv openldap
 	@$(VENV_SCRIPTS)pip install \
 		--force-reinstall \
 		--no-use-pep517 \
@@ -38,3 +38,7 @@ python-ldap-dirty:
 .PHONY: python-ldap-clean
 python-ldap-clean: python-ldap-dirty
 	@test -e $(VENV_SCRIPTS)pip && $(VENV_SCRIPTS)pip uninstall -y python-ldap
+
+DEV_INSTALL_TARGETS+=python-ldap
+DEV_DIRTY_TARGETS+=python-ldap-dirty
+DEV_CLEAN_TARGETS+=python-ldap-clean

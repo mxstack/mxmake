@@ -89,3 +89,7 @@ venv-dirty:
 .PHONY: venv-clean
 venv-clean: venv-dirty
 	@rm -rf $(VENV_FOLDER)
+
+INSTALL_TARGETS+=venv
+DIRTY_TARGETS+=venv-dirty
+CLEAN_TARGETS+=venv-clean
