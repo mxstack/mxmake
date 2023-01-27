@@ -1,8 +1,6 @@
 <img src="https://raw.githubusercontent.com/mxstack/mxmake/c0eb5ce8e21468cc674482b099e772ac4b20003d/docs/source/_static/mxmake-logo.svg"
      alt="Markdown Monster icon"
-     style="float:right; margin-left: 10px; margin-bottom: 10px; width: 25%" />
-
-*mxmake* [mɪks meɪk] generates a project-specific Makefile by using an extensible library of configurable Makefile snippets.
+     style="float:right; margin-left: 10px; margin-bottom: 10px; width: 25%" /> *mxmake* [mɪks meɪk] generates a project-specific Makefile by using an extensible library of configurable Makefile snippets.
 
 It targets the development environments for Python packages but may be used outside of this playground.
 
