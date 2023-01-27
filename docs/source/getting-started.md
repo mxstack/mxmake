@@ -40,6 +40,8 @@ mxmake init
 This is an interactive session and some questions are to be answered.
 If in doubt select the `core` topic and then just hit {kbd}`Return` until done.
 
+This creates an empty `mx.ini` and a `Makefile`.
+
 ## How to change the settings
 
 todo
