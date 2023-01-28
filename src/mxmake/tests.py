@@ -670,17 +670,17 @@ class TestTemplates(RenderTestCase):
 
                 # determine the VENV
                 ifeq ("$(VENV_CREATE)", "true")
-                    VENV_SCRIPTS=$(VENV_FOLDER)/bin/
+                VENV_SCRIPTS=$(VENV_FOLDER)/bin/
                 else
                 # given we have an existing venv folder, we use it, otherwise expect scripts
                 # in system PATH.
-                    ifeq ("$(VENV_FOLDER)", "")
-                        VENV_SCRIPTS=
-                    endif
+                ifeq ("$(VENV_FOLDER)", "")
+                VENV_SCRIPTS=
+                endif
                 endif
 
                 # Check if given Python is installed?
-                ifeq (, $(shell which $(PYTHON_BIN) ))
+                ifeq (, $(shell which $(PYTHON_BIN)))
                 $(error "PYTHON=$(PYTHON_BIN) not found in $(PATH)")
                 endif
 
@@ -719,20 +719,19 @@ class TestTemplates(RenderTestCase):
                 ##############################################################################
 
                 ifeq ("$(MXMAKE_MODE)", "dev")
-                    INSTALL_TARGETS+=$(DEV_INSTALL_TARGETS)
-                    DIRTY_TARGETS+=$(DEV_DIRTY_TARGETS)
-                    CLEAN_TARGETS+=$(DEV_CLEAN_TARGETS)
-                    PURGE_TARGETS+=$(DEV_PURGE_TARGETS)
+                INSTALL_TARGETS+=$(DEV_INSTALL_TARGETS)
+                DIRTY_TARGETS+=$(DEV_DIRTY_TARGETS)
+                CLEAN_TARGETS+=$(DEV_CLEAN_TARGETS)
+                PURGE_TARGETS+=$(DEV_PURGE_TARGETS)
                 else
-                    INSTALL_TARGETS+=$(PROD_INSTALL_TARGETS)
-                    DIRTY_TARGETS+=$(PROD_DIRTY_TARGETS)
-                    CLEAN_TARGETS+=$(PROD_CLEAN_TARGETS)
-                    PURGE_TARGETS+=$(PROD_PURGE_TARGETS)
+                INSTALL_TARGETS+=$(PROD_INSTALL_TARGETS)
+                DIRTY_TARGETS+=$(PROD_DIRTY_TARGETS)
+                CLEAN_TARGETS+=$(PROD_CLEAN_TARGETS)
+                PURGE_TARGETS+=$(PROD_PURGE_TARGETS)
                 endif
 
                 INSTALL_TARGET:=$(SENTINEL_FOLDER)/install.sentinel
                 $(INSTALL_TARGET): $(INSTALL_TARGETS)
-                    @echo "Install $(MXMAKE_MODE)"
                     @touch $(INSTALL_TARGET)
 
                 .PHONY: install
@@ -744,7 +743,7 @@ class TestTemplates(RenderTestCase):
                     @rm -f $(INSTALL_TARGET)
 
                 .PHONY: clean
-                clean: $(CLEAN_TARGETS)
+                clean: dirty $(CLEAN_TARGETS)
                     @rm -rf $(CLEAN_TARGETS) .mxmake-sentinels
 
                 .PHONY: purge

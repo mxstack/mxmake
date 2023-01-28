@@ -420,7 +420,6 @@ endif
 
 INSTALL_TARGET:=$(SENTINEL_FOLDER)/install.sentinel
 $(INSTALL_TARGET): $(INSTALL_TARGETS)
-	@echo "Install $(MXMAKE_MODE)"
 	@touch $(INSTALL_TARGET)
 
 .PHONY: install
@@ -432,7 +431,7 @@ dirty: $(DIRTY_TARGETS)
 	@rm -f $(INSTALL_TARGET)
 
 .PHONY: clean
-clean: $(CLEAN_TARGETS)
+clean: dirty $(CLEAN_TARGETS)
 	@rm -rf $(CLEAN_TARGETS) .mxmake-sentinels
 
 .PHONY: purge
