@@ -1,7 +1,7 @@
 #:[sources]
 #:title = Sources
 #:description = Source package management.
-#:depends = core.files
+#:depends = core.mxfiles
 #:
 #:[target.sources]
 #:description = Checkout sources by running ``mxdev``. It does not generate

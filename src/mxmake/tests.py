@@ -1064,14 +1064,14 @@ class TestDomains(unittest.TestCase):
     def test_collect_missing_dependencies(self):
         domains = [
             topics.get_domain("ldap.python-ldap"),
-            topics.get_domain("core.files"),
+            topics.get_domain("core.mxfiles"),
         ]
         all_dependencies = topics.collect_missing_dependencies(domains)
         self.assertEqual(
             sorted(domain.fqn for domain in all_dependencies),
             [
                 "core.base",
-                "core.files",
+                "core.mxfiles",
                 "core.venv",
                 "ldap.openldap",
                 "ldap.python-ldap",
@@ -1098,7 +1098,7 @@ class TestMain(unittest.TestCase):
         self.assertEqual(templates, ["run-tests", "run-coverage"])
 
     @template_directory()
-    def test_clean_files(self, tempdir):
+    def test_clean_mxfiles(self, tempdir):
         config_file = io.StringIO()
         config_file.write("[settings]\n")
         config_file.seek(0)
