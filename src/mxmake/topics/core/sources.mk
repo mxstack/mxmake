@@ -34,6 +34,6 @@ sources-dirty:
 sources-purge: sources-dirty
 	@rm -rf sources
 
-DEV_INSTALL_TARGETS+=sources
-DEV_DIRTY_TARGETS+=sources-dirty
-DEV_PURGE_TARGETS+=sources-purge
+INSTALL_TARGETS+=sources
+DIRTY_TARGETS+=sources-dirty
+PURGE_TARGETS+=sources-purge

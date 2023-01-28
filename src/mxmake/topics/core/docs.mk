@@ -66,6 +66,6 @@ docs-dirty:
 docs-clean: docs-dirty
 	@rm -rf $(DOCS_TARGET_FOLDER)
 
-DEV_INSTALL_TARGETS+=docs-install
-DEV_DIRTY_TARGETS+=docs-dirty
-DEV_CLEAN_TARGETS+=docs-clean
+INSTALL_TARGETS+=docs-install
+DIRTY_TARGETS+=docs-dirty
+CLEAN_TARGETS+=docs-clean

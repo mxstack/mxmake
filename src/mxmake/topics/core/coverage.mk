@@ -42,6 +42,6 @@ coverage-dirty:
 coverage-clean: coverage-dirty
 	@rm -rf .coverage htmlcov
 
-DEV_INSTALL_TARGETS+=coverage-install
-DEV_DIRTY_TARGETS+=coverage-dirty
-DEV_CLEAN_TARGETS+=coverage-clean
+INSTALL_TARGETS+=coverage-install
+DIRTY_TARGETS+=coverage-dirty
+CLEAN_TARGETS+=coverage-clean

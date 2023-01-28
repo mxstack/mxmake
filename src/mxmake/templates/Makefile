@@ -23,22 +23,15 @@
 ##############################################################################
 # END SETTINGS - DO NOT EDIT BELOW THIS LINE
 ##############################################################################
+
+INSTALL_TARGETS?=
+DIRTY_TARGETS?=
+CLEAN_TARGETS?=
+PURGE_TARGETS?=
 {{ sections.read() }}
 ##############################################################################
 # Default targets
 ##############################################################################
-
-ifeq ("$(MXMAKE_MODE)", "dev")
-INSTALL_TARGETS+=$(DEV_INSTALL_TARGETS)
-DIRTY_TARGETS+=$(DEV_DIRTY_TARGETS)
-CLEAN_TARGETS+=$(DEV_CLEAN_TARGETS)
-PURGE_TARGETS+=$(DEV_PURGE_TARGETS)
-else
-INSTALL_TARGETS+=$(PROD_INSTALL_TARGETS)
-DIRTY_TARGETS+=$(PROD_DIRTY_TARGETS)
-CLEAN_TARGETS+=$(PROD_CLEAN_TARGETS)
-PURGE_TARGETS+=$(PROD_PURGE_TARGETS)
-endif
 
 INSTALL_TARGET:=$(SENTINEL_FOLDER)/install.sentinel
 $(INSTALL_TARGET): $(INSTALL_TARGETS)
@@ -47,6 +40,9 @@ $(INSTALL_TARGET): $(INSTALL_TARGETS)
 .PHONY: install
 install: $(INSTALL_TARGET)
 	@touch $(INSTALL_TARGET)
+
+.PHONY: deploy
+deploy: $(DEPLOY_TARGETS)
 
 .PHONY: dirty
 dirty: $(DIRTY_TARGETS)

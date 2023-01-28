@@ -3,8 +3,12 @@
 #:description = Defines common build targets and basic settings for project.
 #:
 #:[target.install]
-#:description = Install project. Installs the entire project either in
-#:  `production` or `development` mode.
+#:description = Install project. Installs the entire project supposed for
+#:  development.
+#:
+#:[target.deploy]
+#:description = Deploy project. Supposed to setup a production version of
+#:  the project.
 #:
 #:[target.dirty]
 #:description = Force make to rebuild targets on next make run.
@@ -20,56 +24,8 @@
 #:[target.runtime-clean]
 #:description = Remove runtime artifacts, like byte-code and caches.
 #:
-#:[setting.MXMAKE_MODE]
-#:description = Run mode. either ``dev`` or ``prod``.
-#:default = dev
-#:
-#:[setting.INSTALL_TARGETS]
-#:description = Default `install` target dependencies.
-#:default =
-#:
-#:[setting.DIRTY_TARGETS]
-#:description = Default `dirty` target dependencies.
-#:default =
-#:
-#:[setting.CLEAN_TARGETS]
-#:description = Default `clean` target dependencies.
-#:default =
-#:
-#:[setting.PURGE_TARGETS]
-#:description = Default `purge` target dependencies.
-#:default =
-#:
-#:[setting.DEV_INSTALL_TARGETS]
-#:description = Additional `install` target dependencies in development mode.
-#:default =
-#:
-#:[setting.DEV_DIRTY_TARGETS]
-#:description = Additional `dirty` target dependencies in development mode.
-#:default =
-#:
-#:[setting.DEV_CLEAN_TARGETS]
-#:description = Additional `clean` target dependencies in development mode.
-#:default =
-#:
-#:[setting.DEV_PURGE_TARGETS]
-#:description = Additional `purge` target dependencies in development mode.
-#:default =
-#:
-#:[setting.PROD_INSTALL_TARGETS]
-#:description = Additional `install` target dependencies in production mode.
-#:default =
-#:
-#:[setting.PROD_DIRTY_TARGETS]
-#:description = Additional `dirty` target dependencies in production mode.
-#:default =
-#:
-#:[setting.PROD_CLEAN_TARGETS]
-#:description = Additional `clean` target dependencies in production mode.
-#:default =
-#:
-#:[setting.PROD_PURGE_TARGETS]
-#:description = Additional `purge` target dependencies in production mode.
+#:[setting.DEPLOY_TARGETS]
+#:description = `deploy` target dependencies.
 #:default =
 
 # Defensive settings for make: https://tech.davis-hansson.com/p/make/

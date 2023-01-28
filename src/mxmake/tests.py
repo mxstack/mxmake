@@ -522,19 +522,7 @@ class TestTemplates(RenderTestCase):
         domains = topics.collect_missing_dependencies(domains)
         domains = topics.resolve_domain_dependencies(domains)
         domain_settings = {
-            "core.base.MXMAKE_MODE": "dev",
-            "core.base.INSTALL_TARGETS": "",
-            "core.base.DIRTY_TARGETS": "",
-            "core.base.CLEAN_TARGETS": "",
-            "core.base.PURGE_TARGETS": "",
-            "core.base.DEV_INSTALL_TARGETS": "",
-            "core.base.DEV_DIRTY_TARGETS": "",
-            "core.base.DEV_CLEAN_TARGETS": "",
-            "core.base.DEV_PURGE_TARGETS": "",
-            "core.base.PROD_INSTALL_TARGETS": "",
-            "core.base.PROD_DIRTY_TARGETS": "",
-            "core.base.PROD_CLEAN_TARGETS": "",
-            "core.base.PROD_PURGE_TARGETS": "",
+            "core.base.DEPLOY_TARGETS": "",
             "core.venv.PYTHON_BIN": "python3",
             "core.venv.PYTHON_MIN_VERSION": "3.7",
             "core.venv.VENV_CREATE": "true",
@@ -560,57 +548,9 @@ class TestTemplates(RenderTestCase):
 
                 ## core.base
 
-                # Run mode. either ``dev`` or ``prod``.
-                # Default: dev
-                MXMAKE_MODE?=dev
-
-                # Default `install` target dependencies.
+                # `deploy` target dependencies.
                 # No default value.
-                INSTALL_TARGETS?=
-
-                # Default `dirty` target dependencies.
-                # No default value.
-                DIRTY_TARGETS?=
-
-                # Default `clean` target dependencies.
-                # No default value.
-                CLEAN_TARGETS?=
-
-                # Default `purge` target dependencies.
-                # No default value.
-                PURGE_TARGETS?=
-
-                # Additional `install` target dependencies in development mode.
-                # No default value.
-                DEV_INSTALL_TARGETS?=
-
-                # Additional `dirty` target dependencies in development mode.
-                # No default value.
-                DEV_DIRTY_TARGETS?=
-
-                # Additional `clean` target dependencies in development mode.
-                # No default value.
-                DEV_CLEAN_TARGETS?=
-
-                # Additional `purge` target dependencies in development mode.
-                # No default value.
-                DEV_PURGE_TARGETS?=
-
-                # Additional `install` target dependencies in production mode.
-                # No default value.
-                PROD_INSTALL_TARGETS?=
-
-                # Additional `dirty` target dependencies in production mode.
-                # No default value.
-                PROD_DIRTY_TARGETS?=
-
-                # Additional `clean` target dependencies in production mode.
-                # No default value.
-                PROD_CLEAN_TARGETS?=
-
-                # Additional `purge` target dependencies in production mode.
-                # No default value.
-                PROD_PURGE_TARGETS?=
+                DEPLOY_TARGETS?=
 
                 ## core.venv
 
@@ -646,6 +586,11 @@ class TestTemplates(RenderTestCase):
                 ##############################################################################
                 # END SETTINGS - DO NOT EDIT BELOW THIS LINE
                 ##############################################################################
+
+                INSTALL_TARGETS?=
+                DIRTY_TARGETS?=
+                CLEAN_TARGETS?=
+                PURGE_TARGETS?=
 
                 # Defensive settings for make: https://tech.davis-hansson.com/p/make/
                 SHELL:=bash
@@ -718,18 +663,6 @@ class TestTemplates(RenderTestCase):
                 # Default targets
                 ##############################################################################
 
-                ifeq ("$(MXMAKE_MODE)", "dev")
-                INSTALL_TARGETS+=$(DEV_INSTALL_TARGETS)
-                DIRTY_TARGETS+=$(DEV_DIRTY_TARGETS)
-                CLEAN_TARGETS+=$(DEV_CLEAN_TARGETS)
-                PURGE_TARGETS+=$(DEV_PURGE_TARGETS)
-                else
-                INSTALL_TARGETS+=$(PROD_INSTALL_TARGETS)
-                DIRTY_TARGETS+=$(PROD_DIRTY_TARGETS)
-                CLEAN_TARGETS+=$(PROD_CLEAN_TARGETS)
-                PURGE_TARGETS+=$(PROD_PURGE_TARGETS)
-                endif
-
                 INSTALL_TARGET:=$(SENTINEL_FOLDER)/install.sentinel
                 $(INSTALL_TARGET): $(INSTALL_TARGETS)
                     @touch $(INSTALL_TARGET)
@@ -737,6 +670,9 @@ class TestTemplates(RenderTestCase):
                 .PHONY: install
                 install: $(INSTALL_TARGET)
                     @touch $(INSTALL_TARGET)
+
+                .PHONY: deploy
+                deploy: $(DEPLOY_TARGETS)
 
                 .PHONY: dirty
                 dirty: $(DIRTY_TARGETS)
@@ -817,19 +753,7 @@ class TestParser(unittest.TestCase):
         domains = topics.collect_missing_dependencies(domains)
         domains = topics.resolve_domain_dependencies(domains)
         domain_settings = {
-            "core.base.MXMAKE_MODE": "dev",
-            "core.base.INSTALL_TARGETS": "",
-            "core.base.DIRTY_TARGETS": "",
-            "core.base.CLEAN_TARGETS": "",
-            "core.base.PURGE_TARGETS": "",
-            "core.base.DEV_INSTALL_TARGETS": "",
-            "core.base.DEV_DIRTY_TARGETS": "",
-            "core.base.DEV_CLEAN_TARGETS": "",
-            "core.base.DEV_PURGE_TARGETS": "",
-            "core.base.PROD_INSTALL_TARGETS": "",
-            "core.base.PROD_DIRTY_TARGETS": "",
-            "core.base.PROD_CLEAN_TARGETS": "",
-            "core.base.PROD_PURGE_TARGETS": "",
+            "core.base.DEPLOY_TARGETS": "",
             "core.venv.PYTHON_BIN": "python3",
             "core.venv.PYTHON_MIN_VERSION": "3.7",
             "core.venv.VENV_CREATE": "true",
@@ -852,19 +776,7 @@ class TestParser(unittest.TestCase):
         self.assertEqual(
             makefile_parser.settings,
             {
-                "core.base.MXMAKE_MODE": "dev",
-                "core.base.INSTALL_TARGETS": "",
-                "core.base.DIRTY_TARGETS": "",
-                "core.base.CLEAN_TARGETS": "",
-                "core.base.PURGE_TARGETS": "",
-                "core.base.DEV_INSTALL_TARGETS": "",
-                "core.base.DEV_DIRTY_TARGETS": "",
-                "core.base.DEV_CLEAN_TARGETS": "",
-                "core.base.DEV_PURGE_TARGETS": "",
-                "core.base.PROD_INSTALL_TARGETS": "",
-                "core.base.PROD_DIRTY_TARGETS": "",
-                "core.base.PROD_CLEAN_TARGETS": "",
-                "core.base.PROD_PURGE_TARGETS": "",
+                "core.base.DEPLOY_TARGETS": "",
                 "core.venv.PYTHON_BIN": "python3",
                 "core.venv.PYTHON_MIN_VERSION": "3.7",
                 "core.venv.VENV_CREATE": "true",

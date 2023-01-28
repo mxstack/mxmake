@@ -6,57 +6,9 @@
 
 ## core.base
 
-# Run mode. either ``dev`` or ``prod``.
-# Default: dev
-MXMAKE_MODE?=dev
-
-# Default `install` target dependencies.
+# `deploy` target dependencies.
 # No default value.
-INSTALL_TARGETS?=
-
-# Default `dirty` target dependencies.
-# No default value.
-DIRTY_TARGETS?=
-
-# Default `clean` target dependencies.
-# No default value.
-CLEAN_TARGETS?=
-
-# Default `purge` target dependencies.
-# No default value.
-PURGE_TARGETS?=
-
-# Additional `install` target dependencies in development mode.
-# No default value.
-DEV_INSTALL_TARGETS?=
-
-# Additional `dirty` target dependencies in development mode.
-# No default value.
-DEV_DIRTY_TARGETS?=
-
-# Additional `clean` target dependencies in development mode.
-# No default value.
-DEV_CLEAN_TARGETS?=
-
-# Additional `purge` target dependencies in development mode.
-# No default value.
-DEV_PURGE_TARGETS?=
-
-# Additional `install` target dependencies in production mode.
-# No default value.
-PROD_INSTALL_TARGETS?=
-
-# Additional `dirty` target dependencies in production mode.
-# No default value.
-PROD_DIRTY_TARGETS?=
-
-# Additional `clean` target dependencies in production mode.
-# No default value.
-PROD_CLEAN_TARGETS?=
-
-# Additional `purge` target dependencies in production mode.
-# No default value.
-PROD_PURGE_TARGETS?=
+DEPLOY_TARGETS?=
 
 ## core.venv
 
@@ -152,6 +104,11 @@ SYSTEM_DEPENDENCIES?=
 ##############################################################################
 # END SETTINGS - DO NOT EDIT BELOW THIS LINE
 ##############################################################################
+
+INSTALL_TARGETS?=
+DIRTY_TARGETS?=
+CLEAN_TARGETS?=
+PURGE_TARGETS?=
 
 # Defensive settings for make: https://tech.davis-hansson.com/p/make/
 SHELL:=bash
@@ -286,9 +243,9 @@ sources-dirty:
 sources-purge: sources-dirty
 	@rm -rf sources
 
-DEV_INSTALL_TARGETS+=sources
-DEV_DIRTY_TARGETS+=sources-dirty
-DEV_PURGE_TARGETS+=sources-purge
+INSTALL_TARGETS+=sources
+DIRTY_TARGETS+=sources-dirty
+PURGE_TARGETS+=sources-purge
 
 ##############################################################################
 # packages
@@ -350,9 +307,9 @@ coverage-dirty:
 coverage-clean: coverage-dirty
 	@rm -rf .coverage htmlcov
 
-DEV_INSTALL_TARGETS+=coverage-install
-DEV_DIRTY_TARGETS+=coverage-dirty
-DEV_CLEAN_TARGETS+=coverage-clean
+INSTALL_TARGETS+=coverage-install
+DIRTY_TARGETS+=coverage-dirty
+CLEAN_TARGETS+=coverage-clean
 
 ##############################################################################
 # docs
@@ -387,9 +344,9 @@ docs-dirty:
 docs-clean: docs-dirty
 	@rm -rf $(DOCS_TARGET_FOLDER)
 
-DEV_INSTALL_TARGETS+=docs-install
-DEV_DIRTY_TARGETS+=docs-dirty
-DEV_CLEAN_TARGETS+=docs-clean
+INSTALL_TARGETS+=docs-install
+DIRTY_TARGETS+=docs-dirty
+CLEAN_TARGETS+=docs-clean
 
 ##############################################################################
 # system dependencies
@@ -406,18 +363,6 @@ system-dependencies:
 # Default targets
 ##############################################################################
 
-ifeq ("$(MXMAKE_MODE)", "dev")
-INSTALL_TARGETS+=$(DEV_INSTALL_TARGETS)
-DIRTY_TARGETS+=$(DEV_DIRTY_TARGETS)
-CLEAN_TARGETS+=$(DEV_CLEAN_TARGETS)
-PURGE_TARGETS+=$(DEV_PURGE_TARGETS)
-else
-INSTALL_TARGETS+=$(PROD_INSTALL_TARGETS)
-DIRTY_TARGETS+=$(PROD_DIRTY_TARGETS)
-CLEAN_TARGETS+=$(PROD_CLEAN_TARGETS)
-PURGE_TARGETS+=$(PROD_PURGE_TARGETS)
-endif
-
 INSTALL_TARGET:=$(SENTINEL_FOLDER)/install.sentinel
 $(INSTALL_TARGET): $(INSTALL_TARGETS)
 	@touch $(INSTALL_TARGET)
@@ -425,6 +370,9 @@ $(INSTALL_TARGET): $(INSTALL_TARGETS)
 .PHONY: install
 install: $(INSTALL_TARGET)
 	@touch $(INSTALL_TARGET)
+
+.PHONY: deploy
+deploy: $(DEPLOY_TARGETS)
 
 .PHONY: dirty
 dirty: $(DIRTY_TARGETS)
