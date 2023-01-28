@@ -19,7 +19,7 @@
 # coverage
 ##############################################################################
 
-coverage-install: venv
+coverage-install: $(VENV_TARGET)
 	@echo "Install Coverage"
 	@$(VENV_SCRIPTS)pip install -U coverage
 

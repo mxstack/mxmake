@@ -37,12 +37,12 @@
 # docs
 ##############################################################################
 
-docs-install: venv
+docs-install: $(VENV_TARGET)
 	@echo "Install Sphinx"
 	@$(VENV_SCRIPTS)pip install -U sphinx sphinx-autobuild $(DOCS_REQUIREMENTS)
 
 .PHONY: docs
-docs: docs-install
+docs: $(VENV_TARGET)
 	@echo "Build sphinx docs"
 	@test -e $(DOCS_BIN) && $(DOCS_BIN) $(DOCS_SOURCE_FOLDER) $(DOCS_TARGET_FOLDER)
 	@test -e $(DOCS_BIN) || echo "Sphinx binary not exists"

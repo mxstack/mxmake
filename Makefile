@@ -186,7 +186,7 @@ else
 endif
 
 # Check if given Python is installed?
-ifeq (, $(shell which $(PYTHON_BIN) ))
+ifeq (, $(shell which $(PYTHON_BIN)))
   $(error "PYTHON=$(PYTHON_BIN) not found in $(PATH)")
 endif
 
@@ -327,7 +327,7 @@ test: $(FILES_TARGET) $(SOURCES_TARGET) $(PACKAGES_TARGET) $(TEST_DEPENDENCY_TAR
 # coverage
 ##############################################################################
 
-coverage-install: venv
+coverage-install: $(VENV_TARGET)
 	@echo "Install Coverage"
 	@$(VENV_SCRIPTS)pip install -U coverage
 
@@ -348,12 +348,12 @@ DEV_CLEAN_TARGETS+=coverage-clean
 # docs
 ##############################################################################
 
-docs-install: venv
+docs-install: $(VENV_TARGET)
 	@echo "Install Sphinx"
 	@$(VENV_SCRIPTS)pip install -U sphinx sphinx-autobuild $(DOCS_REQUIREMENTS)
 
 .PHONY: docs
-docs: docs-install
+docs: $(VENV_TARGET)
 	@echo "Build sphinx docs"
 	@test -e $(DOCS_BIN) && $(DOCS_BIN) $(DOCS_SOURCE_FOLDER) $(DOCS_TARGET_FOLDER)
 	@test -e $(DOCS_BIN) || echo "Sphinx binary not exists"
@@ -387,15 +387,15 @@ system-dependencies:
 ##############################################################################
 
 ifeq ("$(MXMAKE_MODE)", "dev")
-	INSTALL_TARGETS+=$(DEV_INSTALL_TARGETS)
-	DIRTY_TARGETS+=$(DEV_DIRTY_TARGETS)
-	CLEAN_TARGETS+=$(DEV_CLEAN_TARGETS)
-	PURGE_TARGETS+=$(DEV_PURGE_TARGETS)
+INSTALL_TARGETS+=$(DEV_INSTALL_TARGETS)
+DIRTY_TARGETS+=$(DEV_DIRTY_TARGETS)
+CLEAN_TARGETS+=$(DEV_CLEAN_TARGETS)
+PURGE_TARGETS+=$(DEV_PURGE_TARGETS)
 else
-	INSTALL_TARGETS+=$(PROD_INSTALL_TARGETS)
-	DIRTY_TARGETS+=$(PROD_DIRTY_TARGETS)
-	CLEAN_TARGETS+=$(PROD_CLEAN_TARGETS)
-	PURGE_TARGETS+=$(PROD_PURGE_TARGETS)
+INSTALL_TARGETS+=$(PROD_INSTALL_TARGETS)
+DIRTY_TARGETS+=$(PROD_DIRTY_TARGETS)
+CLEAN_TARGETS+=$(PROD_CLEAN_TARGETS)
+PURGE_TARGETS+=$(PROD_PURGE_TARGETS)
 endif
 
 INSTALL_TARGET:=$(SENTINEL_FOLDER)/install.sentinel

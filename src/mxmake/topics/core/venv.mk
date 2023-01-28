@@ -63,7 +63,7 @@ else
 endif
 
 # Check if given Python is installed?
-ifeq (, $(shell which $(PYTHON_BIN) ))
+ifeq (, $(shell which $(PYTHON_BIN)))
   $(error "PYTHON=$(PYTHON_BIN) not found in $(PATH)")
 endif
 
