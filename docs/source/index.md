@@ -1,5 +1,10 @@
 # mxmake
 
+```{image} _static/mxmake-logo.svg
+:alt: mxmake logo
+:width: 33%
+:class: float-end
+```
 *mxmake* [mɪks meɪk] generates a project-specific Makefile by using an extensible library of configurable Makefile snippets.
 
 It targets the development environments for Python packages but may be used outside of this playground.
@@ -17,7 +22,8 @@ In addition to the Makefile, *mxmake* also creates helper scripts for developmen
 maxdepth: 2
 ---
 
-usage
+getting-started
+usage-oldrst
 topics
 contributing
 

@@ -1,4 +1,7 @@
-*mxmake* [mɪks meɪk] generates a project-specific Makefile by using an extensible library of configurable Makefile snippets.
+<img src="docs/source/_static/mxmake-logo.svg?raw=true"
+     alt="mxmake logo"
+     align="right"
+     style="float: right; margin-left: 10px; margin-bottom: 10px; width: 25%" /> *mxmake* [mɪks meɪk] generates a project-specific Makefile by using an extensible library of configurable Makefile snippets.
 
 It targets the development environments for Python packages but may be used outside of this playground.
 
@@ -10,7 +13,7 @@ It targets the development environments for Python packages but may be used outs
 
 # Documentation
 
-The detailed `mxmake` documentation is available [mxmake.readthedocs.io](https://mxmake.readthedocs.io).
+The detailed `mxmake` documentation is available [mxstack.github.io/mxmake](https://mxstack.github.io/mxmake).
 
 
 # Copyright

@@ -54,14 +54,17 @@ exclude_patterns = []
 html_theme = "conestack"
 
 html_theme_options = {
-    "cs_color": "#FFFFFF",
-    "cs_bg_color": "var(--bs-gray-900)",
-    "logo_title": "mxmake",
     "github_url": "https://github.com/mxstack/mxmake",
     "pypi_url": "https://pypi.org/project/mxmake",
+    "logo_url": "_static/mxmake-logo.svg",
+    "logo_title": "mxmake",
+    "logo_width": "40px",
+    "logo_height": "40px",
+    "cs_bg_color": "#0A0A0A",
 }
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ["_static"]
+
