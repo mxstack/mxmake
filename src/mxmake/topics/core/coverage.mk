@@ -19,9 +19,14 @@
 # coverage
 ##############################################################################
 
-coverage-install: $(VENV_TARGET)
+COVERAGE_TARGET:=$(SENTINEL_FOLDER)/coverage.sentinel
+$(COVERAGE_TARGET): $(VENV_TARGET)
 	@echo "Install Coverage"
 	@$(VENV_SCRIPTS)pip install -U coverage
+	@touch $(COVERAGE_TARGET)
+
+.PHONY: coverage-install
+coverage-install: $(COVERAGE_TARGET)
 
 .PHONY: coverage
 coverage: $(FILES_TARGET) $(SOURCES_TARGET) $(PACKAGES_TARGET) coverage-install
@@ -29,9 +34,14 @@ coverage: $(FILES_TARGET) $(SOURCES_TARGET) $(PACKAGES_TARGET) coverage-install
 	@test -z "$(COVERAGE_COMMAND)" && echo "No coverage command defined"
 	@test -z "$(COVERAGE_COMMAND)" || bash -c "$(COVERAGE_COMMAND)"
 
+.PHONY: coverage-dirty
+coverage-dirty:
+	@rm -f $(COVERAGE_TARGET)
+
 .PHONY: coverage-clean
-coverage-clean:
+coverage-clean: coverage-dirty
 	@rm -rf .coverage htmlcov
 
 DEV_INSTALL_TARGETS+=coverage-install
+DEV_DIRTY_TARGETS+=coverage-dirty
 DEV_CLEAN_TARGETS+=coverage-clean
