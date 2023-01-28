@@ -1071,8 +1071,8 @@ class TestDomains(unittest.TestCase):
             sorted(domain.fqn for domain in all_dependencies),
             [
                 "core.base",
-                "core.mxfiles",
                 "core.mxenv",
+                "core.mxfiles",
                 "ldap.openldap",
                 "ldap.python-ldap",
             ],
