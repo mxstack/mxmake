@@ -53,24 +53,24 @@
 
 # determine the VENV
 ifeq ("$(VENV_CREATE)", "true")
-	VENV_SCRIPTS=$(VENV_FOLDER)/bin/
+VENV_SCRIPTS=$(VENV_FOLDER)/bin/
 else
 # given we have an existing venv folder, we use it, otherwise expect scripts
 # in system PATH.
-	ifeq ("$(VENV_FOLDER)", "")
-		VENV_SCRIPTS=
-	endif
+ifeq ("$(VENV_FOLDER)", "")
+VENV_SCRIPTS=
+endif
 endif
 
 # Check if given Python is installed?
 ifeq (, $(shell which $(PYTHON_BIN)))
-  $(error "PYTHON=$(PYTHON_BIN) not found in $(PATH)")
+$(error "PYTHON=$(PYTHON_BIN) not found in $(PATH)")
 endif
 
 # Check if given Python version is ok?
 PYTHON_VERSION_OK=$(shell $(PYTHON_BIN) -c "import sys; print((int(sys.version_info[0]), int(sys.version_info[1])) >= tuple(map(int, '$(PYTHON_MIN_VERSION)'.split('.'))))")
 ifeq ($(PYTHON_VERSION_OK),0)
-  $(error "Need Python >= $(PYTHON_MIN_VERSION)")
+$(error "Need Python >= $(PYTHON_MIN_VERSION)")
 endif
 
 VENV_TARGET:=$(SENTINEL_FOLDER)/venv.sentinel
