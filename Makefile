@@ -10,7 +10,13 @@
 # No default value.
 DEPLOY_TARGETS?=
 
-## core.venv
+## core.system-dependencies
+
+# Space separated system package names.
+# No default value.
+SYSTEM_DEPENDENCIES?=
+
+## core.mxenv
 
 # Python interpreter to use for creating the virtual environment.
 # Default: python3
@@ -95,12 +101,6 @@ DOCS_TARGET_FOLDER?=docs/html
 # No default value.
 DOCS_REQUIREMENTS?=sphinx-conestack-theme myst-parser
 
-## core.system-dependencies
-
-# Space separated system package names.
-# No default value.
-SYSTEM_DEPENDENCIES?=
-
 ##############################################################################
 # END SETTINGS - DO NOT EDIT BELOW THIS LINE
 ##############################################################################
@@ -128,7 +128,18 @@ $(SENTINEL):
 	@echo "Sentinels for the Makefile process." > $(SENTINEL)
 
 ##############################################################################
-# venv
+# system dependencies
+##############################################################################
+
+.PHONY: system-dependencies
+system-dependencies:
+	@echo "Install system dependencies"
+	@test -z "$(SYSTEM_DEPENDENCIES)" && echo "No System dependencies defined"
+	@test -z "$(SYSTEM_DEPENDENCIES)" \
+		|| sudo apt-get install -y $(SYSTEM_DEPENDENCIES)
+
+##############################################################################
+# mxenv
 ##############################################################################
 
 # determine the VENV
@@ -153,29 +164,29 @@ ifeq ($(PYTHON_VERSION_OK),0)
 $(error "Need Python >= $(PYTHON_MIN_VERSION)")
 endif
 
-VENV_TARGET:=$(SENTINEL_FOLDER)/venv.sentinel
-$(VENV_TARGET): $(SENTINEL)
+MXENV_TARGET:=$(SENTINEL_FOLDER)/mxenv.sentinel
+$(MXENV_TARGET): $(SENTINEL)
 	@echo "Setup Python Virtual Environment under '$(VENV_FOLDER)'"
 	@$(PYTHON_BIN) -m venv $(VENV_FOLDER)
 	@$(VENV_SCRIPTS)pip install -U pip setuptools wheel
 	@$(VENV_SCRIPTS)pip install -U $(MXDEV)
 	@$(VENV_SCRIPTS)pip install -U $(MXMAKE)
-	@touch $(VENV_TARGET)
+	@touch $(MXENV_TARGET)
 
-.PHONY: venv
-venv: $(VENV_TARGET)
+.PHONY: mxenv
+mxenv: $(MXENV_TARGET)
 
-.PHONY: venv-dirty
-venv-dirty:
-	@rm -f $(VENV_TARGET)
+.PHONY: mxenv-dirty
+mxenv-dirty:
+	@rm -f $(MXENV_TARGET)
 
-.PHONY: venv-clean
-venv-clean: venv-dirty
+.PHONY: mxenv-clean
+mxenv-clean: mxenv-dirty
 	@rm -rf $(VENV_FOLDER)
 
-INSTALL_TARGETS+=venv
-DIRTY_TARGETS+=venv-dirty
-CLEAN_TARGETS+=venv-clean
+INSTALL_TARGETS+=mxenv
+DIRTY_TARGETS+=mxenv-dirty
+CLEAN_TARGETS+=mxenv-clean
 
 ##############################################################################
 # mxfiles
@@ -196,7 +207,7 @@ define unset_mxfiles_env
 endef
 
 FILES_TARGET:=$(SENTINEL_FOLDER)/mxfiles.sentinel
-$(FILES_TARGET): $(PROJECT_CONFIG) $(VENV_TARGET)
+$(FILES_TARGET): $(PROJECT_CONFIG) $(MXENV_TARGET)
 	@echo "Create project files"
 	$(call set_mxfiles_env,$(VENV_FOLDER),$(SCRIPTS_FOLDER),$(CONFIG_FOLDER))
 	@$(VENV_SCRIPTS)mxdev -n -c $(PROJECT_CONFIG)
@@ -285,7 +296,7 @@ test: $(FILES_TARGET) $(SOURCES_TARGET) $(PACKAGES_TARGET) $(TEST_DEPENDENCY_TAR
 ##############################################################################
 
 COVERAGE_TARGET:=$(SENTINEL_FOLDER)/coverage.sentinel
-$(COVERAGE_TARGET): $(VENV_TARGET)
+$(COVERAGE_TARGET): $(MXENV_TARGET)
 	@echo "Install Coverage"
 	@$(VENV_SCRIPTS)pip install -U coverage
 	@touch $(COVERAGE_TARGET)
@@ -316,7 +327,7 @@ CLEAN_TARGETS+=coverage-clean
 ##############################################################################
 
 DOCS_TARGET:=$(SENTINEL_FOLDER)/docs.sentinel
-$(DOCS_TARGET): $(VENV_TARGET)
+$(DOCS_TARGET): $(MXENV_TARGET)
 	@echo "Install Sphinx"
 	@$(VENV_SCRIPTS)pip install -U sphinx sphinx-autobuild $(DOCS_REQUIREMENTS)
 	@touch $(DOCS_TARGET)
@@ -347,17 +358,6 @@ docs-clean: docs-dirty
 INSTALL_TARGETS+=docs-install
 DIRTY_TARGETS+=docs-dirty
 CLEAN_TARGETS+=docs-clean
-
-##############################################################################
-# system dependencies
-##############################################################################
-
-.PHONY: system-dependencies
-system-dependencies:
-	@echo "Install system dependencies"
-	@test -z "$(SYSTEM_DEPENDENCIES)" && echo "No System dependencies defined"
-	@test -z "$(SYSTEM_DEPENDENCIES)" \
-		|| sudo apt-get install -y $(SYSTEM_DEPENDENCIES)
 
 ##############################################################################
 # Default targets
@@ -394,12 +394,12 @@ runtime-clean:
 
 ##############################################################################
 #: core.base
-#: core.venv
+#: core.system-dependencies
+#: core.mxenv
 #: core.mxfiles
 #: core.sources
 #: core.packages
 #: core.test
 #: core.coverage
 #: core.docs
-#: core.system-dependencies
 ##############################################################################

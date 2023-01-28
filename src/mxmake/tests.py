@@ -518,18 +518,18 @@ class TestTemplates(RenderTestCase):
 
     @temp_directory
     def test_Makefile(self, tempdir):
-        domains = [topics.get_domain("core.venv")]
+        domains = [topics.get_domain("core.mxenv")]
         domains = topics.collect_missing_dependencies(domains)
         domains = topics.resolve_domain_dependencies(domains)
         domain_settings = {
             "core.base.DEPLOY_TARGETS": "",
-            "core.venv.PYTHON_BIN": "python3",
-            "core.venv.PYTHON_MIN_VERSION": "3.7",
-            "core.venv.VENV_CREATE": "true",
-            "core.venv.VENV_FOLDER": "venv",
-            "core.venv.VENV_SCRIPTS": "$(VENV_FOLDER)/bin/",
-            "core.venv.MXDEV": "mxdev",
-            "core.venv.MXMAKE": "mxmake",
+            "core.mxenv.PYTHON_BIN": "python3",
+            "core.mxenv.PYTHON_MIN_VERSION": "3.7",
+            "core.mxenv.VENV_CREATE": "true",
+            "core.mxenv.VENV_FOLDER": "venv",
+            "core.mxenv.VENV_SCRIPTS": "$(VENV_FOLDER)/bin/",
+            "core.mxenv.MXDEV": "mxdev",
+            "core.mxenv.MXMAKE": "mxmake",
         }
         factory = templates.template.lookup("makefile")
         template = factory(
@@ -552,7 +552,7 @@ class TestTemplates(RenderTestCase):
                 # No default value.
                 DEPLOY_TARGETS?=
 
-                ## core.venv
+                ## core.mxenv
 
                 # Python interpreter to use for creating the virtual environment.
                 # Default: python3
@@ -610,7 +610,7 @@ class TestTemplates(RenderTestCase):
                     @echo "Sentinels for the Makefile process." > $(SENTINEL)
 
                 ##############################################################################
-                # venv
+                # mxenv
                 ##############################################################################
 
                 # determine the VENV
@@ -635,29 +635,29 @@ class TestTemplates(RenderTestCase):
                 $(error "Need Python >= $(PYTHON_MIN_VERSION)")
                 endif
 
-                VENV_TARGET:=$(SENTINEL_FOLDER)/venv.sentinel
-                $(VENV_TARGET): $(SENTINEL)
+                MXENV_TARGET:=$(SENTINEL_FOLDER)/mxenv.sentinel
+                $(MXENV_TARGET): $(SENTINEL)
                     @echo "Setup Python Virtual Environment under '$(VENV_FOLDER)'"
                     @$(PYTHON_BIN) -m venv $(VENV_FOLDER)
                     @$(VENV_SCRIPTS)pip install -U pip setuptools wheel
                     @$(VENV_SCRIPTS)pip install -U $(MXDEV)
                     @$(VENV_SCRIPTS)pip install -U $(MXMAKE)
-                    @touch $(VENV_TARGET)
+                    @touch $(MXENV_TARGET)
 
-                .PHONY: venv
-                venv: $(VENV_TARGET)
+                .PHONY: mxenv
+                mxenv: $(MXENV_TARGET)
 
-                .PHONY: venv-dirty
-                venv-dirty:
-                    @rm -f $(VENV_TARGET)
+                .PHONY: mxenv-dirty
+                mxenv-dirty:
+                    @rm -f $(MXENV_TARGET)
 
-                .PHONY: venv-clean
-                venv-clean: venv-dirty
+                .PHONY: mxenv-clean
+                mxenv-clean: mxenv-dirty
                     @rm -rf $(VENV_FOLDER)
 
-                INSTALL_TARGETS+=venv
-                DIRTY_TARGETS+=venv-dirty
-                CLEAN_TARGETS+=venv-clean
+                INSTALL_TARGETS+=mxenv
+                DIRTY_TARGETS+=mxenv-dirty
+                CLEAN_TARGETS+=mxenv-clean
 
                 ##############################################################################
                 # Default targets
@@ -694,7 +694,7 @@ class TestTemplates(RenderTestCase):
 
                 ##############################################################################
                 #: core.base
-                #: core.venv
+                #: core.mxenv
                 ##############################################################################
                 """,
                 f.read(),
@@ -749,18 +749,18 @@ class TestTemplates(RenderTestCase):
 class TestParser(unittest.TestCase):
     @temp_directory
     def test_MakefileParser(self, tempdir):
-        domains = [topics.get_domain("core.venv")]
+        domains = [topics.get_domain("core.mxenv")]
         domains = topics.collect_missing_dependencies(domains)
         domains = topics.resolve_domain_dependencies(domains)
         domain_settings = {
             "core.base.DEPLOY_TARGETS": "",
-            "core.venv.PYTHON_BIN": "python3",
-            "core.venv.PYTHON_MIN_VERSION": "3.7",
-            "core.venv.VENV_CREATE": "true",
-            "core.venv.VENV_FOLDER": "venv",
-            "core.venv.VENV_SCRIPTS": "$(VENV_FOLDER)/bin/",
-            "core.venv.MXDEV": "mxdev",
-            "core.venv.MXMAKE": "mxmake",
+            "core.mxenv.PYTHON_BIN": "python3",
+            "core.mxenv.PYTHON_MIN_VERSION": "3.7",
+            "core.mxenv.VENV_CREATE": "true",
+            "core.mxenv.VENV_FOLDER": "venv",
+            "core.mxenv.VENV_SCRIPTS": "$(VENV_FOLDER)/bin/",
+            "core.mxenv.MXDEV": "mxdev",
+            "core.mxenv.MXMAKE": "mxmake",
         }
 
         factory = templates.template.lookup("makefile")
@@ -772,21 +772,21 @@ class TestParser(unittest.TestCase):
 
         makefile_path = os.path.join(tempdir, "Makefile")
         makefile_parser = parser.MakefileParser(makefile_path)
-        self.assertEqual(makefile_parser.fqns, ["core.base", "core.venv"])
+        self.assertEqual(makefile_parser.fqns, ["core.base", "core.mxenv"])
         self.assertEqual(
             makefile_parser.settings,
             {
                 "core.base.DEPLOY_TARGETS": "",
-                "core.venv.PYTHON_BIN": "python3",
-                "core.venv.PYTHON_MIN_VERSION": "3.7",
-                "core.venv.VENV_CREATE": "true",
-                "core.venv.VENV_FOLDER": "venv",
-                "core.venv.VENV_SCRIPTS": "$(VENV_FOLDER)/bin/",
-                "core.venv.MXDEV": "mxdev",
-                "core.venv.MXMAKE": "mxmake",
+                "core.mxenv.PYTHON_BIN": "python3",
+                "core.mxenv.PYTHON_MIN_VERSION": "3.7",
+                "core.mxenv.VENV_CREATE": "true",
+                "core.mxenv.VENV_FOLDER": "venv",
+                "core.mxenv.VENV_SCRIPTS": "$(VENV_FOLDER)/bin/",
+                "core.mxenv.MXDEV": "mxdev",
+                "core.mxenv.MXMAKE": "mxmake",
             },
         )
-        self.assertEqual(makefile_parser.topics, {"core": ["base", "venv"]})
+        self.assertEqual(makefile_parser.topics, {"core": ["base", "mxenv"]})
 
 
 ###############################################################################
@@ -882,8 +882,8 @@ class TestDomains(unittest.TestCase):
         self.assertEqual(topic.name, "core")
 
     def test_get_domain(self):
-        domain = topics.get_domain("core.venv")
-        self.assertEqual(domain.fqn, "core.venv")
+        domain = topics.get_domain("core.mxenv")
+        self.assertEqual(domain.fqn, "core.mxenv")
 
     @temp_directory
     def test_Domain(self, tmpdir):
@@ -1072,7 +1072,7 @@ class TestDomains(unittest.TestCase):
             [
                 "core.base",
                 "core.mxfiles",
-                "core.venv",
+                "core.mxenv",
                 "ldap.openldap",
                 "ldap.python-ldap",
             ],

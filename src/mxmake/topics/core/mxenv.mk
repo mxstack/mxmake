@@ -1,9 +1,9 @@
-#:[venv]
+#:[mxenv]
 #:title = Venv
 #:description = Virtual environment management.
 #:depends = core.base
 #:
-#:[target.venv]
+#:[target.mxenv]
 #:description = Create python virtual environment. The following python
 #:  packages are installed respective updated:
 #:    - pip
@@ -12,10 +12,10 @@
 #:    - mxdev
 #:    - mxmake
 #:
-#:[target.venv-dirty]
-#:description = Build :ref:`venv` target on next make run.
+#:[target.mxenv-dirty]
+#:description = Build :ref:`mxenv` target on next make run.
 #:
-#:[target.venv-clean]
+#:[target.mxenv-clean]
 #:description = Removes virtual environment.
 #:
 #:[setting.PYTHON_BIN]
@@ -48,7 +48,7 @@
 #:default = https://github.com/mxstack/mxmake/archive/develop.zip
 
 ##############################################################################
-# venv
+# mxenv
 ##############################################################################
 
 # determine the VENV
@@ -73,26 +73,26 @@ ifeq ($(PYTHON_VERSION_OK),0)
 $(error "Need Python >= $(PYTHON_MIN_VERSION)")
 endif
 
-VENV_TARGET:=$(SENTINEL_FOLDER)/venv.sentinel
-$(VENV_TARGET): $(SENTINEL)
+MXENV_TARGET:=$(SENTINEL_FOLDER)/mxenv.sentinel
+$(MXENV_TARGET): $(SENTINEL)
 	@echo "Setup Python Virtual Environment under '$(VENV_FOLDER)'"
 	@$(PYTHON_BIN) -m venv $(VENV_FOLDER)
 	@$(VENV_SCRIPTS)pip install -U pip setuptools wheel
 	@$(VENV_SCRIPTS)pip install -U $(MXDEV)
 	@$(VENV_SCRIPTS)pip install -U $(MXMAKE)
-	@touch $(VENV_TARGET)
+	@touch $(MXENV_TARGET)
 
-.PHONY: venv
-venv: $(VENV_TARGET)
+.PHONY: mxenv
+mxenv: $(MXENV_TARGET)
 
-.PHONY: venv-dirty
-venv-dirty:
-	@rm -f $(VENV_TARGET)
+.PHONY: mxenv-dirty
+mxenv-dirty:
+	@rm -f $(MXENV_TARGET)
 
-.PHONY: venv-clean
-venv-clean: venv-dirty
+.PHONY: mxenv-clean
+mxenv-clean: mxenv-dirty
 	@rm -rf $(VENV_FOLDER)
 
-INSTALL_TARGETS+=venv
-DIRTY_TARGETS+=venv-dirty
-CLEAN_TARGETS+=venv-clean
+INSTALL_TARGETS+=mxenv
+DIRTY_TARGETS+=mxenv-dirty
+CLEAN_TARGETS+=mxenv-clean

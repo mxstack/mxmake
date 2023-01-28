@@ -1,7 +1,7 @@
 #:[mxfiles]
 #:title = Files
 #:description = Project file generation.
-#:depends = core.venv
+#:depends = core.mxenv
 #:
 #:[target.mxfiles]
 #:description = Create all project files by running ``mxdev``. It does not
@@ -44,7 +44,7 @@ define unset_mxfiles_env
 endef
 
 FILES_TARGET:=$(SENTINEL_FOLDER)/mxfiles.sentinel
-$(FILES_TARGET): $(PROJECT_CONFIG) $(VENV_TARGET)
+$(FILES_TARGET): $(PROJECT_CONFIG) $(MXENV_TARGET)
 	@echo "Create project files"
 	$(call set_mxfiles_env,$(VENV_FOLDER),$(SCRIPTS_FOLDER),$(CONFIG_FOLDER))
 	@$(VENV_SCRIPTS)mxdev -n -c $(PROJECT_CONFIG)

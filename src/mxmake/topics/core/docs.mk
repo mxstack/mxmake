@@ -1,7 +1,7 @@
 #:[docs]
 #:title = Documentation
 #:description = Documentation generation with Sphinx.
-#:depends = core.venv
+#:depends = core.mxenv
 #:
 #:[target.docs]
 #:description = Generate Sphinx docs. Sphinx is expected to be installed. This
@@ -38,7 +38,7 @@
 ##############################################################################
 
 DOCS_TARGET:=$(SENTINEL_FOLDER)/docs.sentinel
-$(DOCS_TARGET): $(VENV_TARGET)
+$(DOCS_TARGET): $(MXENV_TARGET)
 	@echo "Install Sphinx"
 	@$(VENV_SCRIPTS)pip install -U sphinx sphinx-autobuild $(DOCS_REQUIREMENTS)
 	@touch $(DOCS_TARGET)
