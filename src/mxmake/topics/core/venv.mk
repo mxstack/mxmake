@@ -34,6 +34,11 @@
 #:description = The folder where the virtual environment get created.
 #:default = venv
 #:
+#:[setting.VENV_SCRIPTS]
+#:description = The folder where the virtual environment contains the
+#:  executables
+#:default = $(VENV_FOLDER)/bin/
+#:
 #:[setting.MXDEV]
 #:description = mxdev to install in virtual environment.
 #:default = https://github.com/mxstack/mxdev/archive/main.zip
@@ -46,28 +51,26 @@
 # venv
 ##############################################################################
 
-VENV_SCRIPTS=
-
 # determine the VENV
-ifeq ("${VENV_CREATE}", "true")
-	VENV_SCRIPTS=${VENV_FOLDER}/bin/
+ifeq ("$(VENV_CREATE)", "true")
+VENV_SCRIPTS=$(VENV_FOLDER)/bin/
 else
 # given we have an existing venv folder, we use it, otherwise expect scripts
 # in system PATH.
-	ifneq ("${VENV_FOLDER}", "")
-		VENV_SCRIPTS=${VENV_FOLDER}/bin/
-	endif
+ifeq ("$(VENV_FOLDER)", "")
+VENV_SCRIPTS=
+endif
 endif
 
 # Check if given Python is installed?
-ifeq (, $(shell which $(PYTHON_BIN) ))
-  $(error "PYTHON=$(PYTHON_BIN) not found in $(PATH)")
+ifeq (, $(shell which $(PYTHON_BIN)))
+$(error "PYTHON=$(PYTHON_BIN) not found in $(PATH)")
 endif
 
 # Check if given Python version is ok?
 PYTHON_VERSION_OK=$(shell $(PYTHON_BIN) -c "import sys; print((int(sys.version_info[0]), int(sys.version_info[1])) >= tuple(map(int, '$(PYTHON_MIN_VERSION)'.split('.'))))")
 ifeq ($(PYTHON_VERSION_OK),0)
-  $(error "Need Python >= $(PYTHON_MIN_VERSION)")
+$(error "Need Python >= $(PYTHON_MIN_VERSION)")
 endif
 
 VENV_TARGET:=$(SENTINEL_FOLDER)/venv.sentinel
@@ -89,3 +92,7 @@ venv-dirty:
 .PHONY: venv-clean
 venv-clean: venv-dirty
 	@rm -rf $(VENV_FOLDER)
+
+INSTALL_TARGETS+=venv
+DIRTY_TARGETS+=venv-dirty
+CLEAN_TARGETS+=venv-clean

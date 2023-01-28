@@ -38,3 +38,7 @@ python-ldap-dirty:
 .PHONY: python-ldap-clean
 python-ldap-clean: python-ldap-dirty
 	@test -e $(VENV_SCRIPTS)pip && $(VENV_SCRIPTS)pip uninstall -y python-ldap
+
+INSTALL_TARGETS+=python-ldap
+DIRTY_TARGETS+=python-ldap-dirty
+CLEAN_TARGETS+=python-ldap-clean

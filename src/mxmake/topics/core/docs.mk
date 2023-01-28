@@ -33,14 +33,18 @@
 #:description = Documentation Python requirements to be installed (via pip).
 #:default =
 
-
 ##############################################################################
 # docs
 ##############################################################################
 
-docs-install: venv
+DOCS_TARGET:=$(SENTINEL_FOLDER)/docs.sentinel
+$(DOCS_TARGET): $(VENV_TARGET)
 	@echo "Install Sphinx"
 	@$(VENV_SCRIPTS)pip install -U sphinx sphinx-autobuild $(DOCS_REQUIREMENTS)
+	@touch $(DOCS_TARGET)
+
+.PHONY: docs-install
+docs-install: $(DOCS_TARGET)
 
 .PHONY: docs
 docs: docs-install
@@ -54,6 +58,14 @@ docs-live: docs-install
 	@test -e $(DOCS_AUTOBUILD_BIN) && $(DOCS_AUTOBUILD_BIN) $(DOCS_SOURCE_FOLDER) $(DOCS_TARGET_FOLDER)
 	@test -e $(DOCS_AUTOBUILD_BIN) || echo "Sphinx autobuild binary not exists"
 
+.PHONY: docs-dirty
+docs-dirty:
+	@rm -f $(DOCS_TARGET)
+
 .PHONY: docs-clean
-docs-clean:
+docs-clean: docs-dirty
 	@rm -rf $(DOCS_TARGET_FOLDER)
+
+INSTALL_TARGETS+=docs-install
+DIRTY_TARGETS+=docs-dirty
+CLEAN_TARGETS+=docs-clean

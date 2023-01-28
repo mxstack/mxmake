@@ -64,3 +64,7 @@ openldap-dirty:
 openldap-clean:
 	@rm -f $(OPENLDAP_TARGET)
 	@rm -rf $(OPENLDAP_DIR)
+
+INSTALL_TARGETS+=openldap
+DIRTY_TARGETS+=openldap-dirty
+CLEAN_TARGETS+=openldap-clean

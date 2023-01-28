@@ -4,110 +4,111 @@
 # SETTINGS (ALL CHANGES MADE BELOW SETTINGS WILL BE LOST)
 ##############################################################################
 
+## core.base
+
+# `deploy` target dependencies.
+# No default value.
+DEPLOY_TARGETS?=
+
 ## core.venv
 
 # Python interpreter to use for creating the virtual environment.
-# default: python3
+# Default: python3
 PYTHON_BIN?=python3
 
 # Minimum required Python version.
-# default: 3.7
+# Default: 3.7
 PYTHON_MIN_VERSION?=3.7
 
 # Whether to use a VENV or not; "true" or "false".
-# default: true
+# Default: true
 VENV_CREATE?=true
 
 # The folder where the virtual environment get created.
-# default: venv
+# Default: venv
 VENV_FOLDER?=venv
 
+# The folder where the virtual environment contains the
+# executables
+# Default: $(VENV_FOLDER)/bin/
+VENV_SCRIPTS?=$(VENV_FOLDER)/bin/
+
 # mxdev to install in virtual environment.
-# default: https://github.com/mxstack/mxdev/archive/main.zip
+# Default: https://github.com/mxstack/mxdev/archive/main.zip
 MXDEV?=https://github.com/mxstack/mxdev/archive/main.zip
 
 # mxmake to install in virtual environment.
-# default: https://github.com/mxstack/mxmake/archive/develop.zip
+# Default: https://github.com/mxstack/mxmake/archive/develop.zip
 MXMAKE?=-e .
 
 ## core.files
 
 # The config file to use.
-# default: mx.ini
+# Default: mx.ini
 PROJECT_CONFIG?=mx.ini
 
 # Target folder for generated scripts.
-# default: $(VENV_SCRIPTS)
-SCRIPTS_FOLDER?=$(VENV_FOLDER)/bin
+# Default: $(VENV_SCRIPTS)
+SCRIPTS_FOLDER?=$(VENV_SCRIPTS)
 
 # Target folder for generated config files.
-# default: cfg
+# Default: cfg
 CONFIG_FOLDER?=cfg
 
 ## core.test
 
 # The command which gets executed. Defaults to the location the
 # :ref:`run-tests` template gets rendered to if configured.
-# default: $(SCRIPTS_FOLDER)/run-tests.sh
-TEST_COMMAND?=$(VENV_FOLDER)/bin/python -m mxmake.tests
+# Default: $(SCRIPTS_FOLDER)run-tests.sh
+TEST_COMMAND?=$(SCRIPTS_FOLDER)python -m mxmake.tests
 
 # Additional make targets the test target depends on.
-# no default value
-
+# No default value.
 TEST_DEPENDENCY_TARGETS?=
 
 ## core.coverage
 
 # The command which gets executed. Defaults to the location the
 # :ref:`run-coverage` template gets rendered to if configured.
-# default: $(SCRIPTS_FOLDER)/run-coverage.sh
-COVERAGE_COMMAND?=$(VENV_FOLDER)/bin/coverage run -m mxmake.tests
-
-## core.clean
-
-# Space separated list of files and folders to remove.
-# no default value
-
-CLEAN_TARGETS?=dist mxmake.egg-info
+# Default: $(SCRIPTS_FOLDER)run-coverage.sh
+COVERAGE_COMMAND?=$(SCRIPTS_FOLDER)run-coverage.sh
 
 ## core.docs
 
 # The Sphinx build executable.
-# default: $(VENV_SCRIPTS)sphinx-build
-DOCS_BIN?=$(VENV_FOLDER)/bin/sphinx-build
+# Default: $(VENV_SCRIPTS)sphinx-build
+DOCS_BIN?=$(VENV_SCRIPTS)sphinx-build
 
 # The Sphinx auto build executable.
-# default: $(VENV_SCRIPTS)sphinx-autobuild
-DOCS_AUTOBUILD_BIN?=$(VENV_FOLDER)/bin/sphinx-autobuild
+# Default: $(VENV_SCRIPTS)sphinx-autobuild
+DOCS_AUTOBUILD_BIN?=$(VENV_SCRIPTS)sphinx-autobuild
 
 # Documentation source folder.
-# default: docs/source
+# Default: docs/source
 DOCS_SOURCE_FOLDER?=docs/source
 
 # Documentation generation target folder.
-# default: docs/html
+# Default: docs/html
 DOCS_TARGET_FOLDER?=docs/html
 
 # Documentation Python requirements to be installed (via pip).
-# no default value
-
+# No default value.
 DOCS_REQUIREMENTS?=sphinx-conestack-theme myst-parser
 
 ## core.system-dependencies
 
 # Space separated system package names.
-# no default value
-
+# No default value.
 SYSTEM_DEPENDENCIES?=
 
 ##############################################################################
-# END OF SETTINGS - DO NOT EDIT BELOW THIS LINE
+# END SETTINGS - DO NOT EDIT BELOW THIS LINE
 ##############################################################################
 
-
-##############################################################################
-# Makefile for mxmake projects.
-##############################################################################
+INSTALL_TARGETS?=
+DIRTY_TARGETS?=
+CLEAN_TARGETS?=
+PURGE_TARGETS?=
 
 # Defensive settings for make: https://tech.davis-hansson.com/p/make/
 SHELL:=bash
@@ -130,28 +131,26 @@ $(SENTINEL):
 # venv
 ##############################################################################
 
-VENV_SCRIPTS=
-
 # determine the VENV
-ifeq ("${VENV_CREATE}", "true")
-	VENV_SCRIPTS=${VENV_FOLDER}/bin/
+ifeq ("$(VENV_CREATE)", "true")
+VENV_SCRIPTS=$(VENV_FOLDER)/bin/
 else
 # given we have an existing venv folder, we use it, otherwise expect scripts
 # in system PATH.
-	ifneq ("${VENV_FOLDER}", "")
-		VENV_SCRIPTS=${VENV_FOLDER}/bin/
-	endif
+ifeq ("$(VENV_FOLDER)", "")
+VENV_SCRIPTS=
+endif
 endif
 
 # Check if given Python is installed?
-ifeq (, $(shell which $(PYTHON_BIN) ))
-  $(error "PYTHON=$(PYTHON_BIN) not found in $(PATH)")
+ifeq (, $(shell which $(PYTHON_BIN)))
+$(error "PYTHON=$(PYTHON_BIN) not found in $(PATH)")
 endif
 
 # Check if given Python version is ok?
 PYTHON_VERSION_OK=$(shell $(PYTHON_BIN) -c "import sys; print((int(sys.version_info[0]), int(sys.version_info[1])) >= tuple(map(int, '$(PYTHON_MIN_VERSION)'.split('.'))))")
 ifeq ($(PYTHON_VERSION_OK),0)
-  $(error "Need Python >= $(PYTHON_MIN_VERSION)")
+$(error "Need Python >= $(PYTHON_MIN_VERSION)")
 endif
 
 VENV_TARGET:=$(SENTINEL_FOLDER)/venv.sentinel
@@ -173,6 +172,10 @@ venv-dirty:
 .PHONY: venv-clean
 venv-clean: venv-dirty
 	@rm -rf $(VENV_FOLDER)
+
+INSTALL_TARGETS+=venv
+DIRTY_TARGETS+=venv-dirty
+CLEAN_TARGETS+=venv-clean
 
 ##############################################################################
 # files
@@ -215,6 +218,10 @@ files-clean: files-dirty
 	$(call unset_files_env,$(VENV_FOLDER),$(SCRIPTS_FOLDER),$(CONFIG_FOLDER))
 	@rm -f constraints-mxdev.txt requirements-mxdev.txt
 
+INSTALL_TARGETS+=files
+DIRTY_TARGETS+=files-dirty
+CLEAN_TARGETS+=files-clean
+
 ##############################################################################
 # sources
 ##############################################################################
@@ -232,36 +239,43 @@ sources: $(SOURCES_TARGET)
 sources-dirty:
 	@rm -f $(SOURCES_TARGET)
 
-.PHONY: sources-clean
-sources-clean: sources-dirty
+.PHONY: sources-purge
+sources-purge: sources-dirty
 	@rm -rf sources
 
+INSTALL_TARGETS+=sources
+DIRTY_TARGETS+=sources-dirty
+PURGE_TARGETS+=sources-purge
+
 ##############################################################################
-# install
+# packages
 ##############################################################################
 
 INSTALLED_PACKAGES=.installed.txt
 
-INSTALL_TARGET:=$(SENTINEL_FOLDER)/install.sentinel
-$(INSTALL_TARGET): $(SOURCES_TARGET)
+PACKAGES_TARGET:=$(SENTINEL_FOLDER)/packages.sentinel
+$(PACKAGES_TARGET): $(SOURCES_TARGET)
 	@echo "Install python packages"
 	@$(VENV_SCRIPTS)pip install -r requirements-mxdev.txt
 	@$(VENV_SCRIPTS)pip freeze > $(INSTALLED_PACKAGES)
-	@touch $(INSTALL_TARGET)
+	@touch $(PACKAGES_TARGET)
 
-.PHONY: install
-install: $(INSTALL_TARGET)
+.PHONY: packages
+packages: $(PACKAGES_TARGET)
 
-.PHONY: install-dirty
-install-dirty:
-	@rm -f $(INSTALL_TARGET)
+.PHONY: packages-dirty
+packages-dirty:
+	@rm -f $(PACKAGES_TARGET)
+
+INSTALL_TARGETS+=packages
+DIRTY_TARGETS+=packages-dirty
 
 ##############################################################################
 # test
 ##############################################################################
 
 .PHONY: test
-test: $(FILES_TARGET) $(SOURCES_TARGET) $(INSTALL_TARGET) $(TEST_DEPENDENCY_TARGETS)
+test: $(FILES_TARGET) $(SOURCES_TARGET) $(PACKAGES_TARGET) $(TEST_DEPENDENCY_TARGETS)
 	@echo "Run tests"
 	@test -z "$(TEST_COMMAND)" && echo "No test command defined"
 	@test -z "$(TEST_COMMAND)" || bash -c "$(TEST_COMMAND)"
@@ -270,45 +284,45 @@ test: $(FILES_TARGET) $(SOURCES_TARGET) $(INSTALL_TARGET) $(TEST_DEPENDENCY_TARG
 # coverage
 ##############################################################################
 
-coverage-install: venv
+COVERAGE_TARGET:=$(SENTINEL_FOLDER)/coverage.sentinel
+$(COVERAGE_TARGET): $(VENV_TARGET)
 	@echo "Install Coverage"
 	@$(VENV_SCRIPTS)pip install -U coverage
+	@touch $(COVERAGE_TARGET)
+
+.PHONY: coverage-install
+coverage-install: $(COVERAGE_TARGET)
 
 .PHONY: coverage
-coverage: $(FILES_TARGET) $(SOURCES_TARGET) $(INSTALL_TARGET) coverage-install
+coverage: $(FILES_TARGET) $(SOURCES_TARGET) $(PACKAGES_TARGET) coverage-install
 	@echo "Run coverage"
 	@test -z "$(COVERAGE_COMMAND)" && echo "No coverage command defined"
 	@test -z "$(COVERAGE_COMMAND)" || bash -c "$(COVERAGE_COMMAND)"
 
+.PHONY: coverage-dirty
+coverage-dirty:
+	@rm -f $(COVERAGE_TARGET)
+
 .PHONY: coverage-clean
-coverage-clean:
+coverage-clean: coverage-dirty
 	@rm -rf .coverage htmlcov
 
-##############################################################################
-# clean
-##############################################################################
-
-.PHONY: clean
-clean: files-clean venv-clean docs-clean coverage-clean
-	@rm -rf $(CLEAN_TARGETS) .mxmake-sentinels .installed.txt
-
-.PHONY: full-clean
-full-clean: clean sources-clean
-
-.PHONY: runtime-clean
-runtime-clean:
-	@echo "Remove runtime artifacts, like byte-code and caches."
-	@find . -name '*.py[c|o]' -delete
-	@find . -name '*~' -exec rm -f {} +
-	@find . -name '__pycache__' -exec rm -fr {} +
+INSTALL_TARGETS+=coverage-install
+DIRTY_TARGETS+=coverage-dirty
+CLEAN_TARGETS+=coverage-clean
 
 ##############################################################################
 # docs
 ##############################################################################
 
-docs-install: venv
+DOCS_TARGET:=$(SENTINEL_FOLDER)/docs.sentinel
+$(DOCS_TARGET): $(VENV_TARGET)
 	@echo "Install Sphinx"
 	@$(VENV_SCRIPTS)pip install -U sphinx sphinx-autobuild $(DOCS_REQUIREMENTS)
+	@touch $(DOCS_TARGET)
+
+.PHONY: docs-install
+docs-install: $(DOCS_TARGET)
 
 .PHONY: docs
 docs: docs-install
@@ -322,9 +336,17 @@ docs-live: docs-install
 	@test -e $(DOCS_AUTOBUILD_BIN) && $(DOCS_AUTOBUILD_BIN) $(DOCS_SOURCE_FOLDER) $(DOCS_TARGET_FOLDER)
 	@test -e $(DOCS_AUTOBUILD_BIN) || echo "Sphinx autobuild binary not exists"
 
+.PHONY: docs-dirty
+docs-dirty:
+	@rm -f $(DOCS_TARGET)
+
 .PHONY: docs-clean
-docs-clean:
+docs-clean: docs-dirty
 	@rm -rf $(DOCS_TARGET_FOLDER)
+
+INSTALL_TARGETS+=docs-install
+DIRTY_TARGETS+=docs-dirty
+CLEAN_TARGETS+=docs-clean
 
 ##############################################################################
 # system dependencies
@@ -338,14 +360,46 @@ system-dependencies:
 		|| sudo apt-get install -y $(SYSTEM_DEPENDENCIES)
 
 ##############################################################################
+# Default targets
+##############################################################################
+
+INSTALL_TARGET:=$(SENTINEL_FOLDER)/install.sentinel
+$(INSTALL_TARGET): $(INSTALL_TARGETS)
+	@touch $(INSTALL_TARGET)
+
+.PHONY: install
+install: $(INSTALL_TARGET)
+	@touch $(INSTALL_TARGET)
+
+.PHONY: deploy
+deploy: $(DEPLOY_TARGETS)
+
+.PHONY: dirty
+dirty: $(DIRTY_TARGETS)
+	@rm -f $(INSTALL_TARGET)
+
+.PHONY: clean
+clean: dirty $(CLEAN_TARGETS)
+	@rm -rf $(CLEAN_TARGETS) .mxmake-sentinels
+
+.PHONY: purge
+purge: clean $(PURGE_TARGETS)
+
+.PHONY: runtime-clean
+runtime-clean:
+	@echo "Remove runtime artifacts, like byte-code and caches."
+	@find . -name '*.py[c|o]' -delete
+	@find . -name '*~' -exec rm -f {} +
+	@find . -name '__pycache__' -exec rm -fr {} +
+
+##############################################################################
 #: core.base
 #: core.venv
 #: core.files
 #: core.sources
-#: core.install
+#: core.packages
 #: core.test
 #: core.coverage
-#: core.clean
 #: core.docs
 #: core.system-dependencies
 ##############################################################################

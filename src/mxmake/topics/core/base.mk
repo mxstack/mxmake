@@ -1,10 +1,32 @@
 #:[base]
 #:title = Base
-#:description = Defines basic settings and provides sentinel target
-
-##############################################################################
-# Makefile for mxmake projects.
-##############################################################################
+#:description = Defines common build targets and basic settings for project.
+#:
+#:[target.install]
+#:description = Install project. Installs the entire project supposed for
+#:  development.
+#:
+#:[target.deploy]
+#:description = Deploy project. Supposed to setup a production version of
+#:  the project.
+#:
+#:[target.dirty]
+#:description = Force make to rebuild targets on next make run.
+#:
+#:[target.clean]
+#:description = Clean project. Removes all installation related files.
+#:
+#:[target.purge]
+#:description = Purge project. Removes all installation related files and data.
+#:  THIS IS AN OPERATION FOR POTENTIAL DATA LOSS! USE SPARINGLY AND AT YOUR
+#:  OWN RISK!
+#:
+#:[target.runtime-clean]
+#:description = Remove runtime artifacts, like byte-code and caches.
+#:
+#:[setting.DEPLOY_TARGETS]
+#:description = `deploy` target dependencies.
+#:default =
 
 # Defensive settings for make: https://tech.davis-hansson.com/p/make/
 SHELL:=bash

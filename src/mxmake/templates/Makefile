@@ -12,20 +12,56 @@
 # {{ line }}
 {% endfor %}
 {% if setting.default %}
-# default: {{ setting.default }}
+# Default: {{ setting.default }}
 {% else %}
-# no default value
-
+# No default value.
 {% endif %}
 {{ setting.name }}?={{ setting.value }}
 
 {% endfor -%}
 {% endfor -%}
 ##############################################################################
-# END OF SETTINGS - DO NOT EDIT BELOW THIS LINE
+# END SETTINGS - DO NOT EDIT BELOW THIS LINE
 ##############################################################################
 
+INSTALL_TARGETS?=
+DIRTY_TARGETS?=
+CLEAN_TARGETS?=
+PURGE_TARGETS?=
 {{ sections.read() }}
+##############################################################################
+# Default targets
+##############################################################################
+
+INSTALL_TARGET:=$(SENTINEL_FOLDER)/install.sentinel
+$(INSTALL_TARGET): $(INSTALL_TARGETS)
+	@touch $(INSTALL_TARGET)
+
+.PHONY: install
+install: $(INSTALL_TARGET)
+	@touch $(INSTALL_TARGET)
+
+.PHONY: deploy
+deploy: $(DEPLOY_TARGETS)
+
+.PHONY: dirty
+dirty: $(DIRTY_TARGETS)
+	@rm -f $(INSTALL_TARGET)
+
+.PHONY: clean
+clean: dirty $(CLEAN_TARGETS)
+	@rm -rf $(CLEAN_TARGETS) .mxmake-sentinels
+
+.PHONY: purge
+purge: clean $(PURGE_TARGETS)
+
+.PHONY: runtime-clean
+runtime-clean:
+	@echo "Remove runtime artifacts, like byte-code and caches."
+	@find . -name '*.py[c|o]' -delete
+	@find . -name '*~' -exec rm -f {} +
+	@find . -name '__pycache__' -exec rm -fr {} +
+
 ##############################################################################
 {% for fqn in fqns %}
 #: {{ fqn }}

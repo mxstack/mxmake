@@ -10,7 +10,7 @@
 #:[target.sources-dirty]
 #:description = Build :ref:`sources` target on next make run.
 #:
-#:[target.sources-clean]
+#:[target.sources-purge]
 #:description = Removes sources folder.
 
 ##############################################################################
@@ -30,6 +30,10 @@ sources: $(SOURCES_TARGET)
 sources-dirty:
 	@rm -f $(SOURCES_TARGET)
 
-.PHONY: sources-clean
-sources-clean: sources-dirty
+.PHONY: sources-purge
+sources-purge: sources-dirty
 	@rm -rf sources
+
+INSTALL_TARGETS+=sources
+DIRTY_TARGETS+=sources-dirty
+PURGE_TARGETS+=sources-purge
