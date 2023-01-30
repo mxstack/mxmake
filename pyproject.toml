@@ -49,6 +49,7 @@ hook = "mxmake.hook:Hook"
 
 [project.entry-points."mxmake.topics"]
 core = "mxmake.topics:core"
+docs = "mxmake.topics:docs"
 ldap = "mxmake.topics:ldap"
 qa = "mxmake.topics:qa"
 

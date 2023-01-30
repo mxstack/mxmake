@@ -1,14 +1,14 @@
-#:[docs]
-#:title = Documentation
+#:[sphinx]
+#:title = Sphinx Documentation
 #:description = Documentation generation with Sphinx.
 #:depends = core.mxenv
 #:
 #:[target.docs]
-#:description = Generate Sphinx docs. Sphinx is expected to be installed. This
-#:  is not done automatically.
+#:description = Generate Sphinx docs.
 #:
 #:[target.docs-live]
-#:description = Rebuild Sphinx documentation on changes, with live-reload in the browser.
+#:description = Rebuild Sphinx documentation on changes, with live-reload in
+#:  the browser using `sphinx-autobuild`.
 #:
 #:[target.docs-clean]
 #:description = Removes generated docs.
@@ -26,13 +26,13 @@
 #:default =
 
 ##############################################################################
-# docs
+# sphinx
 ##############################################################################
 
-DOCS_BIN=$(MXENV_PATH)sphinx-build
-DOCS_AUTOBUILD_BIN=$(MXENV_PATH)sphinx-autobuild
+SPHINX_BIN=$(MXENV_PATH)sphinx-build
+SPHINX_AUTOBUILD_BIN=$(MXENV_PATH)sphinx-autobuild
 
-DOCS_TARGET:=$(SENTINEL_FOLDER)/docs.sentinel
+DOCS_TARGET:=$(SENTINEL_FOLDER)/sphinx.sentinel
 $(DOCS_TARGET): $(MXENV_TARGET)
 	@echo "Install Sphinx"
 	@$(MXENV_PATH)pip install -U sphinx sphinx-autobuild $(DOCS_REQUIREMENTS)
@@ -44,14 +44,12 @@ docs-install: $(DOCS_TARGET)
 .PHONY: docs
 docs: docs-install
 	@echo "Build sphinx docs"
-	@test -e $(DOCS_BIN) && $(DOCS_BIN) $(DOCS_SOURCE_FOLDER) $(DOCS_TARGET_FOLDER)
-	@test -e $(DOCS_BIN) || echo "Sphinx binary not exists"
+	@$(SPHINX_BIN) $(DOCS_SOURCE_FOLDER) $(DOCS_TARGET_FOLDER)
 
 .PHONY: docs-live
 docs-live: docs-install
 	@echo "Rebuild Sphinx documentation on changes, with live-reload in the browser"
-	@test -e $(DOCS_AUTOBUILD_BIN) && $(DOCS_AUTOBUILD_BIN) $(DOCS_SOURCE_FOLDER) $(DOCS_TARGET_FOLDER)
-	@test -e $(DOCS_AUTOBUILD_BIN) || echo "Sphinx autobuild binary not exists"
+	@$(SPHINX_AUTOBUILD_BIN) $(DOCS_SOURCE_FOLDER) $(DOCS_TARGET_FOLDER)
 
 .PHONY: docs-dirty
 docs-dirty:
