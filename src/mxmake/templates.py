@@ -231,7 +231,7 @@ class Makefile(Template):
             domain.write_to(sections)
         sections.seek(0)
         # collect fqns of used domains
-        fqns = [domain.fqn for domain in self.domains]
+        fqns = sorted([domain.fqn for domain in self.domains])
         # return template variables
         return dict(settings=settings, sections=sections, fqns=fqns)
 

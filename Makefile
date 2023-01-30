@@ -5,14 +5,14 @@
 #
 # DOMAINS:
 #: core.base
-#: system.dependencies
 #: core.mxenv
-#: docs.sphinx
 #: core.mxfiles
-#: core.sources
 #: core.packages
-#: qa.test
+#: core.sources
+#: docs.sphinx
 #: qa.coverage
+#: qa.test
+#: system.dependencies
 ##############################################################################
 
 ## core.base
