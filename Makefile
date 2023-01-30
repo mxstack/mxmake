@@ -10,9 +10,10 @@
 #: core.packages
 #: core.sources
 #: docs.sphinx
+#: qa.black
 #: qa.coverage
+#: qa.mypy
 #: qa.test
-#: system.dependencies
 ##############################################################################
 
 ## core.base
@@ -20,12 +21,6 @@
 # `deploy` target dependencies.
 # No default value.
 DEPLOY_TARGETS?=
-
-## system.dependencies
-
-# Space separated system package names.
-# No default value.
-SYSTEM_DEPENDENCIES?=
 
 ## core.mxenv
 
@@ -99,12 +94,28 @@ TEST_COMMAND?=$(VENV_FOLDER)/bin/python -m mxmake.tests
 # No default value.
 TEST_DEPENDENCY_TARGETS?=
 
+## qa.mypy
+
+# Source folder for code analysis.
+# Default: src
+MYPY_SRC?=src
+
+# Mypy Python requirements to be installed (via pip).
+# Default: types-setuptools
+MYPY_REQUIREMENTS?=types-setuptools types-docutils
+
 ## qa.coverage
 
 # The command which gets executed. Defaults to the location the
 # :ref:`run-coverage` template gets rendered to if configured.
 # Default: $(SCRIPTS_FOLDER)/run-coverage.sh
 COVERAGE_COMMAND?=$(SCRIPTS_FOLDER)/run-coverage.sh
+
+## qa.black
+
+# Source folder for code formatting.
+# Default: src
+BLACK_SRC?=src
 
 ##############################################################################
 # END SETTINGS - DO NOT EDIT BELOW THIS LINE
@@ -131,17 +142,6 @@ SENTINEL?=$(SENTINEL_FOLDER)/about.txt
 $(SENTINEL):
 	@mkdir -p $(SENTINEL_FOLDER)
 	@echo "Sentinels for the Makefile process." > $(SENTINEL)
-
-##############################################################################
-# system dependencies
-##############################################################################
-
-.PHONY: system-dependencies
-system-dependencies:
-	@echo "Install system dependencies"
-	@test -z "$(SYSTEM_DEPENDENCIES)" && echo "No System dependencies defined"
-	@test -z "$(SYSTEM_DEPENDENCIES)" \
-		|| sudo apt-get install -y $(SYSTEM_DEPENDENCIES)
 
 ##############################################################################
 # mxenv
@@ -343,6 +343,26 @@ test: $(FILES_TARGET) $(SOURCES_TARGET) $(PACKAGES_TARGET) $(TEST_DEPENDENCY_TAR
 	@test -z "$(TEST_COMMAND)" || bash -c "$(TEST_COMMAND)"
 
 ##############################################################################
+# mypy
+##############################################################################
+
+MYPY_TARGET:=$(SENTINEL_FOLDER)/mypy.sentinel
+$(MYPY_TARGET): $(MXENV_TARGET)
+	@echo "Install mypy"
+	@$(MXENV_PATH)pip install mypy $(MYPY_REQUIREMENTS)
+	@touch $(MYPY_TARGET)
+
+.PHONY: mypy-install
+mypy-install: $(MYPY_TARGET)
+
+.PHONY: mypy
+mypy: $(PACKAGES_TARGET) mypy-install
+	@echo "Run mypy"
+	@$(MXENV_PATH)mypy $(MYPY_SRC)
+
+INSTALL_TARGETS+=mypy-install
+
+##############################################################################
 # coverage
 ##############################################################################
 
@@ -372,6 +392,26 @@ coverage-clean: coverage-dirty
 INSTALL_TARGETS+=coverage-install
 DIRTY_TARGETS+=coverage-dirty
 CLEAN_TARGETS+=coverage-clean
+
+##############################################################################
+# black
+##############################################################################
+
+BLACK_TARGET:=$(SENTINEL_FOLDER)/black.sentinel
+$(BLACK_TARGET): $(MXENV_TARGET)
+	@echo "Install Black"
+	@$(MXENV_PATH)pip install black
+	@touch $(BLACK_TARGET)
+
+.PHONY: black-install
+black-install: $(BLACK_TARGET)
+
+.PHONY: black
+black: $(PACKAGES_TARGET) black-install
+	@echo "Run black"
+	@$(MXENV_PATH)black $(BLACK_SRC)
+
+INSTALL_TARGETS+=black-install
 
 ##############################################################################
 # Default targets
