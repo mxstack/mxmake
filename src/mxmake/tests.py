@@ -525,9 +525,9 @@ class TestTemplates(RenderTestCase):
             "core.base.DEPLOY_TARGETS": "",
             "core.mxenv.PYTHON_BIN": "python3",
             "core.mxenv.PYTHON_MIN_VERSION": "3.7",
+            "core.mxenv.VENV_ENABLED": "true",
             "core.mxenv.VENV_CREATE": "true",
             "core.mxenv.VENV_FOLDER": "venv",
-            "core.mxenv.VENV_SCRIPTS": "$(VENV_FOLDER)/bin/",
             "core.mxenv.MXDEV": "mxdev",
             "core.mxenv.MXMAKE": "mxmake",
         }
@@ -558,7 +558,7 @@ class TestTemplates(RenderTestCase):
 
                 ## core.mxenv
 
-                # Python interpreter to use for creating the virtual environment.
+                # Python interpreter to use.
                 # Default: python3
                 PYTHON_BIN?=python3
 
@@ -566,18 +566,20 @@ class TestTemplates(RenderTestCase):
                 # Default: 3.7
                 PYTHON_MIN_VERSION?=3.7
 
-                # Whether to use a VENV or not; "true" or "false".
+                # Flag whether to use virtual environment. If `false`, the global
+                # interpreter is used.
+                # Default: true
+                VENV_ENABLED?=true
+
+                # Flag whether to create a virtual environment. If set to `false`
+                # and `VENV_ENABLED` is `true`, `VENV_FOLDER` is expected to point to an
+                # existing virtual environment.
                 # Default: true
                 VENV_CREATE?=true
 
-                # The folder where the virtual environment get created.
+                # The folder of the virtual environment.
                 # Default: venv
                 VENV_FOLDER?=venv
-
-                # The folder where the virtual environment contains the
-                # executables
-                # Default: $(VENV_FOLDER)/bin/
-                VENV_SCRIPTS?=$(VENV_FOLDER)/bin/
 
                 # mxdev to install in virtual environment.
                 # Default: https://github.com/mxstack/mxdev/archive/main.zip
@@ -617,35 +619,36 @@ class TestTemplates(RenderTestCase):
                 # mxenv
                 ##############################################################################
 
-                # determine the VENV
-                ifeq ("$(VENV_CREATE)", "true")
-                VENV_SCRIPTS=$(VENV_FOLDER)/bin/
-                else
-                # given we have an existing venv folder, we use it, otherwise expect scripts
-                # in system PATH.
-                ifeq ("$(VENV_FOLDER)", "")
-                VENV_SCRIPTS=
-                endif
-                endif
-
-                # Check if given Python is installed?
-                ifeq (, $(shell which $(PYTHON_BIN)))
+                # Check if given Python is installed
+                ifeq (,$(shell which $(PYTHON_BIN)))
                 $(error "PYTHON=$(PYTHON_BIN) not found in $(PATH)")
                 endif
 
-                # Check if given Python version is ok?
+                # Check if given Python version is ok
                 PYTHON_VERSION_OK=$(shell $(PYTHON_BIN) -c "import sys; print((int(sys.version_info[0]), int(sys.version_info[1])) >= tuple(map(int, '$(PYTHON_MIN_VERSION)'.split('.'))))")
                 ifeq ($(PYTHON_VERSION_OK),0)
                 $(error "Need Python >= $(PYTHON_MIN_VERSION)")
+                endif
+
+                # Check if venv folder is configured if venv is enabled
+                ifeq ($(shell [[ "$(VENV_ENABLED)" == "true" && "$(VENV_FOLDER)" == "" ]] && echo "true"),"true")
+                $(error "VENV_FOLDER must be configured if VENV_ENABLED is true")
+                endif
+
+                # determine the executable path
+                ifeq ("$(VENV_ENABLED)", "true")
+                MXENV_PATH=$(VENV_FOLDER)/bin/
+                else
+                MXENV_PATH=
                 endif
 
                 MXENV_TARGET:=$(SENTINEL_FOLDER)/mxenv.sentinel
                 $(MXENV_TARGET): $(SENTINEL)
                     @echo "Setup Python Virtual Environment under '$(VENV_FOLDER)'"
                     @$(PYTHON_BIN) -m venv $(VENV_FOLDER)
-                    @$(VENV_SCRIPTS)pip install -U pip setuptools wheel
-                    @$(VENV_SCRIPTS)pip install -U $(MXDEV)
-                    @$(VENV_SCRIPTS)pip install -U $(MXMAKE)
+                    @$(MXENV_PATH)pip install -U pip setuptools wheel
+                    @$(MXENV_PATH)pip install -U $(MXDEV)
+                    @$(MXENV_PATH)pip install -U $(MXMAKE)
                     @touch $(MXENV_TARGET)
 
                 .PHONY: mxenv
@@ -755,9 +758,9 @@ class TestParser(unittest.TestCase):
             "core.base.DEPLOY_TARGETS": "",
             "core.mxenv.PYTHON_BIN": "python3",
             "core.mxenv.PYTHON_MIN_VERSION": "3.7",
+            "core.mxenv.VENV_ENABLED": "true",
             "core.mxenv.VENV_CREATE": "true",
             "core.mxenv.VENV_FOLDER": "venv",
-            "core.mxenv.VENV_SCRIPTS": "$(VENV_FOLDER)/bin/",
             "core.mxenv.MXDEV": "mxdev",
             "core.mxenv.MXMAKE": "mxmake",
         }
@@ -778,9 +781,9 @@ class TestParser(unittest.TestCase):
                 "core.base.DEPLOY_TARGETS": "",
                 "core.mxenv.PYTHON_BIN": "python3",
                 "core.mxenv.PYTHON_MIN_VERSION": "3.7",
+                "core.mxenv.VENV_ENABLED": "true",
                 "core.mxenv.VENV_CREATE": "true",
                 "core.mxenv.VENV_FOLDER": "venv",
-                "core.mxenv.VENV_SCRIPTS": "$(VENV_FOLDER)/bin/",
                 "core.mxenv.MXDEV": "mxdev",
                 "core.mxenv.MXMAKE": "mxmake",
             },
