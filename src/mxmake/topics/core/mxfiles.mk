@@ -1,5 +1,5 @@
 #:[mxfiles]
-#:title = Files
+#:title = MX Files
 #:description = Project file generation.
 #:depends = core.mxenv
 #:
@@ -19,7 +19,7 @@
 #:
 #:[setting.SCRIPTS_FOLDER]
 #:description = Target folder for generated scripts.
-#:default = $(VENV_SCRIPTS)
+#:default = scripts
 #:
 #:[setting.CONFIG_FOLDER]
 #:description = Target folder for generated config files.
@@ -31,14 +31,14 @@
 
 # set environment variables for mxmake
 define set_mxfiles_env
-	@export MXMAKE_VENV_FOLDER=$(1)
+	@export MXMAKE_MXENV_PATH=$(1)
 	@export MXMAKE_SCRIPTS_FOLDER=$(2)
 	@export MXMAKE_CONFIG_FOLDER=$(3)
 endef
 
 # unset environment variables for mxmake
 define unset_mxfiles_env
-	@unset MXMAKE_VENV_FOLDER
+	@unset MXMAKE_MXENV_PATH
 	@unset MXMAKE_SCRIPTS_FOLDER
 	@unset MXMAKE_CONFIG_FOLDER
 endef
@@ -46,9 +46,9 @@ endef
 FILES_TARGET:=$(SENTINEL_FOLDER)/mxfiles.sentinel
 $(FILES_TARGET): $(PROJECT_CONFIG) $(MXENV_TARGET)
 	@echo "Create project files"
-	$(call set_mxfiles_env,$(VENV_FOLDER),$(SCRIPTS_FOLDER),$(CONFIG_FOLDER))
-	@$(VENV_SCRIPTS)mxdev -n -c $(PROJECT_CONFIG)
-	$(call unset_mxfiles_env,$(VENV_FOLDER),$(SCRIPTS_FOLDER),$(CONFIG_FOLDER))
+	$(call set_mxfiles_env,$(MXENV_PATH),$(SCRIPTS_FOLDER),$(CONFIG_FOLDER))
+	@$(MXENV_PATH)mxdev -n -c $(PROJECT_CONFIG)
+	$(call unset_mxfiles_env,$(MXENV_PATH),$(SCRIPTS_FOLDER),$(CONFIG_FOLDER))
 	@touch $(FILES_TARGET)
 
 .PHONY: mxfiles
@@ -60,10 +60,10 @@ mxfiles-dirty:
 
 .PHONY: mxfiles-clean
 mxfiles-clean: mxfiles-dirty
-	$(call set_mxfiles_env,$(VENV_FOLDER),$(SCRIPTS_FOLDER),$(CONFIG_FOLDER))
-	@test -e $(VENV_SCRIPTS)mxmake && \
-		$(VENV_SCRIPTS)mxmake clean -c $(PROJECT_CONFIG)
-	$(call unset_mxfiles_env,$(VENV_FOLDER),$(SCRIPTS_FOLDER),$(CONFIG_FOLDER))
+	$(call set_mxfiles_env,$(MXENV_PATH),$(SCRIPTS_FOLDER),$(CONFIG_FOLDER))
+	@test -e $(MXENV_PATH)mxmake && \
+		$(MXENV_PATH)mxmake clean -c $(PROJECT_CONFIG)
+	$(call unset_mxfiles_env,$(MXENV_PATH),$(SCRIPTS_FOLDER),$(CONFIG_FOLDER))
 	@rm -f constraints-mxdev.txt requirements-mxdev.txt
 
 INSTALL_TARGETS+=mxfiles

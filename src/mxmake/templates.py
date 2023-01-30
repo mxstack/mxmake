@@ -2,9 +2,9 @@ from jinja2 import Environment
 from jinja2 import PackageLoader
 from mxmake.topics import Domain
 from mxmake.topics import load_topics
+from mxmake.utils import mxenv_path
 from mxmake.utils import ns_name
 from mxmake.utils import scripts_folder
-from mxmake.utils import venv_folder
 
 import abc
 import io
@@ -147,7 +147,7 @@ class TestScript(EnvironmentTemplate, ShellScriptTemplate):
         return dict(
             description=self.description,
             env=self.env,
-            venv=venv_folder(),
+            mxenv_path=mxenv_path(),
             testpaths=self.package_paths(ns_name("test-path")),
         )
 
@@ -231,7 +231,7 @@ class Makefile(Template):
             domain.write_to(sections)
         sections.seek(0)
         # collect fqns of used domains
-        fqns = [domain.fqn for domain in self.domains]
+        fqns = sorted([domain.fqn for domain in self.domains])
         # return template variables
         return dict(settings=settings, sections=sections, fqns=fqns)
 
@@ -262,9 +262,9 @@ class MxIni(Template):
     def template_variables(self) -> typing.Dict[str, typing.Any]:
         mxmake_templates = []
         for domain in self.domains:
-            if domain.fqn == "core.test":
+            if domain.fqn == "qa.test":
                 mxmake_templates.append("run-tests")
-            if domain.fqn == "core.coverage":
+            if domain.fqn == "qa.coverage":
                 mxmake_templates.append("run-coverage")
         return dict(mxmake_templates=mxmake_templates)
 

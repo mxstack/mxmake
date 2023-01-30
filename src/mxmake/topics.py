@@ -259,4 +259,7 @@ def collect_missing_dependencies(
 topics_dir = os.path.join(os.path.dirname(__file__), "topics")
 
 core = Topic(name="core", directory=os.path.join(topics_dir, "core"))
+docs = Topic(name="docs", directory=os.path.join(topics_dir, "docs"))
 ldap = Topic(name="ldap", directory=os.path.join(topics_dir, "ldap"))
+qa = Topic(name="qa", directory=os.path.join(topics_dir, "qa"))
+system = Topic(name="system", directory=os.path.join(topics_dir, "system"))

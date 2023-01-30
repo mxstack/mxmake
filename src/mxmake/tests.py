@@ -55,7 +55,7 @@ class template_directory:
     def __call__(self, fn: typing.Callable):
         def wrapper(*a):
             tempdir = tempfile.mkdtemp()
-            os.environ["MXMAKE_VENV_FOLDER"] = tempdir
+            os.environ["MXMAKE_MXENV_PATH"] = tempdir
             os.environ["MXMAKE_SCRIPTS_FOLDER"] = tempdir
             os.environ["MXMAKE_CONFIG_FOLDER"] = tempdir
             try:
@@ -66,7 +66,7 @@ class template_directory:
                     fn(*a, tempdir=tempdir)
             finally:
                 shutil.rmtree(tempdir)
-                del os.environ["MXMAKE_VENV_FOLDER"]
+                del os.environ["MXMAKE_MXENV_PATH"]
                 del os.environ["MXMAKE_SCRIPTS_FOLDER"]
                 del os.environ["MXMAKE_CONFIG_FOLDER"]
 
@@ -127,11 +127,11 @@ class TestUtils(unittest.TestCase):
     def test_namespace(self):
         self.assertEqual(utils.NAMESPACE, "mxmake-")
 
-    def test_venv_folder(self):
-        self.assertEqual(utils.venv_folder(), "venv")
-        os.environ["MXMAKE_VENV_FOLDER"] = "other"
-        self.assertEqual(utils.venv_folder(), "other")
-        del os.environ["MXMAKE_VENV_FOLDER"]
+    def test_mxenv_path(self):
+        self.assertEqual(utils.mxenv_path(), os.path.join("venv", "bin") + os.path.sep)
+        os.environ["MXMAKE_MXENV_PATH"] = "other"
+        self.assertEqual(utils.mxenv_path(), "other" + os.path.sep)
+        del os.environ["MXMAKE_MXENV_PATH"]
 
     def test_scripts_folder(self):
         self.assertEqual(utils.scripts_folder(), os.path.join("venv", "bin"))
@@ -285,7 +285,7 @@ class TestTemplates(RenderTestCase):
                 "description": "Run tests",
                 "env": {"ENV_PARAM": "env_value"},
                 "testpaths": ["sources/package/src"],
-                "venv": tempdir,
+                "mxenv_path": tempdir + os.path.sep,
             },
         )
         self.assertEqual(template.package_paths("inexistent"), [])
@@ -317,7 +317,7 @@ class TestTemplates(RenderTestCase):
 
                 setenv
 
-                /.../bin/zope-testrunner --auto-color --auto-progress \\
+                /.../zope-testrunner --auto-color --auto-progress \\
                     --test-path=sources/package/src \\
                     --module=$1
 
@@ -351,7 +351,7 @@ class TestTemplates(RenderTestCase):
                 # Run tests
                 set -e
 
-                /.../bin/zope-testrunner --auto-color --auto-progress \\
+                /.../zope-testrunner --auto-color --auto-progress \\
                     --test-path=sources/package/src \\
                     --module=$1
 
@@ -398,7 +398,7 @@ class TestTemplates(RenderTestCase):
                     "sources/package/src/package/file1.py",
                     "sources/package/src/package/file2.py",
                 ],
-                "venv": tempdir,
+                "mxenv_path": tempdir + os.path.sep,
             },
         )
         self.assertEqual(template.package_paths("inexistent"), [])
@@ -456,14 +456,14 @@ class TestTemplates(RenderTestCase):
                 omits=$(printf ",%s" "${omits[@]}")
                 omits=${omits:1}
 
-                /.../bin/coverage run \\
+                /.../coverage run \\
                     --source=$sources \\
                     --omit=$omits \\
                     -m zope.testrunner --auto-color --auto-progress \\
                     --test-path=sources/package/src
 
-                /.../bin/coverage report
-                /.../bin/coverage html
+                /.../coverage report
+                /.../coverage html
 
                 unsetenv
 
@@ -503,13 +503,13 @@ class TestTemplates(RenderTestCase):
                 sources=$(printf ",%s" "${sources[@]}")
                 sources=${sources:1}
 
-                /.../bin/coverage run \\
+                /.../coverage run \\
                     --source=$sources \\
                     -m zope.testrunner --auto-color --auto-progress \\
                     --test-path=sources/package/src
 
-                /.../bin/coverage report
-                /.../bin/coverage html
+                /.../coverage report
+                /.../coverage html
 
                 exit 0
                 """,
@@ -525,9 +525,9 @@ class TestTemplates(RenderTestCase):
             "core.base.DEPLOY_TARGETS": "",
             "core.mxenv.PYTHON_BIN": "python3",
             "core.mxenv.PYTHON_MIN_VERSION": "3.7",
+            "core.mxenv.VENV_ENABLED": "true",
             "core.mxenv.VENV_CREATE": "true",
             "core.mxenv.VENV_FOLDER": "venv",
-            "core.mxenv.VENV_SCRIPTS": "$(VENV_FOLDER)/bin/",
             "core.mxenv.MXDEV": "mxdev",
             "core.mxenv.MXMAKE": "mxmake",
         }
@@ -558,7 +558,7 @@ class TestTemplates(RenderTestCase):
 
                 ## core.mxenv
 
-                # Python interpreter to use for creating the virtual environment.
+                # Python interpreter to use.
                 # Default: python3
                 PYTHON_BIN?=python3
 
@@ -566,18 +566,20 @@ class TestTemplates(RenderTestCase):
                 # Default: 3.7
                 PYTHON_MIN_VERSION?=3.7
 
-                # Whether to use a VENV or not; "true" or "false".
+                # Flag whether to use virtual environment. If `false`, the global
+                # interpreter is used.
+                # Default: true
+                VENV_ENABLED?=true
+
+                # Flag whether to create a virtual environment. If set to `false`
+                # and `VENV_ENABLED` is `true`, `VENV_FOLDER` is expected to point to an
+                # existing virtual environment.
                 # Default: true
                 VENV_CREATE?=true
 
-                # The folder where the virtual environment get created.
+                # The folder of the virtual environment.
                 # Default: venv
                 VENV_FOLDER?=venv
-
-                # The folder where the virtual environment contains the
-                # executables
-                # Default: $(VENV_FOLDER)/bin/
-                VENV_SCRIPTS?=$(VENV_FOLDER)/bin/
 
                 # mxdev to install in virtual environment.
                 # Default: https://github.com/mxstack/mxdev/archive/main.zip
@@ -592,6 +594,7 @@ class TestTemplates(RenderTestCase):
                 ##############################################################################
 
                 INSTALL_TARGETS?=
+                QA_TARGETS?=
                 DIRTY_TARGETS?=
                 CLEAN_TARGETS?=
                 PURGE_TARGETS?=
@@ -617,35 +620,38 @@ class TestTemplates(RenderTestCase):
                 # mxenv
                 ##############################################################################
 
-                # determine the VENV
-                ifeq ("$(VENV_CREATE)", "true")
-                VENV_SCRIPTS=$(VENV_FOLDER)/bin/
-                else
-                # given we have an existing venv folder, we use it, otherwise expect scripts
-                # in system PATH.
-                ifeq ("$(VENV_FOLDER)", "")
-                VENV_SCRIPTS=
-                endif
-                endif
-
-                # Check if given Python is installed?
-                ifeq (, $(shell which $(PYTHON_BIN)))
+                # Check if given Python is installed
+                ifeq (,$(shell which $(PYTHON_BIN)))
                 $(error "PYTHON=$(PYTHON_BIN) not found in $(PATH)")
                 endif
 
-                # Check if given Python version is ok?
+                # Check if given Python version is ok
                 PYTHON_VERSION_OK=$(shell $(PYTHON_BIN) -c "import sys; print((int(sys.version_info[0]), int(sys.version_info[1])) >= tuple(map(int, '$(PYTHON_MIN_VERSION)'.split('.'))))")
                 ifeq ($(PYTHON_VERSION_OK),0)
                 $(error "Need Python >= $(PYTHON_MIN_VERSION)")
                 endif
 
+                # Check if venv folder is configured if venv is enabled
+                ifeq ($(shell [[ "$(VENV_ENABLED)" == "true" && "$(VENV_FOLDER)" == "" ]] && echo "true"),"true")
+                $(error "VENV_FOLDER must be configured if VENV_ENABLED is true")
+                endif
+
+                # determine the executable path
+                ifeq ("$(VENV_ENABLED)", "true")
+                MXENV_PATH=$(VENV_FOLDER)/bin/
+                else
+                MXENV_PATH=
+                endif
+
                 MXENV_TARGET:=$(SENTINEL_FOLDER)/mxenv.sentinel
                 $(MXENV_TARGET): $(SENTINEL)
+                ifeq ("$(VENV_ENABLED)", "true")
                     @echo "Setup Python Virtual Environment under '$(VENV_FOLDER)'"
                     @$(PYTHON_BIN) -m venv $(VENV_FOLDER)
-                    @$(VENV_SCRIPTS)pip install -U pip setuptools wheel
-                    @$(VENV_SCRIPTS)pip install -U $(MXDEV)
-                    @$(VENV_SCRIPTS)pip install -U $(MXMAKE)
+                endif
+                    @$(MXENV_PATH)pip install -U pip setuptools wheel
+                    @$(MXENV_PATH)pip install -U $(MXDEV)
+                    @$(MXENV_PATH)pip install -U $(MXMAKE)
                     @touch $(MXENV_TARGET)
 
                 .PHONY: mxenv
@@ -657,7 +663,12 @@ class TestTemplates(RenderTestCase):
 
                 .PHONY: mxenv-clean
                 mxenv-clean: mxenv-dirty
+                ifeq ("$(VENV_ENABLED)", "true")
                     @rm -rf $(VENV_FOLDER)
+                else
+                    @$(MXENV_PATH)pip uninstall -y $(MXDEV)
+                    @$(MXENV_PATH)pip uninstall -y $(MXMAKE)
+                endif
 
                 INSTALL_TARGETS+=mxenv
                 DIRTY_TARGETS+=mxenv-dirty
@@ -677,6 +688,9 @@ class TestTemplates(RenderTestCase):
 
                 .PHONY: deploy
                 deploy: $(DEPLOY_TARGETS)
+
+                .PHONY: qa
+                qa: $(QA_TARGETS)
 
                 .PHONY: dirty
                 dirty: $(DIRTY_TARGETS)
@@ -702,8 +716,8 @@ class TestTemplates(RenderTestCase):
     @temp_directory
     def test_MxIni(self, tempdir):
         domains = [
-            topics.get_domain("core.test"),
-            topics.get_domain("core.coverage"),
+            topics.get_domain("qa.test"),
+            topics.get_domain("qa.coverage"),
         ]
         domains = topics.collect_missing_dependencies(domains)
 
@@ -755,9 +769,9 @@ class TestParser(unittest.TestCase):
             "core.base.DEPLOY_TARGETS": "",
             "core.mxenv.PYTHON_BIN": "python3",
             "core.mxenv.PYTHON_MIN_VERSION": "3.7",
+            "core.mxenv.VENV_ENABLED": "true",
             "core.mxenv.VENV_CREATE": "true",
             "core.mxenv.VENV_FOLDER": "venv",
-            "core.mxenv.VENV_SCRIPTS": "$(VENV_FOLDER)/bin/",
             "core.mxenv.MXDEV": "mxdev",
             "core.mxenv.MXMAKE": "mxmake",
         }
@@ -778,9 +792,9 @@ class TestParser(unittest.TestCase):
                 "core.base.DEPLOY_TARGETS": "",
                 "core.mxenv.PYTHON_BIN": "python3",
                 "core.mxenv.PYTHON_MIN_VERSION": "3.7",
+                "core.mxenv.VENV_ENABLED": "true",
                 "core.mxenv.VENV_CREATE": "true",
                 "core.mxenv.VENV_FOLDER": "venv",
-                "core.mxenv.VENV_SCRIPTS": "$(VENV_FOLDER)/bin/",
                 "core.mxenv.MXDEV": "mxdev",
                 "core.mxenv.MXMAKE": "mxmake",
             },

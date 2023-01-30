@@ -1,4 +1,4 @@
-#:[system-dependencies]
+#:[dependencies]
 #:title = System dependencies
 #:description = System dependency management.
 #:depends = core.base

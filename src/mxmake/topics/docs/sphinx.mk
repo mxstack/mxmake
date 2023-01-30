@@ -1,25 +1,17 @@
-#:[docs]
-#:title = Documentation
+#:[sphinx]
+#:title = Sphinx Documentation
 #:description = Documentation generation with Sphinx.
 #:depends = core.mxenv
 #:
 #:[target.docs]
-#:description = Generate Sphinx docs. Sphinx is expected to be installed. This
-#:  is not done automatically.
+#:description = Generate Sphinx docs.
 #:
 #:[target.docs-live]
-#:description = Rebuild Sphinx documentation on changes, with live-reload in the browser.
+#:description = Rebuild Sphinx documentation on changes, with live-reload in
+#:  the browser using `sphinx-autobuild`.
 #:
 #:[target.docs-clean]
 #:description = Removes generated docs.
-#:
-#:[setting.DOCS_BIN]
-#:description = The Sphinx build executable.
-#:default = $(VENV_SCRIPTS)sphinx-build
-#:
-#:[setting.DOCS_AUTOBUILD_BIN]
-#:description = The Sphinx auto build executable.
-#:default = $(VENV_SCRIPTS)sphinx-autobuild
 #:
 #:[setting.DOCS_SOURCE_FOLDER]
 #:description = Documentation source folder.
@@ -34,29 +26,27 @@
 #:default =
 
 ##############################################################################
-# docs
+# sphinx
 ##############################################################################
 
-DOCS_TARGET:=$(SENTINEL_FOLDER)/docs.sentinel
+SPHINX_BIN=$(MXENV_PATH)sphinx-build
+SPHINX_AUTOBUILD_BIN=$(MXENV_PATH)sphinx-autobuild
+
+DOCS_TARGET:=$(SENTINEL_FOLDER)/sphinx.sentinel
 $(DOCS_TARGET): $(MXENV_TARGET)
 	@echo "Install Sphinx"
-	@$(VENV_SCRIPTS)pip install -U sphinx sphinx-autobuild $(DOCS_REQUIREMENTS)
+	@$(MXENV_PATH)pip install -U sphinx sphinx-autobuild $(DOCS_REQUIREMENTS)
 	@touch $(DOCS_TARGET)
 
-.PHONY: docs-install
-docs-install: $(DOCS_TARGET)
-
 .PHONY: docs
-docs: docs-install
+docs: $(DOCS_TARGET)
 	@echo "Build sphinx docs"
-	@test -e $(DOCS_BIN) && $(DOCS_BIN) $(DOCS_SOURCE_FOLDER) $(DOCS_TARGET_FOLDER)
-	@test -e $(DOCS_BIN) || echo "Sphinx binary not exists"
+	@$(SPHINX_BIN) $(DOCS_SOURCE_FOLDER) $(DOCS_TARGET_FOLDER)
 
 .PHONY: docs-live
-docs-live: docs-install
+docs-live: $(DOCS_TARGET)
 	@echo "Rebuild Sphinx documentation on changes, with live-reload in the browser"
-	@test -e $(DOCS_AUTOBUILD_BIN) && $(DOCS_AUTOBUILD_BIN) $(DOCS_SOURCE_FOLDER) $(DOCS_TARGET_FOLDER)
-	@test -e $(DOCS_AUTOBUILD_BIN) || echo "Sphinx autobuild binary not exists"
+	@$(SPHINX_AUTOBUILD_BIN) $(DOCS_SOURCE_FOLDER) $(DOCS_TARGET_FOLDER)
 
 .PHONY: docs-dirty
 docs-dirty:
@@ -66,6 +56,6 @@ docs-dirty:
 docs-clean: docs-dirty
 	@rm -rf $(DOCS_TARGET_FOLDER)
 
-INSTALL_TARGETS+=docs-install
+INSTALL_TARGETS+=$(DOCS_TARGET)
 DIRTY_TARGETS+=docs-dirty
 CLEAN_TARGETS+=docs-clean

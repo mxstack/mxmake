@@ -19,8 +19,8 @@ INSTALLED_PACKAGES=.installed.txt
 PACKAGES_TARGET:=$(SENTINEL_FOLDER)/packages.sentinel
 $(PACKAGES_TARGET): $(SOURCES_TARGET)
 	@echo "Install python packages"
-	@$(VENV_SCRIPTS)pip install -r requirements-mxdev.txt
-	@$(VENV_SCRIPTS)pip freeze > $(INSTALLED_PACKAGES)
+	@$(MXENV_PATH)pip install -r requirements-mxdev.txt
+	@$(MXENV_PATH)pip freeze > $(INSTALLED_PACKAGES)
 	@touch $(PACKAGES_TARGET)
 
 .PHONY: packages
