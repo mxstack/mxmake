@@ -128,15 +128,9 @@ class TestUtils(unittest.TestCase):
         self.assertEqual(utils.NAMESPACE, "mxmake-")
 
     def test_mxenv_path(self):
-        self.assertEqual(
-            utils.mxenv_path(),
-            os.path.join("venv", "bin") + os.path.sep
-        )
+        self.assertEqual(utils.mxenv_path(), os.path.join("venv", "bin") + os.path.sep)
         os.environ["MXMAKE_MXENV_PATH"] = "other"
-        self.assertEqual(
-            utils.mxenv_path(),
-            "other" + os.path.sep
-        )
+        self.assertEqual(utils.mxenv_path(), "other" + os.path.sep)
         del os.environ["MXMAKE_MXENV_PATH"]
 
     def test_scripts_folder(self):
