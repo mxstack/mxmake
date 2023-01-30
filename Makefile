@@ -5,7 +5,7 @@
 #
 # DOMAINS:
 #: core.base
-#: core.system-dependencies
+#: system.dependencies
 #: core.mxenv
 #: docs.sphinx
 #: core.mxfiles
@@ -21,7 +21,7 @@
 # No default value.
 DEPLOY_TARGETS?=
 
-## core.system-dependencies
+## system.dependencies
 
 # Space separated system package names.
 # No default value.
