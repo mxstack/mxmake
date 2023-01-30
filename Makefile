@@ -172,8 +172,10 @@ endif
 
 MXENV_TARGET:=$(SENTINEL_FOLDER)/mxenv.sentinel
 $(MXENV_TARGET): $(SENTINEL)
+ifeq ("$(VENV_ENABLED)", "true")
 	@echo "Setup Python Virtual Environment under '$(VENV_FOLDER)'"
 	@$(PYTHON_BIN) -m venv $(VENV_FOLDER)
+endif
 	@$(MXENV_PATH)pip install -U pip setuptools wheel
 	@$(MXENV_PATH)pip install -U $(MXDEV)
 	@$(MXENV_PATH)pip install -U $(MXMAKE)
@@ -188,7 +190,12 @@ mxenv-dirty:
 
 .PHONY: mxenv-clean
 mxenv-clean: mxenv-dirty
+ifeq ("$(VENV_ENABLED)", "true")
 	@rm -rf $(VENV_FOLDER)
+else
+	@$(MXENV_PATH)pip uninstall -y $(MXDEV)
+	@$(MXENV_PATH)pip uninstall -y $(MXMAKE)
+endif
 
 INSTALL_TARGETS+=mxenv
 DIRTY_TARGETS+=mxenv-dirty
