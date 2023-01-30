@@ -13,14 +13,6 @@
 #:[target.docs-clean]
 #:description = Removes generated docs.
 #:
-#:[setting.DOCS_BIN]
-#:description = The Sphinx build executable.
-#:default = $(VENV_SCRIPTS)sphinx-build
-#:
-#:[setting.DOCS_AUTOBUILD_BIN]
-#:description = The Sphinx auto build executable.
-#:default = $(VENV_SCRIPTS)sphinx-autobuild
-#:
 #:[setting.DOCS_SOURCE_FOLDER]
 #:description = Documentation source folder.
 #:default = docs/source
@@ -37,10 +29,13 @@
 # docs
 ##############################################################################
 
+DOCS_BIN=$(MXENV_PATH)sphinx-build
+DOCS_AUTOBUILD_BIN=$(MXENV_PATH)sphinx-autobuild
+
 DOCS_TARGET:=$(SENTINEL_FOLDER)/docs.sentinel
 $(DOCS_TARGET): $(MXENV_TARGET)
 	@echo "Install Sphinx"
-	@$(VENV_SCRIPTS)pip install -U sphinx sphinx-autobuild $(DOCS_REQUIREMENTS)
+	@$(MXENV_PATH)pip install -U sphinx sphinx-autobuild $(DOCS_REQUIREMENTS)
 	@touch $(DOCS_TARGET)
 
 .PHONY: docs-install

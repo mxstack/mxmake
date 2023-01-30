@@ -1,5 +1,5 @@
 #:[mxfiles]
-#:title = Files
+#:title = MX Files
 #:description = Project file generation.
 #:depends = core.mxenv
 #:
@@ -19,7 +19,7 @@
 #:
 #:[setting.SCRIPTS_FOLDER]
 #:description = Target folder for generated scripts.
-#:default = $(VENV_SCRIPTS)
+#:default = $(MXENV_PATH)
 #:
 #:[setting.CONFIG_FOLDER]
 #:description = Target folder for generated config files.
@@ -47,7 +47,7 @@ FILES_TARGET:=$(SENTINEL_FOLDER)/mxfiles.sentinel
 $(FILES_TARGET): $(PROJECT_CONFIG) $(MXENV_TARGET)
 	@echo "Create project files"
 	$(call set_mxfiles_env,$(VENV_FOLDER),$(SCRIPTS_FOLDER),$(CONFIG_FOLDER))
-	@$(VENV_SCRIPTS)mxdev -n -c $(PROJECT_CONFIG)
+	@$(MXENV_PATH)mxdev -n -c $(PROJECT_CONFIG)
 	$(call unset_mxfiles_env,$(VENV_FOLDER),$(SCRIPTS_FOLDER),$(CONFIG_FOLDER))
 	@touch $(FILES_TARGET)
 
@@ -61,8 +61,8 @@ mxfiles-dirty:
 .PHONY: mxfiles-clean
 mxfiles-clean: mxfiles-dirty
 	$(call set_mxfiles_env,$(VENV_FOLDER),$(SCRIPTS_FOLDER),$(CONFIG_FOLDER))
-	@test -e $(VENV_SCRIPTS)mxmake && \
-		$(VENV_SCRIPTS)mxmake clean -c $(PROJECT_CONFIG)
+	@test -e $(MXENV_PATH)mxmake && \
+		$(MXENV_PATH)mxmake clean -c $(PROJECT_CONFIG)
 	$(call unset_mxfiles_env,$(VENV_FOLDER),$(SCRIPTS_FOLDER),$(CONFIG_FOLDER))
 	@rm -f constraints-mxdev.txt requirements-mxdev.txt
 

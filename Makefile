@@ -29,7 +29,7 @@ SYSTEM_DEPENDENCIES?=
 
 ## core.mxenv
 
-# Python interpreter to use for creating the virtual environment.
+# Python interpreter to use.
 # Default: python3
 PYTHON_BIN?=python3
 
@@ -37,18 +37,20 @@ PYTHON_BIN?=python3
 # Default: 3.7
 PYTHON_MIN_VERSION?=3.7
 
-# Whether to use a VENV or not; "true" or "false".
+# Flag whether to use virtual environment. If `false`, the global
+# interpreter is used.
+# Default: true
+VENV_ENABLED?=true
+
+# Flag whether to create a virtual environment. If set to `false`
+# and `VENV_ENABLED` is `true`, `VENV_FOLDER` is expected to point to an
+# existing virtual environment.
 # Default: true
 VENV_CREATE?=true
 
-# The folder where the virtual environment get created.
+# The folder of the virtual environment.
 # Default: venv
 VENV_FOLDER?=venv
-
-# The folder where the virtual environment contains the
-# executables
-# Default: $(VENV_FOLDER)/bin/
-VENV_SCRIPTS?=$(VENV_FOLDER)/bin/
 
 # mxdev to install in virtual environment.
 # Default: https://github.com/mxstack/mxdev/archive/main.zip
@@ -65,7 +67,7 @@ MXMAKE?=-e .
 PROJECT_CONFIG?=mx.ini
 
 # Target folder for generated scripts.
-# Default: $(VENV_SCRIPTS)
+# Default: $(MXENV_PATH)
 SCRIPTS_FOLDER?=$(VENV_SCRIPTS)
 
 # Target folder for generated config files.
@@ -91,14 +93,6 @@ TEST_DEPENDENCY_TARGETS?=
 COVERAGE_COMMAND?=$(SCRIPTS_FOLDER)run-coverage.sh
 
 ## core.docs
-
-# The Sphinx build executable.
-# Default: $(VENV_SCRIPTS)sphinx-build
-DOCS_BIN?=$(VENV_SCRIPTS)sphinx-build
-
-# The Sphinx auto build executable.
-# Default: $(VENV_SCRIPTS)sphinx-autobuild
-DOCS_AUTOBUILD_BIN?=$(VENV_SCRIPTS)sphinx-autobuild
 
 # Documentation source folder.
 # Default: docs/source
@@ -153,35 +147,36 @@ system-dependencies:
 # mxenv
 ##############################################################################
 
-# determine the VENV
-ifeq ("$(VENV_CREATE)", "true")
-VENV_SCRIPTS=$(VENV_FOLDER)/bin/
-else
-# given we have an existing venv folder, we use it, otherwise expect scripts
-# in system PATH.
-ifeq ("$(VENV_FOLDER)", "")
-VENV_SCRIPTS=
-endif
-endif
-
-# Check if given Python is installed?
-ifeq (, $(shell which $(PYTHON_BIN)))
+# Check if given Python is installed
+ifeq (,$(shell which $(PYTHON_BIN)))
 $(error "PYTHON=$(PYTHON_BIN) not found in $(PATH)")
 endif
 
-# Check if given Python version is ok?
+# Check if given Python version is ok
 PYTHON_VERSION_OK=$(shell $(PYTHON_BIN) -c "import sys; print((int(sys.version_info[0]), int(sys.version_info[1])) >= tuple(map(int, '$(PYTHON_MIN_VERSION)'.split('.'))))")
 ifeq ($(PYTHON_VERSION_OK),0)
 $(error "Need Python >= $(PYTHON_MIN_VERSION)")
+endif
+
+# Check if venv folder is configured if venv is enabled
+ifeq ($(shell [[ "$(VENV_ENABLED)" == "true" && "$(VENV_FOLDER)" == "" ]] && echo "true"),"true")
+$(error "VENV_FOLDER must be configured if VENV_ENABLED is true")
+endif
+
+# determine the executable path
+ifeq ("$(VENV_ENABLED)", "true")
+MXENV_PATH=$(VENV_FOLDER)/bin/
+else
+MXENV_PATH=
 endif
 
 MXENV_TARGET:=$(SENTINEL_FOLDER)/mxenv.sentinel
 $(MXENV_TARGET): $(SENTINEL)
 	@echo "Setup Python Virtual Environment under '$(VENV_FOLDER)'"
 	@$(PYTHON_BIN) -m venv $(VENV_FOLDER)
-	@$(VENV_SCRIPTS)pip install -U pip setuptools wheel
-	@$(VENV_SCRIPTS)pip install -U $(MXDEV)
-	@$(VENV_SCRIPTS)pip install -U $(MXMAKE)
+	@$(MXENV_PATH)pip install -U pip setuptools wheel
+	@$(MXENV_PATH)pip install -U $(MXDEV)
+	@$(MXENV_PATH)pip install -U $(MXMAKE)
 	@touch $(MXENV_TARGET)
 
 .PHONY: mxenv
@@ -221,7 +216,7 @@ FILES_TARGET:=$(SENTINEL_FOLDER)/mxfiles.sentinel
 $(FILES_TARGET): $(PROJECT_CONFIG) $(MXENV_TARGET)
 	@echo "Create project files"
 	$(call set_mxfiles_env,$(VENV_FOLDER),$(SCRIPTS_FOLDER),$(CONFIG_FOLDER))
-	@$(VENV_SCRIPTS)mxdev -n -c $(PROJECT_CONFIG)
+	@$(MXENV_PATH)mxdev -n -c $(PROJECT_CONFIG)
 	$(call unset_mxfiles_env,$(VENV_FOLDER),$(SCRIPTS_FOLDER),$(CONFIG_FOLDER))
 	@touch $(FILES_TARGET)
 
@@ -235,8 +230,8 @@ mxfiles-dirty:
 .PHONY: mxfiles-clean
 mxfiles-clean: mxfiles-dirty
 	$(call set_mxfiles_env,$(VENV_FOLDER),$(SCRIPTS_FOLDER),$(CONFIG_FOLDER))
-	@test -e $(VENV_SCRIPTS)mxmake && \
-		$(VENV_SCRIPTS)mxmake clean -c $(PROJECT_CONFIG)
+	@test -e $(MXENV_PATH)mxmake && \
+		$(MXENV_PATH)mxmake clean -c $(PROJECT_CONFIG)
 	$(call unset_mxfiles_env,$(VENV_FOLDER),$(SCRIPTS_FOLDER),$(CONFIG_FOLDER))
 	@rm -f constraints-mxdev.txt requirements-mxdev.txt
 
@@ -251,7 +246,7 @@ CLEAN_TARGETS+=mxfiles-clean
 SOURCES_TARGET:=$(SENTINEL_FOLDER)/sources.sentinel
 $(SOURCES_TARGET): $(FILES_TARGET)
 	@echo "Checkout project sources"
-	@$(VENV_SCRIPTS)mxdev -o -c $(PROJECT_CONFIG)
+	@$(MXENV_PATH)mxdev -o -c $(PROJECT_CONFIG)
 	@touch $(SOURCES_TARGET)
 
 .PHONY: sources
@@ -278,8 +273,8 @@ INSTALLED_PACKAGES=.installed.txt
 PACKAGES_TARGET:=$(SENTINEL_FOLDER)/packages.sentinel
 $(PACKAGES_TARGET): $(SOURCES_TARGET)
 	@echo "Install python packages"
-	@$(VENV_SCRIPTS)pip install -r requirements-mxdev.txt
-	@$(VENV_SCRIPTS)pip freeze > $(INSTALLED_PACKAGES)
+	@$(MXENV_PATH)pip install -r requirements-mxdev.txt
+	@$(MXENV_PATH)pip freeze > $(INSTALLED_PACKAGES)
 	@touch $(PACKAGES_TARGET)
 
 .PHONY: packages
@@ -309,7 +304,7 @@ test: $(FILES_TARGET) $(SOURCES_TARGET) $(PACKAGES_TARGET) $(TEST_DEPENDENCY_TAR
 COVERAGE_TARGET:=$(SENTINEL_FOLDER)/coverage.sentinel
 $(COVERAGE_TARGET): $(MXENV_TARGET)
 	@echo "Install Coverage"
-	@$(VENV_SCRIPTS)pip install -U coverage
+	@$(MXENV_PATH)pip install -U coverage
 	@touch $(COVERAGE_TARGET)
 
 .PHONY: coverage-install
@@ -337,10 +332,13 @@ CLEAN_TARGETS+=coverage-clean
 # docs
 ##############################################################################
 
+DOCS_BIN=$(MXENV_PATH)sphinx-build
+DOCS_AUTOBUILD_BIN=$(MXENV_PATH)sphinx-autobuild
+
 DOCS_TARGET:=$(SENTINEL_FOLDER)/docs.sentinel
 $(DOCS_TARGET): $(MXENV_TARGET)
 	@echo "Install Sphinx"
-	@$(VENV_SCRIPTS)pip install -U sphinx sphinx-autobuild $(DOCS_REQUIREMENTS)
+	@$(MXENV_PATH)pip install -U sphinx sphinx-autobuild $(DOCS_REQUIREMENTS)
 	@touch $(DOCS_TARGET)
 
 .PHONY: docs-install
