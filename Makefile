@@ -116,7 +116,7 @@ ISORT_SRC?=src
 # The command which gets executed. Defaults to the location the
 # :ref:`run-coverage` template gets rendered to if configured.
 # Default: $(SCRIPTS_FOLDER)/run-coverage.sh
-COVERAGE_COMMAND?=$(SCRIPTS_FOLDER)/run-coverage.sh
+COVERAGE_COMMAND?=$(VENV_FOLDER)/bin/coverage run -m mxmake.tests
 
 ## qa.black
 
@@ -129,6 +129,7 @@ BLACK_SRC?=src
 ##############################################################################
 
 INSTALL_TARGETS?=
+QA_TARGETS?=
 DIRTY_TARGETS?=
 CLEAN_TARGETS?=
 PURGE_TARGETS?=
@@ -346,6 +347,8 @@ test: $(FILES_TARGET) $(SOURCES_TARGET) $(PACKAGES_TARGET) $(TEST_DEPENDENCY_TAR
 	@test -z "$(TEST_COMMAND)" && echo "No test command defined"
 	@test -z "$(TEST_COMMAND)" || bash -c "$(TEST_COMMAND)"
 
+QA_TARGETS+=test
+
 ##############################################################################
 # mypy
 ##############################################################################
@@ -362,6 +365,7 @@ mypy: $(PACKAGES_TARGET) $(MYPY_TARGET)
 	@$(MXENV_PATH)mypy $(MYPY_SRC)
 
 INSTALL_TARGETS+=$(MYPY_TARGET)
+QA_TARGETS+=mypy
 
 ##############################################################################
 # isort
@@ -379,6 +383,7 @@ isort: $(PACKAGES_TARGET) $(ISORT_TARGET)
 	@$(MXENV_PATH)isort $(ISORT_SRC)
 
 INSTALL_TARGETS+=$(ISORT_TARGET)
+QA_TARGETS+=isort
 
 ##############################################################################
 # coverage
@@ -407,6 +412,7 @@ coverage-clean: coverage-dirty
 INSTALL_TARGETS+=$(COVERAGE_TARGET)
 DIRTY_TARGETS+=coverage-dirty
 CLEAN_TARGETS+=coverage-clean
+QA_TARGETS+=coverage
 
 ##############################################################################
 # black
@@ -424,6 +430,7 @@ black: $(PACKAGES_TARGET) $(BLACK_TARGET)
 	@$(MXENV_PATH)black $(BLACK_SRC)
 
 INSTALL_TARGETS+=$(BLACK_TARGET)
+QA_TARGETS+=black
 
 ##############################################################################
 # Default targets
@@ -439,6 +446,9 @@ install: $(INSTALL_TARGET)
 
 .PHONY: deploy
 deploy: $(DEPLOY_TARGETS)
+
+.PHONY: qa
+qa: $(QA_TARGETS)
 
 .PHONY: dirty
 dirty: $(DIRTY_TARGETS)

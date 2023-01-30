@@ -594,6 +594,7 @@ class TestTemplates(RenderTestCase):
                 ##############################################################################
 
                 INSTALL_TARGETS?=
+                QA_TARGETS?=
                 DIRTY_TARGETS?=
                 CLEAN_TARGETS?=
                 PURGE_TARGETS?=
@@ -687,6 +688,9 @@ class TestTemplates(RenderTestCase):
 
                 .PHONY: deploy
                 deploy: $(DEPLOY_TARGETS)
+
+                .PHONY: qa
+                qa: $(QA_TARGETS)
 
                 .PHONY: dirty
                 dirty: $(DIRTY_TARGETS)
