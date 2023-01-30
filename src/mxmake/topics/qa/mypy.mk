@@ -24,12 +24,9 @@ $(MYPY_TARGET): $(MXENV_TARGET)
 	@$(MXENV_PATH)pip install mypy $(MYPY_REQUIREMENTS)
 	@touch $(MYPY_TARGET)
 
-.PHONY: mypy-install
-mypy-install: $(MYPY_TARGET)
-
 .PHONY: mypy
-mypy: $(PACKAGES_TARGET) mypy-install
+mypy: $(PACKAGES_TARGET) $(MYPY_TARGET)
 	@echo "Run mypy"
 	@$(MXENV_PATH)mypy $(MYPY_SRC)
 
-INSTALL_TARGETS+=mypy-install
+INSTALL_TARGETS+=$(MYPY_TARGET)

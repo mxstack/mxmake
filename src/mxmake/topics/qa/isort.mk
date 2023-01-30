@@ -20,12 +20,9 @@ $(ISORT_TARGET): $(MXENV_TARGET)
 	@$(MXENV_PATH)pip install isort
 	@touch $(ISORT_TARGET)
 
-.PHONY: isort-install
-isort-install: $(ISORT_TARGET)
-
 .PHONY: isort
-isort: $(PACKAGES_TARGET) isort-install
+isort: $(PACKAGES_TARGET) $(ISORT_TARGET)
 	@echo "Run isort"
 	@$(MXENV_PATH)isort $(ISORT_SRC)
 
-INSTALL_TARGETS+=isort-install
+INSTALL_TARGETS+=$(ISORT_TARGET)

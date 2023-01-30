@@ -25,11 +25,8 @@ $(COVERAGE_TARGET): $(MXENV_TARGET)
 	@$(MXENV_PATH)pip install -U coverage
 	@touch $(COVERAGE_TARGET)
 
-.PHONY: coverage-install
-coverage-install: $(COVERAGE_TARGET)
-
 .PHONY: coverage
-coverage: $(FILES_TARGET) $(SOURCES_TARGET) $(PACKAGES_TARGET) coverage-install
+coverage: $(FILES_TARGET) $(SOURCES_TARGET) $(PACKAGES_TARGET) $(COVERAGE_TARGET)
 	@echo "Run coverage"
 	@test -z "$(COVERAGE_COMMAND)" && echo "No coverage command defined"
 	@test -z "$(COVERAGE_COMMAND)" || bash -c "$(COVERAGE_COMMAND)"
@@ -42,6 +39,6 @@ coverage-dirty:
 coverage-clean: coverage-dirty
 	@rm -rf .coverage htmlcov
 
-INSTALL_TARGETS+=coverage-install
+INSTALL_TARGETS+=$(COVERAGE_TARGET)
 DIRTY_TARGETS+=coverage-dirty
 CLEAN_TARGETS+=coverage-clean

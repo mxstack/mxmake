@@ -38,16 +38,13 @@ $(DOCS_TARGET): $(MXENV_TARGET)
 	@$(MXENV_PATH)pip install -U sphinx sphinx-autobuild $(DOCS_REQUIREMENTS)
 	@touch $(DOCS_TARGET)
 
-.PHONY: docs-install
-docs-install: $(DOCS_TARGET)
-
 .PHONY: docs
-docs: docs-install
+docs: $(DOCS_TARGET)
 	@echo "Build sphinx docs"
 	@$(SPHINX_BIN) $(DOCS_SOURCE_FOLDER) $(DOCS_TARGET_FOLDER)
 
 .PHONY: docs-live
-docs-live: docs-install
+docs-live: $(DOCS_TARGET)
 	@echo "Rebuild Sphinx documentation on changes, with live-reload in the browser"
 	@$(SPHINX_AUTOBUILD_BIN) $(DOCS_SOURCE_FOLDER) $(DOCS_TARGET_FOLDER)
 
@@ -59,6 +56,6 @@ docs-dirty:
 docs-clean: docs-dirty
 	@rm -rf $(DOCS_TARGET_FOLDER)
 
-INSTALL_TARGETS+=docs-install
+INSTALL_TARGETS+=$(DOCS_TARGET)
 DIRTY_TARGETS+=docs-dirty
 CLEAN_TARGETS+=docs-clean

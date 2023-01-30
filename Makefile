@@ -221,16 +221,13 @@ $(DOCS_TARGET): $(MXENV_TARGET)
 	@$(MXENV_PATH)pip install -U sphinx sphinx-autobuild $(DOCS_REQUIREMENTS)
 	@touch $(DOCS_TARGET)
 
-.PHONY: docs-install
-docs-install: $(DOCS_TARGET)
-
 .PHONY: docs
-docs: docs-install
+docs: $(DOCS_TARGET)
 	@echo "Build sphinx docs"
 	@$(SPHINX_BIN) $(DOCS_SOURCE_FOLDER) $(DOCS_TARGET_FOLDER)
 
 .PHONY: docs-live
-docs-live: docs-install
+docs-live: $(DOCS_TARGET)
 	@echo "Rebuild Sphinx documentation on changes, with live-reload in the browser"
 	@$(SPHINX_AUTOBUILD_BIN) $(DOCS_SOURCE_FOLDER) $(DOCS_TARGET_FOLDER)
 
@@ -242,7 +239,7 @@ docs-dirty:
 docs-clean: docs-dirty
 	@rm -rf $(DOCS_TARGET_FOLDER)
 
-INSTALL_TARGETS+=docs-install
+INSTALL_TARGETS+=$(DOCS_TARGET)
 DIRTY_TARGETS+=docs-dirty
 CLEAN_TARGETS+=docs-clean
 
@@ -359,15 +356,12 @@ $(MYPY_TARGET): $(MXENV_TARGET)
 	@$(MXENV_PATH)pip install mypy $(MYPY_REQUIREMENTS)
 	@touch $(MYPY_TARGET)
 
-.PHONY: mypy-install
-mypy-install: $(MYPY_TARGET)
-
 .PHONY: mypy
-mypy: $(PACKAGES_TARGET) mypy-install
+mypy: $(PACKAGES_TARGET) $(MYPY_TARGET)
 	@echo "Run mypy"
 	@$(MXENV_PATH)mypy $(MYPY_SRC)
 
-INSTALL_TARGETS+=mypy-install
+INSTALL_TARGETS+=$(MYPY_TARGET)
 
 ##############################################################################
 # isort
@@ -379,15 +373,12 @@ $(ISORT_TARGET): $(MXENV_TARGET)
 	@$(MXENV_PATH)pip install isort
 	@touch $(ISORT_TARGET)
 
-.PHONY: isort-install
-isort-install: $(ISORT_TARGET)
-
 .PHONY: isort
-isort: $(PACKAGES_TARGET) isort-install
+isort: $(PACKAGES_TARGET) $(ISORT_TARGET)
 	@echo "Run isort"
 	@$(MXENV_PATH)isort $(ISORT_SRC)
 
-INSTALL_TARGETS+=isort-install
+INSTALL_TARGETS+=$(ISORT_TARGET)
 
 ##############################################################################
 # coverage
@@ -399,11 +390,8 @@ $(COVERAGE_TARGET): $(MXENV_TARGET)
 	@$(MXENV_PATH)pip install -U coverage
 	@touch $(COVERAGE_TARGET)
 
-.PHONY: coverage-install
-coverage-install: $(COVERAGE_TARGET)
-
 .PHONY: coverage
-coverage: $(FILES_TARGET) $(SOURCES_TARGET) $(PACKAGES_TARGET) coverage-install
+coverage: $(FILES_TARGET) $(SOURCES_TARGET) $(PACKAGES_TARGET) $(COVERAGE_TARGET)
 	@echo "Run coverage"
 	@test -z "$(COVERAGE_COMMAND)" && echo "No coverage command defined"
 	@test -z "$(COVERAGE_COMMAND)" || bash -c "$(COVERAGE_COMMAND)"
@@ -416,7 +404,7 @@ coverage-dirty:
 coverage-clean: coverage-dirty
 	@rm -rf .coverage htmlcov
 
-INSTALL_TARGETS+=coverage-install
+INSTALL_TARGETS+=$(COVERAGE_TARGET)
 DIRTY_TARGETS+=coverage-dirty
 CLEAN_TARGETS+=coverage-clean
 
@@ -430,15 +418,12 @@ $(BLACK_TARGET): $(MXENV_TARGET)
 	@$(MXENV_PATH)pip install black
 	@touch $(BLACK_TARGET)
 
-.PHONY: black-install
-black-install: $(BLACK_TARGET)
-
 .PHONY: black
-black: $(PACKAGES_TARGET) black-install
+black: $(PACKAGES_TARGET) $(BLACK_TARGET)
 	@echo "Run black"
 	@$(MXENV_PATH)black $(BLACK_SRC)
 
-INSTALL_TARGETS+=black-install
+INSTALL_TARGETS+=$(BLACK_TARGET)
 
 ##############################################################################
 # Default targets

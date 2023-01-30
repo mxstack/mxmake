@@ -20,12 +20,9 @@ $(BLACK_TARGET): $(MXENV_TARGET)
 	@$(MXENV_PATH)pip install black
 	@touch $(BLACK_TARGET)
 
-.PHONY: black-install
-black-install: $(BLACK_TARGET)
-
 .PHONY: black
-black: $(PACKAGES_TARGET) black-install
+black: $(PACKAGES_TARGET) $(BLACK_TARGET)
 	@echo "Run black"
 	@$(MXENV_PATH)black $(BLACK_SRC)
 
-INSTALL_TARGETS+=black-install
+INSTALL_TARGETS+=$(BLACK_TARGET)
