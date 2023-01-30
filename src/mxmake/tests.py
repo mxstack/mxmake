@@ -55,7 +55,7 @@ class template_directory:
     def __call__(self, fn: typing.Callable):
         def wrapper(*a):
             tempdir = tempfile.mkdtemp()
-            os.environ["MXMAKE_VENV_FOLDER"] = tempdir
+            os.environ["MXMAKE_MXENV_PATH"] = tempdir
             os.environ["MXMAKE_SCRIPTS_FOLDER"] = tempdir
             os.environ["MXMAKE_CONFIG_FOLDER"] = tempdir
             try:
@@ -66,7 +66,7 @@ class template_directory:
                     fn(*a, tempdir=tempdir)
             finally:
                 shutil.rmtree(tempdir)
-                del os.environ["MXMAKE_VENV_FOLDER"]
+                del os.environ["MXMAKE_MXENV_PATH"]
                 del os.environ["MXMAKE_SCRIPTS_FOLDER"]
                 del os.environ["MXMAKE_CONFIG_FOLDER"]
 
@@ -127,11 +127,17 @@ class TestUtils(unittest.TestCase):
     def test_namespace(self):
         self.assertEqual(utils.NAMESPACE, "mxmake-")
 
-    def test_venv_folder(self):
-        self.assertEqual(utils.venv_folder(), "venv")
-        os.environ["MXMAKE_VENV_FOLDER"] = "other"
-        self.assertEqual(utils.venv_folder(), "other")
-        del os.environ["MXMAKE_VENV_FOLDER"]
+    def test_mxenv_path(self):
+        self.assertEqual(
+            utils.mxenv_path(),
+            os.path.join("venv", "bin") + os.path.sep
+        )
+        os.environ["MXMAKE_MXENV_PATH"] = "other"
+        self.assertEqual(
+            utils.mxenv_path(),
+            "other" + os.path.sep
+        )
+        del os.environ["MXMAKE_MXENV_PATH"]
 
     def test_scripts_folder(self):
         self.assertEqual(utils.scripts_folder(), os.path.join("venv", "bin"))
@@ -285,7 +291,7 @@ class TestTemplates(RenderTestCase):
                 "description": "Run tests",
                 "env": {"ENV_PARAM": "env_value"},
                 "testpaths": ["sources/package/src"],
-                "venv": tempdir,
+                "mxenv_path": tempdir + os.path.sep,
             },
         )
         self.assertEqual(template.package_paths("inexistent"), [])
@@ -317,7 +323,7 @@ class TestTemplates(RenderTestCase):
 
                 setenv
 
-                /.../bin/zope-testrunner --auto-color --auto-progress \\
+                /.../zope-testrunner --auto-color --auto-progress \\
                     --test-path=sources/package/src \\
                     --module=$1
 
@@ -351,7 +357,7 @@ class TestTemplates(RenderTestCase):
                 # Run tests
                 set -e
 
-                /.../bin/zope-testrunner --auto-color --auto-progress \\
+                /.../zope-testrunner --auto-color --auto-progress \\
                     --test-path=sources/package/src \\
                     --module=$1
 
@@ -398,7 +404,7 @@ class TestTemplates(RenderTestCase):
                     "sources/package/src/package/file1.py",
                     "sources/package/src/package/file2.py",
                 ],
-                "venv": tempdir,
+                "mxenv_path": tempdir + os.path.sep,
             },
         )
         self.assertEqual(template.package_paths("inexistent"), [])
@@ -456,14 +462,14 @@ class TestTemplates(RenderTestCase):
                 omits=$(printf ",%s" "${omits[@]}")
                 omits=${omits:1}
 
-                /.../bin/coverage run \\
+                /.../coverage run \\
                     --source=$sources \\
                     --omit=$omits \\
                     -m zope.testrunner --auto-color --auto-progress \\
                     --test-path=sources/package/src
 
-                /.../bin/coverage report
-                /.../bin/coverage html
+                /.../coverage report
+                /.../coverage html
 
                 unsetenv
 
@@ -503,13 +509,13 @@ class TestTemplates(RenderTestCase):
                 sources=$(printf ",%s" "${sources[@]}")
                 sources=${sources:1}
 
-                /.../bin/coverage run \\
+                /.../coverage run \\
                     --source=$sources \\
                     -m zope.testrunner --auto-color --auto-progress \\
                     --test-path=sources/package/src
 
-                /.../bin/coverage report
-                /.../bin/coverage html
+                /.../coverage report
+                /.../coverage html
 
                 exit 0
                 """,

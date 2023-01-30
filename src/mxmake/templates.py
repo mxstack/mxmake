@@ -4,7 +4,7 @@ from mxmake.topics import Domain
 from mxmake.topics import load_topics
 from mxmake.utils import ns_name
 from mxmake.utils import scripts_folder
-from mxmake.utils import venv_folder
+from mxmake.utils import mxenv_path
 
 import abc
 import io
@@ -147,7 +147,7 @@ class TestScript(EnvironmentTemplate, ShellScriptTemplate):
         return dict(
             description=self.description,
             env=self.env,
-            venv=venv_folder(),
+            mxenv_path=mxenv_path(),
             testpaths=self.package_paths(ns_name("test-path")),
         )
 

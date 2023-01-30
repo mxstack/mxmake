@@ -67,8 +67,8 @@ MXMAKE?=-e .
 PROJECT_CONFIG?=mx.ini
 
 # Target folder for generated scripts.
-# Default: $(MXENV_PATH)
-SCRIPTS_FOLDER?=$(VENV_SCRIPTS)
+# Default: scripts
+SCRIPTS_FOLDER?=scripts
 
 # Target folder for generated config files.
 # Default: cfg
@@ -78,8 +78,8 @@ CONFIG_FOLDER?=cfg
 
 # The command which gets executed. Defaults to the location the
 # :ref:`run-tests` template gets rendered to if configured.
-# Default: $(SCRIPTS_FOLDER)run-tests.sh
-TEST_COMMAND?=$(SCRIPTS_FOLDER)python -m mxmake.tests
+# Default: $(SCRIPTS_FOLDER)/run-tests.sh
+TEST_COMMAND?=$(VENV_FOLDER)/bin/python -m mxmake.tests
 
 # Additional make targets the test target depends on.
 # No default value.
@@ -89,8 +89,8 @@ TEST_DEPENDENCY_TARGETS?=
 
 # The command which gets executed. Defaults to the location the
 # :ref:`run-coverage` template gets rendered to if configured.
-# Default: $(SCRIPTS_FOLDER)run-coverage.sh
-COVERAGE_COMMAND?=$(SCRIPTS_FOLDER)run-coverage.sh
+# Default: $(SCRIPTS_FOLDER)/run-coverage.sh
+COVERAGE_COMMAND?=$(SCRIPTS_FOLDER)/run-coverage.sh
 
 ## core.docs
 
@@ -207,14 +207,14 @@ CLEAN_TARGETS+=mxenv-clean
 
 # set environment variables for mxmake
 define set_mxfiles_env
-	@export MXMAKE_VENV_FOLDER=$(1)
+	@export MXMAKE_MXENV_PATH=$(1)
 	@export MXMAKE_SCRIPTS_FOLDER=$(2)
 	@export MXMAKE_CONFIG_FOLDER=$(3)
 endef
 
 # unset environment variables for mxmake
 define unset_mxfiles_env
-	@unset MXMAKE_VENV_FOLDER
+	@unset MXMAKE_MXENV_PATH
 	@unset MXMAKE_SCRIPTS_FOLDER
 	@unset MXMAKE_CONFIG_FOLDER
 endef
@@ -222,9 +222,9 @@ endef
 FILES_TARGET:=$(SENTINEL_FOLDER)/mxfiles.sentinel
 $(FILES_TARGET): $(PROJECT_CONFIG) $(MXENV_TARGET)
 	@echo "Create project files"
-	$(call set_mxfiles_env,$(VENV_FOLDER),$(SCRIPTS_FOLDER),$(CONFIG_FOLDER))
+	$(call set_mxfiles_env,$(MXENV_PATH),$(SCRIPTS_FOLDER),$(CONFIG_FOLDER))
 	@$(MXENV_PATH)mxdev -n -c $(PROJECT_CONFIG)
-	$(call unset_mxfiles_env,$(VENV_FOLDER),$(SCRIPTS_FOLDER),$(CONFIG_FOLDER))
+	$(call unset_mxfiles_env,$(MXENV_PATH),$(SCRIPTS_FOLDER),$(CONFIG_FOLDER))
 	@touch $(FILES_TARGET)
 
 .PHONY: mxfiles
@@ -236,10 +236,10 @@ mxfiles-dirty:
 
 .PHONY: mxfiles-clean
 mxfiles-clean: mxfiles-dirty
-	$(call set_mxfiles_env,$(VENV_FOLDER),$(SCRIPTS_FOLDER),$(CONFIG_FOLDER))
+	$(call set_mxfiles_env,$(MXENV_PATH),$(SCRIPTS_FOLDER),$(CONFIG_FOLDER))
 	@test -e $(MXENV_PATH)mxmake && \
 		$(MXENV_PATH)mxmake clean -c $(PROJECT_CONFIG)
-	$(call unset_mxfiles_env,$(VENV_FOLDER),$(SCRIPTS_FOLDER),$(CONFIG_FOLDER))
+	$(call unset_mxfiles_env,$(MXENV_PATH),$(SCRIPTS_FOLDER),$(CONFIG_FOLDER))
 	@rm -f constraints-mxdev.txt requirements-mxdev.txt
 
 INSTALL_TARGETS+=mxfiles
