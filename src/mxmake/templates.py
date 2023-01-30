@@ -262,9 +262,9 @@ class MxIni(Template):
     def template_variables(self) -> typing.Dict[str, typing.Any]:
         mxmake_templates = []
         for domain in self.domains:
-            if domain.fqn == "core.test":
+            if domain.fqn == "qa.test":
                 mxmake_templates.append("run-tests")
-            if domain.fqn == "core.coverage":
+            if domain.fqn == "qa.coverage":
                 mxmake_templates.append("run-coverage")
         return dict(mxmake_templates=mxmake_templates)
 

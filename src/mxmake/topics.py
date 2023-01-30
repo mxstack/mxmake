@@ -260,3 +260,4 @@ topics_dir = os.path.join(os.path.dirname(__file__), "topics")
 
 core = Topic(name="core", directory=os.path.join(topics_dir, "core"))
 ldap = Topic(name="ldap", directory=os.path.join(topics_dir, "ldap"))
+qa = Topic(name="qa", directory=os.path.join(topics_dir, "qa"))

@@ -10,8 +10,8 @@
 #: core.mxfiles
 #: core.sources
 #: core.packages
-#: core.test
-#: core.coverage
+#: qa.test
+#: qa.coverage
 #: core.docs
 ##############################################################################
 
@@ -74,7 +74,7 @@ SCRIPTS_FOLDER?=scripts
 # Default: cfg
 CONFIG_FOLDER?=cfg
 
-## core.test
+## qa.test
 
 # The command which gets executed. Defaults to the location the
 # :ref:`run-tests` template gets rendered to if configured.
@@ -85,7 +85,7 @@ TEST_COMMAND?=$(VENV_FOLDER)/bin/python -m mxmake.tests
 # No default value.
 TEST_DEPENDENCY_TARGETS?=
 
-## core.coverage
+## qa.coverage
 
 # The command which gets executed. Defaults to the location the
 # :ref:`run-coverage` template gets rendered to if configured.

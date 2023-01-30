@@ -712,8 +712,8 @@ class TestTemplates(RenderTestCase):
     @temp_directory
     def test_MxIni(self, tempdir):
         domains = [
-            topics.get_domain("core.test"),
-            topics.get_domain("core.coverage"),
+            topics.get_domain("qa.test"),
+            topics.get_domain("qa.coverage"),
         ]
         domains = topics.collect_missing_dependencies(domains)
 
