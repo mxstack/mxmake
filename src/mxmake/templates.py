@@ -2,9 +2,9 @@ from jinja2 import Environment
 from jinja2 import PackageLoader
 from mxmake.topics import Domain
 from mxmake.topics import load_topics
+from mxmake.utils import mxenv_path
 from mxmake.utils import ns_name
 from mxmake.utils import scripts_folder
-from mxmake.utils import mxenv_path
 
 import abc
 import io

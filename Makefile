@@ -12,6 +12,7 @@
 #: docs.sphinx
 #: qa.black
 #: qa.coverage
+#: qa.isort
 #: qa.mypy
 #: qa.test
 ##############################################################################
@@ -103,6 +104,12 @@ MYPY_SRC?=src
 # Mypy Python requirements to be installed (via pip).
 # Default: types-setuptools
 MYPY_REQUIREMENTS?=types-setuptools types-docutils
+
+## qa.isort
+
+# Source folder for import sorting.
+# Default: src
+ISORT_SRC?=src
 
 ## qa.coverage
 
@@ -361,6 +368,26 @@ mypy: $(PACKAGES_TARGET) mypy-install
 	@$(MXENV_PATH)mypy $(MYPY_SRC)
 
 INSTALL_TARGETS+=mypy-install
+
+##############################################################################
+# isort
+##############################################################################
+
+ISORT_TARGET:=$(SENTINEL_FOLDER)/isort.sentinel
+$(ISORT_TARGET): $(MXENV_TARGET)
+	@echo "Install isort"
+	@$(MXENV_PATH)pip install isort
+	@touch $(ISORT_TARGET)
+
+.PHONY: isort-install
+isort-install: $(ISORT_TARGET)
+
+.PHONY: isort
+isort: $(PACKAGES_TARGET) isort-install
+	@echo "Run isort"
+	@$(MXENV_PATH)isort $(ISORT_SRC)
+
+INSTALL_TARGETS+=isort-install
 
 ##############################################################################
 # coverage
