@@ -25,6 +25,7 @@ maxdepth: 2
 getting-started
 usage-oldrst
 topics
+templates
 contributing
 
 ```

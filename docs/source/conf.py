@@ -30,7 +30,7 @@ release = "1.0"
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = ["mxmake.sphinxext", "myst_parser"]
+extensions = ["mxmake.sphinxext", "myst_parser", "sphinx.ext.todo",]
 
 # MySt specific extensions
 myst_enable_extensions = [
