@@ -7,7 +7,7 @@
 #:description = Run isort.
 #:
 #:[setting.ISORT_SRC]
-#:description = Source folder for import sorting.
+#:description = Source folder to scan for Python files to run isort on.
 #:default = src
 
 ##############################################################################
@@ -20,10 +20,16 @@ $(ISORT_TARGET): $(MXENV_TARGET)
 	@$(MXENV_PATH)pip install isort
 	@touch $(ISORT_TARGET)
 
-.PHONY: isort
-isort: $(PACKAGES_TARGET) $(ISORT_TARGET)
-	@echo "Run isort"
+.PHONY: isort-check
+isort-check: $(PACKAGES_TARGET) $(ISORT_TARGET)
+	@echo "Run isort check"
+	@$(MXENV_PATH)isort --check $(ISORT_SRC)
+
+.PHONY: isort-format
+isort-format: $(PACKAGES_TARGET) $(ISORT_TARGET)
+	@echo "Run isort format"
 	@$(MXENV_PATH)isort $(ISORT_SRC)
 
 INSTALL_TARGETS+=$(ISORT_TARGET)
-QA_TARGETS+=isort
+CHECK_TARGETS+=isort-check
+FORMAT_TARGETS+=isort-format

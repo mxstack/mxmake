@@ -80,7 +80,7 @@ PROJECT_CONFIG?=mx.ini
 
 # The command which gets executed. Defaults to the location the
 # :ref:`run-tests` template gets rendered to if configured.
-# Default: $(SCRIPTS_FOLDER)/run-tests.sh
+# Default: .mxmake/files/run-tests.sh
 TEST_COMMAND?=$(VENV_FOLDER)/bin/python -m mxmake.tests
 
 # Additional make targets the test target depends on.
@@ -99,7 +99,7 @@ MYPY_REQUIREMENTS?=types-setuptools types-docutils
 
 ## qa.isort
 
-# Source folder for import sorting.
+# Source folder to scan for Python files to run isort on.
 # Default: src
 ISORT_SRC?=src
 
@@ -107,12 +107,12 @@ ISORT_SRC?=src
 
 # The command which gets executed. Defaults to the location the
 # :ref:`run-coverage` template gets rendered to if configured.
-# Default: $(SCRIPTS_FOLDER)/run-coverage.sh
+# Default: .mxmake/files/run-coverage.sh
 COVERAGE_COMMAND?=$(VENV_FOLDER)/bin/coverage run -m mxmake.tests
 
 ## qa.black
 
-# Source folder for code formatting.
+# Source folder to scan for Python files to run black on.
 # Default: src
 BLACK_SRC?=src
 
@@ -124,7 +124,8 @@ INSTALL_TARGETS?=
 DIRTY_TARGETS?=
 CLEAN_TARGETS?=
 PURGE_TARGETS?=
-QA_TARGETS?=
+CHECK_TARGETS?=
+FORMAT_TARGETS?=
 
 # Defensive settings for make: https://tech.davis-hansson.com/p/make/
 SHELL:=bash
@@ -342,7 +343,6 @@ test: $(FILES_TARGET) $(SOURCES_TARGET) $(PACKAGES_TARGET) $(TEST_DEPENDENCY_TAR
 	@test -z "$(TEST_COMMAND)" && echo "No test command defined"
 	@test -z "$(TEST_COMMAND)" || bash -c "$(TEST_COMMAND)"
 
-QA_TARGETS+=test
 
 ##############################################################################
 # mypy
@@ -365,7 +365,7 @@ mypy-clean:
 
 INSTALL_TARGETS+=$(MYPY_TARGET)
 CLEAN_TARGETS+=mypy-clean
-QA_TARGETS+=mypy
+CHECK_TARGETS+=mypy
 
 ##############################################################################
 # isort
@@ -377,13 +377,19 @@ $(ISORT_TARGET): $(MXENV_TARGET)
 	@$(MXENV_PATH)pip install isort
 	@touch $(ISORT_TARGET)
 
-.PHONY: isort
-isort: $(PACKAGES_TARGET) $(ISORT_TARGET)
-	@echo "Run isort"
+.PHONY: isort-check
+isort-check: $(PACKAGES_TARGET) $(ISORT_TARGET)
+	@echo "Run isort check"
+	@$(MXENV_PATH)isort --check $(ISORT_SRC)
+
+.PHONY: isort-format
+isort-format: $(PACKAGES_TARGET) $(ISORT_TARGET)
+	@echo "Run isort format"
 	@$(MXENV_PATH)isort $(ISORT_SRC)
 
 INSTALL_TARGETS+=$(ISORT_TARGET)
-QA_TARGETS+=isort
+CHECK_TARGETS+=isort-check
+FORMAT_TARGETS+=isort-format
 
 ##############################################################################
 # coverage
@@ -412,7 +418,6 @@ coverage-clean: coverage-dirty
 INSTALL_TARGETS+=$(COVERAGE_TARGET)
 DIRTY_TARGETS+=coverage-dirty
 CLEAN_TARGETS+=coverage-clean
-QA_TARGETS+=coverage
 
 ##############################################################################
 # black
@@ -424,13 +429,19 @@ $(BLACK_TARGET): $(MXENV_TARGET)
 	@$(MXENV_PATH)pip install black
 	@touch $(BLACK_TARGET)
 
-.PHONY: black
-black: $(PACKAGES_TARGET) $(BLACK_TARGET)
-	@echo "Run black"
+.PHONY: black-check
+black-check: $(PACKAGES_TARGET) $(BLACK_TARGET)
+	@echo "Run black checks"
+	@$(MXENV_PATH)black --check $(BLACK_SRC)
+
+.PHONY: black-format
+black-format: $(PACKAGES_TARGET) $(BLACK_TARGET)
+	@echo "Run black format"
 	@$(MXENV_PATH)black $(BLACK_SRC)
 
 INSTALL_TARGETS+=$(BLACK_TARGET)
-QA_TARGETS+=black
+CHECK_TARGETS+=black-check
+CHECK_TARGETS+=black-format
 
 ##############################################################################
 # Default targets
@@ -465,5 +476,8 @@ runtime-clean:
 	@find . -name '*~' -exec rm -f {} +
 	@find . -name '__pycache__' -exec rm -fr {} +
 
-.PHONY: qa
-qa: $(QA_TARGETS)
+.PHONY: check
+check: $(CHECK_TARGETS)
+
+.PHONY: format
+format: $(FORMAT_TARGETS)

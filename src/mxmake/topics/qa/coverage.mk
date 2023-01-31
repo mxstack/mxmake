@@ -42,4 +42,3 @@ coverage-clean: coverage-dirty
 INSTALL_TARGETS+=$(COVERAGE_TARGET)
 DIRTY_TARGETS+=coverage-dirty
 CLEAN_TARGETS+=coverage-clean
-QA_TARGETS+=coverage

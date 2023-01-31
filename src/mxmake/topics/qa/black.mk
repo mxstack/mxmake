@@ -7,7 +7,7 @@
 #:description = Run black.
 #:
 #:[setting.BLACK_SRC]
-#:description = Source folder for code formatting.
+#:description = Source folder to scan for Python files to run black on.
 #:default = src
 
 ##############################################################################
@@ -20,10 +20,16 @@ $(BLACK_TARGET): $(MXENV_TARGET)
 	@$(MXENV_PATH)pip install black
 	@touch $(BLACK_TARGET)
 
-.PHONY: black
-black: $(PACKAGES_TARGET) $(BLACK_TARGET)
-	@echo "Run black"
+.PHONY: black-check
+black-check: $(PACKAGES_TARGET) $(BLACK_TARGET)
+	@echo "Run black checks"
+	@$(MXENV_PATH)black --check $(BLACK_SRC)
+
+.PHONY: black-format
+black-format: $(PACKAGES_TARGET) $(BLACK_TARGET)
+	@echo "Run black format"
 	@$(MXENV_PATH)black $(BLACK_SRC)
 
 INSTALL_TARGETS+=$(BLACK_TARGET)
-QA_TARGETS+=black
+CHECK_TARGETS+=black-check
+CHECK_TARGETS+=black-format

@@ -35,4 +35,4 @@ mypy-clean:
 
 INSTALL_TARGETS+=$(MYPY_TARGET)
 CLEAN_TARGETS+=mypy-clean
-QA_TARGETS+=mypy
+CHECK_TARGETS+=mypy

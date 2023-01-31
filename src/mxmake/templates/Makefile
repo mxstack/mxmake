@@ -34,7 +34,8 @@ DIRTY_TARGETS?=
 CLEAN_TARGETS?=
 PURGE_TARGETS?=
 {% if additional_targets["qa"] %}
-QA_TARGETS?=
+CHECK_TARGETS?=
+FORMAT_TARGETS?=
 {% endif %}
 {{ sections.read() }}
 ##############################################################################
@@ -71,6 +72,9 @@ runtime-clean:
 	@find . -name '__pycache__' -exec rm -fr {} +
 
 {% if additional_targets["qa"] %}
-.PHONY: qa
-qa: $(QA_TARGETS)
+.PHONY: check
+check: $(CHECK_TARGETS)
+
+.PHONY: format
+format: $(FORMAT_TARGETS)
 {% endif %}
