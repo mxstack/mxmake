@@ -5,19 +5,17 @@ import typing
 NAMESPACE = "mxmake-"
 
 
-def venv_folder() -> str:
-    """Folder containing the virtual environment."""
-    return os.environ.get("MXMAKE_VENV_FOLDER", os.path.join("venv"))
+def mxenv_path() -> str:
+    """MX environment path."""
+    path = os.environ.get("MXMAKE_MXENV_PATH", os.path.join("venv", "bin"))
+    if not path.endswith(os.path.sep):
+        path = f"{path}{os.path.sep}"
+    return path
 
 
-def scripts_folder() -> str:
-    """Target folder for script generation."""
-    return os.environ.get("MXMAKE_SCRIPTS_FOLDER", os.path.join("venv", "bin"))
-
-
-def config_folder() -> str:
-    """Target folder for config generation."""
-    return os.environ.get("MXMAKE_CONFIG_FOLDER", os.path.join("cfg"))
+def mxmake_files() -> str:
+    """Target folder for mxmake related file generation."""
+    return os.environ.get("MXMAKE_FILES", os.path.join(".mxmake", "files"))
 
 
 def ns_name(name: str) -> str:

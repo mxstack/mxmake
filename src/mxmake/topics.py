@@ -1,0 +1,271 @@
+from collections import Counter
+from dataclasses import dataclass
+from pkg_resources import iter_entry_points
+
+import configparser
+import functools
+import io
+import operator
+import os
+import typing
+
+
+@dataclass
+class Setting:
+    name: str
+    description: str
+    default: str
+
+
+@dataclass
+class Target:
+    name: str
+    description: str
+
+
+@dataclass
+class Domain:
+    topic: str
+    name: str
+    file: str
+
+    @property
+    def fqn(self):
+        return f"{self.topic}.{self.name}"
+
+    @property
+    def file_data(self) -> typing.List[str]:
+        if hasattr(self, "_file_data"):
+            return self._file_data
+        with open(self.file) as f:
+            self.file_data = f.readlines()
+        return self._file_data
+
+    @file_data.setter
+    def file_data(self, value: typing.List[str]):
+        self._file_data = value
+
+    @property
+    def config(self) -> configparser.ConfigParser:
+        if hasattr(self, "_config"):
+            return self._config
+        data = io.StringIO()
+        for line in self.file_data:
+            if line.startswith("#:"):
+                data.write(line[2:])
+        data.seek(0)
+        config = self.config = configparser.ConfigParser(default_section=self.name)
+        config.optionxform = str  # type: ignore
+        config.read_file(data)
+        return self._config
+
+    @config.setter
+    def config(self, value: configparser.ConfigParser):
+        self._config = value
+
+    @property
+    def title(self) -> str:
+        return self.config[self.name].get("title", "No Title")
+
+    @property
+    def description(self) -> str:
+        return self.config[self.name].get("description", "No Description")
+
+    @property
+    def depends(self) -> typing.List[str]:
+        return [
+            dep.strip()
+            for dep in self.config[self.name].get("depends", "").split("\n")
+            if dep
+        ]
+
+    @property
+    def settings(self) -> typing.List[Setting]:
+        config = self.config
+        return [
+            Setting(
+                name=name[8:],
+                description=config[name].get("description", "No Description"),
+                default=config[name].get("default", "No Default"),
+            )
+            for name in config.sections()
+            if name.startswith("setting.")
+        ]
+
+    @property
+    def targets(self) -> typing.List[Target]:
+        config = self.config
+        return [
+            Target(
+                name=name[7:],
+                description=config[name].get("description", "No Description"),
+            )
+            for name in config.sections()
+            if name.startswith("target.")
+        ]
+
+    def write_to(self, fd: typing.TextIO):
+        leading_blankline = True
+        for line in self.file_data:
+            if line.startswith("#:"):
+                continue
+            if not line.strip().strip("\n") and leading_blankline:
+                continue
+            else:
+                leading_blankline = False
+            fd.write(line)
+
+
+@dataclass
+class Topic:
+    name: str
+    directory: str
+
+    def __post_init__(self):
+        config = configparser.ConfigParser(default_section="metadata")
+        config.read(os.path.join(self.directory, "metadata.ini"))
+        self.title = config.get("metadata", "title")
+        self.description = config.get("metadata", "description")
+
+    @property
+    def domains(self) -> typing.List[Domain]:
+        return [
+            Domain(
+                topic=self.name,
+                name=name[:-3],
+                file=os.path.join(self.directory, name),
+            )
+            for name in sorted(os.listdir(self.directory))
+            if name.endswith(".mk")
+        ]
+
+    def domain(self, name: str) -> typing.Optional[Domain]:
+        for domain in self.domains:
+            if domain.name == name:
+                return domain
+        return None
+
+
+@functools.lru_cache(maxsize=4096)
+def load_topics() -> typing.List[Topic]:
+    return [ep.load() for ep in iter_entry_points("mxmake.topics")]
+
+
+def get_topic(name: str) -> Topic:
+    for topic in load_topics():
+        if topic.name == name:
+            return topic
+    raise AttributeError(f"No such topic: {name}")
+
+
+def get_domain(fqn: str) -> Domain:
+    topic_name, name = fqn.split(".")
+    topic = get_topic(topic_name)
+    domain = topic.domain(name)
+    if not domain:
+        raise AttributeError(f"No such domain: {fqn}")
+    return domain
+
+
+class DomainConflictError(Exception):
+    def __init__(self, counter: Counter):
+        conflicting = list()
+        for name, count in counter.items():
+            if count > 1:
+                conflicting.append(name)
+        msg = "Conflicting domain names: {}".format(sorted(conflicting))
+        super(DomainConflictError, self).__init__(msg)
+
+
+class CircularDependencyDomainError(Exception):
+    def __init__(self, domains: typing.List[Domain]):
+        msg = "Domains define circular dependencies: {}".format(domains)
+        super(CircularDependencyDomainError, self).__init__(msg)
+
+
+class MissingDependencyDomainError(Exception):
+    def __init__(self, domain: Domain):
+        msg = "Domain define missing dependency: {}".format(domain)
+        super(MissingDependencyDomainError, self).__init__(msg)
+
+
+def resolve_domain_dependencies(
+    domains: typing.List[Domain],
+) -> typing.List[Domain]:
+    """Return given domains ordered by dependencies.
+
+    :raise DomainConflictError: Domain list contains conflicting names.
+    :raise MissingDependencyDomainError: Dependency domain not included.
+    :raise CircularDependencyDomainError: Circular dependencies defined.
+    """
+    names = [res.fqn for res in domains]
+    counter = Counter(names)
+    if len(domains) != len(counter):
+        raise DomainConflictError(counter)
+    ret = []
+    handled = {}
+    for domain in domains[:]:
+        if not domain.depends:
+            ret.append(domain)
+            handled[domain.fqn] = domain
+            domains.remove(domain)
+        else:
+            for dependency_name in domain.depends:
+                if dependency_name not in names:
+                    raise MissingDependencyDomainError(domain)
+    count = len(domains)
+    while count > 0:
+        count -= 1
+        for domain in domains[:]:
+            hook_idx = 0
+            not_yet = False
+            for dependency_name in domain.depends:
+                if dependency_name in handled:
+                    dependency = handled[dependency_name]
+                    dep_idx = ret.index(dependency)
+                    hook_idx = dep_idx if dep_idx > hook_idx else hook_idx
+                else:
+                    not_yet = True
+                    break
+            if not_yet:
+                continue
+            ret.insert(hook_idx + 1, domain)
+            handled[domain.fqn] = domain
+            domains.remove(domain)
+            break
+    if domains:
+        raise CircularDependencyDomainError(domains)
+    return ret
+
+
+def collect_missing_dependencies(
+    domains: typing.List[Domain],
+) -> typing.List[Domain]:
+    """Expect a list of domain instances, and add all missing depencecy
+    domains.
+    """
+    to_check = {domain.fqn for domain in domains}
+    checked = set()
+    while to_check:
+        current_fqn = to_check.pop()
+        checked.add(current_fqn)
+        new_depends = set(get_domain(current_fqn).depends) - checked
+        if new_depends:
+            to_check.update(new_depends)
+    return sorted(
+        [get_domain(domain_name) for domain_name in checked],
+        key=operator.attrgetter("fqn"),
+    )
+
+
+##############################################################################
+# topics shipped within mxmake
+##############################################################################
+
+topics_dir = os.path.join(os.path.dirname(__file__), "topics")
+
+core = Topic(name="core", directory=os.path.join(topics_dir, "core"))
+docs = Topic(name="docs", directory=os.path.join(topics_dir, "docs"))
+ldap = Topic(name="ldap", directory=os.path.join(topics_dir, "ldap"))
+qa = Topic(name="qa", directory=os.path.join(topics_dir, "qa"))
+system = Topic(name="system", directory=os.path.join(topics_dir, "system"))

@@ -30,7 +30,16 @@ release = "1.0"
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = []
+extensions = [
+    "mxmake.sphinxext",
+    "myst_parser",
+    "sphinx.ext.todo",
+]
+
+# MySt specific extensions
+myst_enable_extensions = [
+    "deflist",  # You will be able to utilise definition lists
+]
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
@@ -40,13 +49,25 @@ templates_path = ["_templates"]
 # This pattern also affects html_static_path and html_extra_path.
 exclude_patterns = []
 
+# show todo items
+todo_include_todos = True
 
 # -- Options for HTML output -------------------------------------------------
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = "mxstack"
+html_theme = "conestack"
+
+html_theme_options = {
+    "github_url": "https://github.com/mxstack/mxmake",
+    "pypi_url": "https://pypi.org/project/mxmake",
+    "logo_url": "_static/mxmake-logo.svg",
+    "logo_title": "mxmake",
+    "logo_width": "40px",
+    "logo_height": "40px",
+    "cs_bg_color": "#0A0A0A",
+}
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,

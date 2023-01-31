@@ -1,8 +1,9 @@
 *.egg-info
 *.pyc
-__pycache__
+/.coverage
 /.installed.txt
-/.sentinels/
+/.mxmake/
+/.mypy_cache/
 /.vscode/
 /build/
 /constraints-mxdev.txt
@@ -10,3 +11,4 @@ __pycache__
 /docs/html/
 /requirements-mxdev.txt
 /venv/
+__pycache__

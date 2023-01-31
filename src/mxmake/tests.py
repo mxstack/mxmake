@@ -3,10 +3,11 @@ from contextlib import contextmanager
 from dataclasses import dataclass
 from jinja2 import Environment
 from jinja2 import FileSystemLoader
-from mxmake import domains
 from mxmake import hook
 from mxmake import main
+from mxmake import parser
 from mxmake import templates
+from mxmake import topics
 from mxmake import utils
 
 import configparser
@@ -54,9 +55,8 @@ class template_directory:
     def __call__(self, fn: typing.Callable):
         def wrapper(*a):
             tempdir = tempfile.mkdtemp()
-            os.environ["MXMAKE_VENV_FOLDER"] = tempdir
-            os.environ["MXMAKE_SCRIPTS_FOLDER"] = tempdir
-            os.environ["MXMAKE_CONFIG_FOLDER"] = tempdir
+            os.environ["MXMAKE_FILES"] = tempdir
+            os.environ["MXMAKE_MXENV_PATH"] = tempdir
             try:
                 if self.reset_registry:
                     with reset_template_registry():
@@ -65,9 +65,8 @@ class template_directory:
                     fn(*a, tempdir=tempdir)
             finally:
                 shutil.rmtree(tempdir)
-                del os.environ["MXMAKE_VENV_FOLDER"]
-                del os.environ["MXMAKE_SCRIPTS_FOLDER"]
-                del os.environ["MXMAKE_CONFIG_FOLDER"]
+                del os.environ["MXMAKE_FILES"]
+                del os.environ["MXMAKE_MXENV_PATH"]
 
         return wrapper
 
@@ -126,23 +125,17 @@ class TestUtils(unittest.TestCase):
     def test_namespace(self):
         self.assertEqual(utils.NAMESPACE, "mxmake-")
 
-    def test_venv_folder(self):
-        self.assertEqual(utils.venv_folder(), "venv")
-        os.environ["MXMAKE_VENV_FOLDER"] = "other"
-        self.assertEqual(utils.venv_folder(), "other")
-        del os.environ["MXMAKE_VENV_FOLDER"]
+    def test_mxenv_path(self):
+        self.assertEqual(utils.mxenv_path(), os.path.join("venv", "bin") + os.path.sep)
+        os.environ["MXMAKE_MXENV_PATH"] = "other"
+        self.assertEqual(utils.mxenv_path(), "other" + os.path.sep)
+        del os.environ["MXMAKE_MXENV_PATH"]
 
-    def test_scripts_folder(self):
-        self.assertEqual(utils.scripts_folder(), os.path.join("venv", "bin"))
-        os.environ["MXMAKE_SCRIPTS_FOLDER"] = "other"
-        self.assertEqual(utils.scripts_folder(), "other")
-        del os.environ["MXMAKE_SCRIPTS_FOLDER"]
-
-    def test_config_folder(self):
-        self.assertEqual(utils.config_folder(), "cfg")
-        os.environ["MXMAKE_CONFIG_FOLDER"] = "other"
-        self.assertEqual(utils.config_folder(), "other")
-        del os.environ["MXMAKE_CONFIG_FOLDER"]
+    def test_mxmake_files(self):
+        self.assertEqual(utils.mxmake_files(), os.path.join(".mxmake", "files"))
+        os.environ["MXMAKE_FILES"] = "other"
+        self.assertEqual(utils.mxmake_files(), "other")
+        del os.environ["MXMAKE_FILES"]
 
     def test_ns_name(self):
         self.assertEqual(utils.ns_name("foo"), "mxmake-foo")
@@ -166,14 +159,19 @@ class TestTemplates(RenderTestCase):
                 pass
 
             self.assertEqual(templates.template._registry, dict(template=Template))
-            self.assertEqual(templates.template.lookup("inexistent"), None)
             self.assertEqual(templates.template.lookup("template"), Template)
+            with self.assertRaises(RuntimeError):
+                templates.template.lookup("inexistent")
 
         self.assertEqual(
             templates.template._registry,
             {
+                "additional_sources_targets": templates.AdditionalSourcesTargets,
+                "makefile": templates.Makefile,
+                "mx.ini": templates.MxIni,
                 "run-coverage": templates.CoverageScript,
                 "run-tests": templates.TestScript,
+                "topics.md": templates.Topics,
             },
         )
 
@@ -192,21 +190,15 @@ class TestTemplates(RenderTestCase):
             template_variables = dict(param="value")
 
         # cannot write template without template environment
-        hooks: typing.Dict[str, typing.Dict] = {}
-        template = Template(TestConfiguration(hooks=hooks))
+        template = Template()
         with self.assertRaises(RuntimeError):
             template.write()
-
-        # template settings
-        self.assertEqual(template.settings, dict())
-        hooks["mxmake-template"] = dict(key="val")
-        self.assertEqual(template.settings, dict(key="val"))
 
         # write template
         with open(os.path.join(tempdir, "target.in"), "w") as f:
             f.write("{{ param }}")
         environment = Environment(loader=FileSystemLoader(tempdir))
-        template = Template(TestConfiguration(hooks={}), environment)
+        template = Template(environment)
         template.write()
         with open(os.path.join(tempdir, "target.out")) as f:
             self.assertEqual(f.read(), "value")
@@ -220,6 +212,23 @@ class TestTemplates(RenderTestCase):
         self.assertTrue(removed)
         self.assertFalse(os.path.exists(os.path.join(tempdir, "target.out")))
         self.assertFalse(template.remove())
+
+    @template_directory()
+    def test_MxIniBoundTemplate(self, tempdir: str):
+        # create test template
+        class Template(templates.MxIniBoundTemplate):
+            name = "template"
+            target_folder = ""
+            target_name = ""
+            template_name = ""
+            template_variables = {}
+
+        # template settings
+        hooks: typing.Dict[str, typing.Dict] = {}
+        template = Template(TestConfiguration(hooks=hooks))
+        self.assertEqual(template.settings, dict())
+        hooks["mxmake-template"] = dict(key="val")
+        self.assertEqual(template.settings, dict(key="val"))
 
     def test_ShellScriptTemplate(self):
         self.assertEqual(templates.ShellScriptTemplate.description, "")
@@ -258,10 +267,10 @@ class TestTemplates(RenderTestCase):
 
         configuration = mxdev.Configuration(config_file, hooks=[hook.Hook()])
         factory = templates.template.lookup("run-tests")
-        template = factory(configuration, hook.get_template_environment())
+        template = factory(configuration, templates.get_template_environment())
 
         self.assertEqual(template.description, "Run tests")
-        self.assertEqual(template.target_folder, utils.scripts_folder())
+        self.assertEqual(template.target_folder, utils.mxmake_files())
         self.assertEqual(template.target_name, "run-tests.sh")
         self.assertEqual(template.template_name, "run-tests.sh")
         self.assertEqual(
@@ -270,7 +279,7 @@ class TestTemplates(RenderTestCase):
                 "description": "Run tests",
                 "env": {"ENV_PARAM": "env_value"},
                 "testpaths": ["sources/package/src"],
-                "venv": tempdir,
+                "mxenv_path": tempdir + os.path.sep,
             },
         )
         self.assertEqual(template.package_paths("inexistent"), [])
@@ -302,7 +311,7 @@ class TestTemplates(RenderTestCase):
 
                 setenv
 
-                /.../bin/zope-testrunner --auto-color --auto-progress \\
+                /.../zope-testrunner --auto-color --auto-progress \\
                     --test-path=sources/package/src \\
                     --module=$1
 
@@ -323,7 +332,7 @@ class TestTemplates(RenderTestCase):
         config_file.seek(0)
 
         configuration = mxdev.Configuration(config_file, hooks=[hook.Hook()])
-        template = factory(configuration, hook.get_template_environment())
+        template = factory(configuration, templates.get_template_environment())
         template.write()
         with open(os.path.join(tempdir, "run-tests.sh")) as f:
             self.checkOutput(
@@ -336,7 +345,7 @@ class TestTemplates(RenderTestCase):
                 # Run tests
                 set -e
 
-                /.../bin/zope-testrunner --auto-color --auto-progress \\
+                /.../zope-testrunner --auto-color --auto-progress \\
                     --test-path=sources/package/src \\
                     --module=$1
 
@@ -366,10 +375,10 @@ class TestTemplates(RenderTestCase):
 
         configuration = mxdev.Configuration(config_file, hooks=[hook.Hook()])
         factory = templates.template.lookup("run-coverage")
-        template = factory(configuration, hook.get_template_environment())
+        template = factory(configuration, templates.get_template_environment())
 
         self.assertEqual(template.description, "Run coverage")
-        self.assertEqual(template.target_folder, utils.scripts_folder())
+        self.assertEqual(template.target_folder, utils.mxmake_files())
         self.assertEqual(template.target_name, "run-coverage.sh")
         self.assertEqual(template.template_name, "run-coverage.sh")
         self.assertEqual(
@@ -381,9 +390,9 @@ class TestTemplates(RenderTestCase):
                 "sourcepaths": ["sources/package/src/package"],
                 "omitpaths": [
                     "sources/package/src/package/file1.py",
-                    "sources/package/src/package/file2.py"
+                    "sources/package/src/package/file2.py",
                 ],
-                "venv": tempdir,
+                "mxenv_path": tempdir + os.path.sep,
             },
         )
         self.assertEqual(template.package_paths("inexistent"), [])
@@ -441,14 +450,14 @@ class TestTemplates(RenderTestCase):
                 omits=$(printf ",%s" "${omits[@]}")
                 omits=${omits:1}
 
-                /.../bin/coverage run \\
+                /.../coverage run \\
                     --source=$sources \\
                     --omit=$omits \\
                     -m zope.testrunner --auto-color --auto-progress \\
                     --test-path=sources/package/src
 
-                /.../bin/coverage report
-                /.../bin/coverage html
+                /.../coverage report
+                /.../coverage html
 
                 unsetenv
 
@@ -468,7 +477,7 @@ class TestTemplates(RenderTestCase):
         config_file.seek(0)
 
         configuration = mxdev.Configuration(config_file, hooks=[hook.Hook()])
-        template = factory(configuration, hook.get_template_environment())
+        template = factory(configuration, templates.get_template_environment())
         template.write()
         with open(os.path.join(tempdir, "run-coverage.sh")) as f:
             self.checkOutput(
@@ -488,18 +497,312 @@ class TestTemplates(RenderTestCase):
                 sources=$(printf ",%s" "${sources[@]}")
                 sources=${sources:1}
 
-                /.../bin/coverage run \\
+                /.../coverage run \\
                     --source=$sources \\
                     -m zope.testrunner --auto-color --auto-progress \\
                     --test-path=sources/package/src
 
-                /.../bin/coverage report
-                /.../bin/coverage html
+                /.../coverage report
+                /.../coverage html
 
                 exit 0
                 """,
                 f.read(),
             )
+
+    @template_directory()
+    def test_AdditionalSourcesTargets(self, tempdir):
+        factory = templates.template.lookup("additional_sources_targets")
+        template = factory(["a", "b"], templates.get_template_environment())
+        template.write()
+
+        path = os.path.join(tempdir, "additional_sources_targets.mk")
+        with open(path) as f:
+            self.checkOutput("ADDITIONAL_SOURCES_TARGETS=a b", f.read())
+
+    @temp_directory
+    def test_Makefile(self, tempdir):
+        domains = [topics.get_domain("core.mxenv")]
+        domains = topics.collect_missing_dependencies(domains)
+        domains = topics.resolve_domain_dependencies(domains)
+        domain_settings = {
+            "core.base.DEPLOY_TARGETS": "",
+            "core.mxenv.PYTHON_BIN": "python3",
+            "core.mxenv.PYTHON_MIN_VERSION": "3.7",
+            "core.mxenv.VENV_ENABLED": "true",
+            "core.mxenv.VENV_CREATE": "true",
+            "core.mxenv.VENV_FOLDER": "venv",
+            "core.mxenv.MXDEV": "mxdev",
+            "core.mxenv.MXMAKE": "mxmake",
+        }
+        factory = templates.template.lookup("makefile")
+        template = factory(
+            tempdir, domains, domain_settings, templates.get_template_environment()
+        )
+
+        template.write()
+        with open(os.path.join(tempdir, "Makefile")) as f:
+            self.checkOutput(
+                """
+                ##############################################################################
+                # THIS FILE IS GENERATED BY MXMAKE
+                #
+                # DOMAINS:
+                #: core.base
+                #: core.mxenv
+                #
+                # SETTINGS (ALL CHANGES MADE BELOW SETTINGS WILL BE LOST)
+                ##############################################################################
+
+                ## core.base
+
+                # `deploy` target dependencies.
+                # No default value.
+                DEPLOY_TARGETS?=
+
+                ## core.mxenv
+
+                # Python interpreter to use.
+                # Default: python3
+                PYTHON_BIN?=python3
+
+                # Minimum required Python version.
+                # Default: 3.7
+                PYTHON_MIN_VERSION?=3.7
+
+                # Flag whether to use virtual environment. If `false`, the global
+                # interpreter is used.
+                # Default: true
+                VENV_ENABLED?=true
+
+                # Flag whether to create a virtual environment. If set to `false`
+                # and `VENV_ENABLED` is `true`, `VENV_FOLDER` is expected to point to an
+                # existing virtual environment.
+                # Default: true
+                VENV_CREATE?=true
+
+                # The folder of the virtual environment.
+                # Default: venv
+                VENV_FOLDER?=venv
+
+                # mxdev to install in virtual environment.
+                # Default: https://github.com/mxstack/mxdev/archive/main.zip
+                MXDEV?=mxdev
+
+                # mxmake to install in virtual environment.
+                # Default: https://github.com/mxstack/mxmake/archive/develop.zip
+                MXMAKE?=mxmake
+
+                ##############################################################################
+                # END SETTINGS - DO NOT EDIT BELOW THIS LINE
+                ##############################################################################
+
+                INSTALL_TARGETS?=
+                DIRTY_TARGETS?=
+                CLEAN_TARGETS?=
+                PURGE_TARGETS?=
+
+                # Defensive settings for make: https://tech.davis-hansson.com/p/make/
+                SHELL:=bash
+                .ONESHELL:
+                # for Makefile debugging purposes add -x to the .SHELLFLAGS
+                .SHELLFLAGS:=-eu -o pipefail -O inherit_errexit -c
+                .SILENT:
+                .DELETE_ON_ERROR:
+                MAKEFLAGS+=--warn-undefined-variables
+                MAKEFLAGS+=--no-builtin-rules
+
+                # mxmake folder
+                MXMAKE_FOLDER?=.mxmake
+
+                # Sentinel files
+                SENTINEL_FOLDER?=$(MXMAKE_FOLDER)/sentinels
+                SENTINEL?=$(SENTINEL_FOLDER)/about.txt
+                $(SENTINEL):
+                    @mkdir -p $(SENTINEL_FOLDER)
+                    @echo "Sentinels for the Makefile process." > $(SENTINEL)
+
+                ##############################################################################
+                # mxenv
+                ##############################################################################
+
+                # Check if given Python is installed
+                ifeq (,$(shell which $(PYTHON_BIN)))
+                $(error "PYTHON=$(PYTHON_BIN) not found in $(PATH)")
+                endif
+
+                # Check if given Python version is ok
+                PYTHON_VERSION_OK=$(shell $(PYTHON_BIN) -c "import sys; print((int(sys.version_info[0]), int(sys.version_info[1])) >= tuple(map(int, '$(PYTHON_MIN_VERSION)'.split('.'))))")
+                ifeq ($(PYTHON_VERSION_OK),0)
+                $(error "Need Python >= $(PYTHON_MIN_VERSION)")
+                endif
+
+                # Check if venv folder is configured if venv is enabled
+                ifeq ($(shell [[ "$(VENV_ENABLED)" == "true" && "$(VENV_FOLDER)" == "" ]] && echo "true"),"true")
+                $(error "VENV_FOLDER must be configured if VENV_ENABLED is true")
+                endif
+
+                # determine the executable path
+                ifeq ("$(VENV_ENABLED)", "true")
+                MXENV_PATH=$(VENV_FOLDER)/bin/
+                else
+                MXENV_PATH=
+                endif
+
+                MXENV_TARGET:=$(SENTINEL_FOLDER)/mxenv.sentinel
+                $(MXENV_TARGET): $(SENTINEL)
+                ifeq ("$(VENV_ENABLED)", "true")
+                    @echo "Setup Python Virtual Environment under '$(VENV_FOLDER)'"
+                    @$(PYTHON_BIN) -m venv $(VENV_FOLDER)
+                endif
+                    @$(MXENV_PATH)pip install -U pip setuptools wheel
+                    @$(MXENV_PATH)pip install -U $(MXDEV)
+                    @$(MXENV_PATH)pip install -U $(MXMAKE)
+                    @touch $(MXENV_TARGET)
+
+                .PHONY: mxenv
+                mxenv: $(MXENV_TARGET)
+
+                .PHONY: mxenv-dirty
+                mxenv-dirty:
+                    @rm -f $(MXENV_TARGET)
+
+                .PHONY: mxenv-clean
+                mxenv-clean: mxenv-dirty
+                ifeq ("$(VENV_ENABLED)", "true")
+                    @rm -rf $(VENV_FOLDER)
+                else
+                    @$(MXENV_PATH)pip uninstall -y $(MXDEV)
+                    @$(MXENV_PATH)pip uninstall -y $(MXMAKE)
+                endif
+
+                INSTALL_TARGETS+=mxenv
+                DIRTY_TARGETS+=mxenv-dirty
+                CLEAN_TARGETS+=mxenv-clean
+
+                ##############################################################################
+                # Default targets
+                ##############################################################################
+
+                INSTALL_TARGET:=$(SENTINEL_FOLDER)/install.sentinel
+                $(INSTALL_TARGET): $(INSTALL_TARGETS)
+                    @touch $(INSTALL_TARGET)
+
+                .PHONY: install
+                install: $(INSTALL_TARGET)
+                    @touch $(INSTALL_TARGET)
+
+                .PHONY: deploy
+                deploy: $(DEPLOY_TARGETS)
+
+                .PHONY: dirty
+                dirty: $(DIRTY_TARGETS)
+                    @rm -f $(INSTALL_TARGET)
+
+                .PHONY: clean
+                clean: dirty $(CLEAN_TARGETS)
+                    @rm -rf $(CLEAN_TARGETS) $(MXMAKE_FOLDER)
+
+                .PHONY: purge
+                purge: clean $(PURGE_TARGETS)
+
+                .PHONY: runtime-clean
+                runtime-clean:
+                    @echo "Remove runtime artifacts, like byte-code and caches."
+                    @find . -name '*.py[c|o]' -delete
+                    @find . -name '*~' -exec rm -f {} +
+                    @find . -name '__pycache__' -exec rm -fr {} +
+                """,
+                f.read(),
+            )
+
+    @temp_directory
+    def test_MxIni(self, tempdir):
+        domains = [
+            topics.get_domain("qa.test"),
+            topics.get_domain("qa.coverage"),
+        ]
+        domains = topics.collect_missing_dependencies(domains)
+
+        factory = templates.template.lookup("mx.ini")
+        template = factory(tempdir, domains, templates.get_template_environment())
+
+        template.write()
+        with open(os.path.join(tempdir, "mx.ini")) as f:
+            self.checkOutput(
+                """
+                [settings]
+                threads = 5
+                version-overrides =
+
+                # mxmake related mxdev extensions
+
+                # templates to generate
+                mxmake-templates =
+                    run-coverage
+                    run-tests
+
+                # environment variables
+                [mxmake-env]
+                # VAR = value
+
+                [mxmake-run-coverage]
+                environment = env
+
+                [mxmake-run-tests]
+                environment = env
+
+                """,
+                f.read(),
+            )
+
+
+###############################################################################
+# Test parser
+###############################################################################
+
+
+class TestParser(unittest.TestCase):
+    @temp_directory
+    def test_MakefileParser(self, tempdir):
+        domains = [topics.get_domain("core.mxenv")]
+        domains = topics.collect_missing_dependencies(domains)
+        domains = topics.resolve_domain_dependencies(domains)
+        domain_settings = {
+            "core.base.DEPLOY_TARGETS": "",
+            "core.mxenv.PYTHON_BIN": "python3",
+            "core.mxenv.PYTHON_MIN_VERSION": "3.7",
+            "core.mxenv.VENV_ENABLED": "true",
+            "core.mxenv.VENV_CREATE": "true",
+            "core.mxenv.VENV_FOLDER": "venv",
+            "core.mxenv.MXDEV": "mxdev",
+            "core.mxenv.MXMAKE": "mxmake",
+        }
+
+        factory = templates.template.lookup("makefile")
+        template = factory(
+            tempdir, domains, domain_settings, templates.get_template_environment()
+        )
+
+        template.write()
+
+        makefile_path = os.path.join(tempdir, "Makefile")
+        makefile_parser = parser.MakefileParser(makefile_path)
+        self.assertEqual(makefile_parser.fqns, ["core.base", "core.mxenv"])
+        self.assertEqual(
+            makefile_parser.settings,
+            {
+                "core.base.DEPLOY_TARGETS": "",
+                "core.mxenv.PYTHON_BIN": "python3",
+                "core.mxenv.PYTHON_MIN_VERSION": "3.7",
+                "core.mxenv.VENV_ENABLED": "true",
+                "core.mxenv.VENV_CREATE": "true",
+                "core.mxenv.VENV_FOLDER": "venv",
+                "core.mxenv.MXDEV": "mxdev",
+                "core.mxenv.MXMAKE": "mxmake",
+            },
+        )
+        self.assertEqual(makefile_parser.topics, {"core": ["base", "mxenv"]})
 
 
 ###############################################################################
@@ -526,25 +829,25 @@ class TestHook(unittest.TestCase):
 
 
 ###############################################################################
-# Test domains
+# Test topics
 ###############################################################################
 
 MAKEFILE_TEMPLATE = """
-#:[topic]
+#:[example]
 #:title = Title
 #:description = Description
 #:depends =
 #:    dependency-1
 #:    dependency-2
 #:
-#:[target.topic]
-#:description = Build topic
+#:[target.example]
+#:description = Build example
 #:
-#:[target.topic-dirty]
-#:description = Rebuild topic on next make run
+#:[target.example-dirty]
+#:description = Rebuild example on next make run
 #:
-#:[target.topic-clean]
-#:description = Clean topic
+#:[target.example-clean]
+#:description = Clean example
 #:
 #:[setting.SETTING_A]
 #:description = Setting A
@@ -557,26 +860,26 @@ MAKEFILE_TEMPLATE = """
 SETTING_A?=A
 SETTING_B?=B
 
-TOPIC_SENTINEL:=$(SENTINEL_FOLDER)/topic.sentinel
-$(TOPIC_SENTINEL): $(SENTINEL)
-	@echo "Building topic"
-	@touch $(TOPIC_SENTINEL)
+EXAMPLE_TARGET:=$(SENTINEL_FOLDER)/example.sentinel
+$(EXAMPLE_TARGET): $(SENTINEL)
+	@echo "Building example"
+	@touch $(EXAMPLE_TARGET)
 
-.PHONY: topic
-openldap: $(TOPIC_SENTINEL)
+.PHONY: example
+example: $(EXAMPLE_TARGET)
 
-.PHONY: topic-dirty
-topic-dirty:
-	@rm -f $(TOPIC_SENTINEL)
+.PHONY: example-dirty
+example-dirty:
+	@rm -f $(EXAMPLE_TARGET)
 
-.PHONY: topic-clean
-topic-clean:
-	@rm -f $(TOPIC_SENTINEL)
+.PHONY: example-clean
+example-clean:
+	@rm -f $(EXAMPLE_TARGET)
 """
 
 
 @dataclass
-class TestMakefile(domains.Makefile):
+class TestDomain(topics.Domain):
     depends_: typing.List[str]
 
     @property
@@ -584,247 +887,220 @@ class TestMakefile(domains.Makefile):
         return self.depends_
 
 
-class TestMakefiles(unittest.TestCase):
-    def test_load_domains(self):
-        domains_ = domains.load_domains()
-        self.assertTrue(domains.core in domains_)
-        self.assertTrue(domains.ldap in domains_)
+class TestDomains(unittest.TestCase):
+    def test_load_topics(self):
+        topics_ = topics.load_topics()
+        self.assertTrue(topics.core in topics_)
+        self.assertTrue(topics.ldap in topics_)
+
+    def test_get_topic(self):
+        topic = topics.get_topic("core")
+        self.assertEqual(topic.name, "core")
+
+    def test_get_domain(self):
+        domain = topics.get_domain("core.mxenv")
+        self.assertEqual(domain.fqn, "core.mxenv")
 
     @temp_directory
-    def test_Makefile(self, tmpdir):
-        makefile_path = os.path.join(tmpdir, "makefile.mk")
-        with open(makefile_path, "w") as f:
+    def test_Domain(self, tmpdir):
+        domain_path = os.path.join(tmpdir, "domain.mk")
+        with open(domain_path, "w") as f:
             f.write(MAKEFILE_TEMPLATE)
 
-        makefile = domains.Makefile(name="topic", file=makefile_path)
-        self.assertTrue(len(makefile.file_data) > 0)
-        self.assertTrue(makefile._file_data is makefile.file_data)
+        domain = topics.Domain(topic="topic", name="example", file=domain_path)
+        self.assertTrue(len(domain.file_data) > 0)
+        self.assertTrue(domain._file_data is domain.file_data)
 
-        config = makefile.config
+        config = domain.config
         self.assertIsInstance(config, configparser.ConfigParser)
-        self.assertTrue(makefile._config is config)
-        self.assertEqual(config["topic"]["title"], "Title")
-        self.assertEqual(config["topic"]["description"], "Description")
-        self.assertEqual(
-            config["topic"]["depends"],
-            "\ndependency-1\ndependency-2"
-        )
+        self.assertTrue(domain._config is config)
+        self.assertEqual(config["example"]["title"], "Title")
+        self.assertEqual(config["example"]["description"], "Description")
+        self.assertEqual(config["example"]["depends"], "\ndependency-1\ndependency-2")
 
-        self.assertEqual(config["target.topic"]["description"], "Build topic")
+        self.assertEqual(config["target.example"]["description"], "Build example")
         self.assertEqual(
-            config["target.topic-dirty"]["description"],
-            "Rebuild topic on next make run",
+            config["target.example-dirty"]["description"],
+            "Rebuild example on next make run",
         )
-        self.assertEqual(config["target.topic-clean"]["description"], "Clean topic")
+        self.assertEqual(config["target.example-clean"]["description"], "Clean example")
 
         self.assertEqual(config["setting.SETTING_A"]["description"], "Setting A")
         self.assertEqual(config["setting.SETTING_A"]["default"], "A")
         self.assertEqual(config["setting.SETTING_B"]["description"], "Setting B")
         self.assertEqual(config["setting.SETTING_B"]["default"], "B")
 
-        self.assertEqual(makefile.title, "Title")
-        self.assertEqual(makefile.description, "Description")
-        self.assertEqual(makefile.depends, ['dependency-1', 'dependency-2'])
+        self.assertEqual(domain.title, "Title")
+        self.assertEqual(domain.description, "Description")
+        self.assertEqual(domain.depends, ["dependency-1", "dependency-2"])
 
-        config["topic"]["depends"] = ""
-        self.assertEqual(makefile.depends, [])
+        config["example"]["depends"] = ""
+        self.assertEqual(domain.depends, [])
 
-        targets = makefile.targets
+        targets = domain.targets
         self.assertEqual(len(targets), 3)
-        self.assertEqual(targets[0].name, "topic")
-        self.assertEqual(targets[0].description, "Build topic")
+        self.assertEqual(targets[0].name, "example")
+        self.assertEqual(targets[0].description, "Build example")
 
-        settings = makefile.settings
+        settings = domain.settings
         self.assertEqual(len(settings), 2)
         self.assertEqual(settings[0].name, "SETTING_A")
         self.assertEqual(settings[0].description, "Setting A")
         self.assertEqual(settings[0].default, "A")
 
-        out_path = os.path.join(tmpdir, "makefile_out.mk")
-        makefile.write_to(out_path)
-        with open(out_path) as f:
-            out_content = f.readlines()
+        out_path = os.path.join(tmpdir, "domain_out.mk")
+        with open(out_path, "w") as fd:
+            domain.write_to(fd)
+        with open(out_path) as fd:
+            out_content = fd.readlines()
         self.assertEqual(out_content[0], "SETTING_A?=A\n")
-        self.assertEqual(out_content[-1], "\t@rm -f $(TOPIC_SENTINEL)\n")
+        self.assertEqual(out_content[-1], "\t@rm -f $(EXAMPLE_TARGET)\n")
 
     @temp_directory
-    def test_Domain(self, tmpdir):
-        domaindir = os.path.join(tmpdir, "domain")
-        os.mkdir(domaindir)
-        with open(os.path.join(domaindir, "makefile-a.mk"), "w") as f:
+    def test_Topic(self, tmpdir):
+        topicdir = os.path.join(tmpdir, "topic")
+        os.mkdir(topicdir)
+        with open(os.path.join(topicdir, "metadata.ini"), "w") as f:
+            f.write("[metadata]\n")
+            f.write("title = Title\n")
+            f.write("description = Description\n")
+        with open(os.path.join(topicdir, "domain-a.mk"), "w") as f:
             f.write("\n")
-        with open(os.path.join(domaindir, "makefile-b.mk"), "w") as f:
+        with open(os.path.join(topicdir, "domain-b.mk"), "w") as f:
             f.write("\n")
-        with open(os.path.join(domaindir, "somethinelse"), "w") as f:
+        with open(os.path.join(topicdir, "somethinelse"), "w") as f:
             f.write("\n")
 
-        domain = domains.Domain(name="domain", directory=domaindir)
-        domain_makefiles = domain.makefiles
-        self.assertEqual(len(domain_makefiles), 2)
-        self.assertEqual(domain_makefiles[0].name, "makefile-a")
-        self.assertEqual(domain_makefiles[1].name, "makefile-b")
+        topic = topics.Topic(name="topic", directory=topicdir)
 
-        self.assertEqual(domain.makefile("makefile-a").name, "makefile-a")
-        self.assertEqual(domain.makefile("inexistent"), None)
+        self.assertEqual(topic.title, "Title")
+        self.assertEqual(topic.description, "Description")
 
-    def test_MakefileConflictError(self):
+        topic_domains = topic.domains
+        self.assertEqual(len(topic_domains), 2)
+        self.assertEqual(topic_domains[0].name, "domain-a")
+        self.assertEqual(topic_domains[1].name, "domain-b")
+        self.assertEqual(topic_domains[1].topic, "topic")
+
+        self.assertEqual(topic.domain("domain-a").name, "domain-a")
+        self.assertEqual(topic.domain("inexistent"), None)
+
+    def test_DomainConflictError(self):
         counter = Counter(["a", "b", "b", "c", "c"])
-        err = domains.MakefileConflictError(counter)
-        self.assertEqual(str(err), "Conflicting makefile names: ['b', 'c']")
+        err = topics.DomainConflictError(counter)
+        self.assertEqual(str(err), "Conflicting domain names: ['b', 'c']")
 
-    def test_CircularDependencyMakefileError(self):
-        makefile = TestMakefile(name="f1", depends_=["f2"], file="f1.mk")
-        err = domains.CircularDependencyMakefileError([makefile])
+    def test_CircularDependencyDomainError(self):
+        domain = TestDomain(topic="t1", name="f1", depends_=["f2"], file="f1.mk")
+        err = topics.CircularDependencyDomainError([domain])
         self.assertEqual(
             str(err),
             (
-                "Makefiles define circular dependencies: "
-                "[TestMakefile(name='f1', file='f1.mk', depends_=['f2'])]"
+                "Domains define circular dependencies: "
+                "[TestDomain(topic='t1', name='f1', file='f1.mk', depends_=['f2'])]"
             ),
         )
 
-    def test_MissingDependencyMakefileError(self):
-        makefile = TestMakefile(name="t", depends_=["missing"], file="t.mk")
-        err = domains.MissingDependencyMakefileError(makefile)
+    def test_MissingDependencyDomainError(self):
+        domain = TestDomain(topic="t", name="t", depends_=["missing"], file="t.mk")
+        err = topics.MissingDependencyDomainError(domain)
         self.assertEqual(
             str(err),
             (
-                "Makefile define missing dependency: "
-                "TestMakefile(name='t', file='t.mk', depends_=['missing'])"
+                "Domain define missing dependency: "
+                "TestDomain(topic='t', name='t', file='t.mk', depends_=['missing'])"
             ),
         )
 
-    def test_MakefileResolver(self):
+    def test_DomainResolver(self):
         self.assertRaises(
-            domains.MakefileConflictError,
-            domains.resolve_makefile_dependencies,
+            topics.DomainConflictError,
+            topics.resolve_domain_dependencies,
             [
-                TestMakefile(name="f", depends_=["f1"], file="t.mk"),
-                TestMakefile(name="f", depends_=["f1"], file="t.mk"),
+                TestDomain(topic="t", name="f", depends_=["t.f1"], file="t.mk"),
+                TestDomain(topic="t", name="f", depends_=["t.f1"], file="t.mk"),
             ],
         )
 
-        f1 = TestMakefile(name="f1", depends_=["f2"], file="f1.mk")
-        f2 = TestMakefile(name="f2", depends_=["f3"], file="f2.mk")
-        f3 = TestMakefile(name="f3", depends_=[], file="f3.mk")
-        self.assertEqual(
-            domains.resolve_makefile_dependencies([f1, f2, f3]), [f3, f2, f1]
-        )
-        self.assertEqual(
-            domains.resolve_makefile_dependencies([f2, f1, f3]), [f3, f2, f1]
-        )
-        self.assertEqual(
-            domains.resolve_makefile_dependencies([f1, f3, f2]), [f3, f2, f1]
-        )
+        f1 = TestDomain(topic="t", name="f1", depends_=["t.f2"], file="f1.mk")
+        f2 = TestDomain(topic="t", name="f2", depends_=["t.f3"], file="f2.mk")
+        f3 = TestDomain(topic="t", name="f3", depends_=[], file="f3.mk")
+        self.assertEqual(topics.resolve_domain_dependencies([f1, f2, f3]), [f3, f2, f1])
+        self.assertEqual(topics.resolve_domain_dependencies([f2, f1, f3]), [f3, f2, f1])
+        self.assertEqual(topics.resolve_domain_dependencies([f1, f3, f2]), [f3, f2, f1])
 
-        f1 = TestMakefile(name="f1", depends_=["f2"], file="f1.mk")
-        f2 = TestMakefile(name="f2", depends_=["f1"], file="f2.mk")
+        f1 = TestDomain(topic="t", name="f1", depends_=["t.f2"], file="f1.mk")
+        f2 = TestDomain(topic="t", name="f2", depends_=["t.f1"], file="f2.mk")
         self.assertRaises(
-            domains.CircularDependencyMakefileError,
-            domains.resolve_makefile_dependencies,
+            topics.CircularDependencyDomainError,
+            topics.resolve_domain_dependencies,
             [f1, f2],
         )
 
-        f1 = TestMakefile(name="f1", depends_=["f2"], file="f1.mk")
-        f2 = TestMakefile(name="f2", depends_=["missing"], file="f2.mk")
+        f1 = TestDomain(topic="t", name="f1", depends_=["t.f2"], file="f1.mk")
+        f2 = TestDomain(topic="t", name="f2", depends_=["t.missing"], file="f2.mk")
         self.assertRaises(
-            domains.MissingDependencyMakefileError,
-            domains.resolve_makefile_dependencies,
+            topics.MissingDependencyDomainError,
+            topics.resolve_domain_dependencies,
             [f1, f2],
         )
 
-        f1 = TestMakefile(name="f1", depends_=["f2", "f4"], file="f1.mk")
-        f2 = TestMakefile(name="f2", depends_=["f3", "f4"], file="f2.mk")
-        f3 = TestMakefile(name="f3", depends_=["f4", "f5"], file="f3.mk")
-        f4 = TestMakefile(name="f4", depends_=["f5"], file="f4.mk")
-        f5 = TestMakefile(name="f5", depends_=[], file="f5.mk")
+        f1 = TestDomain(topic="t", name="f1", depends_=["t.f2", "t.f4"], file="f1.mk")
+        f2 = TestDomain(topic="t", name="f2", depends_=["t.f3", "t.f4"], file="f2.mk")
+        f3 = TestDomain(topic="t", name="f3", depends_=["t.f4", "t.f5"], file="f3.mk")
+        f4 = TestDomain(topic="t", name="f4", depends_=["t.f5"], file="f4.mk")
+        f5 = TestDomain(topic="t", name="f5", depends_=[], file="f5.mk")
         self.assertEqual(
-            domains.resolve_makefile_dependencies([f1, f2, f3, f4, f5]),
-            [f5, f4, f3, f2, f1]
+            topics.resolve_domain_dependencies([f1, f2, f3, f4, f5]),
+            [f5, f4, f3, f2, f1],
         )
         self.assertEqual(
-            domains.resolve_makefile_dependencies([f5, f4, f3, f2, f1]),
-            [f5, f4, f3, f2, f1]
+            topics.resolve_domain_dependencies([f5, f4, f3, f2, f1]),
+            [f5, f4, f3, f2, f1],
         )
         self.assertEqual(
-            domains.resolve_makefile_dependencies([f4, f5, f2, f3, f1]),
-            [f5, f4, f3, f2, f1]
+            topics.resolve_domain_dependencies([f4, f5, f2, f3, f1]),
+            [f5, f4, f3, f2, f1],
         )
         self.assertEqual(
-            domains.resolve_makefile_dependencies([f1, f3, f2, f5, f4]),
-            [f5, f4, f3, f2, f1]
+            topics.resolve_domain_dependencies([f1, f3, f2, f5, f4]),
+            [f5, f4, f3, f2, f1],
         )
 
-        f1 = TestMakefile(name="f1", depends_=["f2", "f3"], file="f1.mk")
-        f2 = TestMakefile(name="f2", depends_=["f1", "f3"], file="f2.mk")
-        f3 = TestMakefile(name="f3", depends_=["f1", "f2"], file="f3.mk")
+        f1 = TestDomain(topic="t", name="f1", depends_=["t.f2", "t.f3"], file="f1.mk")
+        f2 = TestDomain(topic="t", name="f2", depends_=["t.f1", "t.f3"], file="f2.mk")
+        f3 = TestDomain(topic="t", name="f3", depends_=["t.f1", "t.f2"], file="f3.mk")
         self.assertRaises(
-            domains.CircularDependencyMakefileError,
-            domains.resolve_makefile_dependencies,
-            [f1, f2, f3]
+            topics.CircularDependencyDomainError,
+            topics.resolve_domain_dependencies,
+            [f1, f2, f3],
         )
 
-        f1 = TestMakefile(name="f1", depends_=["f2", "f3"], file="f1.ext")
-        f2 = TestMakefile(name="f2", depends_=["f1", "f3"], file="f2.ext")
-        f3 = TestMakefile(name="f3", depends_=["f1", "f4"], file="f3.ext")
+        f1 = TestDomain(topic="t", name="f1", depends_=["t.f2", "t.f3"], file="f1.ext")
+        f2 = TestDomain(topic="t", name="f2", depends_=["t.f1", "t.f3"], file="f2.ext")
+        f3 = TestDomain(topic="t", name="f3", depends_=["t.f1", "t.f4"], file="f3.ext")
         self.assertRaises(
-            domains.MissingDependencyMakefileError,
-            domains.resolve_makefile_dependencies,
-            [f1, f2, f3]
+            topics.MissingDependencyDomainError,
+            topics.resolve_domain_dependencies,
+            [f1, f2, f3],
         )
 
-
-###############################################################################
-# Test main
-###############################################################################
-
-
-class TestMain(unittest.TestCase):
-    @template_directory()
-    def test_read_configuration(self, tempdir):
-        config_file = io.StringIO()
-        config_file.write("[settings]\n" "mxmake-templates = run-tests run-coverage")
-        config_file.seek(0)
-        configuration = main.read_configuration(config_file)
-        self.assertIsInstance(configuration, mxdev.Configuration)
-        templates = utils.list_value(
-            configuration.settings.get(utils.ns_name("templates"))
+    def test_collect_missing_dependencies(self):
+        domains = [
+            topics.get_domain("ldap.python-ldap"),
+            topics.get_domain("core.mxfiles"),
+        ]
+        all_dependencies = topics.collect_missing_dependencies(domains)
+        self.assertEqual(
+            sorted(domain.fqn for domain in all_dependencies),
+            [
+                "core.base",
+                "core.mxenv",
+                "core.mxfiles",
+                "ldap.openldap",
+                "ldap.python-ldap",
+            ],
         )
-        self.assertEqual(templates, ["run-tests", "run-coverage"])
-
-    @template_directory()
-    def test_clean_files(self, tempdir):
-        config_file = io.StringIO()
-        config_file.write("[settings]\n")
-        config_file.seek(0)
-        configuration = main.read_configuration(config_file)
-        with self.assertLogs() as captured:
-            main.clean_files(configuration)
-            self.assertEqual(len(captured.records), 2)
-            self.assertEqual(
-                captured.records[0].getMessage(), "mxmake: clean generated files"
-            )
-            self.assertEqual(
-                captured.records[1].getMessage(), "mxmake: No templates defined"
-            )
-
-        with open(os.path.join(tempdir, "run-tests.sh"), "w") as f:
-            f.write("")
-        config_file = io.StringIO()
-        config_file.write("[settings]\n" "mxmake-templates = run-tests\n")
-        config_file.seek(0)
-        configuration = main.read_configuration(config_file)
-        with self.assertLogs() as captured:
-            main.clean_files(configuration)
-            self.assertEqual(len(captured.records), 2)
-            self.assertEqual(
-                captured.records[0].getMessage(), "mxmake: clean generated files"
-            )
-            self.assertEqual(
-                captured.records[1].getMessage(),
-                'mxmake: removed "run-tests.sh"',
-            )
-        self.assertEqual(sorted(os.listdir(tempdir)), [])
 
 
 if __name__ == "__main__":
