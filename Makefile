@@ -359,7 +359,12 @@ mypy: $(PACKAGES_TARGET) $(MYPY_TARGET)
 	@echo "Run mypy"
 	@$(MXENV_PATH)mypy $(MYPY_SRC)
 
+.PHONY: mypy-clean
+mypy-clean:
+	@rm -rf .mypy_cache
+
 INSTALL_TARGETS+=$(MYPY_TARGET)
+CLEAN_TARGETS+=mypy-clean
 QA_TARGETS+=mypy
 
 ##############################################################################
