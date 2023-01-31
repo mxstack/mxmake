@@ -40,9 +40,25 @@ mxmake init
 This is an interactive session and some questions are to be answered.
 If in doubt select the `core` topic and then just hit {kbd}`Return` until done.
 
-This creates an empty `mx.ini` and a `Makefile`.
+This creates an empty `mx.ini` (only if it does not exist already) and a `Makefile`.
 
 ## How to change the settings
 
-todo
+The `Makefile` consists of three sections:
 
+1. Header with configured topics/domains
+1. Settings (for customization)
+1. Makefile logic (do not edit)
+
+The header is not intended for editing, thus it does not cause any harm by adding or removing domains here.
+It is considered during the execution of "mxmake init".
+Added or removed topics are checked or unchecked accordingly on the next run.
+
+The settings section is where customization is happening.
+Domains can provide configurable settings.
+Setting names must be unique among all domains.
+Thus they are often prefixed.
+
+Each setting provides a description and an optional default value.
+
+For details read the chapter [on topics and it's domains](topics-and-domains).
