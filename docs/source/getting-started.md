@@ -1,4 +1,4 @@
-# How to get started
+# Getting started
 
 ## How to bootstrap a project with mxmake
 

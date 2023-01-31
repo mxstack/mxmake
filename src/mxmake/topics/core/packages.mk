@@ -14,10 +14,13 @@
 # packages
 ##############################################################################
 
+-include $(MXMAKE_FILES)/additional_sources_targets.mk
+ADDITIONAL_SOURCES_TARGETS?=
+
 INSTALLED_PACKAGES=.installed.txt
 
 PACKAGES_TARGET:=$(SENTINEL_FOLDER)/packages.sentinel
-$(PACKAGES_TARGET): $(SOURCES_TARGET)
+$(PACKAGES_TARGET): $(SOURCES_TARGET) $(ADDITIONAL_SOURCES_TARGETS)
 	@echo "Install python packages"
 	@$(MXENV_PATH)pip install -r requirements-mxdev.txt
 	@$(MXENV_PATH)pip freeze > $(INSTALLED_PACKAGES)

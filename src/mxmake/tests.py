@@ -55,9 +55,8 @@ class template_directory:
     def __call__(self, fn: typing.Callable):
         def wrapper(*a):
             tempdir = tempfile.mkdtemp()
+            os.environ["MXMAKE_FILES"] = tempdir
             os.environ["MXMAKE_MXENV_PATH"] = tempdir
-            os.environ["MXMAKE_SCRIPTS_FOLDER"] = tempdir
-            os.environ["MXMAKE_CONFIG_FOLDER"] = tempdir
             try:
                 if self.reset_registry:
                     with reset_template_registry():
@@ -66,9 +65,8 @@ class template_directory:
                     fn(*a, tempdir=tempdir)
             finally:
                 shutil.rmtree(tempdir)
+                del os.environ["MXMAKE_FILES"]
                 del os.environ["MXMAKE_MXENV_PATH"]
-                del os.environ["MXMAKE_SCRIPTS_FOLDER"]
-                del os.environ["MXMAKE_CONFIG_FOLDER"]
 
         return wrapper
 
@@ -133,17 +131,11 @@ class TestUtils(unittest.TestCase):
         self.assertEqual(utils.mxenv_path(), "other" + os.path.sep)
         del os.environ["MXMAKE_MXENV_PATH"]
 
-    def test_scripts_folder(self):
-        self.assertEqual(utils.scripts_folder(), os.path.join("venv", "bin"))
-        os.environ["MXMAKE_SCRIPTS_FOLDER"] = "other"
-        self.assertEqual(utils.scripts_folder(), "other")
-        del os.environ["MXMAKE_SCRIPTS_FOLDER"]
-
-    def test_config_folder(self):
-        self.assertEqual(utils.config_folder(), "cfg")
-        os.environ["MXMAKE_CONFIG_FOLDER"] = "other"
-        self.assertEqual(utils.config_folder(), "other")
-        del os.environ["MXMAKE_CONFIG_FOLDER"]
+    def test_mxmake_files(self):
+        self.assertEqual(utils.mxmake_files(), os.path.join(".mxmake", "files"))
+        os.environ["MXMAKE_FILES"] = "other"
+        self.assertEqual(utils.mxmake_files(), "other")
+        del os.environ["MXMAKE_FILES"]
 
     def test_ns_name(self):
         self.assertEqual(utils.ns_name("foo"), "mxmake-foo")
@@ -167,17 +159,19 @@ class TestTemplates(RenderTestCase):
                 pass
 
             self.assertEqual(templates.template._registry, dict(template=Template))
-            self.assertEqual(templates.template.lookup("inexistent"), None)
             self.assertEqual(templates.template.lookup("template"), Template)
+            with self.assertRaises(RuntimeError):
+                templates.template.lookup("inexistent")
 
         self.assertEqual(
             templates.template._registry,
             {
-                "topics.md": templates.Topics,
+                "additional_sources_targets": templates.AdditionalSourcesTargets,
                 "makefile": templates.Makefile,
                 "mx.ini": templates.MxIni,
                 "run-coverage": templates.CoverageScript,
                 "run-tests": templates.TestScript,
+                "topics.md": templates.Topics,
             },
         )
 
@@ -276,7 +270,7 @@ class TestTemplates(RenderTestCase):
         template = factory(configuration, templates.get_template_environment())
 
         self.assertEqual(template.description, "Run tests")
-        self.assertEqual(template.target_folder, utils.scripts_folder())
+        self.assertEqual(template.target_folder, utils.mxmake_files())
         self.assertEqual(template.target_name, "run-tests.sh")
         self.assertEqual(template.template_name, "run-tests.sh")
         self.assertEqual(
@@ -384,7 +378,7 @@ class TestTemplates(RenderTestCase):
         template = factory(configuration, templates.get_template_environment())
 
         self.assertEqual(template.description, "Run coverage")
-        self.assertEqual(template.target_folder, utils.scripts_folder())
+        self.assertEqual(template.target_folder, utils.mxmake_files())
         self.assertEqual(template.target_name, "run-coverage.sh")
         self.assertEqual(template.template_name, "run-coverage.sh")
         self.assertEqual(
@@ -516,6 +510,16 @@ class TestTemplates(RenderTestCase):
                 f.read(),
             )
 
+    @template_directory()
+    def test_AdditionalSourcesTargets(self, tempdir):
+        factory = templates.template.lookup("additional_sources_targets")
+        template = factory(["a", "b"], templates.get_template_environment())
+        template.write()
+
+        path = os.path.join(tempdir, "additional_sources_targets.mk")
+        with open(path) as f:
+            self.checkOutput("ADDITIONAL_SOURCES_TARGETS=a b", f.read())
+
     @temp_directory
     def test_Makefile(self, tempdir):
         domains = [topics.get_domain("core.mxenv")]
@@ -609,8 +613,11 @@ class TestTemplates(RenderTestCase):
                 MAKEFLAGS+=--warn-undefined-variables
                 MAKEFLAGS+=--no-builtin-rules
 
+                # mxmake folder
+                MXMAKE_FOLDER?=.mxmake
+
                 # Sentinel files
-                SENTINEL_FOLDER?=.mxmake-sentinels
+                SENTINEL_FOLDER?=$(MXMAKE_FOLDER)/sentinels
                 SENTINEL?=$(SENTINEL_FOLDER)/about.txt
                 $(SENTINEL):
                     @mkdir -p $(SENTINEL_FOLDER)
@@ -698,7 +705,7 @@ class TestTemplates(RenderTestCase):
 
                 .PHONY: clean
                 clean: dirty $(CLEAN_TARGETS)
-                    @rm -rf $(CLEAN_TARGETS) .mxmake-sentinels
+                    @rm -rf $(CLEAN_TARGETS) $(MXMAKE_FOLDER)
 
                 .PHONY: purge
                 purge: clean $(PURGE_TARGETS)
@@ -1090,59 +1097,6 @@ class TestDomains(unittest.TestCase):
                 "ldap.python-ldap",
             ],
         )
-
-
-###############################################################################
-# Test main
-###############################################################################
-
-
-class TestMain(unittest.TestCase):
-    @template_directory()
-    def test_read_configuration(self, tempdir):
-        config_file = io.StringIO()
-        config_file.write("[settings]\n" "mxmake-templates = run-tests run-coverage")
-        config_file.seek(0)
-        configuration = main.read_configuration(config_file)
-        self.assertIsInstance(configuration, mxdev.Configuration)
-        templates = utils.list_value(
-            configuration.settings.get(utils.ns_name("templates"))
-        )
-        self.assertEqual(templates, ["run-tests", "run-coverage"])
-
-    @template_directory()
-    def test_clean_mxfiles(self, tempdir):
-        config_file = io.StringIO()
-        config_file.write("[settings]\n")
-        config_file.seek(0)
-        configuration = main.read_configuration(config_file)
-        with self.assertLogs() as captured:
-            main.clean_files(configuration)
-            self.assertEqual(len(captured.records), 2)
-            self.assertEqual(
-                captured.records[0].getMessage(), "mxmake: clean generated files"
-            )
-            self.assertEqual(
-                captured.records[1].getMessage(), "mxmake: No templates defined"
-            )
-
-        with open(os.path.join(tempdir, "run-tests.sh"), "w") as f:
-            f.write("")
-        config_file = io.StringIO()
-        config_file.write("[settings]\n" "mxmake-templates = run-tests\n")
-        config_file.seek(0)
-        configuration = main.read_configuration(config_file)
-        with self.assertLogs() as captured:
-            main.clean_files(configuration)
-            self.assertEqual(len(captured.records), 2)
-            self.assertEqual(
-                captured.records[0].getMessage(), "mxmake: clean generated files"
-            )
-            self.assertEqual(
-                captured.records[1].getMessage(),
-                'mxmake: removed "run-tests.sh"',
-            )
-        self.assertEqual(sorted(os.listdir(tempdir)), [])
 
 
 if __name__ == "__main__":

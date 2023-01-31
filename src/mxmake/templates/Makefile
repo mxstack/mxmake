@@ -59,7 +59,7 @@ dirty: $(DIRTY_TARGETS)
 
 .PHONY: clean
 clean: dirty $(CLEAN_TARGETS)
-	@rm -rf $(CLEAN_TARGETS) .mxmake-sentinels
+	@rm -rf $(CLEAN_TARGETS) $(MXMAKE_FOLDER)
 
 .PHONY: purge
 purge: clean $(PURGE_TARGETS)

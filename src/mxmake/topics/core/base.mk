@@ -38,8 +38,11 @@ SHELL:=bash
 MAKEFLAGS+=--warn-undefined-variables
 MAKEFLAGS+=--no-builtin-rules
 
+# mxmake folder
+MXMAKE_FOLDER?=.mxmake
+
 # Sentinel files
-SENTINEL_FOLDER?=.mxmake-sentinels
+SENTINEL_FOLDER?=$(MXMAKE_FOLDER)/sentinels
 SENTINEL?=$(SENTINEL_FOLDER)/about.txt
 $(SENTINEL):
 	@mkdir -p $(SENTINEL_FOLDER)
