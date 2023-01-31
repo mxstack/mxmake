@@ -5,9 +5,9 @@
 Requirements:
 
 - [`make`](https://www.gnu.org/software/make/) has to be installed.
-  This is usually done by your systems package manager, like `sudo apt install make` on Debian-/Ubuntu-based systems.
+  This is usually done by your system's package manager - as `sudo apt install make` on Debian-/Ubuntu-based systems.
 - `Python 3` has to be installed with the `venv` module.
-  Some system Python installations need extra action here, like `sudo apt install python-venv` on Debian-/Ubuntu-based systems.
+  Some system Python installations need extra action here - as `sudo apt install python-venv` on Debian-/Ubuntu-based systems.
 
 Create a project folder and enter it:
 
