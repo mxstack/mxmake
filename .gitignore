@@ -2,7 +2,7 @@
 *.pyc
 /.coverage
 /.installed.txt
-/.mxmake-sentinels/
+/.mxmake/
 /.vscode/
 /build/
 /constraints-mxdev.txt

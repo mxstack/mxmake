@@ -13,14 +13,9 @@ def mxenv_path() -> str:
     return path
 
 
-def scripts_folder() -> str:
-    """Target folder for script generation."""
-    return os.environ.get("MXMAKE_SCRIPTS_FOLDER", os.path.join("venv", "bin"))
-
-
-def config_folder() -> str:
-    """Target folder for config generation."""
-    return os.environ.get("MXMAKE_CONFIG_FOLDER", os.path.join("cfg"))
+def mxmake_files() -> str:
+    """Target folder for mxmake related file generation."""
+    return os.environ.get("MXMAKE_FILES", os.path.join(".mxmake", "files"))
 
 
 def ns_name(name: str) -> str:

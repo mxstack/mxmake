@@ -6,8 +6,6 @@ from mxmake.topics import get_domain
 from mxmake.topics import get_topic
 from mxmake.topics import load_topics
 from mxmake.topics import resolve_domain_dependencies
-from mxmake.utils import list_value
-from mxmake.utils import ns_name
 from operator import attrgetter
 from textwrap import indent
 
@@ -17,7 +15,6 @@ import logging
 import mxdev
 import os
 import sys
-import typing
 
 
 logger = logging.getLogger("mxmake")
@@ -25,50 +22,6 @@ logger = logging.getLogger("mxmake")
 
 parser = argparse.ArgumentParser()
 command_parsers = parser.add_subparsers(dest="command", required=True)
-
-
-##############################################################################
-# clean
-##############################################################################
-
-
-def read_configuration(tio: typing.TextIO) -> mxdev.Configuration:
-    hooks = mxdev.load_hooks()
-    configuration = mxdev.Configuration(tio=tio, hooks=hooks)
-    state = mxdev.State(configuration=configuration)
-    mxdev.read(state)
-    mxdev.read_hooks(state, hooks)
-    return configuration
-
-
-def clean_files(configuration: mxdev.Configuration) -> None:
-    logger.info("mxmake: clean generated files")
-    templates = list_value(configuration.settings.get(ns_name("templates")))
-    if not templates:
-        logger.info("mxmake: No templates defined")
-    else:
-        for name in templates:
-            factory = template.lookup(name)
-            instance = factory(configuration)  # type: ignore
-            if instance.remove():
-                logger.info(f'mxmake: removed "{instance.target_name}"')
-
-
-def clean_command(args: argparse.Namespace):
-    configuration = read_configuration(args.configuration)
-    clean_files(configuration)
-
-
-clean_parser = command_parsers.add_parser("clean", help="Remove generated files")
-clean_parser.set_defaults(func=clean_command)
-clean_parser.add_argument(
-    "-c",
-    "--configuration",
-    help="mxdev configuration file",
-    nargs="?",
-    type=argparse.FileType("r"),
-    default="mx.ini",
-)
 
 
 ##############################################################################

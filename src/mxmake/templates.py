@@ -3,8 +3,8 @@ from jinja2 import PackageLoader
 from mxmake.topics import Domain
 from mxmake.topics import load_topics
 from mxmake.utils import mxenv_path
+from mxmake.utils import mxmake_files
 from mxmake.utils import ns_name
-from mxmake.utils import scripts_folder
 
 import abc
 import io
@@ -35,10 +35,15 @@ class template:
         return ob
 
     @classmethod
-    def lookup(cls, name: str) -> typing.Any:
+    def lookup(cls, name: str, bound: bool = False) -> typing.Any:
         # mypy reports errors if we define abstract ``Template`` as return
         # type, return type is always a subclass of ``Template``.
-        return cls._registry.get(name)
+        factory = cls._registry.get(name)
+        if not factory:
+            raise RuntimeError(f"Template '{name}' not found")
+        if bound and not issubclass(factory, MxIniBoundTemplate):
+            raise RuntimeError(f"Template '{name}' if no bound template")
+        return factory
 
 
 class Template(abc.ABC):
@@ -49,12 +54,7 @@ class Template(abc.ABC):
         self,
         environment: typing.Union[Environment, None] = None,
     ) -> None:
-        # XXX: Subclasses of template have different signatures. template
-        #      registry was initially created to be able to lookup templates
-        #      by name defined in mx.ini by mxdev hook. Now templates are
-        #      also used for Makefile, mx.ini and docs generation, which
-        #      differ from the initial usecase. We need to make this explicit
-        #      at some point.
+        # XXX: if environment is None, default to ``get_template_environment``?
         self.environment = environment
 
     @abc.abstractproperty
@@ -95,6 +95,12 @@ class Template(abc.ABC):
 
 
 class MxIniBoundTemplate(Template):
+    """Template which depends on ``mx.ini`` configuration.
+
+    This templates are created by ``mxmake`` hook which expects this object's
+    ``__init__`` signature.
+    """
+
     def __init__(
         self,
         config: mxdev.Configuration,
@@ -132,7 +138,7 @@ class TestScript(EnvironmentTemplate, ShellScriptTemplate):
 
     @property
     def target_folder(self) -> str:
-        return scripts_folder()
+        return mxmake_files()
 
     @property
     def target_name(self) -> str:
@@ -237,6 +243,34 @@ class Makefile(Template):
 
 
 ##############################################################################
+# additional sources targets
+##############################################################################
+
+
+@template("additional_sources_targets")
+class AdditionalSourcesTargets(Template):
+    description: str = "Additional sources targets"
+    target_name = "additional_sources_targets.mk"
+    template_name = "additional_sources_targets.mk"
+
+    def __init__(
+        self,
+        additional_sources_targets: typing.List[str],
+        environment: typing.Union[Environment, None] = None,
+    ) -> None:
+        super().__init__(environment)
+        self.additional_sources_targets = additional_sources_targets
+
+    @property
+    def target_folder(self) -> str:
+        return mxmake_files()
+
+    @property
+    def template_variables(self) -> typing.Dict[str, typing.Any]:
+        return dict(additional_sources_targets=self.additional_sources_targets)
+
+
+##############################################################################
 # mx.ini template
 ##############################################################################
 
@@ -280,12 +314,6 @@ class Topics(Template):
     target_name = ""
     template_name = "topics.md"
     target_folder = ""
-
-    def __init__(
-        self,
-        environment: typing.Union[Environment, None] = None,
-    ) -> None:
-        super().__init__(environment)
 
     @property
     def template_variables(self) -> typing.Dict[str, typing.Any]:

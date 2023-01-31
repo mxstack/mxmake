@@ -6,9 +6,19 @@ from mxmake.utils import ns_name
 
 import logging
 import mxdev
+import os
 
 
 logger = logging.getLogger("mxmake")
+
+
+ADDITIONAL_SOURCES_TARGETS = [
+    "constraints.txt",
+    "pyproject.toml",
+    "requirements.txt",
+    "setup.cfg",
+    "setup.py",
+]
 
 
 class Hook(mxdev.Hook):
@@ -17,7 +27,7 @@ class Hook(mxdev.Hook):
     def __init__(self) -> None:
         logger.info("mxmake: hook initialized")
 
-    def write(self, state: mxdev.State) -> None:
+    def generate_templates(self, state: mxdev.State):
         config = state.configuration
         templates = list_value(config.settings.get(ns_name("templates")))
         if not templates:
@@ -25,9 +35,31 @@ class Hook(mxdev.Hook):
             return
         environment = get_template_environment()
         for name in templates:
-            factory = template.lookup(name)
-            if not factory:
-                msg = f"mxmake: No template registered under name {name}"
+            try:
+                factory = template.lookup(name, bound=True)
+            except RuntimeError as e:
+                msg = f"mxmake: {str(e)}"
                 logger.warning(msg)
                 continue
             factory(config, environment).write()
+
+    def generate_additional_sources_targets(self, state: mxdev.State):
+        config = state.configuration
+        additional_sources_targets = []
+        sources_folder = config.settings.get("default-target", "sources")
+        for package_name in config.packages:
+            source_folder = os.path.join(sources_folder, package_name)
+            for child in os.listdir(source_folder):
+                if child in ADDITIONAL_SOURCES_TARGETS:
+                    additional_sources_targets.append(
+                        os.path.join(source_folder, child)
+                    )
+        if not additional_sources_targets:
+            return
+        environment = get_template_environment()
+        factory = template.lookup("additional_sources_targets")
+        factory(additional_sources_targets, environment).write()
+
+    def write(self, state: mxdev.State) -> None:
+        self.generate_templates(state)
+        self.generate_additional_sources_targets(state)
