@@ -49,6 +49,8 @@ templates_path = ["_templates"]
 # This pattern also affects html_static_path and html_extra_path.
 exclude_patterns = []
 
+# show todo items
+todo_include_todos = True
 
 # -- Options for HTML output -------------------------------------------------
 

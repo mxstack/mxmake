@@ -1,5 +1,5 @@
 #:[black]
-#:title = Black
+#:title = black
 #:description = Code formatting with black.
 #:depends = core.packages
 #:

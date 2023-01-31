@@ -1,9 +1,12 @@
 {% for topic in topics %}
 
+---
+
 # {{ topic.name }}
 
 {% for domain in topic.domains %}
 
+---
 ## {{ domain.title }}
 
 {{ domain.description }}
