@@ -238,8 +238,17 @@ class Makefile(Template):
         sections.seek(0)
         # collect fqns of used domains
         fqns = sorted([domain.fqn for domain in self.domains])
+        additional_targets = {}
+        topics = {domain.topic for domain in self.domains}
+        additional_targets["qa"] = "qa" in topics
+        # additional_targets["docs"] = "docs" in topics
         # return template variables
-        return dict(settings=settings, sections=sections, fqns=fqns)
+        return dict(
+            settings=settings,
+            sections=sections,
+            fqns=fqns,
+            additional_targets=additional_targets,
+        )
 
 
 ##############################################################################

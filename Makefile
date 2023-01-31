@@ -121,10 +121,10 @@ BLACK_SRC?=src
 ##############################################################################
 
 INSTALL_TARGETS?=
-QA_TARGETS?=
 DIRTY_TARGETS?=
 CLEAN_TARGETS?=
 PURGE_TARGETS?=
+QA_TARGETS?=
 
 # Defensive settings for make: https://tech.davis-hansson.com/p/make/
 SHELL:=bash
@@ -447,9 +447,6 @@ install: $(INSTALL_TARGET)
 .PHONY: deploy
 deploy: $(DEPLOY_TARGETS)
 
-.PHONY: qa
-qa: $(QA_TARGETS)
-
 .PHONY: dirty
 dirty: $(DIRTY_TARGETS)
 	@rm -f $(INSTALL_TARGET)
@@ -467,3 +464,6 @@ runtime-clean:
 	@find . -name '*.py[c|o]' -delete
 	@find . -name '*~' -exec rm -f {} +
 	@find . -name '__pycache__' -exec rm -fr {} +
+
+.PHONY: qa
+qa: $(QA_TARGETS)

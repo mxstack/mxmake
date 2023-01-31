@@ -30,10 +30,12 @@
 ##############################################################################
 
 INSTALL_TARGETS?=
-QA_TARGETS?=
 DIRTY_TARGETS?=
 CLEAN_TARGETS?=
 PURGE_TARGETS?=
+{% if additional_targets["qa"] %}
+QA_TARGETS?=
+{% endif %}
 {{ sections.read() }}
 ##############################################################################
 # Default targets
@@ -49,9 +51,6 @@ install: $(INSTALL_TARGET)
 
 .PHONY: deploy
 deploy: $(DEPLOY_TARGETS)
-
-.PHONY: qa
-qa: $(QA_TARGETS)
 
 .PHONY: dirty
 dirty: $(DIRTY_TARGETS)
@@ -70,3 +69,8 @@ runtime-clean:
 	@find . -name '*.py[c|o]' -delete
 	@find . -name '*~' -exec rm -f {} +
 	@find . -name '__pycache__' -exec rm -fr {} +
+
+{% if additional_targets["qa"] %}
+.PHONY: qa
+qa: $(QA_TARGETS)
+{% endif %}

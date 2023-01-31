@@ -24,6 +24,10 @@
 #:[target.runtime-clean]
 #:description = Remove runtime artifacts, like byte-code and caches.
 #:
+#:[target.qa]
+#:description = Run all QA related targets. only gets included if any qa
+#:  related domain is used.
+#:
 #:[setting.DEPLOY_TARGETS]
 #:description = `deploy` target dependencies.
 #:default =
