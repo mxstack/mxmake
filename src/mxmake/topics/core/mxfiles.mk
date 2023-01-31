@@ -39,6 +39,7 @@ endef
 FILES_TARGET:=$(SENTINEL_FOLDER)/mxfiles.sentinel
 $(FILES_TARGET): $(PROJECT_CONFIG) $(MXENV_TARGET)
 	@echo "Create project files"
+	@mkdir -p $(MXMAKE_FILES)
 	$(call set_mxfiles_env,$(MXENV_PATH),$(MXMAKE_FILES))
 	@$(MXENV_PATH)mxdev -n -c $(PROJECT_CONFIG)
 	$(call unset_mxfiles_env,$(MXENV_PATH),$(MXMAKE_FILES))
@@ -53,7 +54,7 @@ mxfiles-dirty:
 
 .PHONY: mxfiles-clean
 mxfiles-clean: mxfiles-dirty
-	@rm -f constraints-mxdev.txt requirements-mxdev.txt $(MXMAKE_FILES)
+	@rm -f $(MXMAKE_FILES)
 
 INSTALL_TARGETS+=mxfiles
 DIRTY_TARGETS+=mxfiles-dirty
