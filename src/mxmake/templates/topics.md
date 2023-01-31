@@ -2,7 +2,9 @@
 
 ---
 
-# {{ topic.name }}
+# {{ topic.title }}
+
+{{ topic.description }}
 
 {% for domain in topic.domains %}
 

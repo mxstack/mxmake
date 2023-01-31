@@ -960,6 +960,10 @@ class TestDomains(unittest.TestCase):
     def test_Topic(self, tmpdir):
         topicdir = os.path.join(tmpdir, "topic")
         os.mkdir(topicdir)
+        with open(os.path.join(topicdir, "metadata.ini"), "w") as f:
+            f.write("[metadata]\n")
+            f.write("title = Title\n")
+            f.write("description = Description\n")
         with open(os.path.join(topicdir, "domain-a.mk"), "w") as f:
             f.write("\n")
         with open(os.path.join(topicdir, "domain-b.mk"), "w") as f:
@@ -968,6 +972,10 @@ class TestDomains(unittest.TestCase):
             f.write("\n")
 
         topic = topics.Topic(name="topic", directory=topicdir)
+
+        self.assertEqual(topic.title, "Title")
+        self.assertEqual(topic.description, "Description")
+
         topic_domains = topic.domains
         self.assertEqual(len(topic_domains), 2)
         self.assertEqual(topic_domains[0].name, "domain-a")

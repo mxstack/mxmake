@@ -121,6 +121,12 @@ class Topic:
     name: str
     directory: str
 
+    def __post_init__(self):
+        config = configparser.ConfigParser(default_section="metadata")
+        config.read(os.path.join(self.directory, "metadata.ini"))
+        self.title = config.get("metadata", "title")
+        self.description = config.get("metadata", "description")
+
     @property
     def domains(self) -> typing.List[Domain]:
         return [
