@@ -32,4 +32,4 @@ black-format: $(PACKAGES_TARGET) $(BLACK_TARGET)
 
 INSTALL_TARGETS+=$(BLACK_TARGET)
 CHECK_TARGETS+=black-check
-CHECK_TARGETS+=black-format
+FORMAT_TARGETS+=black-format

@@ -1,10 +1,10 @@
 from collections import Counter
 from contextlib import contextmanager
 from dataclasses import dataclass
+from dataclasses import field
 from jinja2 import Environment
 from jinja2 import FileSystemLoader
 from mxmake import hook
-from mxmake import main
 from mxmake import parser
 from mxmake import templates
 from mxmake import topics
@@ -880,11 +880,19 @@ example-clean:
 
 @dataclass
 class TestDomain(topics.Domain):
-    depends_: typing.List[str]
+    depends_: typing.List[str] = field(default_factory=list)
+    soft_depends_: typing.List[str] = field(default_factory=list)
+
+    def __post_init__(self) -> None:
+        self.runtime_depends = self.depends + self.soft_depends
 
     @property
     def depends(self) -> typing.List[str]:
         return self.depends_
+
+    @property
+    def soft_depends(self) -> typing.List[str]:
+        return self.soft_depends_
 
 
 class TestDomains(unittest.TestCase):
@@ -996,8 +1004,8 @@ class TestDomains(unittest.TestCase):
         self.assertEqual(
             str(err),
             (
-                "Domains define circular dependencies: "
-                "[TestDomain(topic='t1', name='f1', file='f1.mk', depends_=['f2'])]"
+                "Domains define circular dependencies: [TestDomain("
+                "topic='t1', name='f1', file='f1.mk', depends_=['f2'], soft_depends_=[])]"
             ),
         )
 
@@ -1007,8 +1015,8 @@ class TestDomains(unittest.TestCase):
         self.assertEqual(
             str(err),
             (
-                "Domain define missing dependency: "
-                "TestDomain(topic='t', name='t', file='t.mk', depends_=['missing'])"
+                "Domain define missing dependency: TestDomain("
+                "topic='t', name='t', file='t.mk', depends_=['missing'], soft_depends_=[])"
             ),
         )
 
@@ -1024,7 +1032,7 @@ class TestDomains(unittest.TestCase):
 
         f1 = TestDomain(topic="t", name="f1", depends_=["t.f2"], file="f1.mk")
         f2 = TestDomain(topic="t", name="f2", depends_=["t.f3"], file="f2.mk")
-        f3 = TestDomain(topic="t", name="f3", depends_=[], file="f3.mk")
+        f3 = TestDomain(topic="t", name="f3", file="f3.mk")
         self.assertEqual(topics.resolve_domain_dependencies([f1, f2, f3]), [f3, f2, f1])
         self.assertEqual(topics.resolve_domain_dependencies([f2, f1, f3]), [f3, f2, f1])
         self.assertEqual(topics.resolve_domain_dependencies([f1, f3, f2]), [f3, f2, f1])
@@ -1049,7 +1057,7 @@ class TestDomains(unittest.TestCase):
         f2 = TestDomain(topic="t", name="f2", depends_=["t.f3", "t.f4"], file="f2.mk")
         f3 = TestDomain(topic="t", name="f3", depends_=["t.f4", "t.f5"], file="f3.mk")
         f4 = TestDomain(topic="t", name="f4", depends_=["t.f5"], file="f4.mk")
-        f5 = TestDomain(topic="t", name="f5", depends_=[], file="f5.mk")
+        f5 = TestDomain(topic="t", name="f5", file="f5.mk")
         self.assertEqual(
             topics.resolve_domain_dependencies([f1, f2, f3, f4, f5]),
             [f5, f4, f3, f2, f1],
@@ -1101,6 +1109,23 @@ class TestDomains(unittest.TestCase):
                 "ldap.python-ldap",
             ],
         )
+
+    def test_set_domain_runtime_depends(self):
+        f1 = TestDomain(topic="t", name="f1", file="f1.ext")
+        f2 = TestDomain(
+            topic="t", name="f2", soft_depends_=["t.f1", "t.f4"], file="f2.ext"
+        )
+        f3 = TestDomain(
+            topic="t",
+            name="f3",
+            depends_=["t.f2"],
+            soft_depends_=["t.f1"],
+            file="f3.ext",
+        )
+        topics.set_domain_runtime_depends([f1, f2, f3])
+        self.assertEqual(f1.runtime_depends, [])
+        self.assertEqual(f2.runtime_depends, ["t.f1"])
+        self.assertEqual(f3.runtime_depends, ["t.f2", "t.f1"])
 
 
 if __name__ == "__main__":
