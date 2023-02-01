@@ -39,6 +39,7 @@ endef
 FILES_TARGET:=$(SENTINEL_FOLDER)/mxfiles.sentinel
 $(FILES_TARGET): $(PROJECT_CONFIG) $(MXENV_TARGET)
 	@echo "Create project files"
+	@mkdir -p $(MXMAKE_FILES)
 	$(call set_mxfiles_env,$(MXENV_PATH),$(MXMAKE_FILES))
 	@$(MXENV_PATH)mxdev -n -c $(PROJECT_CONFIG)
 	$(call unset_mxfiles_env,$(MXENV_PATH),$(MXMAKE_FILES))

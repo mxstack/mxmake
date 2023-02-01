@@ -261,6 +261,7 @@ endef
 FILES_TARGET:=$(SENTINEL_FOLDER)/mxfiles.sentinel
 $(FILES_TARGET): $(PROJECT_CONFIG) $(MXENV_TARGET)
 	@echo "Create project files"
+	@mkdir -p $(MXMAKE_FILES)
 	$(call set_mxfiles_env,$(MXENV_PATH),$(MXMAKE_FILES))
 	@$(MXENV_PATH)mxdev -n -c $(PROJECT_CONFIG)
 	$(call unset_mxfiles_env,$(MXENV_PATH),$(MXMAKE_FILES))
@@ -295,7 +296,7 @@ ADDITIONAL_SOURCES_TARGETS?=
 INSTALLED_PACKAGES=$(MXMAKE_FILES)/installed.txt
 
 PACKAGES_TARGET:=$(SENTINEL_FOLDER)/packages.sentinel
-$(PACKAGES_TARGET): $(SOURCES_TARGET) $(ADDITIONAL_SOURCES_TARGETS)
+$(PACKAGES_TARGET): $(FILES_TARGET) $(SOURCES_TARGET) $(ADDITIONAL_SOURCES_TARGETS)
 	@echo "Install python packages"
 	@$(MXENV_PATH)pip install -r requirements-mxdev.txt
 	@$(MXENV_PATH)pip freeze > $(INSTALLED_PACKAGES)
