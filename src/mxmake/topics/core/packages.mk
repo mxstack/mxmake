@@ -1,7 +1,8 @@
 #:[packages]
 #:title = Packages
 #:description = Install python packages.
-#:depends = core.sources
+#:depends = core.mxfiles
+#:soft-depends = core.sources
 #:
 #:[target.packages]
 #:description = Install packages with pip after creating files and checking
@@ -14,10 +15,14 @@
 # packages
 ##############################################################################
 
+# case sources domain not included
+SOURCES_TARGET?=
+
+# additional sources targets which requires package re-install on change
 -include $(MXMAKE_FILES)/additional_sources_targets.mk
 ADDITIONAL_SOURCES_TARGETS?=
 
-INSTALLED_PACKAGES=.installed.txt
+INSTALLED_PACKAGES=$(MXMAKE_FILES)/installed.txt
 
 PACKAGES_TARGET:=$(SENTINEL_FOLDER)/packages.sentinel
 $(PACKAGES_TARGET): $(SOURCES_TARGET) $(ADDITIONAL_SOURCES_TARGETS)

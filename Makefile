@@ -6,7 +6,6 @@
 #: core.mxenv
 #: core.mxfiles
 #: core.packages
-#: core.sources
 #: docs.sphinx
 #: qa.black
 #: qa.coverage
@@ -276,45 +275,24 @@ mxfiles-dirty:
 
 .PHONY: mxfiles-clean
 mxfiles-clean: mxfiles-dirty
-	@rm -f constraints-mxdev.txt requirements-mxdev.txt $(MXMAKE_FILES)
+	@rm -rf constraints-mxdev.txt requirements-mxdev.txt $(MXMAKE_FILES)
 
 INSTALL_TARGETS+=mxfiles
 DIRTY_TARGETS+=mxfiles-dirty
 CLEAN_TARGETS+=mxfiles-clean
 
 ##############################################################################
-# sources
-##############################################################################
-
-SOURCES_TARGET:=$(SENTINEL_FOLDER)/sources.sentinel
-$(SOURCES_TARGET): $(FILES_TARGET)
-	@echo "Checkout project sources"
-	@$(MXENV_PATH)mxdev -o -c $(PROJECT_CONFIG)
-	@touch $(SOURCES_TARGET)
-
-.PHONY: sources
-sources: $(SOURCES_TARGET)
-
-.PHONY: sources-dirty
-sources-dirty:
-	@rm -f $(SOURCES_TARGET)
-
-.PHONY: sources-purge
-sources-purge: sources-dirty
-	@rm -rf sources
-
-INSTALL_TARGETS+=sources
-DIRTY_TARGETS+=sources-dirty
-PURGE_TARGETS+=sources-purge
-
-##############################################################################
 # packages
 ##############################################################################
 
+# case sources domain not included
+SOURCES_TARGET?=
+
+# additional sources targets which requires package re-install on change
 -include $(MXMAKE_FILES)/additional_sources_targets.mk
 ADDITIONAL_SOURCES_TARGETS?=
 
-INSTALLED_PACKAGES=.installed.txt
+INSTALLED_PACKAGES=$(MXMAKE_FILES)/installed.txt
 
 PACKAGES_TARGET:=$(SENTINEL_FOLDER)/packages.sentinel
 $(PACKAGES_TARGET): $(SOURCES_TARGET) $(ADDITIONAL_SOURCES_TARGETS)

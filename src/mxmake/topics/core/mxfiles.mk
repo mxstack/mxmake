@@ -53,7 +53,7 @@ mxfiles-dirty:
 
 .PHONY: mxfiles-clean
 mxfiles-clean: mxfiles-dirty
-	@rm -f constraints-mxdev.txt requirements-mxdev.txt $(MXMAKE_FILES)
+	@rm -rf constraints-mxdev.txt requirements-mxdev.txt $(MXMAKE_FILES)
 
 INSTALL_TARGETS+=mxfiles
 DIRTY_TARGETS+=mxfiles-dirty
