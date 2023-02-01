@@ -1,7 +1,7 @@
 # A short primer on make
 
 "make" is a build automation tool that is commonly used in software development projects to automate repetitive tasks.
-This is historically such as compiling source code, linking object files, and building executables - and more recently managing complex (development) environments with different tools and languagse mixed.
+This is historically such as compiling source code, linking object files, and building executables - and more recently managing complex (development) environments with different tools and languages mixed.
 
 Using "make" in Python projects makes sense because it provides a way to manage dependencies and build processes in a consistent and repeatable way.
 This can be particularly useful in large projects with multiple contributors, as it ensures that everyone is building and testing the project in the same way.
@@ -75,7 +75,7 @@ This helps to avoid unnecessary rebuilds, which can save time and resources.
 
 ## Variables
 
-In "make", variables are used to store values that can be referenced in multiple places throughout the makefile. Variables are defined by assigning a value to a name, and can be used in rules, dependencies, and commands.
+In "make", variables are used to store values that can be referenced in multiple places throughout the makefile. Variables are defined by assigning a value to a name and can be used in rules, dependencies, and commands.
 
 For example, the following makefile uses a variable to store the name of the compiler:
 
