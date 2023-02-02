@@ -15,7 +15,7 @@
 # packages
 ##############################################################################
 
-# case sources domain not included
+# case `core.sources` domain not included
 SOURCES_TARGET?=
 
 # additional sources targets which requires package re-install on change
