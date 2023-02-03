@@ -36,10 +36,13 @@
 #:description = script to run
 #:
 #:[target.zope-dirty]
-#:description = Removes generated configuration file but keeps Zope database.
+#:description = Touches the configuration file to force a rebuild of the Zope instance.
+#:
+#:[target.zope-clean]
+#:description = Removes generated configuration files but keeps Zope database.
 #:
 #:[target.zope-purge]
-#:description = Removes the whole Zope instance folder inlcuding database.
+#:description = Removes the whole Zope instance folder including database.
 #:
 
 
@@ -77,11 +80,16 @@ zope-runscript: $(ZOPE_INSTANCE_TARGET) $(PACKAGES_TARGET)
 
 .PHONY: zope-dirty
 zope-dirty:
-	@rm -f $(ZOPE_INSTANCE_FOLDER)/etc $(ZOPE_INSTANCE_FOLDER)/inituser
+	@touch ${ZOPE_CONFIGURATION_FILE}
+
+.PHONY: zope-clean
+zope-clean:
+	@touch ${ZOPE_CONFIGURATION_FILE}
+	@rm -rf $(ZOPE_INSTANCE_FOLDER)/etc $(ZOPE_INSTANCE_FOLDER)/inituser
 
 .PHONY: zope-purge
 zope-purge: zope-dirty
-	@rm -rf $(ZOPE_BASE_FOLDER)
+	@rm -rf $(ZOPE_INSTANCE_FOLDER)
 
 INSTALL_TARGETS+=zope-instance
 DIRTY_TARGETS+=zope-dirty

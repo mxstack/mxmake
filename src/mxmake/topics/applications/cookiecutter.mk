@@ -14,5 +14,5 @@
 COOKIECUTTER_TARGET:=$(SENTINEL_FOLDER)/cookiecutter.sentinel
 $(COOKIECUTTER_TARGET): $(MXENV_TARGET)
 	@echo "Install cookiecutter"
-	@$(MXENV_PATH)pip install cookiecutter>=2.0.1
+	@$(MXENV_PATH)pip install "cookiecutter>=2.1.1"
 	@touch $(COOKIECUTTER_TARGET)
