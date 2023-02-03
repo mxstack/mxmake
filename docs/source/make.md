@@ -116,4 +116,4 @@ There are many more details about variables in the GNU Make Manual.
 
 ## Further Reading
 
-For more information, read the [GNU Make Manual](https://www.gnu.org/software/make/manual/html_node/index.html).
+For more information, read the [GNU Make Manual](https://www.gnu.org/software/make/manual/make.html).
