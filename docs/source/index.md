@@ -26,6 +26,7 @@ getting-started
 topics
 templates
 extending
+dependencies
 make
 contributing
 usage-old

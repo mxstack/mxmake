@@ -33,7 +33,7 @@ mypy = [
     "types-setuptools",
     "types-pkg-resources",
 ]
-docs = ["Sphinx"]
+docs = ["Sphinx", "sphinxcontrib-mermaid"]
 
 [project.urls]
 Homepage = "https://github.com/mxstack/mxmake"

@@ -339,3 +339,31 @@ class Topics(Template):
         raise NotImplementedError(
             "Topics template is not supposed to be written to file system"
         )
+
+##############################################################################
+# dependencies.rst template
+##############################################################################
+
+
+@template("dependencies.md")
+class Dependencies(Template):
+    description: str = "Dependencies documentation for sphinx"
+    target_name = ""
+    template_name = "dependencies.md"
+    target_folder = ""
+
+    @property
+    def template_variables(self) -> typing.Dict[str, typing.Any]:
+        topics = load_topics()
+        return {"topics": topics}
+
+    def render(self):
+        if not self.environment:
+            raise RuntimeError("Cannot write template without environment")
+        template = self.environment.get_template(self.template_name)
+        return template.render(**self.template_variables)
+
+    def write(self) -> None:
+        raise NotImplementedError(
+            "Dependencies template is not supposed to be written to file system"
+        )

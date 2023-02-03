@@ -82,7 +82,7 @@ DOCS_TARGET_FOLDER?=docs/html
 
 # Documentation Python requirements to be installed (via pip).
 # No default value.
-DOCS_REQUIREMENTS?=sphinx-conestack-theme myst-parser
+DOCS_REQUIREMENTS?=sphinx-conestack-theme myst-parser sphinxcontrib-mermaid
 
 ## core.mxfiles
 
@@ -387,7 +387,7 @@ ADDITIONAL_SOURCES_TARGETS?=
 
 INSTALLED_PACKAGES=$(MXMAKE_FILES)/installed.txt
 
-PACKAGES_TARGET:=INSTALLED_PACKAGES
+PACKAGES_TARGET:=$(INSTALLED_PACKAGES)
 $(PACKAGES_TARGET): $(FILES_TARGET) $(SOURCES_TARGET) $(ADDITIONAL_SOURCES_TARGETS)
 	@echo "Install python packages"
 	@$(MXENV_PATH)pip install -r $(FILES_TARGET)
