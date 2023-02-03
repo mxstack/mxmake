@@ -5,8 +5,8 @@ from myst_parser.mdit_to_docutils.sphinx_ import SphinxRenderer
 from myst_parser.parsers.mdit import create_md_parser
 from sphinx.util.docutils import SphinxDirective
 
-class BaseDirective(SphinxDirective):
 
+class BaseDirective(SphinxDirective):
     TEMPLATE = ""
 
     def run(self):
@@ -29,8 +29,10 @@ class BaseDirective(SphinxDirective):
         # return the parsed nodes, but not the helper document
         return doc.children
 
+
 class TopicsDirective(BaseDirective):
     TEMPLATE = "topics.md"
+
 
 class DependenciesDirective(BaseDirective):
     TEMPLATE = "dependencies.md"

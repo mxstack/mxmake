@@ -340,6 +340,7 @@ class Topics(Template):
             "Topics template is not supposed to be written to file system"
         )
 
+
 ##############################################################################
 # dependencies.rst template
 ##############################################################################
