@@ -54,6 +54,7 @@ js = "mxmake.topics:js"
 ldap = "mxmake.topics:ldap"
 qa = "mxmake.topics:qa"
 system = "mxmake.topics:system"
+applications = "mxmake.topics:applications"
 
 [build-system]
 requires = ["setuptools"]
