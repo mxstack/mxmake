@@ -43,8 +43,19 @@ else
 	@echo "[settings]" > $(PROJECT_CONFIG)
 endif
 
+LOCAL_PACKAGE_FILES:=
+ifneq ("$(wildcard pyproject.toml)","")
+	LOCAL_PACKAGE_FILES+=pyproject.toml
+endif
+ifneq ("$(wildcard setup.cfg)","")
+	LOCAL_PACKAGE_FILES+=setup.cfg
+endif
+ifneq ("$(wildcard setup.py)","")
+	LOCAL_PACKAGE_FILES+=setup.py
+endif
+
 FILES_TARGET:=requirements-mxdev.txt
-$(FILES_TARGET): $(PROJECT_CONFIG) $(MXENV_TARGET)
+$(FILES_TARGET): $(PROJECT_CONFIG) $(MXENV_TARGET) $(LOCAL_PACKAGE_FILES)
 	@echo "Create project files"
 	@mkdir -p $(MXMAKE_FILES)
 	$(call set_mxfiles_env,$(MXENV_PATH),$(MXMAKE_FILES))
