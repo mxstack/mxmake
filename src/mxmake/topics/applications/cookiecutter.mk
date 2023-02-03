@@ -32,4 +32,5 @@ cookiecutter-clean: cookiecutter-dirty
 	@rm -f $(COOKIECUTTER_TARGET)
 	@$(MXENV_PATH)pip uninstall cookiecutter
 
+DIRTY_TARGETS+=cookiecutter-dirty
 CLEAN_TARGETS+=cookiecutter-clean
