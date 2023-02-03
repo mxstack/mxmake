@@ -13,6 +13,13 @@
 #:[setting.MYPY_REQUIREMENTS]
 #:description = Mypy Python requirements to be installed (via pip).
 #:default = types-setuptools
+#:
+#:[target.mypy-dirty]
+#:description = Marks mypy dirty
+#:
+#:[target.mypy-clean]
+#:description = Uninstall mypy and removes cached data.
+#:
 
 ##############################################################################
 # mypy
@@ -29,10 +36,16 @@ mypy: $(PACKAGES_TARGET) $(MYPY_TARGET)
 	@echo "Run mypy"
 	@$(MXENV_PATH)mypy $(MYPY_SRC)
 
+.PHONY: mypy-dirty
+mypy-dirty:
+	@rm -f $(MYPY_TARGET)
+
 .PHONY: mypy-clean
-mypy-clean:
+mypy-clean: mypy-dirty
 	@rm -rf .mypy_cache
+	@$(MXENV_PATH)pip uninstall mypy
 
 INSTALL_TARGETS+=$(MYPY_TARGET)
-CLEAN_TARGETS+=mypy-clean
 CHECK_TARGETS+=mypy
+CLEAN_TARGETS+=mypy-clean
+DIRTY_TARGETS+=mypy-dirty
