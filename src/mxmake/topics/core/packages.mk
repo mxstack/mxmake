@@ -10,6 +10,9 @@
 #:
 #:[target.packages-dirty]
 #:description = Build packages target on next make run.
+#:
+#:[target.packages-clean]
+#:description = Remove prior installed packages
 
 ##############################################################################
 # packages
