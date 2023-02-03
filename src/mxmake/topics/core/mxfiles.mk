@@ -36,7 +36,14 @@ define unset_mxfiles_env
 	@unset MXMAKE_FILES
 endef
 
-FILES_TARGET:=$(SENTINEL_FOLDER)/mxfiles.sentinel
+$(PROJECT_CONFIG):
+ifneq ("$(wildcard $(PROJECT_CONFIG))","")
+	@touch $(PROJECT_CONFIG)
+else
+	@echo "[settings]" > $(PROJECT_CONFIG)
+endif
+
+FILES_TARGET:=requirements-mxdev.txt
 $(FILES_TARGET): $(PROJECT_CONFIG) $(MXENV_TARGET)
 	@echo "Create project files"
 	@mkdir -p $(MXMAKE_FILES)
@@ -50,7 +57,7 @@ mxfiles: $(FILES_TARGET)
 
 .PHONY: mxfiles-dirty
 mxfiles-dirty:
-	@rm -f $(FILES_TARGET)
+	@touch $(PROJECT_CONFIG)
 
 .PHONY: mxfiles-clean
 mxfiles-clean: mxfiles-dirty

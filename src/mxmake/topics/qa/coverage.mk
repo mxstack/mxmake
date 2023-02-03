@@ -38,6 +38,7 @@ coverage-dirty:
 .PHONY: coverage-clean
 coverage-clean: coverage-dirty
 	@rm -rf .coverage htmlcov
+	@$(MXENV_PATH)pip uninstall coverage
 
 INSTALL_TARGETS+=$(COVERAGE_TARGET)
 DIRTY_TARGETS+=coverage-dirty
