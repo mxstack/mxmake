@@ -4,8 +4,9 @@
 #:depends = core.base
 #:
 #:[target.mxenv]
-#:description = Setup the python environment. Creates a virtual env if
-#:  `VENV_CREATE` is `true`. The following python packages are installed
+#:description = Setup the Python environment.
+#: Creates a Python virtual environment using the built-in `venv` module if
+#:  `VENV_CREATE` is `true`. The following Python packages are installed
 #:  respective updated:
 #:    - pip
 #:    - setuptools
@@ -29,8 +30,8 @@
 #:default = 3.7
 #:
 #:[setting.VENV_ENABLED]
-#:description = Flag whether to use virtual environment. If `false`, the global
-#:  interpreter is used.
+#:description = Flag whether to use virtual environment.
+#:    If `false`, the interpreter according to `PYTHON_BIN` found in `PATH` is used.
 #:default = true
 #:
 #:[setting.VENV_CREATE]
@@ -41,6 +42,9 @@
 #:
 #:[setting.VENV_FOLDER]
 #:description = The folder of the virtual environment.
+#:    If `VENV_ENABLED` is `true` and `VENV_CREATE` is true it is used as the target folder for the virtual environment.
+#:    If `VENV_ENABLED` is `true` and `VENV_CREATE` is false it is expected to point to an existing virtual environment.
+#:    If `VENV_ENABLED` is `false` it is ignored.
 #:default = venv
 #:
 #:[setting.MXDEV]

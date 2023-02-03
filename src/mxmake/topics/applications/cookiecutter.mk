@@ -4,7 +4,7 @@
 #:depends = core.mxenv
 #:
 #:[target.cookiecutter]
-#:description = Install cookiecutter.
+#:description = Installs cookiecutter.
 #:
 
 ##############################################################################

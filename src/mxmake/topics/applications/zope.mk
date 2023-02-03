@@ -32,6 +32,12 @@
 #:[setting.ZOPE_SCRIPTNAME]
 #:description = script to run
 #:
+#:[target.zope-dirty]
+#:description = Removes generated configuration file but keeps Zope database.
+#:
+#:[target.zope-purge]
+#:description = Removes the whole Zope instance folder inlcuding database.
+#:
 
 
 ##############################################################################
