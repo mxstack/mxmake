@@ -23,11 +23,11 @@ maxdepth: 2
 ---
 
 getting-started
-usage-old
 topics
 templates
 extending
 make
 contributing
+usage-old
 
 ```
