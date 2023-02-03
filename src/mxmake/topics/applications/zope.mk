@@ -28,6 +28,9 @@
 #:
 #:[target.zope-runscript]
 #:description = Run a script within Zope/plone context.
+#:   ZOPE_SCRIPTNAME must be set to the script to run.
+#:   This can be done by setting the environment variable or by setting the make variable in the header.
+#:	 Example: `make ZOPE_SCRIPTNAME=./my-script.py zope-runscript`
 #:
 #:[setting.ZOPE_SCRIPTNAME]
 #:description = script to run
