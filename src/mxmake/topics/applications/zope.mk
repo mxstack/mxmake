@@ -4,9 +4,6 @@
 #:depends =
 #:    core.packages
 #:    applications.cookiecutter
-#:soft-depends =
-#:    core.mxfiles
-#:    core.sources
 #:
 #:[target.zope-instance]
 #:description = Use cookiecutter-zope-instance to create Zope- and its WSGI-configuration from values of the cookiecutter configuration file.
