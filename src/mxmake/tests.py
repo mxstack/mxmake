@@ -570,8 +570,8 @@ class TestTemplates(RenderTestCase):
                 # Default: 3.7
                 PYTHON_MIN_VERSION?=3.7
 
-                # Flag whether to use virtual environment. If `false`, the global
-                # interpreter is used.
+                # Flag whether to use virtual environment.
+                # If `false`, the interpreter according to `PYTHON_BIN` found in `PATH` is used.
                 # Default: true
                 VENV_ENABLED?=true
 
@@ -582,6 +582,9 @@ class TestTemplates(RenderTestCase):
                 VENV_CREATE?=true
 
                 # The folder of the virtual environment.
+                # If `VENV_ENABLED` is `true` and `VENV_CREATE` is true it is used as the target folder for the virtual environment.
+                # If `VENV_ENABLED` is `true` and `VENV_CREATE` is false it is expected to point to an existing virtual environment.
+                # If `VENV_ENABLED` is `false` it is ignored.
                 # Default: venv
                 VENV_FOLDER?=venv
 
@@ -712,6 +715,8 @@ class TestTemplates(RenderTestCase):
                     @find . -name '*.py[c|o]' -delete
                     @find . -name '*~' -exec rm -f {} +
                     @find . -name '__pycache__' -exec rm -fr {} +
+
+
                 """,
                 f.read(),
             )
