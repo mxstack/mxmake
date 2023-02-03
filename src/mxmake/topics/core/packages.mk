@@ -24,10 +24,10 @@ ADDITIONAL_SOURCES_TARGETS?=
 
 INSTALLED_PACKAGES=$(MXMAKE_FILES)/installed.txt
 
-PACKAGES_TARGET:=$(SENTINEL_FOLDER)/packages.sentinel
+PACKAGES_TARGET:=INSTALLED_PACKAGES
 $(PACKAGES_TARGET): $(FILES_TARGET) $(SOURCES_TARGET) $(ADDITIONAL_SOURCES_TARGETS)
 	@echo "Install python packages"
-	@$(MXENV_PATH)pip install -r requirements-mxdev.txt
+	@$(MXENV_PATH)pip install -r $(FILES_TARGET)
 	@$(MXENV_PATH)pip freeze > $(INSTALLED_PACKAGES)
 	@touch $(PACKAGES_TARGET)
 
@@ -38,5 +38,11 @@ packages: $(PACKAGES_TARGET)
 packages-dirty:
 	@rm -f $(PACKAGES_TARGET)
 
+.PHONY: packages-clean
+packages-clean:
+	@pip uninstall -y -r $(FILES_TARGET)
+	@rm -f $(PACKAGES_TARGET)
+
 INSTALL_TARGETS+=packages
 DIRTY_TARGETS+=packages-dirty
+CLEAN_TARGETS+=packages-clean
