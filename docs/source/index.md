@@ -26,6 +26,7 @@ getting-started
 usage-old
 topics
 templates
+extending
 make
 contributing
 
