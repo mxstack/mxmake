@@ -99,7 +99,7 @@ PROJECT_CONFIG?=mx.ini
 # The command which gets executed. Defaults to the location the
 # :ref:`run-tests` template gets rendered to if configured.
 # Default: .mxmake/files/run-tests.sh
-TEST_COMMAND?=$(VENV_FOLDER)/bin/python -m mxmake.tests
+TEST_COMMAND?=$(VENV_FOLDER)/bin/python -m mxmake.tests.__init__
 
 # Additional make targets the test target depends on.
 # No default value.
