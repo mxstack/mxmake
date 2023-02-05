@@ -43,7 +43,7 @@ packages-dirty:
 
 .PHONY: packages-clean
 packages-clean:
-	@pip uninstall -y -r $(FILES_TARGET)
+	@test -e $(FILES_TARGET) && pip uninstall -y -r $(FILES_TARGET)
 	@rm -f $(PACKAGES_TARGET)
 
 INSTALL_TARGETS+=packages
