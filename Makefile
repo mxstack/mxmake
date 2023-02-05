@@ -22,6 +22,10 @@
 # No default value.
 DEPLOY_TARGETS?=
 
+# Additional files and folders to remove when running clean target
+# No default value.
+CLEAN_FS?=
+
 ## core.mxenv
 
 # Python interpreter to use.
@@ -403,7 +407,7 @@ packages-dirty:
 
 .PHONY: packages-clean
 packages-clean:
-	@pip uninstall -y -r $(FILES_TARGET)
+	@test -e $(FILES_TARGET) && pip uninstall -y -r $(FILES_TARGET)
 	@rm -f $(PACKAGES_TARGET)
 
 INSTALL_TARGETS+=packages
@@ -500,7 +504,7 @@ dirty: $(DIRTY_TARGETS)
 
 .PHONY: clean
 clean: dirty $(CLEAN_TARGETS)
-	@rm -rf $(CLEAN_TARGETS) $(MXMAKE_FOLDER)
+	@rm -rf $(CLEAN_TARGETS) $(MXMAKE_FOLDER) $(CLEAN_FS)
 
 .PHONY: purge
 purge: clean $(PURGE_TARGETS)
