@@ -167,6 +167,7 @@ class TestTemplates(RenderTestCase):
             templates.template._registry,
             {
                 "additional_sources_targets": templates.AdditionalSourcesTargets,
+                "dependencies.md": templates.Dependencies,
                 "makefile": templates.Makefile,
                 "mx.ini": templates.MxIni,
                 "run-coverage": templates.CoverageScript,
@@ -527,6 +528,7 @@ class TestTemplates(RenderTestCase):
         domains = topics.resolve_domain_dependencies(domains)
         domain_settings = {
             "core.base.DEPLOY_TARGETS": "",
+            "core.base.CLEAN_FS": "",
             "core.mxenv.PYTHON_BIN": "python3",
             "core.mxenv.PYTHON_MIN_VERSION": "3.7",
             "core.mxenv.VENV_ENABLED": "true",
@@ -559,6 +561,10 @@ class TestTemplates(RenderTestCase):
                 # `deploy` target dependencies.
                 # No default value.
                 DEPLOY_TARGETS?=
+
+                # Additional files and folders to remove when running clean target
+                # No default value.
+                CLEAN_FS?=
 
                 ## core.mxenv
 
@@ -704,7 +710,7 @@ class TestTemplates(RenderTestCase):
 
                 .PHONY: clean
                 clean: dirty $(CLEAN_TARGETS)
-                    @rm -rf $(CLEAN_TARGETS) $(MXMAKE_FOLDER)
+                    @rm -rf $(CLEAN_TARGETS) $(MXMAKE_FOLDER) $(CLEAN_FS)
 
                 .PHONY: purge
                 purge: clean $(PURGE_TARGETS)
@@ -775,6 +781,7 @@ class TestParser(unittest.TestCase):
         domains = topics.resolve_domain_dependencies(domains)
         domain_settings = {
             "core.base.DEPLOY_TARGETS": "",
+            "core.base.CLEAN_FS": "",
             "core.mxenv.PYTHON_BIN": "python3",
             "core.mxenv.PYTHON_MIN_VERSION": "3.7",
             "core.mxenv.VENV_ENABLED": "true",
@@ -798,6 +805,7 @@ class TestParser(unittest.TestCase):
             makefile_parser.settings,
             {
                 "core.base.DEPLOY_TARGETS": "",
+                "core.base.CLEAN_FS": "",
                 "core.mxenv.PYTHON_BIN": "python3",
                 "core.mxenv.PYTHON_MIN_VERSION": "3.7",
                 "core.mxenv.VENV_ENABLED": "true",
