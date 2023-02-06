@@ -19,7 +19,11 @@
 ##############################################################################
 
 # extend npm dev packages
-NPM_DEV_PACKAGES+=karma karma-coverage karma-chrome-launcher karma-module-resolver-preprocessor
+NPM_DEV_PACKAGES+=\
+	karma \
+	karma-coverage \
+	karma-chrome-launcher \
+	karma-module-resolver-preprocessor
 
 .PHONY: karma
 karma:

@@ -34,6 +34,23 @@ class TestParser(unittest.TestCase):
 
         makefile_path = os.path.join(tempdir, "Makefile")
         makefile_parser = parser.MakefileParser(makefile_path)
+
+        self.assertEqual(
+            makefile_parser.parse_setting(["SETTING?=value"], "SETTING"), "value"
+        )
+        self.assertEqual(
+            makefile_parser.parse_setting(
+                ["SETTING?=value\\", "\tvalue\\", "\tvalue"], "SETTING"
+            ),
+            "value\\\n\tvalue\\\n\tvalue",
+        )
+        self.assertEqual(
+            makefile_parser.parse_setting(
+                ["SETTING?=\\", "\tvalue\\", "\tvalue"], "SETTING"
+            ),
+            "\\\n\tvalue\\\n\tvalue",
+        )
+
         self.assertEqual(makefile_parser.fqns, ["core.base", "core.mxenv"])
         self.assertEqual(
             makefile_parser.settings,

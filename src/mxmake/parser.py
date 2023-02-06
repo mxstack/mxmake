@@ -25,15 +25,35 @@ class MakefileParser:
         for fqn in self.fqns:
             domain = get_domain(fqn)
             for setting in domain.settings:
-                for line in lines:
-                    if line.startswith(f"{setting.name}?="):
-                        value = line[line.find("?=") + 2 :]
-                        self.settings[f"{fqn}.{setting.name}"] = value
+                value = self.parse_setting(lines, setting.name)
+                if value is not None:
+                    self.settings[f"{fqn}.{setting.name}"] = value
 
-    def parse(self):
+    def parse_setting(
+        self, lines: typing.List[str], name: str
+    ) -> typing.Union[str, None]:
+        setting_scope = False
+        value = None
+        for line in lines:
+            if setting_scope:
+                if line:
+                    value += f"\n{line}"
+                if line.endswith("\\"):
+                    continue
+                setting_scope = False
+                break
+            if line.startswith(f"{name}?="):
+                value = line[line.find("?=") + 2 :]
+                if value.endswith("\\"):
+                    setting_scope = True
+                    continue
+                break
+        return value
+
+    def parse(self) -> None:
         if not os.path.exists(self.path):
             return
         with open(self.path) as fd:
-            lines = [line.strip().strip("\n") for line in fd.readlines() if line]
+            lines = [line.rstrip() for line in fd.readlines() if line.strip()]
             self.parse_fqns(lines)
             self.parse_settings(lines)

@@ -15,7 +15,10 @@
 ##############################################################################
 
 # extend npm dev packages
-NPM_DEV_PACKAGES+=rollup rollup-plugin-cleanup rollup-plugin-terser
+NPM_DEV_PACKAGES+=\
+	rollup \
+	rollup-plugin-cleanup \
+	rollup-plugin-terser
 
 .PHONY: rollup
 rollup:
