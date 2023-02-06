@@ -4,6 +4,12 @@ import os
 import typing
 
 
+class SettingMissing(Exception):
+    """Exception used in parser to indicate a missing setting in an existing
+    makefile while parsing.
+    """
+
+
 class MakefileParser:
     def __init__(self, path: str):
         self.path = path
@@ -25,15 +31,39 @@ class MakefileParser:
         for fqn in self.fqns:
             domain = get_domain(fqn)
             for setting in domain.settings:
-                for line in lines:
-                    if line.startswith(f"{setting.name}?="):
-                        value = line[line.find("?=") + 2 :]
-                        self.settings[f"{fqn}.{setting.name}"] = value
+                try:
+                    value = self.parse_setting(lines, setting.name)
+                    self.settings[f"{fqn}.{setting.name}"] = value
+                except SettingMissing:
+                    continue
 
-    def parse(self):
+    def parse_setting(self, lines: typing.List[str], name: str) -> str:
+        setting_missing = True
+        setting_scope = False
+        value = ""
+        for line in lines:
+            if setting_scope:
+                if line:
+                    value += f"\n{line}"
+                if line.endswith("\\"):
+                    continue
+                setting_scope = False
+                break
+            if line.startswith(f"{name}?="):
+                setting_missing = False
+                value = line[line.find("?=") + 2 :]
+                if value.endswith("\\"):
+                    setting_scope = True
+                    continue
+                break
+        if setting_missing:
+            raise SettingMissing(name)
+        return value
+
+    def parse(self) -> None:
         if not os.path.exists(self.path):
             return
         with open(self.path) as fd:
-            lines = [line.strip().strip("\n") for line in fd.readlines() if line]
+            lines = [line.rstrip() for line in fd.readlines() if line.strip()]
             self.parse_fqns(lines)
             self.parse_settings(lines)

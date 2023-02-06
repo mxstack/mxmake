@@ -45,6 +45,26 @@
 
 - Add topic related metadata containing a topic description.
 
+- Create `npm` domains in `js` topic.
+
+- Create `jsdoc` domain, in `docs` topic.
+
+- Create `rollup` domains in `js` topic.
+
+- Create `karma` domain, in `js` topic.
+
+- Create `zope` domain, in `applications` topic.
+
+- Add `soft-depends` setting in domains to define conditional order of domain
+  rendering.
+
+- Make `sources` target an optional dependency.
+
+- Extend makefile parser to provide multi line settings.
+
+- Take local package into account to "dirty" if there (pyproject.toml,
+  setup.[cfg|py]
+
 
 ## 0.1 (2022-05-19)
 

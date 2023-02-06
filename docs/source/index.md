@@ -23,9 +23,12 @@ maxdepth: 2
 ---
 
 getting-started
-usage-oldrst
 topics
 templates
+extending
+dependencies
+make
 contributing
+usage-old
 
 ```

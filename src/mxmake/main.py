@@ -6,6 +6,7 @@ from mxmake.topics import get_domain
 from mxmake.topics import get_topic
 from mxmake.topics import load_topics
 from mxmake.topics import resolve_domain_dependencies
+from mxmake.topics import set_domain_runtime_depends
 from operator import attrgetter
 from textwrap import indent
 
@@ -147,6 +148,7 @@ def init_command(args: argparse.Namespace):
         for fqn in domains_choice["domains"]:
             domains.append(get_domain(fqn))
     domains = collect_missing_dependencies(domains)
+    set_domain_runtime_depends(domains)
     domains = resolve_domain_dependencies(domains)
 
     # obtain settings

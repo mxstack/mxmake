@@ -34,6 +34,7 @@ extensions = [
     "mxmake.sphinxext",
     "myst_parser",
     "sphinx.ext.todo",
+    "sphinxcontrib.mermaid",
 ]
 
 # MySt specific extensions
@@ -51,7 +52,7 @@ exclude_patterns = []
 
 # show todo items
 todo_include_todos = True
-
+mermaid_output_format = "svg"
 # -- Options for HTML output -------------------------------------------------
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for

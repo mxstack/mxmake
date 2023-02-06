@@ -2,6 +2,7 @@
 #:title = Sphinx Documentation
 #:description = Documentation generation with Sphinx.
 #:depends = core.mxenv
+#:soft-depends = docs.jsdoc
 #:
 #:[target.docs]
 #:description = Generate Sphinx docs.
@@ -29,6 +30,9 @@
 # sphinx
 ##############################################################################
 
+# additional targets required for building docs.
+DOCS_TARGETS+=
+
 SPHINX_BIN=$(MXENV_PATH)sphinx-build
 SPHINX_AUTOBUILD_BIN=$(MXENV_PATH)sphinx-autobuild
 
@@ -39,12 +43,12 @@ $(DOCS_TARGET): $(MXENV_TARGET)
 	@touch $(DOCS_TARGET)
 
 .PHONY: docs
-docs: $(DOCS_TARGET)
+docs: $(DOCS_TARGET) $(DOCS_TARGETS)
 	@echo "Build sphinx docs"
 	@$(SPHINX_BIN) $(DOCS_SOURCE_FOLDER) $(DOCS_TARGET_FOLDER)
 
 .PHONY: docs-live
-docs-live: $(DOCS_TARGET)
+docs-live: $(DOCS_TARGET) $(DOCS_TARGETS)
 	@echo "Rebuild Sphinx documentation on changes, with live-reload in the browser"
 	@$(SPHINX_AUTOBUILD_BIN) $(DOCS_SOURCE_FOLDER) $(DOCS_TARGET_FOLDER)
 

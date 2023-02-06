@@ -51,7 +51,7 @@ The `Makefile` consists of three sections:
 1. Makefile logic (do not edit)
 
 The header is not intended for editing, thus it does not cause any harm by adding or removing domains here.
-It is considered during the execution of "mxmake init".
+It is considered during the execution of `mxmake init`.
 Added or removed topics are checked or unchecked accordingly on the next run.
 
 The settings section is where customization is happening.

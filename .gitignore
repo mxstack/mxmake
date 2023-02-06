@@ -1,7 +1,6 @@
 *.egg-info
 *.pyc
 /.coverage
-/.installed.txt
 /.mxmake/
 /.mypy_cache/
 /.vscode/

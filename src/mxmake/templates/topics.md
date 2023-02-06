@@ -23,6 +23,13 @@ Depends on
 {% endfor %}
 {% endif %}
 
+{% if domain.soft_depends %}
+Soft depends on
+{% for soft_depends in domain.soft_depends %}
+: `{{ soft_depends }}`
+{% endfor %}
+{% endif %}
+
 {% if domain.targets %}
 Targets
 {% for target in domain.targets %}

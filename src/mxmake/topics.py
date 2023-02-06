@@ -29,6 +29,15 @@ class Domain:
     name: str
     file: str
 
+    def __post_init__(self) -> None:
+        # Runtime dependencies contain the list of dependencies used for
+        # generating the makefile.
+        #
+        # They are computed by `set_domain_runtime_depends` and consist of
+        # The hard dependencies and all soft dependencies included in domain
+        # list.
+        self.runtime_depends: typing.List[str] = []
+
     @property
     def fqn(self):
         return f"{self.topic}.{self.name}"
@@ -80,6 +89,14 @@ class Domain:
         ]
 
     @property
+    def soft_depends(self) -> typing.List[str]:
+        return [
+            dep.strip()
+            for dep in self.config[self.name].get("soft-depends", "").split("\n")
+            if dep
+        ]
+
+    @property
     def settings(self) -> typing.List[Setting]:
         config = self.config
         return [
@@ -121,7 +138,7 @@ class Topic:
     name: str
     directory: str
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         config = configparser.ConfigParser(default_section="metadata")
         config.read(os.path.join(self.directory, "metadata.ini"))
         self.title = config.get("metadata", "title")
@@ -205,12 +222,12 @@ def resolve_domain_dependencies(
     ret = []
     handled = {}
     for domain in domains[:]:
-        if not domain.depends:
+        if not domain.runtime_depends:
             ret.append(domain)
             handled[domain.fqn] = domain
             domains.remove(domain)
         else:
-            for dependency_name in domain.depends:
+            for dependency_name in domain.runtime_depends:
                 if dependency_name not in names:
                     raise MissingDependencyDomainError(domain)
     count = len(domains)
@@ -219,7 +236,7 @@ def resolve_domain_dependencies(
         for domain in domains[:]:
             hook_idx = 0
             not_yet = False
-            for dependency_name in domain.depends:
+            for dependency_name in domain.runtime_depends:
                 if dependency_name in handled:
                     dependency = handled[dependency_name]
                     dep_idx = ret.index(dependency)
@@ -258,6 +275,20 @@ def collect_missing_dependencies(
     )
 
 
+def set_domain_runtime_depends(domains: typing.List[Domain]) -> None:
+    """Expect a list of domain instances, and set runtime_depends on each
+    domain, which consists of the hard dependencies and the soft dependencies
+    which are contained in domains.
+    """
+    all_fqns = [domain.fqn for domain in domains]
+    for domain in domains:
+        runtime_depends = domain.depends
+        for fqn in domain.soft_depends:
+            if fqn in all_fqns:
+                runtime_depends.append(fqn)
+        domain.runtime_depends = runtime_depends
+
+
 ##############################################################################
 # topics shipped within mxmake
 ##############################################################################
@@ -266,6 +297,10 @@ topics_dir = os.path.join(os.path.dirname(__file__), "topics")
 
 core = Topic(name="core", directory=os.path.join(topics_dir, "core"))
 docs = Topic(name="docs", directory=os.path.join(topics_dir, "docs"))
+js = Topic(name="js", directory=os.path.join(topics_dir, "js"))
 ldap = Topic(name="ldap", directory=os.path.join(topics_dir, "ldap"))
 qa = Topic(name="qa", directory=os.path.join(topics_dir, "qa"))
 system = Topic(name="system", directory=os.path.join(topics_dir, "system"))
+applications = Topic(
+    name="applications", directory=os.path.join(topics_dir, "applications")
+)

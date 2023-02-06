@@ -1,158 +1,20 @@
-from collections import Counter
-from contextlib import contextmanager
-from dataclasses import dataclass
 from jinja2 import Environment
 from jinja2 import FileSystemLoader
 from mxmake import hook
-from mxmake import main
-from mxmake import parser
 from mxmake import templates
+from mxmake import testing
 from mxmake import topics
 from mxmake import utils
 
-import configparser
-import doctest
 import io
 import mxdev
 import os
-import shutil
-import tempfile
 import typing
-import unittest
 
 
-###############################################################################
-# helpers
-###############################################################################
-
-
-def temp_directory(fn):
-    tempdir = tempfile.mkdtemp()
-
-    def wrapper(self):
-        try:
-            fn(self, tempdir)
-        finally:
-            shutil.rmtree(tempdir)
-
-    return wrapper
-
-
-@contextmanager
-def reset_template_registry():
-    registry_orgin = templates.template._registry
-    templates.template._registry = dict()
-    try:
-        yield
-    finally:
-        templates.template._registry = registry_orgin
-
-
-class template_directory:
-    def __init__(self, reset_registry: bool = False):
-        self.reset_registry = reset_registry
-
-    def __call__(self, fn: typing.Callable):
-        def wrapper(*a):
-            tempdir = tempfile.mkdtemp()
-            os.environ["MXMAKE_FILES"] = tempdir
-            os.environ["MXMAKE_MXENV_PATH"] = tempdir
-            try:
-                if self.reset_registry:
-                    with reset_template_registry():
-                        fn(*a, tempdir=tempdir)
-                else:
-                    fn(*a, tempdir=tempdir)
-            finally:
-                shutil.rmtree(tempdir)
-                del os.environ["MXMAKE_FILES"]
-                del os.environ["MXMAKE_MXENV_PATH"]
-
-        return wrapper
-
-
-class TestConfiguration(mxdev.Configuration):
-    def __init__(
-        self,
-        settings: typing.Dict[str, str] = {},
-        overrides: typing.Dict[str, str] = {},
-        ignore_keys: typing.List[str] = [],
-        packages: typing.Dict[str, typing.Dict[str, str]] = {},
-        hooks: typing.Dict[str, typing.Dict[str, str]] = {},
-    ):
-        self.settings = settings
-        self.overrides = overrides
-        self.ignore_keys = ignore_keys
-        self.packages = packages
-        self.hooks = hooks
-
-
-class RenderTestCase(unittest.TestCase):
-    class Example(object):
-        def __init__(self, want):
-            self.want = want + "\n"
-
-    class Failure(Exception):
-        pass
-
-    def __init__(self, *args, **kw):
-        unittest.TestCase.__init__(self, *args, **kw)
-        self._checker = doctest.OutputChecker()
-        self._optionflags = (
-            doctest.NORMALIZE_WHITESPACE
-            | doctest.ELLIPSIS
-            | doctest.REPORT_ONLY_FIRST_FAILURE
-        )
-
-    def checkOutput(self, want, got, optionflags=None):
-        if optionflags is None:
-            optionflags = self._optionflags
-        success = self._checker.check_output(want, got, optionflags)
-        if not success:
-            raise RenderTestCase.Failure(
-                self._checker.output_difference(
-                    RenderTestCase.Example(want), got, optionflags
-                )
-            )
-
-
-###############################################################################
-# Test utils
-###############################################################################
-
-
-class TestUtils(unittest.TestCase):
-    def test_namespace(self):
-        self.assertEqual(utils.NAMESPACE, "mxmake-")
-
-    def test_mxenv_path(self):
-        self.assertEqual(utils.mxenv_path(), os.path.join("venv", "bin") + os.path.sep)
-        os.environ["MXMAKE_MXENV_PATH"] = "other"
-        self.assertEqual(utils.mxenv_path(), "other" + os.path.sep)
-        del os.environ["MXMAKE_MXENV_PATH"]
-
-    def test_mxmake_files(self):
-        self.assertEqual(utils.mxmake_files(), os.path.join(".mxmake", "files"))
-        os.environ["MXMAKE_FILES"] = "other"
-        self.assertEqual(utils.mxmake_files(), "other")
-        del os.environ["MXMAKE_FILES"]
-
-    def test_ns_name(self):
-        self.assertEqual(utils.ns_name("foo"), "mxmake-foo")
-
-    def test_list_value(self):
-        self.assertEqual(utils.list_value(""), [])
-        self.assertEqual(utils.list_value("a\nb c"), ["a", "b", "c"])
-
-
-###############################################################################
-# Test teamplates
-###############################################################################
-
-
-class TestTemplates(RenderTestCase):
+class TestTemplates(testing.RenderTestCase):
     def test_template(self):
-        with reset_template_registry():
+        with testing.reset_template_registry():
 
             @templates.template("template")
             class Template(templates.Template):
@@ -167,6 +29,7 @@ class TestTemplates(RenderTestCase):
             templates.template._registry,
             {
                 "additional_sources_targets": templates.AdditionalSourcesTargets,
+                "dependencies.md": templates.Dependencies,
                 "makefile": templates.Makefile,
                 "mx.ini": templates.MxIni,
                 "run-coverage": templates.CoverageScript,
@@ -175,7 +38,7 @@ class TestTemplates(RenderTestCase):
             },
         )
 
-    @template_directory()
+    @testing.template_directory()
     def test_Template(self, tempdir: str):
         # cannot instantiate abstract template
         with self.assertRaises(TypeError):
@@ -213,7 +76,7 @@ class TestTemplates(RenderTestCase):
         self.assertFalse(os.path.exists(os.path.join(tempdir, "target.out")))
         self.assertFalse(template.remove())
 
-    @template_directory()
+    @testing.template_directory()
     def test_MxIniBoundTemplate(self, tempdir: str):
         # create test template
         class Template(templates.MxIniBoundTemplate):
@@ -225,7 +88,7 @@ class TestTemplates(RenderTestCase):
 
         # template settings
         hooks: typing.Dict[str, typing.Dict] = {}
-        template = Template(TestConfiguration(hooks=hooks))
+        template = Template(testing.TestConfiguration(hooks=hooks))
         self.assertEqual(template.settings, dict())
         hooks["mxmake-template"] = dict(key="val")
         self.assertEqual(template.settings, dict(key="val"))
@@ -243,14 +106,14 @@ class TestTemplates(RenderTestCase):
             template_variables = {}
 
         hooks = {}
-        template = Template(TestConfiguration(hooks=hooks))
+        template = Template(testing.TestConfiguration(hooks=hooks))
         self.assertEqual(template.env, {})
         hooks["mxmake-template"] = {"environment": "env"}
         self.assertEqual(template.env, {})
         hooks["mxmake-env"] = {"param": "value"}
         self.assertEqual(template.env, {"param": "value"})
 
-    @template_directory()
+    @testing.template_directory()
     def test_TestScript(self, tempdir):
         config_file = io.StringIO()
         config_file.write(
@@ -354,7 +217,7 @@ class TestTemplates(RenderTestCase):
                 f.read(),
             )
 
-    @template_directory()
+    @testing.template_directory()
     def test_CoverageScript(self, tempdir):
         config_file = io.StringIO()
         config_file.write(
@@ -510,7 +373,7 @@ class TestTemplates(RenderTestCase):
                 f.read(),
             )
 
-    @template_directory()
+    @testing.template_directory()
     def test_AdditionalSourcesTargets(self, tempdir):
         factory = templates.template.lookup("additional_sources_targets")
         template = factory(["a", "b"], templates.get_template_environment())
@@ -520,13 +383,14 @@ class TestTemplates(RenderTestCase):
         with open(path) as f:
             self.checkOutput("ADDITIONAL_SOURCES_TARGETS=a b", f.read())
 
-    @temp_directory
+    @testing.temp_directory
     def test_Makefile(self, tempdir):
         domains = [topics.get_domain("core.mxenv")]
         domains = topics.collect_missing_dependencies(domains)
         domains = topics.resolve_domain_dependencies(domains)
         domain_settings = {
             "core.base.DEPLOY_TARGETS": "",
+            "core.base.CLEAN_FS": "",
             "core.mxenv.PYTHON_BIN": "python3",
             "core.mxenv.PYTHON_MIN_VERSION": "3.7",
             "core.mxenv.VENV_ENABLED": "true",
@@ -560,6 +424,10 @@ class TestTemplates(RenderTestCase):
                 # No default value.
                 DEPLOY_TARGETS?=
 
+                # Additional files and folders to remove when running clean target
+                # No default value.
+                CLEAN_FS?=
+
                 ## core.mxenv
 
                 # Python interpreter to use.
@@ -570,8 +438,8 @@ class TestTemplates(RenderTestCase):
                 # Default: 3.7
                 PYTHON_MIN_VERSION?=3.7
 
-                # Flag whether to use virtual environment. If `false`, the global
-                # interpreter is used.
+                # Flag whether to use virtual environment.
+                # If `false`, the interpreter according to `PYTHON_BIN` found in `PATH` is used.
                 # Default: true
                 VENV_ENABLED?=true
 
@@ -582,6 +450,9 @@ class TestTemplates(RenderTestCase):
                 VENV_CREATE?=true
 
                 # The folder of the virtual environment.
+                # If `VENV_ENABLED` is `true` and `VENV_CREATE` is true it is used as the target folder for the virtual environment.
+                # If `VENV_ENABLED` is `true` and `VENV_CREATE` is false it is expected to point to an existing virtual environment.
+                # If `VENV_ENABLED` is `false` it is ignored.
                 # Default: venv
                 VENV_FOLDER?=venv
 
@@ -701,7 +572,7 @@ class TestTemplates(RenderTestCase):
 
                 .PHONY: clean
                 clean: dirty $(CLEAN_TARGETS)
-                    @rm -rf $(CLEAN_TARGETS) $(MXMAKE_FOLDER)
+                    @rm -rf $(CLEAN_TARGETS) $(MXMAKE_FOLDER) $(CLEAN_FS)
 
                 .PHONY: purge
                 purge: clean $(PURGE_TARGETS)
@@ -712,11 +583,13 @@ class TestTemplates(RenderTestCase):
                     @find . -name '*.py[c|o]' -delete
                     @find . -name '*~' -exec rm -f {} +
                     @find . -name '__pycache__' -exec rm -fr {} +
+
+
                 """,
                 f.read(),
             )
 
-    @temp_directory
+    @testing.temp_directory
     def test_MxIni(self, tempdir):
         domains = [
             topics.get_domain("qa.test"),
@@ -755,353 +628,3 @@ class TestTemplates(RenderTestCase):
                 """,
                 f.read(),
             )
-
-
-###############################################################################
-# Test parser
-###############################################################################
-
-
-class TestParser(unittest.TestCase):
-    @temp_directory
-    def test_MakefileParser(self, tempdir):
-        domains = [topics.get_domain("core.mxenv")]
-        domains = topics.collect_missing_dependencies(domains)
-        domains = topics.resolve_domain_dependencies(domains)
-        domain_settings = {
-            "core.base.DEPLOY_TARGETS": "",
-            "core.mxenv.PYTHON_BIN": "python3",
-            "core.mxenv.PYTHON_MIN_VERSION": "3.7",
-            "core.mxenv.VENV_ENABLED": "true",
-            "core.mxenv.VENV_CREATE": "true",
-            "core.mxenv.VENV_FOLDER": "venv",
-            "core.mxenv.MXDEV": "mxdev",
-            "core.mxenv.MXMAKE": "mxmake",
-        }
-
-        factory = templates.template.lookup("makefile")
-        template = factory(
-            tempdir, domains, domain_settings, templates.get_template_environment()
-        )
-
-        template.write()
-
-        makefile_path = os.path.join(tempdir, "Makefile")
-        makefile_parser = parser.MakefileParser(makefile_path)
-        self.assertEqual(makefile_parser.fqns, ["core.base", "core.mxenv"])
-        self.assertEqual(
-            makefile_parser.settings,
-            {
-                "core.base.DEPLOY_TARGETS": "",
-                "core.mxenv.PYTHON_BIN": "python3",
-                "core.mxenv.PYTHON_MIN_VERSION": "3.7",
-                "core.mxenv.VENV_ENABLED": "true",
-                "core.mxenv.VENV_CREATE": "true",
-                "core.mxenv.VENV_FOLDER": "venv",
-                "core.mxenv.MXDEV": "mxdev",
-                "core.mxenv.MXMAKE": "mxmake",
-            },
-        )
-        self.assertEqual(makefile_parser.topics, {"core": ["base", "mxenv"]})
-
-
-###############################################################################
-# Test hook
-###############################################################################
-
-
-class TestHook(unittest.TestCase):
-    @template_directory()
-    def test_Hook(self, tempdir):
-        config_file = io.StringIO()
-        config_file.write(
-            "[settings]\n" "mxmake-templates = run-tests run-coverage inexistent"
-        )
-        config_file.seek(0)
-
-        hook_ = hook.Hook()
-        configuration = mxdev.Configuration(config_file, hooks=[hook_])
-        state = mxdev.State(configuration=configuration)
-        hook_.write(state)
-        self.assertEqual(
-            sorted(os.listdir(tempdir)), ["run-coverage.sh", "run-tests.sh"]
-        )
-
-
-###############################################################################
-# Test topics
-###############################################################################
-
-MAKEFILE_TEMPLATE = """
-#:[example]
-#:title = Title
-#:description = Description
-#:depends =
-#:    dependency-1
-#:    dependency-2
-#:
-#:[target.example]
-#:description = Build example
-#:
-#:[target.example-dirty]
-#:description = Rebuild example on next make run
-#:
-#:[target.example-clean]
-#:description = Clean example
-#:
-#:[setting.SETTING_A]
-#:description = Setting A
-#:default = A
-#:
-#:[setting.SETTING_B]
-#:description = Setting B
-#:default = B
-
-SETTING_A?=A
-SETTING_B?=B
-
-EXAMPLE_TARGET:=$(SENTINEL_FOLDER)/example.sentinel
-$(EXAMPLE_TARGET): $(SENTINEL)
-	@echo "Building example"
-	@touch $(EXAMPLE_TARGET)
-
-.PHONY: example
-example: $(EXAMPLE_TARGET)
-
-.PHONY: example-dirty
-example-dirty:
-	@rm -f $(EXAMPLE_TARGET)
-
-.PHONY: example-clean
-example-clean:
-	@rm -f $(EXAMPLE_TARGET)
-"""
-
-
-@dataclass
-class TestDomain(topics.Domain):
-    depends_: typing.List[str]
-
-    @property
-    def depends(self) -> typing.List[str]:
-        return self.depends_
-
-
-class TestDomains(unittest.TestCase):
-    def test_load_topics(self):
-        topics_ = topics.load_topics()
-        self.assertTrue(topics.core in topics_)
-        self.assertTrue(topics.ldap in topics_)
-
-    def test_get_topic(self):
-        topic = topics.get_topic("core")
-        self.assertEqual(topic.name, "core")
-
-    def test_get_domain(self):
-        domain = topics.get_domain("core.mxenv")
-        self.assertEqual(domain.fqn, "core.mxenv")
-
-    @temp_directory
-    def test_Domain(self, tmpdir):
-        domain_path = os.path.join(tmpdir, "domain.mk")
-        with open(domain_path, "w") as f:
-            f.write(MAKEFILE_TEMPLATE)
-
-        domain = topics.Domain(topic="topic", name="example", file=domain_path)
-        self.assertTrue(len(domain.file_data) > 0)
-        self.assertTrue(domain._file_data is domain.file_data)
-
-        config = domain.config
-        self.assertIsInstance(config, configparser.ConfigParser)
-        self.assertTrue(domain._config is config)
-        self.assertEqual(config["example"]["title"], "Title")
-        self.assertEqual(config["example"]["description"], "Description")
-        self.assertEqual(config["example"]["depends"], "\ndependency-1\ndependency-2")
-
-        self.assertEqual(config["target.example"]["description"], "Build example")
-        self.assertEqual(
-            config["target.example-dirty"]["description"],
-            "Rebuild example on next make run",
-        )
-        self.assertEqual(config["target.example-clean"]["description"], "Clean example")
-
-        self.assertEqual(config["setting.SETTING_A"]["description"], "Setting A")
-        self.assertEqual(config["setting.SETTING_A"]["default"], "A")
-        self.assertEqual(config["setting.SETTING_B"]["description"], "Setting B")
-        self.assertEqual(config["setting.SETTING_B"]["default"], "B")
-
-        self.assertEqual(domain.title, "Title")
-        self.assertEqual(domain.description, "Description")
-        self.assertEqual(domain.depends, ["dependency-1", "dependency-2"])
-
-        config["example"]["depends"] = ""
-        self.assertEqual(domain.depends, [])
-
-        targets = domain.targets
-        self.assertEqual(len(targets), 3)
-        self.assertEqual(targets[0].name, "example")
-        self.assertEqual(targets[0].description, "Build example")
-
-        settings = domain.settings
-        self.assertEqual(len(settings), 2)
-        self.assertEqual(settings[0].name, "SETTING_A")
-        self.assertEqual(settings[0].description, "Setting A")
-        self.assertEqual(settings[0].default, "A")
-
-        out_path = os.path.join(tmpdir, "domain_out.mk")
-        with open(out_path, "w") as fd:
-            domain.write_to(fd)
-        with open(out_path) as fd:
-            out_content = fd.readlines()
-        self.assertEqual(out_content[0], "SETTING_A?=A\n")
-        self.assertEqual(out_content[-1], "\t@rm -f $(EXAMPLE_TARGET)\n")
-
-    @temp_directory
-    def test_Topic(self, tmpdir):
-        topicdir = os.path.join(tmpdir, "topic")
-        os.mkdir(topicdir)
-        with open(os.path.join(topicdir, "metadata.ini"), "w") as f:
-            f.write("[metadata]\n")
-            f.write("title = Title\n")
-            f.write("description = Description\n")
-        with open(os.path.join(topicdir, "domain-a.mk"), "w") as f:
-            f.write("\n")
-        with open(os.path.join(topicdir, "domain-b.mk"), "w") as f:
-            f.write("\n")
-        with open(os.path.join(topicdir, "somethinelse"), "w") as f:
-            f.write("\n")
-
-        topic = topics.Topic(name="topic", directory=topicdir)
-
-        self.assertEqual(topic.title, "Title")
-        self.assertEqual(topic.description, "Description")
-
-        topic_domains = topic.domains
-        self.assertEqual(len(topic_domains), 2)
-        self.assertEqual(topic_domains[0].name, "domain-a")
-        self.assertEqual(topic_domains[1].name, "domain-b")
-        self.assertEqual(topic_domains[1].topic, "topic")
-
-        self.assertEqual(topic.domain("domain-a").name, "domain-a")
-        self.assertEqual(topic.domain("inexistent"), None)
-
-    def test_DomainConflictError(self):
-        counter = Counter(["a", "b", "b", "c", "c"])
-        err = topics.DomainConflictError(counter)
-        self.assertEqual(str(err), "Conflicting domain names: ['b', 'c']")
-
-    def test_CircularDependencyDomainError(self):
-        domain = TestDomain(topic="t1", name="f1", depends_=["f2"], file="f1.mk")
-        err = topics.CircularDependencyDomainError([domain])
-        self.assertEqual(
-            str(err),
-            (
-                "Domains define circular dependencies: "
-                "[TestDomain(topic='t1', name='f1', file='f1.mk', depends_=['f2'])]"
-            ),
-        )
-
-    def test_MissingDependencyDomainError(self):
-        domain = TestDomain(topic="t", name="t", depends_=["missing"], file="t.mk")
-        err = topics.MissingDependencyDomainError(domain)
-        self.assertEqual(
-            str(err),
-            (
-                "Domain define missing dependency: "
-                "TestDomain(topic='t', name='t', file='t.mk', depends_=['missing'])"
-            ),
-        )
-
-    def test_DomainResolver(self):
-        self.assertRaises(
-            topics.DomainConflictError,
-            topics.resolve_domain_dependencies,
-            [
-                TestDomain(topic="t", name="f", depends_=["t.f1"], file="t.mk"),
-                TestDomain(topic="t", name="f", depends_=["t.f1"], file="t.mk"),
-            ],
-        )
-
-        f1 = TestDomain(topic="t", name="f1", depends_=["t.f2"], file="f1.mk")
-        f2 = TestDomain(topic="t", name="f2", depends_=["t.f3"], file="f2.mk")
-        f3 = TestDomain(topic="t", name="f3", depends_=[], file="f3.mk")
-        self.assertEqual(topics.resolve_domain_dependencies([f1, f2, f3]), [f3, f2, f1])
-        self.assertEqual(topics.resolve_domain_dependencies([f2, f1, f3]), [f3, f2, f1])
-        self.assertEqual(topics.resolve_domain_dependencies([f1, f3, f2]), [f3, f2, f1])
-
-        f1 = TestDomain(topic="t", name="f1", depends_=["t.f2"], file="f1.mk")
-        f2 = TestDomain(topic="t", name="f2", depends_=["t.f1"], file="f2.mk")
-        self.assertRaises(
-            topics.CircularDependencyDomainError,
-            topics.resolve_domain_dependencies,
-            [f1, f2],
-        )
-
-        f1 = TestDomain(topic="t", name="f1", depends_=["t.f2"], file="f1.mk")
-        f2 = TestDomain(topic="t", name="f2", depends_=["t.missing"], file="f2.mk")
-        self.assertRaises(
-            topics.MissingDependencyDomainError,
-            topics.resolve_domain_dependencies,
-            [f1, f2],
-        )
-
-        f1 = TestDomain(topic="t", name="f1", depends_=["t.f2", "t.f4"], file="f1.mk")
-        f2 = TestDomain(topic="t", name="f2", depends_=["t.f3", "t.f4"], file="f2.mk")
-        f3 = TestDomain(topic="t", name="f3", depends_=["t.f4", "t.f5"], file="f3.mk")
-        f4 = TestDomain(topic="t", name="f4", depends_=["t.f5"], file="f4.mk")
-        f5 = TestDomain(topic="t", name="f5", depends_=[], file="f5.mk")
-        self.assertEqual(
-            topics.resolve_domain_dependencies([f1, f2, f3, f4, f5]),
-            [f5, f4, f3, f2, f1],
-        )
-        self.assertEqual(
-            topics.resolve_domain_dependencies([f5, f4, f3, f2, f1]),
-            [f5, f4, f3, f2, f1],
-        )
-        self.assertEqual(
-            topics.resolve_domain_dependencies([f4, f5, f2, f3, f1]),
-            [f5, f4, f3, f2, f1],
-        )
-        self.assertEqual(
-            topics.resolve_domain_dependencies([f1, f3, f2, f5, f4]),
-            [f5, f4, f3, f2, f1],
-        )
-
-        f1 = TestDomain(topic="t", name="f1", depends_=["t.f2", "t.f3"], file="f1.mk")
-        f2 = TestDomain(topic="t", name="f2", depends_=["t.f1", "t.f3"], file="f2.mk")
-        f3 = TestDomain(topic="t", name="f3", depends_=["t.f1", "t.f2"], file="f3.mk")
-        self.assertRaises(
-            topics.CircularDependencyDomainError,
-            topics.resolve_domain_dependencies,
-            [f1, f2, f3],
-        )
-
-        f1 = TestDomain(topic="t", name="f1", depends_=["t.f2", "t.f3"], file="f1.ext")
-        f2 = TestDomain(topic="t", name="f2", depends_=["t.f1", "t.f3"], file="f2.ext")
-        f3 = TestDomain(topic="t", name="f3", depends_=["t.f1", "t.f4"], file="f3.ext")
-        self.assertRaises(
-            topics.MissingDependencyDomainError,
-            topics.resolve_domain_dependencies,
-            [f1, f2, f3],
-        )
-
-    def test_collect_missing_dependencies(self):
-        domains = [
-            topics.get_domain("ldap.python-ldap"),
-            topics.get_domain("core.mxfiles"),
-        ]
-        all_dependencies = topics.collect_missing_dependencies(domains)
-        self.assertEqual(
-            sorted(domain.fqn for domain in all_dependencies),
-            [
-                "core.base",
-                "core.mxenv",
-                "core.mxfiles",
-                "ldap.openldap",
-                "ldap.python-ldap",
-            ],
-        )
-
-
-if __name__ == "__main__":
-    unittest.main()

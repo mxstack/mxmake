@@ -1,7 +1,7 @@
 #:[black]
 #:title = black
 #:description = Code formatting with black.
-#:depends = core.packages
+#:depends = core.mxenv
 #:
 #:[target.black]
 #:description = Run black.
@@ -9,6 +9,13 @@
 #:[setting.BLACK_SRC]
 #:description = Source folder to scan for Python files to run black on.
 #:default = src
+#:
+#:[target.black-dirty]
+#:description = Marks black dirty
+#:
+#:[target.black-clean]
+#:description = Uninstall black.
+#:
 
 ##############################################################################
 # black
@@ -21,15 +28,25 @@ $(BLACK_TARGET): $(MXENV_TARGET)
 	@touch $(BLACK_TARGET)
 
 .PHONY: black-check
-black-check: $(PACKAGES_TARGET) $(BLACK_TARGET)
+black-check: $(BLACK_TARGET)
 	@echo "Run black checks"
 	@$(MXENV_PATH)black --check $(BLACK_SRC)
 
 .PHONY: black-format
-black-format: $(PACKAGES_TARGET) $(BLACK_TARGET)
+black-format: $(BLACK_TARGET)
 	@echo "Run black format"
 	@$(MXENV_PATH)black $(BLACK_SRC)
 
+.PHONY: black-dirty
+black-dirty:
+	@rm -f $(BLACK_TARGET)
+
+.PHONY: black-clean
+black-clean: black-dirty
+	@$(MXENV_PATH)pip uninstall black
+
 INSTALL_TARGETS+=$(BLACK_TARGET)
 CHECK_TARGETS+=black-check
-CHECK_TARGETS+=black-format
+FORMAT_TARGETS+=black-format
+DIRTY_TARGETS+=black-dirty
+CLEAN_TARGETS+=black-clean

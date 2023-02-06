@@ -6,10 +6,12 @@ from myst_parser.parsers.mdit import create_md_parser
 from sphinx.util.docutils import SphinxDirective
 
 
-class TopicsDirective(SphinxDirective):
+class BaseDirective(SphinxDirective):
+    TEMPLATE = ""
+
     def run(self):
         # call uses the Topics class in templates.py to render the template
-        factory = template.lookup("topics.md")
+        factory = template.lookup(self.TEMPLATE)
         tpl = factory(get_template_environment())
 
         # create a new parser with the sphinx myst renderer
@@ -28,5 +30,14 @@ class TopicsDirective(SphinxDirective):
         return doc.children
 
 
+class TopicsDirective(BaseDirective):
+    TEMPLATE = "topics.md"
+
+
+class DependenciesDirective(BaseDirective):
+    TEMPLATE = "dependencies.md"
+
+
 def setup(app):
     app.add_directive("mxmaketopics", TopicsDirective)
+    app.add_directive("mxmakedependencies", DependenciesDirective)

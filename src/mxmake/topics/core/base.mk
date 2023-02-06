@@ -31,6 +31,10 @@
 #:[setting.DEPLOY_TARGETS]
 #:description = `deploy` target dependencies.
 #:default =
+#:
+#:[setting.CLEAN_FS]
+#:description = Additional files and folders to remove when running clean target
+#:default =
 
 # Defensive settings for make: https://tech.davis-hansson.com/p/make/
 SHELL:=bash

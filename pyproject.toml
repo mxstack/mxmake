@@ -1,7 +1,7 @@
 [project]
 name = "mxmake"
 description = "Generates a Python project-specific Makefile by using an extensible library of configurable Makefile snippets."
-version = "1.0a1.dev0"
+version = "1.0a1.dev1"
 keywords = ["development", "deployment", "environment"]
 authors = [
   {name = "MA Stack Developers", email = "dev@bluedynamics.com" }
@@ -33,7 +33,7 @@ mypy = [
     "types-setuptools",
     "types-pkg-resources",
 ]
-docs = ["Sphinx"]
+docs = ["Sphinx", "sphinxcontrib-mermaid"]
 
 [project.urls]
 Homepage = "https://github.com/mxstack/mxmake"
@@ -50,9 +50,11 @@ hook = "mxmake.hook:Hook"
 [project.entry-points."mxmake.topics"]
 core = "mxmake.topics:core"
 docs = "mxmake.topics:docs"
+js = "mxmake.topics:js"
 ldap = "mxmake.topics:ldap"
 qa = "mxmake.topics:qa"
 system = "mxmake.topics:system"
+applications = "mxmake.topics:applications"
 
 [build-system]
 requires = ["setuptools"]
