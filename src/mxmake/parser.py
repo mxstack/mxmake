@@ -4,6 +4,12 @@ import os
 import typing
 
 
+class SettingMissing(Exception):
+    """Exception used in parser to indicate a missing setting in an existing
+    makefile while parsing.
+    """
+
+
 class MakefileParser:
     def __init__(self, path: str):
         self.path = path
@@ -25,15 +31,16 @@ class MakefileParser:
         for fqn in self.fqns:
             domain = get_domain(fqn)
             for setting in domain.settings:
-                value = self.parse_setting(lines, setting.name)
-                if value is not None:
+                try:
+                    value = self.parse_setting(lines, setting.name)
                     self.settings[f"{fqn}.{setting.name}"] = value
+                except SettingMissing:
+                    continue
 
-    def parse_setting(
-        self, lines: typing.List[str], name: str
-    ) -> typing.Union[str, None]:
+    def parse_setting(self, lines: typing.List[str], name: str) -> str:
+        setting_missing = True
         setting_scope = False
-        value = None
+        value = ""
         for line in lines:
             if setting_scope:
                 if line:
@@ -43,11 +50,14 @@ class MakefileParser:
                 setting_scope = False
                 break
             if line.startswith(f"{name}?="):
+                setting_missing = False
                 value = line[line.find("?=") + 2 :]
                 if value.endswith("\\"):
                     setting_scope = True
                     continue
                 break
+        if setting_missing:
+            raise SettingMissing(name)
         return value
 
     def parse(self) -> None:
