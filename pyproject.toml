@@ -1,7 +1,7 @@
 [project]
 name = "mxmake"
 description = "Generates a Python project-specific Makefile by using an extensible library of configurable Makefile snippets."
-version = "1.0a1.dev1"
+version = "1.0a1.dev2"
 keywords = ["development", "deployment", "environment"]
 authors = [
   {name = "MA Stack Developers", email = "dev@bluedynamics.com" }
