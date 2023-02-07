@@ -37,7 +37,7 @@ coverage-dirty:
 
 .PHONY: coverage-clean
 coverage-clean: coverage-dirty
-	@test -e $(MXENV_PATH)pip && $(MXENV_PATH)pip uninstall -y coverage
+	@test -e $(MXENV_PATH)pip && $(MXENV_PATH)pip uninstall -y coverage || :
 	@rm -rf .coverage htmlcov
 
 INSTALL_TARGETS+=$(COVERAGE_TARGET)

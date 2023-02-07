@@ -42,7 +42,7 @@ mypy-dirty:
 
 .PHONY: mypy-clean
 mypy-clean: mypy-dirty
-	@test -e $(MXENV_PATH)pip && $(MXENV_PATH)pip uninstall -y mypy
+	@test -e $(MXENV_PATH)pip && $(MXENV_PATH)pip uninstall -y mypy || :
 	@rm -rf .mypy_cache
 
 INSTALL_TARGETS+=$(MYPY_TARGET)

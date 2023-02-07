@@ -29,7 +29,7 @@ cookiecutter-dirty:
 
 .PHONY: cookiecutter-clean
 cookiecutter-clean: cookiecutter-dirty
-	@test -e $(MXENV_PATH)pip && $(MXENV_PATH)pip uninstall -y cookiecutter
+	@test -e $(MXENV_PATH)pip && $(MXENV_PATH)pip uninstall -y cookiecutter || :
 	@rm -f $(COOKIECUTTER_TARGET)
 
 DIRTY_TARGETS+=cookiecutter-dirty

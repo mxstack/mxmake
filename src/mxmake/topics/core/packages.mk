@@ -41,7 +41,8 @@ packages-dirty:
 packages-clean:
 	@test -e $(FILES_TARGET) \
 		&& test -e $(MXENV_PATH)pip \
-		&& $(MXENV_PATH)pip uninstall -y -r $(FILES_TARGET)
+		&& $(MXENV_PATH)pip uninstall -y -r $(FILES_TARGET) \
+		|| :
 	@rm -f $(PACKAGES_TARGET)
 
 INSTALL_TARGETS+=packages
