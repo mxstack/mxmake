@@ -2,6 +2,7 @@
 #:title = MX Files
 #:description = Project file generation.
 #:depends = core.mxenv
+#:soft-depends = core.sources
 #:
 #:[target.mxfiles]
 #:description = Create all project files by running ``mxdev``. It does not
@@ -20,6 +21,9 @@
 ##############################################################################
 # mxfiles
 ##############################################################################
+
+# case `core.sources` domain not included
+SOURCES_TARGET?=
 
 # File generation target
 MXMAKE_FILES?=$(MXMAKE_FOLDER)/files
@@ -55,7 +59,7 @@ ifneq ("$(wildcard setup.py)","")
 endif
 
 FILES_TARGET:=requirements-mxdev.txt
-$(FILES_TARGET): $(PROJECT_CONFIG) $(MXENV_TARGET) $(LOCAL_PACKAGE_FILES)
+$(FILES_TARGET): $(PROJECT_CONFIG) $(MXENV_TARGET) $(SOURCES_TARGET) $(LOCAL_PACKAGE_FILES)
 	@echo "Create project files"
 	@mkdir -p $(MXMAKE_FILES)
 	$(call set_mxfiles_env,$(MXENV_PATH),$(MXMAKE_FILES))

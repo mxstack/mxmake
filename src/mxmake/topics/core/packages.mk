@@ -2,7 +2,6 @@
 #:title = Packages
 #:description = Install python packages.
 #:depends = core.mxfiles
-#:soft-depends = core.sources
 #:
 #:[target.packages]
 #:description = Install packages with pip after creating files and checking
@@ -18,9 +17,6 @@
 # packages
 ##############################################################################
 
-# case `core.sources` domain not included
-SOURCES_TARGET?=
-
 # additional sources targets which requires package re-install on change
 -include $(MXMAKE_FILES)/additional_sources_targets.mk
 ADDITIONAL_SOURCES_TARGETS?=
@@ -28,7 +24,7 @@ ADDITIONAL_SOURCES_TARGETS?=
 INSTALLED_PACKAGES=$(MXMAKE_FILES)/installed.txt
 
 PACKAGES_TARGET:=$(INSTALLED_PACKAGES)
-$(PACKAGES_TARGET): $(FILES_TARGET) $(SOURCES_TARGET) $(ADDITIONAL_SOURCES_TARGETS)
+$(PACKAGES_TARGET): $(FILES_TARGET) $(ADDITIONAL_SOURCES_TARGETS)
 	@echo "Install python packages"
 	@$(MXENV_PATH)pip install -r $(FILES_TARGET)
 	@$(MXENV_PATH)pip freeze > $(INSTALLED_PACKAGES)
