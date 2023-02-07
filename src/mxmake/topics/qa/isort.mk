@@ -43,7 +43,7 @@ isort-dirty:
 
 .PHONY: isort-clean
 isort-clean: isort-dirty
-	@$(MXENV_PATH)pip uninstall isort
+	@test -e $(MXENV_PATH)pip && $(MXENV_PATH)pip uninstall -y isort
 
 INSTALL_TARGETS+=$(ISORT_TARGET)
 CHECK_TARGETS+=isort-check
