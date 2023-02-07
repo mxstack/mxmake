@@ -21,5 +21,5 @@ NPM_DEV_PACKAGES+=\
 	rollup-plugin-terser
 
 .PHONY: rollup
-rollup:
+rollup: $(NPM_TARGET)
 	@$(NPM_PREFIX)/node_modules/rollup/dist/bin/rollup --config $(ROLLUP_CONFIG)
