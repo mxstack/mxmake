@@ -2,18 +2,16 @@
 
 ## Topics and domains
 
-Mxmake organizes it's provided make features into `domains` which are contained in `topics`.
-A domain provides a set of settings and make targets and might depend on other domains.
+The features provided by *mxmake* are organized into "domains," which are grouped together under "topics."
+Each domain offers a collection of settings and targets for the make process and may have dependencies on other domains.
 
 ## Writing custom domains
 
-`mxmake` treats all files with `.mk` ending inside a topic folder as domain.
-To extend an existing topic, simply add a file named `yourdomain.mk`.
+*mxmake* treats all files with `.mk` suffix inside a topic folder as a domain.
+To extend an existing topic, add a file named `yourdomain.mk`.
 It will be integrated automatically.
 
-To write a new `topic`, a topic related folder needs to be created.
-
-It contains a file named `metadata.ini` file providing topic title and description:
+To create a new `topic` create a folder containing a file named `metadata.ini` providing topic title and description:
 
 ```ini
 [metadata]
@@ -21,7 +19,7 @@ title = Topic title
 description = Topic topic description.
 ```
 
-Next its required to create a `Topic` object in python:
+Then its required to create a `Topic` object in python:
 
 ```python
 mytopic = Topic(name="mytopic", directory=os.path.join(topics_dir, "mytopic"))
