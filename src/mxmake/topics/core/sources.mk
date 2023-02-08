@@ -1,7 +1,7 @@
 #:[sources]
 #:title = Sources
 #:description = Source package management.
-#:depends = core.mxfiles
+#:depends = core.mxenv
 #:
 #:[target.sources]
 #:description = Checkout sources by running ``mxdev``. It does not generate
@@ -18,7 +18,7 @@
 ##############################################################################
 
 SOURCES_TARGET:=$(SENTINEL_FOLDER)/sources.sentinel
-$(SOURCES_TARGET): $(FILES_TARGET)
+$(SOURCES_TARGET): $(MXENV_TARGET)
 	@echo "Checkout project sources"
 	@$(MXENV_PATH)mxdev -o -c $(PROJECT_CONFIG)
 	@touch $(SOURCES_TARGET)

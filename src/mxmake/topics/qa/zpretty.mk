@@ -46,7 +46,7 @@ zpretty-dirty:
 
 .PHONY: zpretty-clean
 zpretty-clean: zpretty-dirty
-	@$(MXENV_PATH)pip uninstall zpretty
+	@test -e $(MXENV_PATH)pip && $(MXENV_PATH)pip uninstall -y zpretty || :
 
 INSTALL_TARGETS+=$(ZPRETTY_TARGET)
 CHECK_TARGETS+=zpretty-check

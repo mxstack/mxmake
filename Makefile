@@ -237,7 +237,7 @@ isort-dirty:
 
 .PHONY: isort-clean
 isort-clean: isort-dirty
-	@$(MXENV_PATH)pip uninstall isort
+	@test -e $(MXENV_PATH)pip && $(MXENV_PATH)pip uninstall -y isort || :
 
 INSTALL_TARGETS+=$(ISORT_TARGET)
 CHECK_TARGETS+=isort-check
@@ -271,7 +271,7 @@ black-dirty:
 
 .PHONY: black-clean
 black-clean: black-dirty
-	@$(MXENV_PATH)pip uninstall black
+	@test -e $(MXENV_PATH)pip && $(MXENV_PATH)pip uninstall -y black || :
 
 INSTALL_TARGETS+=$(BLACK_TARGET)
 CHECK_TARGETS+=black-check
@@ -321,6 +321,9 @@ CLEAN_TARGETS+=docs-clean
 # mxfiles
 ##############################################################################
 
+# case `core.sources` domain not included
+SOURCES_TARGET?=
+
 # File generation target
 MXMAKE_FILES?=$(MXMAKE_FOLDER)/files
 
@@ -355,7 +358,7 @@ ifneq ("$(wildcard setup.py)","")
 endif
 
 FILES_TARGET:=requirements-mxdev.txt
-$(FILES_TARGET): $(PROJECT_CONFIG) $(MXENV_TARGET) $(LOCAL_PACKAGE_FILES)
+$(FILES_TARGET): $(PROJECT_CONFIG) $(MXENV_TARGET) $(SOURCES_TARGET) $(LOCAL_PACKAGE_FILES)
 	@echo "Create project files"
 	@mkdir -p $(MXMAKE_FILES)
 	$(call set_mxfiles_env,$(MXENV_PATH),$(MXMAKE_FILES))
@@ -382,9 +385,6 @@ CLEAN_TARGETS+=mxfiles-clean
 # packages
 ##############################################################################
 
-# case `core.sources` domain not included
-SOURCES_TARGET?=
-
 # additional sources targets which requires package re-install on change
 -include $(MXMAKE_FILES)/additional_sources_targets.mk
 ADDITIONAL_SOURCES_TARGETS?=
@@ -392,7 +392,7 @@ ADDITIONAL_SOURCES_TARGETS?=
 INSTALLED_PACKAGES=$(MXMAKE_FILES)/installed.txt
 
 PACKAGES_TARGET:=$(INSTALLED_PACKAGES)
-$(PACKAGES_TARGET): $(FILES_TARGET) $(SOURCES_TARGET) $(ADDITIONAL_SOURCES_TARGETS)
+$(PACKAGES_TARGET): $(FILES_TARGET) $(ADDITIONAL_SOURCES_TARGETS)
 	@echo "Install python packages"
 	@$(MXENV_PATH)pip install -r $(FILES_TARGET)
 	@$(MXENV_PATH)pip freeze > $(INSTALLED_PACKAGES)
@@ -407,7 +407,10 @@ packages-dirty:
 
 .PHONY: packages-clean
 packages-clean:
-	@test -e $(FILES_TARGET) && pip uninstall -y -r $(FILES_TARGET)
+	@test -e $(FILES_TARGET) \
+		&& test -e $(MXENV_PATH)pip \
+		&& $(MXENV_PATH)pip uninstall -y -r $(FILES_TARGET) \
+		|| :
 	@rm -f $(PACKAGES_TARGET)
 
 INSTALL_TARGETS+=packages
@@ -446,8 +449,8 @@ mypy-dirty:
 
 .PHONY: mypy-clean
 mypy-clean: mypy-dirty
+	@test -e $(MXENV_PATH)pip && $(MXENV_PATH)pip uninstall -y mypy || :
 	@rm -rf .mypy_cache
-	@$(MXENV_PATH)pip uninstall mypy
 
 INSTALL_TARGETS+=$(MYPY_TARGET)
 CHECK_TARGETS+=mypy
@@ -476,8 +479,8 @@ coverage-dirty:
 
 .PHONY: coverage-clean
 coverage-clean: coverage-dirty
+	@test -e $(MXENV_PATH)pip && $(MXENV_PATH)pip uninstall -y coverage || :
 	@rm -rf .coverage htmlcov
-	@$(MXENV_PATH)pip uninstall coverage
 
 INSTALL_TARGETS+=$(COVERAGE_TARGET)
 DIRTY_TARGETS+=coverage-dirty

@@ -43,7 +43,7 @@ black-dirty:
 
 .PHONY: black-clean
 black-clean: black-dirty
-	@$(MXENV_PATH)pip uninstall black
+	@test -e $(MXENV_PATH)pip && $(MXENV_PATH)pip uninstall -y black || :
 
 INSTALL_TARGETS+=$(BLACK_TARGET)
 CHECK_TARGETS+=black-check

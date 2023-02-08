@@ -1,9 +1,7 @@
 #:[zope]
 #:title = zope
 #:description = Zope and Plone application related
-#:depends =
-#:    core.packages
-#:    applications.cookiecutter
+#:depends = applications.cookiecutter
 #:
 #:[target.zope-instance]
 #:description = Use cookiecutter-zope-instance to create Zope- and its WSGI-configuration from values of the cookiecutter configuration file.

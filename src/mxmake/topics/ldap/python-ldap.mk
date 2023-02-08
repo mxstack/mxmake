@@ -39,7 +39,7 @@ python-ldap-dirty:
 
 .PHONY: python-ldap-clean
 python-ldap-clean: python-ldap-dirty
-	@test -e $(MXENV_PATH)pip && $(MXENV_PATH)pip uninstall -y python-ldap
+	@test -e $(MXENV_PATH)pip && $(MXENV_PATH)pip uninstall -y python-ldap || :
 
 INSTALL_TARGETS+=python-ldap
 DIRTY_TARGETS+=python-ldap-dirty

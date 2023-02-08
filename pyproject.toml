@@ -1,10 +1,10 @@
 [project]
 name = "mxmake"
 description = "Generates a Python project-specific Makefile by using an extensible library of configurable Makefile snippets."
-version = "1.0a1.dev1"
+version = "1.0a1.dev2"
 keywords = ["development", "deployment", "environment"]
 authors = [
-  {name = "MA Stack Developers", email = "dev@bluedynamics.com" }
+  {name = "MX Stack Developers", email = "dev@bluedynamics.com" }
 ]
 requires-python = ">=3.7"
 license = { text = "BSD 2-Clause License" }
@@ -64,7 +64,7 @@ build-backend = "setuptools.build_meta"
 zip-safe = false
 
 [tool.setuptools.dynamic]
-readme = {file = ["README.md", "CHANGES.md", "LICENSE.md"]}
+readme = {file = ["README.md", "CHANGES.md", "LICENSE.md"], content-type = "text/markdown"}
 
 [tool.pytest.ini_options]
 minversion = "6.0"
