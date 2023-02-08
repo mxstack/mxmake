@@ -65,6 +65,18 @@
 - Take local package into account to "dirty" if there (pyproject.toml,
   setup.[cfg|py]
 
+- Check for the existence of pip in `*-clean` targets before uninstalling a
+  package, to ensure the targets are working when running via the default
+  `clean` target, where the entire virtual env gets removed.
+
+- Remove redundant dependencies from `zope` domain.
+
+- `sources` domain is now a soft dependency of `mxfiles` domain instead of the
+  `packages` domain. This ensures source package checkout happens before mxmake
+  generates files, because templates might gain information from source
+  packages if present.
+
+- `karma` and `rollup` targets depend on `NPM_TARGET` now.
 
 ## 0.1 (2022-05-19)
 
