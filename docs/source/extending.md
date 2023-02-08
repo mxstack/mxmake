@@ -112,7 +112,7 @@ The following naming should be taken into account:
 Since make keeps track of file modification timestamps, installation related targets should be bound to some installation related file(s).
 This ensures that targets are not run if not necessary.
 Sometimes there are no reliable files to depend on, therefor sentinel files are used.
-They are created during installation, touched by `dirty` targets and removed on `clean`, to mimic the behavior of depending on "real" domain related files.
+They are created during installation, and removed on `dirty` and `clean`, to mimic the behavior of depending on "real" domain related files.
 
 The basic pattern for using a sentinel file is shown here by installing a python package with pip:
 
@@ -146,7 +146,7 @@ domain-dirty:
 # sentinel and additionally uninstalls the installed package.
 .PHONY: domain-clean
 domain-clean: domain-dirty
-	@$(MXENV_PATH)pip uninstall package
+	@test -e $(MXENV_PATH)pip && $(MXENV_PATH)pip uninstall -y package || :
 ```
 
 #### Extending default targets
