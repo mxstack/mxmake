@@ -2,6 +2,8 @@
 
 ## 1.0a1 (unreleased)
 
+- Conditional add local [requirement|constraints}.txt to LOCAL_PACKAGE_FILES.
+
 - Generate one Makefile from snippets instead of including several files from
   subfolder.
 

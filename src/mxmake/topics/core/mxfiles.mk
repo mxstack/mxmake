@@ -57,6 +57,12 @@ endif
 ifneq ("$(wildcard setup.py)","")
 	LOCAL_PACKAGE_FILES+=setup.py
 endif
+ifneq ("$(wildcard requirements.txt)","")
+	LOCAL_PACKAGE_FILES+=requirements.txt
+endif
+ifneq ("$(wildcard constraints.txt)","")
+	LOCAL_PACKAGE_FILES+=constraints.txt
+endif
 
 FILES_TARGET:=requirements-mxdev.txt
 $(FILES_TARGET): $(PROJECT_CONFIG) $(MXENV_TARGET) $(SOURCES_TARGET) $(LOCAL_PACKAGE_FILES)
