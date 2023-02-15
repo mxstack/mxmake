@@ -13,10 +13,6 @@ In "make", dependency management is achieved through the use of rules and depend
 A rule defines a target, its dependencies, and the commands necessary to create the target.
 The dependencies for a target specify the other files that it relies on and must be built before the target can be built.
 
-In "make", dependency management is achieved through the use of rules and dependencies.
-A rule defines a target, its dependencies, and the commands necessary to build the target.
-The dependencies for a target specify the other files that it relies on and must be built before the target can be built.
-
 When "make" is run, it checks the timestamps of the target and its dependencies.
 If the target is older than its dependencies, "make" will run the commands in the rule to rebuild the target.
 If the dependencies are up-to-date, "make" will skip the build process for the target, saving time and resources.
