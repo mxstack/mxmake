@@ -39,6 +39,8 @@ Phony targets are useful because they provide a way to define targets that don't
 Additionally, "make" considers phony targets to always be out-of-date, so the commands for a phony target will always be executed, even if its dependencies are up-to-date.
 This can be useful when you want to guarantee that an action is performed, such as cleaning the build directory before a build.
 
+(make-sentinel-files)=
+
 ## Sentinel files
 
 Tracking the state of a target in "make" is typically done by checking the timestamp of a file that is the output of a particular step.

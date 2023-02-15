@@ -109,10 +109,14 @@ The following naming should be taken into account:
 
 #### The domain sentinel
 
-Since make keeps track of file modification timestamps, installation related targets should be bound to some installation related file(s).
+Since *make* keeps track of file modification timestamps, installation related targets should be bound to some installation related file(s).
 This ensures that targets are not run if not necessary.
-Sometimes there are no reliable files to depend on, therefor sentinel files are used.
-They are created during installation, and removed on `dirty` and `clean`, to mimic the behavior of depending on "real" domain related files.
+
+```{note}
+Sometimes there are no reliable files created to depend on, therefor sentinel files are used.
+```
+
+[Sentinel files](make-sentinel-files) are created during installation, and removed on `dirty` and `clean`, to mimic the behavior of depending on "real" domain related files.
 
 The basic pattern for using a sentinel file is shown here by installing a python package with pip:
 
