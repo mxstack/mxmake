@@ -27,4 +27,4 @@ NPM_DEV_PACKAGES+=\
 
 .PHONY: karma
 karma: $(NPM_TARGET)
-	@$(NPM_PREFIX)/node_modules/karma/bin/karma start $(KARMA_CONFIG) $(KARMA_OPTIONS)
+	@$(NPM_PREFIX)/node_modules/.bin/karma start $(KARMA_CONFIG) $(KARMA_OPTIONS)
