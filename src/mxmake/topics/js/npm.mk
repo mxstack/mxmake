@@ -47,11 +47,6 @@ SYSTEM_DEPENDENCIES+=npm
 NPM_TARGET:=$(SENTINEL_FOLDER)/npm.sentinel
 $(NPM_TARGET): $(SENTINEL)
 	@echo "Install npm packages"
-	@test -z "$(NPM_PACKAGES)" \
-		&& echo "No packages to be installed" \
-		|| npm --prefix $(NPM_PREFIX) install \
-			--no-save \
-			$(NPM_PACKAGES)
 	@test -z "$(NPM_DEV_PACKAGES)" \
 		&& echo "No dev packages to be installed" \
 		|| npm --prefix $(NPM_PREFIX) install \
@@ -70,6 +65,11 @@ $(NPM_TARGET): $(SENTINEL)
 			--save-optional \
 			$(NPM_INSTALL_OPTS) \
 			$(NPM_OPT_PACKAGES)
+	@test -z "$(NPM_PACKAGES)" \
+		&& echo "No packages to be installed" \
+		|| npm --prefix $(NPM_PREFIX) install \
+			--no-save \
+			$(NPM_PACKAGES)
 	@touch $(NPM_TARGET)
 
 .PHONY: npm
