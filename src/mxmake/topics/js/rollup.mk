@@ -18,7 +18,7 @@
 NPM_DEV_PACKAGES+=\
 	rollup \
 	rollup-plugin-cleanup \
-	rollup-plugin-terser
+	@rollup/plugin-terser
 
 .PHONY: rollup
 rollup: $(NPM_TARGET)
