@@ -34,15 +34,15 @@ SYSTEM_DEPENDENCIES+=gettext
 gettext-create:
 	@if [ ! -e "$(GETTEXT_LOCALES_PATH)/$(GETTEXT_DOMAIN).pot" ]; then \
 		echo "Create pot file"; \
-		mkdir -p $(GETTEXT_LOCALES_PATH); \
-		touch $(GETTEXT_LOCALES_PATH)/$(GETTEXT_DOMAIN).pot; \
+		mkdir -p "$(GETTEXT_LOCALES_PATH)"; \
+		touch "$(GETTEXT_LOCALES_PATH)/$(GETTEXT_DOMAIN).pot"; \
 	fi
 	@for lang in $(GETTEXT_LANGUAGES); do \
 		if [ ! -e "$(GETTEXT_LOCALES_PATH)/$$lang/LC_MESSAGES/$(GETTEXT_DOMAIN).po" ]; then \
-			mkdir -p $(GETTEXT_LOCALES_PATH)/$$lang/LC_MESSAGES; \
+			mkdir -p "$(GETTEXT_LOCALES_PATH)/$$lang/LC_MESSAGES"; \
 			msginit \
-				-i $(GETTEXT_LOCALES_PATH)/$(GETTEXT_DOMAIN).pot \
-				-o $(GETTEXT_LOCALES_PATH)/$$lang/LC_MESSAGES/$(GETTEXT_DOMAIN).po \
+				-i "$(GETTEXT_LOCALES_PATH)/$(GETTEXT_DOMAIN).pot" \
+				-o "$(GETTEXT_LOCALES_PATH)/$$lang/LC_MESSAGES/$(GETTEXT_DOMAIN).po" \
 				-l $$lang; \
 		fi \
 	done
