@@ -304,3 +304,4 @@ system = Topic(name="system", directory=os.path.join(topics_dir, "system"))
 applications = Topic(
     name="applications", directory=os.path.join(topics_dir, "applications")
 )
+i18n = Topic(name="i18n", directory=os.path.join(topics_dir, "i18n"))

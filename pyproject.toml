@@ -55,6 +55,7 @@ ldap = "mxmake.topics:ldap"
 qa = "mxmake.topics:qa"
 system = "mxmake.topics:system"
 applications = "mxmake.topics:applications"
+i18n = "mxmake.topics:i18n"
 
 [build-system]
 requires = ["setuptools"]
