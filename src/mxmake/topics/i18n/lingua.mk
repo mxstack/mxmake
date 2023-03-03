@@ -25,15 +25,28 @@
 LINGUA_TARGET:=$(SENTINEL_FOLDER)/lingua.sentinel
 $(LINGUA_TARGET): $(MXENV_TARGET)
 	@echo "Install Lingua"
-	@$(MXENV_PATH)pip install lingua $(LINGUA_PLUGINS)
+	@$(MXENV_PATH)pip install chameleon lingua $(LINGUA_PLUGINS)
 	@touch $(LINGUA_TARGET)
 
 PHONY: lingua-extract
 lingua-extract: $(LINGUA_TARGET)
 	@echo "Extract messages"
-	@pot-create "$(LINGUA_SEARCH_PATH)" -o "$(GETTEXT_LOCALES_PATH)/$(GETTEXT_DOMAIN).pot"
+	@$(MXENV_PATH)pot-create \
+		"$(LINGUA_SEARCH_PATH)" \
+		-o "$(GETTEXT_LOCALES_PATH)/$(GETTEXT_DOMAIN).pot"
 
 PHONY: lingua
 lingua: lingua-extract gettext-create gettext-update gettext-compile
 
+.PHONY: lingua-dirty
+lingua-dirty:
+	@rm -f $(LINGUA_TARGET)
+
+.PHONY: lingua-clean
+lingua-clean: lingua-dirty
+	@test -e $(MXENV_PATH)pip && $(MXENV_PATH)pip uninstall -y \
+		chameleon lingua $(LINGUA_PLUGINS) || :
+
 INSTALL_TARGETS+=$(LINGUA_TARGET)
+DIRTY_TARGETS+=lingua-dirty
+CLEAN_TARGETS+=lingua-clean
