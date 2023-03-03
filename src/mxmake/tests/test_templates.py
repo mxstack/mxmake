@@ -381,7 +381,7 @@ class TestTemplates(testing.RenderTestCase):
 
         path = os.path.join(tempdir, "additional_sources_targets.mk")
         with open(path) as f:
-            self.checkOutput("ADDITIONAL_SOURCES_TARGETS=a b", f.read())
+            self.checkOutput("ADDITIONAL_SOURCES_TARGETS=$(wildcard a b)", f.read())
 
     @testing.temp_directory
     def test_Makefile(self, tempdir):
