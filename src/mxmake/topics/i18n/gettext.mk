@@ -47,14 +47,15 @@ gettext-create:
 		fi \
 	done
 
-#.PHONY: gettext-update
-#gettext-update:
-#	@echo "Update translations"
-
-#echo "Update translations"
-#for po in "$GETTEXT_LOCALES_PATH"/*/LC_MESSAGES/$GETTEXT_DOMAIN.po; do
-#    msgmerge -o "$po" "$po" "$GETTEXT_LOCALES_PATH"/$GETTEXT_DOMAIN.pot
-#done
+.PHONY: gettext-update
+gettext-update:
+	@echo "Update translations"
+	@for lang in $(GETTEXT_LANGUAGES); do \
+		msgmerge -o \
+			"$(GETTEXT_LOCALES_PATH)/$$lang/LC_MESSAGES/$(GETTEXT_DOMAIN).po" \
+			"$(GETTEXT_LOCALES_PATH)/$$lang/LC_MESSAGES/$(GETTEXT_DOMAIN).po" \
+			"$(GETTEXT_LOCALES_PATH)/$(GETTEXT_DOMAIN).pot"; \
+	done
 
 #.PHONY: gettext-compile
 #gettext-compile:
