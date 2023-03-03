@@ -1,2 +1,39 @@
-# echo "Extract messages"
-# pot-create "$SEARCH_PATH" -o "$LOCALES_PATH"/$DOMAIN.pot
+#:[lingua]
+#:title = Lingua
+#:description = Extract translatable texts from your code.
+#:depends = i18n.gettext
+#:
+#:[target.lingua-extract]
+#:description = Extract translatable texts from your code.
+#:
+#:[target.lingua]
+#:description = Extract translatable texts from your code and create,
+#:    update and compile message catalogs.
+#:
+#:[setting.LINGUA_SEARCH_PATH]
+#:description = Path of directory to extract translatable texts from.
+#:default = src
+#:
+#:[setting.LINGUA_PLUGINS]
+#:description = Python packages containing lingua extensions.
+#:default =
+
+##############################################################################
+# lingua
+##############################################################################
+
+LINGUA_TARGET:=$(SENTINEL_FOLDER)/lingua.sentinel
+$(LINGUA_TARGET): $(MXENV_TARGET)
+	@echo "Install Lingua"
+	@$(MXENV_PATH)pip install lingua $(LINGUA_PLUGINS)
+	@touch $(LINGUA_TARGET)
+
+PHONY: lingua-extract
+lingua-extract: $(LINGUA_TARGET)
+	@echo "Extract messages"
+	@pot-create "$(LINGUA_SEARCH_PATH)" -o "$(GETTEXT_LOCALES_PATH)/$(GETTEXT_DOMAIN).pot"
+
+PHONY: lingua
+lingua: lingua-extract gettext-create gettext-update gettext-compile
+
+INSTALL_TARGETS+=$(LINGUA_TARGET)
