@@ -57,15 +57,11 @@ gettext-update:
 			"$(GETTEXT_LOCALES_PATH)/$(GETTEXT_DOMAIN).pot"; \
 	done
 
-#.PHONY: gettext-compile
-#gettext-compile:
-#	@echo "Compile message catalogs"
-
-#echo "Compile message catalogs"
-#for po in "$GETTEXT_LOCALES_PATH"/*/LC_MESSAGES/*.po; do
-#	lg=${po##$GETTEXT_LOCALES_PATH/}
-#	lg=${lg%%/LC_MESSAGES/*}
-#	echo -n "$lg: "
-#	msgfmt --statistics -o "${po%.*}.mo" "$po"
-#done
-
+.PHONY: gettext-compile
+gettext-compile:
+	@echo "Compile message catalogs"
+	@for lang in $(GETTEXT_LANGUAGES); do \
+		msgfmt --statistics -o \
+			"$(GETTEXT_LOCALES_PATH)/$$lang/LC_MESSAGES/$(GETTEXT_DOMAIN).mo" \
+			"$(GETTEXT_LOCALES_PATH)/$$lang/LC_MESSAGES/$(GETTEXT_DOMAIN).po"; \
+	done
