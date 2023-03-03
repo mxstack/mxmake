@@ -1,7 +1,9 @@
 #:[lingua]
 #:title = Lingua
 #:description = Extract translatable texts from your code.
-#:depends = i18n.gettext
+#:depends =
+#:    core.mxenv
+#:    i18n.gettext
 #:
 #:[target.lingua-extract]
 #:description = Extract translatable texts from your code.
