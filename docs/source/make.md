@@ -13,10 +13,6 @@ In "make", dependency management is achieved through the use of rules and depend
 A rule defines a target, its dependencies, and the commands necessary to create the target.
 The dependencies for a target specify the other files that it relies on and must be built before the target can be built.
 
-In "make", dependency management is achieved through the use of rules and dependencies.
-A rule defines a target, its dependencies, and the commands necessary to build the target.
-The dependencies for a target specify the other files that it relies on and must be built before the target can be built.
-
 When "make" is run, it checks the timestamps of the target and its dependencies.
 If the target is older than its dependencies, "make" will run the commands in the rule to rebuild the target.
 If the dependencies are up-to-date, "make" will skip the build process for the target, saving time and resources.
@@ -42,6 +38,8 @@ The ".PHONY" line indicates that the "clean" target is a phony target. When "mak
 Phony targets are useful because they provide a way to define targets that don't correspond to files and can be used to perform arbitrary actions such as cleaning the build directory or running tests.
 Additionally, "make" considers phony targets to always be out-of-date, so the commands for a phony target will always be executed, even if its dependencies are up-to-date.
 This can be useful when you want to guarantee that an action is performed, such as cleaning the build directory before a build.
+
+(make-sentinel-files)=
 
 ## Sentinel files
 
