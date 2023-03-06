@@ -38,7 +38,7 @@ lingua-extract: $(LINGUA_TARGET)
 		-o "$(GETTEXT_LOCALES_PATH)/$(GETTEXT_DOMAIN).pot"
 
 PHONY: lingua
-lingua: lingua-extract gettext-create gettext-update gettext-compile
+lingua: gettext-create lingua-extract gettext-update gettext-compile
 
 .PHONY: lingua-dirty
 lingua-dirty:
