@@ -2,6 +2,12 @@
 
 ## 1.0a1 (unreleased)
 
+- Create `scss` domain in `js` topic.
+
+- Create `gettext` domain in `i18n` topic.
+
+- Create `lingua` domain in `i18n` topic.
+
 - Conditional add local [requirement|constraints}.txt to LOCAL_PACKAGE_FILES.
 
 - Generate one Makefile from snippets instead of including several files from
