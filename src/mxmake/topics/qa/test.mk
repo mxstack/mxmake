@@ -44,6 +44,7 @@ test-dirty:
 .PHONY: test-clean
 test-clean: test-dirty
 	@test -e $(MXENV_PATH)pip && $(MXENV_PATH)pip uninstall -y $(TEST_REQUIREMENTS) || :
+	@rm -rf .pytest_cache
 
 INSTALL_TARGETS+=$(TEST_TARGET)
 CLEAN_TARGETS+=test-clean
