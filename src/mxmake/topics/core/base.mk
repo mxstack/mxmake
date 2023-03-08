@@ -10,6 +10,9 @@
 #:description = Deploy project. Supposed to setup a production version of
 #:  the project.
 #:
+#:[target.run]
+#:description = Run project. Depending on target defined in `RUN_TARGET`
+#:
 #:[target.dirty]
 #:description = Force make to rebuild targets on next make run.
 #:
