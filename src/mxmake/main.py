@@ -111,7 +111,7 @@ def init_command(args: argparse.Namespace):
                 "topic",
                 message="Include topics",
                 choices=[d.name for d in topics],
-                default=parser.topics.keys(),
+                default=list(parser.topics),
             )
         ]
     )
