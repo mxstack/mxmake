@@ -105,9 +105,21 @@ PROJECT_CONFIG?=mx.ini
 # Default: .mxmake/files/run-tests.sh
 TEST_COMMAND?=.mxmake/files/run-tests.sh
 
+# Additional Python requirements for running tests to be
+# installed (via pip).
+# Default: pytest
+TEST_REQUIREMENTS?=pytest
+
 # Additional make targets the test target depends on.
 # No default value.
 TEST_DEPENDENCY_TARGETS?=
+
+## qa.coverage
+
+# The command which gets executed. Defaults to the location the
+# :ref:`run-coverage` template gets rendered to if configured.
+# Default: .mxmake/files/run-coverage.sh
+COVERAGE_COMMAND?=.mxmake/files/run-coverage.sh
 
 ## qa.mypy
 
@@ -118,13 +130,6 @@ MYPY_SRC?=src
 # Mypy Python requirements to be installed (via pip).
 # Default: types-setuptools
 MYPY_REQUIREMENTS?=types-setuptools types-docutils
-
-## qa.coverage
-
-# The command which gets executed. Defaults to the location the
-# :ref:`run-coverage` template gets rendered to if configured.
-# Default: .mxmake/files/run-coverage.sh
-COVERAGE_COMMAND?=.mxmake/files/run-coverage.sh
 
 ##############################################################################
 # END SETTINGS - DO NOT EDIT BELOW THIS LINE
@@ -416,41 +421,29 @@ CLEAN_TARGETS+=packages-clean
 # test
 ##############################################################################
 
+TEST_TARGET:=$(SENTINEL_FOLDER)/test.sentinel
+$(TEST_TARGET): $(MXENV_TARGET)
+	@echo "Install $(TEST_REQUIREMENTS)"
+	@$(MXENV_PATH)pip install $(TEST_REQUIREMENTS)
+	@touch $(TEST_TARGET)
+
 .PHONY: test
-test: $(FILES_TARGET) $(SOURCES_TARGET) $(PACKAGES_TARGET) $(TEST_DEPENDENCY_TARGETS)
+test: $(FILES_TARGET) $(SOURCES_TARGET) $(PACKAGES_TARGET) $(TEST_TARGET) $(TEST_DEPENDENCY_TARGETS)
 	@echo "Run tests"
 	@test -z "$(TEST_COMMAND)" && echo "No test command defined"
 	@test -z "$(TEST_COMMAND)" || bash -c "$(TEST_COMMAND)"
 
+.PHONY: test-dirty
+test-dirty:
+	@rm -f $(TEST_TARGET)
 
-##############################################################################
-# mypy
-##############################################################################
+.PHONY: test-clean
+test-clean: test-dirty
+	@test -e $(MXENV_PATH)pip && $(MXENV_PATH)pip uninstall -y $(TEST_REQUIREMENTS) || :
 
-MYPY_TARGET:=$(SENTINEL_FOLDER)/mypy.sentinel
-$(MYPY_TARGET): $(MXENV_TARGET)
-	@echo "Install mypy"
-	@$(MXENV_PATH)pip install mypy $(MYPY_REQUIREMENTS)
-	@touch $(MYPY_TARGET)
-
-.PHONY: mypy
-mypy: $(PACKAGES_TARGET) $(MYPY_TARGET)
-	@echo "Run mypy"
-	@$(MXENV_PATH)mypy $(MYPY_SRC)
-
-.PHONY: mypy-dirty
-mypy-dirty:
-	@rm -f $(MYPY_TARGET)
-
-.PHONY: mypy-clean
-mypy-clean: mypy-dirty
-	@test -e $(MXENV_PATH)pip && $(MXENV_PATH)pip uninstall -y mypy || :
-	@rm -rf .mypy_cache
-
-INSTALL_TARGETS+=$(MYPY_TARGET)
-CHECK_TARGETS+=mypy
-CLEAN_TARGETS+=mypy-clean
-DIRTY_TARGETS+=mypy-dirty
+INSTALL_TARGETS+=$(TEST_TARGET)
+CLEAN_TARGETS+=test-clean
+DIRTY_TARGETS+=test-dirty
 
 ##############################################################################
 # coverage
@@ -480,6 +473,35 @@ coverage-clean: coverage-dirty
 INSTALL_TARGETS+=$(COVERAGE_TARGET)
 DIRTY_TARGETS+=coverage-dirty
 CLEAN_TARGETS+=coverage-clean
+
+##############################################################################
+# mypy
+##############################################################################
+
+MYPY_TARGET:=$(SENTINEL_FOLDER)/mypy.sentinel
+$(MYPY_TARGET): $(MXENV_TARGET)
+	@echo "Install mypy"
+	@$(MXENV_PATH)pip install mypy $(MYPY_REQUIREMENTS)
+	@touch $(MYPY_TARGET)
+
+.PHONY: mypy
+mypy: $(PACKAGES_TARGET) $(MYPY_TARGET)
+	@echo "Run mypy"
+	@$(MXENV_PATH)mypy $(MYPY_SRC)
+
+.PHONY: mypy-dirty
+mypy-dirty:
+	@rm -f $(MYPY_TARGET)
+
+.PHONY: mypy-clean
+mypy-clean: mypy-dirty
+	@test -e $(MXENV_PATH)pip && $(MXENV_PATH)pip uninstall -y mypy || :
+	@rm -rf .mypy_cache
+
+INSTALL_TARGETS+=$(MYPY_TARGET)
+CHECK_TARGETS+=mypy
+CLEAN_TARGETS+=mypy-clean
+DIRTY_TARGETS+=mypy-dirty
 
 ##############################################################################
 # Default targets

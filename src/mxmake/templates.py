@@ -137,6 +137,10 @@ class TestScript(EnvironmentTemplate, ShellScriptTemplate):
     description: str = "Run tests"
 
     @property
+    def test_runner(self):
+        return self.config.settings.get("mxmake-test-runner", "pytest")
+
+    @property
     def target_folder(self) -> str:
         return mxmake_files()
 
@@ -146,7 +150,7 @@ class TestScript(EnvironmentTemplate, ShellScriptTemplate):
 
     @property
     def template_name(self) -> str:
-        return self.target_name
+        return f"{self.test_runner}-{self.target_name}"
 
     @property
     def template_variables(self) -> typing.Dict[str, typing.Any]:
