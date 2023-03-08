@@ -541,8 +541,8 @@ class TestTemplates(testing.RenderTestCase):
                 # Default: 3.7
                 PYTHON_MIN_VERSION?=3.7
 
-                # Flag whether to use virtual environment.
-                # If `false`, the interpreter according to `PYTHON_BIN` found in `PATH` is used.
+                # Flag whether to use virtual environment. If `false`, the
+                # interpreter according to `PYTHON_BIN` found in `PATH` is used.
                 # Default: true
                 VENV_ENABLED?=true
 
@@ -553,9 +553,10 @@ class TestTemplates(testing.RenderTestCase):
                 VENV_CREATE?=true
 
                 # The folder of the virtual environment.
-                # If `VENV_ENABLED` is `true` and `VENV_CREATE` is true it is used as the target folder for the virtual environment.
-                # If `VENV_ENABLED` is `true` and `VENV_CREATE` is false it is expected to point to an existing virtual environment.
-                # If `VENV_ENABLED` is `false` it is ignored.
+                # If `VENV_ENABLED` is `true` and `VENV_CREATE` is true it is used as the
+                # target folder for the virtual environment. If `VENV_ENABLED` is `true` and
+                # `VENV_CREATE` is false it is expected to point to an existing virtual
+                # environment. If `VENV_ENABLED` is `false` it is ignored.
                 # Default: venv
                 VENV_FOLDER?=venv
 
@@ -593,8 +594,8 @@ class TestTemplates(testing.RenderTestCase):
                 SENTINEL_FOLDER?=$(MXMAKE_FOLDER)/sentinels
                 SENTINEL?=$(SENTINEL_FOLDER)/about.txt
                 $(SENTINEL):
-                    @mkdir -p $(SENTINEL_FOLDER)
-                    @echo "Sentinels for the Makefile process." > $(SENTINEL)
+                	@mkdir -p $(SENTINEL_FOLDER)
+                	@echo "Sentinels for the Makefile process." > $(SENTINEL)
 
                 ##############################################################################
                 # mxenv
@@ -626,28 +627,28 @@ class TestTemplates(testing.RenderTestCase):
                 MXENV_TARGET:=$(SENTINEL_FOLDER)/mxenv.sentinel
                 $(MXENV_TARGET): $(SENTINEL)
                 ifeq ("$(VENV_ENABLED)", "true")
-                    @echo "Setup Python Virtual Environment under '$(VENV_FOLDER)'"
-                    @$(PYTHON_BIN) -m venv $(VENV_FOLDER)
+                	@echo "Setup Python Virtual Environment under '$(VENV_FOLDER)'"
+                	@$(PYTHON_BIN) -m venv $(VENV_FOLDER)
                 endif
-                    @$(MXENV_PATH)pip install -U pip setuptools wheel
-                    @$(MXENV_PATH)pip install -U $(MXDEV)
-                    @$(MXENV_PATH)pip install -U $(MXMAKE)
-                    @touch $(MXENV_TARGET)
+                	@$(MXENV_PATH)pip install -U pip setuptools wheel
+                	@$(MXENV_PATH)pip install -U $(MXDEV)
+                	@$(MXENV_PATH)pip install -U $(MXMAKE)
+                	@touch $(MXENV_TARGET)
 
                 .PHONY: mxenv
                 mxenv: $(MXENV_TARGET)
 
                 .PHONY: mxenv-dirty
                 mxenv-dirty:
-                    @rm -f $(MXENV_TARGET)
+                	@rm -f $(MXENV_TARGET)
 
                 .PHONY: mxenv-clean
                 mxenv-clean: mxenv-dirty
                 ifeq ("$(VENV_ENABLED)", "true")
-                    @rm -rf $(VENV_FOLDER)
+                	@rm -rf $(VENV_FOLDER)
                 else
-                    @$(MXENV_PATH)pip uninstall -y $(MXDEV)
-                    @$(MXENV_PATH)pip uninstall -y $(MXMAKE)
+                	@$(MXENV_PATH)pip uninstall -y $(MXDEV)
+                	@$(MXENV_PATH)pip uninstall -y $(MXMAKE)
                 endif
 
                 INSTALL_TARGETS+=mxenv
@@ -660,11 +661,11 @@ class TestTemplates(testing.RenderTestCase):
 
                 INSTALL_TARGET:=$(SENTINEL_FOLDER)/install.sentinel
                 $(INSTALL_TARGET): $(INSTALL_TARGETS)
-                    @touch $(INSTALL_TARGET)
+                	@touch $(INSTALL_TARGET)
 
                 .PHONY: install
                 install: $(INSTALL_TARGET)
-                    @touch $(INSTALL_TARGET)
+                	@touch $(INSTALL_TARGET)
 
                 .PHONY: run
                 run: $(RUN_TARGET)
@@ -674,22 +675,21 @@ class TestTemplates(testing.RenderTestCase):
 
                 .PHONY: dirty
                 dirty: $(DIRTY_TARGETS)
-                    @rm -f $(INSTALL_TARGET)
+                	@rm -f $(INSTALL_TARGET)
 
                 .PHONY: clean
                 clean: dirty $(CLEAN_TARGETS)
-                    @rm -rf $(CLEAN_TARGETS) $(MXMAKE_FOLDER) $(CLEAN_FS)
+                	@rm -rf $(CLEAN_TARGETS) $(MXMAKE_FOLDER) $(CLEAN_FS)
 
                 .PHONY: purge
                 purge: clean $(PURGE_TARGETS)
 
                 .PHONY: runtime-clean
                 runtime-clean:
-                    @echo "Remove runtime artifacts, like byte-code and caches."
-                    @find . -name '*.py[c|o]' -delete
-                    @find . -name '*~' -exec rm -f {} +
-                    @find . -name '__pycache__' -exec rm -fr {} +
-
+                	@echo "Remove runtime artifacts, like byte-code and caches."
+                	@find . -name '*.py[c|o]' -delete
+                	@find . -name '*~' -exec rm -f {} +
+                	@find . -name '__pycache__' -exec rm -fr {} +
 
                 """,
                 f.read(),
