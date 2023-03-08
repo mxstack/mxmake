@@ -2,6 +2,11 @@
 
 ## 1.0a1 (unreleased)
 
+- Add `RUN_TARGET` setting to `base` domain and generate `run` target in
+  `Makefile`.
+
+- Create `twisted` domain in `applications` topic.
+
 - Test and coverage templates consider `mxmake-test-path`, `mxmake-source-path`
   and `mxmake-omit-path` in `settings` section of `mx.ini` to support inclusion
   of local package in `run-tests.sh` and `run-coverage.sh` scripts.

@@ -407,6 +407,7 @@ class TestTemplates(testing.RenderTestCase):
         domains = topics.resolve_domain_dependencies(domains)
         domain_settings = {
             "core.base.DEPLOY_TARGETS": "",
+            "core.base.RUN_TARGET": "",
             "core.base.CLEAN_FS": "",
             "core.mxenv.PYTHON_BIN": "python3",
             "core.mxenv.PYTHON_MIN_VERSION": "3.7",
@@ -440,6 +441,10 @@ class TestTemplates(testing.RenderTestCase):
                 # `deploy` target dependencies.
                 # No default value.
                 DEPLOY_TARGETS?=
+
+                # target to be executed when calling `make run`
+                # No default value.
+                RUN_TARGET?=
 
                 # Additional files and folders to remove when running clean target
                 # No default value.
@@ -579,6 +584,9 @@ class TestTemplates(testing.RenderTestCase):
                 .PHONY: install
                 install: $(INSTALL_TARGET)
                     @touch $(INSTALL_TARGET)
+
+                .PHONY: run
+                run: $(RUN_TARGET)
 
                 .PHONY: deploy
                 deploy: $(DEPLOY_TARGETS)

@@ -15,6 +15,7 @@ class TestParser(unittest.TestCase):
         domains = topics.resolve_domain_dependencies(domains)
         domain_settings = {
             "core.base.DEPLOY_TARGETS": "",
+            "core.base.RUN_TARGET": "",
             "core.base.CLEAN_FS": "",
             "core.mxenv.PYTHON_BIN": "python3",
             "core.mxenv.PYTHON_MIN_VERSION": "3.7",
@@ -56,6 +57,7 @@ class TestParser(unittest.TestCase):
             makefile_parser.settings,
             {
                 "core.base.DEPLOY_TARGETS": "",
+                "core.base.RUN_TARGET": "",
                 "core.base.CLEAN_FS": "",
                 "core.mxenv.PYTHON_BIN": "python3",
                 "core.mxenv.PYTHON_MIN_VERSION": "3.7",

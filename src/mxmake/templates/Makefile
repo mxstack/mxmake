@@ -50,6 +50,9 @@ $(INSTALL_TARGET): $(INSTALL_TARGETS)
 install: $(INSTALL_TARGET)
 	@touch $(INSTALL_TARGET)
 
+.PHONY: run
+run: $(RUN_TARGET)
+
 .PHONY: deploy
 deploy: $(DEPLOY_TARGETS)
 
