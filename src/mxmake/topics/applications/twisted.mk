@@ -28,3 +28,15 @@ $(TWISTED_TARGET): $(MXENV_TARGET)
 twisted-start: $(TWISTED_TARGET)
 	@echo "Run Twisted"
 	@$(MXENV_PATH)twistd $(TWISTED_TWISTD_OPTIONS) $(TWISTED_TAC_FILE)
+
+.PHONY: twisted-dirty
+twisted-dirty:
+	@rm -f $(TWISTED_TARGET)
+
+.PHONY: twisted-clean
+twisted-clean: twisted-dirty
+	@test -e $(MXENV_PATH)pip && $(MXENV_PATH)pip uninstall -y Twisted || :
+
+INSTALL_TARGETS+=$(TWISTED_TARGET)
+CLEAN_TARGETS+=twisted-clean
+DIRTY_TARGETS+=twisted-dirty
