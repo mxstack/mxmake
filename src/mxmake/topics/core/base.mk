@@ -32,6 +32,10 @@
 #:description = `deploy` target dependencies.
 #:default =
 #:
+#:[setting.RUN_TARGET]
+#:description = target to be executed when calling `make run`
+#:default =
+#:
 #:[setting.CLEAN_FS]
 #:description = Additional files and folders to remove when running clean target
 #:default =

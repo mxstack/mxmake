@@ -12,6 +12,11 @@
 #:  :ref:`run-tests` template gets rendered to if configured.
 #:default = .mxmake/files/run-tests.sh
 #:
+#:[setting.TEST_REQUIREMENTS]
+#:description = Additional Python requirements for running tests to be
+#:  installed (via pip).
+#:default = pytest
+#:
 #:[setting.TEST_DEPENDENCY_TARGETS]
 #:description = Additional make targets the test target depends on.
 #:default =
@@ -20,9 +25,27 @@
 # test
 ##############################################################################
 
+TEST_TARGET:=$(SENTINEL_FOLDER)/test.sentinel
+$(TEST_TARGET): $(MXENV_TARGET)
+	@echo "Install $(TEST_REQUIREMENTS)"
+	@$(MXENV_PATH)pip install $(TEST_REQUIREMENTS)
+	@touch $(TEST_TARGET)
+
 .PHONY: test
-test: $(FILES_TARGET) $(SOURCES_TARGET) $(PACKAGES_TARGET) $(TEST_DEPENDENCY_TARGETS)
+test: $(FILES_TARGET) $(SOURCES_TARGET) $(PACKAGES_TARGET) $(TEST_TARGET) $(TEST_DEPENDENCY_TARGETS)
 	@echo "Run tests"
 	@test -z "$(TEST_COMMAND)" && echo "No test command defined"
 	@test -z "$(TEST_COMMAND)" || bash -c "$(TEST_COMMAND)"
 
+.PHONY: test-dirty
+test-dirty:
+	@rm -f $(TEST_TARGET)
+
+.PHONY: test-clean
+test-clean: test-dirty
+	@test -e $(MXENV_PATH)pip && $(MXENV_PATH)pip uninstall -y $(TEST_REQUIREMENTS) || :
+	@rm -rf .pytest_cache
+
+INSTALL_TARGETS+=$(TEST_TARGET)
+CLEAN_TARGETS+=test-clean
+DIRTY_TARGETS+=test-dirty

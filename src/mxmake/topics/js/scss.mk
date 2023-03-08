@@ -14,6 +14,10 @@
 #:description = The target file for the compiles Stylesheet.
 #:default = scss/styles.css
 #:
+#:[setting.SCSS_MIN_TARGET]
+#:description = The target file for the compressed Stylesheet.
+#:default = scss/styles.min.css
+#:
 #:[setting.SCSS_OPTIONS]
 #:description = Additional options to be passed to SCSS compiler.
 #:default = --no-source-map=none
@@ -29,3 +33,5 @@ NPM_DEV_PACKAGES+=sass
 scss: $(NPM_TARGET)
 	@$(NPM_PREFIX)/node_modules/.bin/sass \
 		$(SCSS_OPTIONS) $(SCSS_SOURCE) $(SCSS_TARGET)
+	@$(NPM_PREFIX)/node_modules/.bin/sass \
+		$(SCSS_OPTIONS) --style compressed $(SCSS_SOURCE) $(SCSS_MIN_TARGET)

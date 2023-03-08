@@ -2,6 +2,18 @@
 
 ## 1.0a1 (unreleased)
 
+- Support `pytest` as test runner and make it default if not configured
+  otherwise.
+
+- Add `RUN_TARGET` setting to `base` domain and generate `run` target in
+  `Makefile`.
+
+- Create `twisted` domain in `applications` topic.
+
+- Test and coverage templates consider `mxmake-test-path`, `mxmake-source-path`
+  and `mxmake-omit-path` in `settings` section of `mx.ini` to support inclusion
+  of local package in `run-tests.sh` and `run-coverage.sh` scripts.
+
 - Create `scss` domain in `js` topic.
 
 - Create `gettext` domain in `i18n` topic.

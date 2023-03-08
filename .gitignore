@@ -3,6 +3,7 @@
 /.coverage
 /.mxmake/
 /.mypy_cache/
+/.pytest_cache/
 /.vscode/
 /build/
 /constraints-mxdev.txt
