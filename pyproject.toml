@@ -34,6 +34,7 @@ mypy = [
     "types-pkg-resources",
 ]
 docs = ["Sphinx", "sphinxcontrib-mermaid"]
+test = ["zope.testrunner"]
 
 [project.urls]
 Homepage = "https://github.com/mxstack/mxmake"

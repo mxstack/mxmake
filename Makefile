@@ -99,7 +99,7 @@ PROJECT_CONFIG?=mx.ini
 # The command which gets executed. Defaults to the location the
 # :ref:`run-tests` template gets rendered to if configured.
 # Default: .mxmake/files/run-tests.sh
-TEST_COMMAND?=$(VENV_FOLDER)/bin/python -m mxmake.tests.__init__
+TEST_COMMAND?=.mxmake/files/run-tests.sh
 
 # Additional make targets the test target depends on.
 # No default value.
@@ -120,7 +120,7 @@ MYPY_REQUIREMENTS?=types-setuptools types-docutils
 # The command which gets executed. Defaults to the location the
 # :ref:`run-coverage` template gets rendered to if configured.
 # Default: .mxmake/files/run-coverage.sh
-COVERAGE_COMMAND?=$(VENV_FOLDER)/bin/coverage run -m mxmake.tests
+COVERAGE_COMMAND?=.mxmake/files/run-coverage.sh
 
 ##############################################################################
 # END SETTINGS - DO NOT EDIT BELOW THIS LINE
