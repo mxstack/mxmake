@@ -2,6 +2,10 @@
 
 ## 1.0a1 (unreleased)
 
+- Test and coverage templates consider `mxmake-test-path`, `mxmake-source-path`
+  and `mxmake-omit-path` in `settings` section of `mx.ini` to support inclusion
+  of local package in `run-tests.sh` and `run-coverage.sh` scripts.
+
 - Create `scss` domain in `js` topic.
 
 - Create `gettext` domain in `i18n` topic.

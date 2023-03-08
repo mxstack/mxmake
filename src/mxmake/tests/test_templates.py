@@ -118,6 +118,7 @@ class TestTemplates(testing.RenderTestCase):
         config_file = io.StringIO()
         config_file.write(
             "[settings]\n"
+            "mxmake-test-path = src\n"
             "[mxmake-env]\n"
             "ENV_PARAM = env_value\n"
             "[mxmake-run-tests]\n"
@@ -141,13 +142,14 @@ class TestTemplates(testing.RenderTestCase):
             {
                 "description": "Run tests",
                 "env": {"ENV_PARAM": "env_value"},
-                "testpaths": ["sources/package/src"],
+                "testpaths": ["sources/package/src", "src"],
                 "mxenv_path": tempdir + os.path.sep,
             },
         )
         self.assertEqual(template.package_paths("inexistent"), [])
         self.assertEqual(
-            template.package_paths(utils.ns_name("test-path")), ["sources/package/src"]
+            template.package_paths(utils.ns_name("test-path")),
+            ["sources/package/src", "src"],
         )
 
         template.write()
@@ -176,6 +178,7 @@ class TestTemplates(testing.RenderTestCase):
 
                 /.../zope-testrunner --auto-color --auto-progress \\
                     --test-path=sources/package/src \\
+                    --test-path=src \\
                     --module=$1
 
                 unsetenv
@@ -222,6 +225,11 @@ class TestTemplates(testing.RenderTestCase):
         config_file = io.StringIO()
         config_file.write(
             "[settings]\n"
+            "mxmake-test-path = src\n"
+            "mxmake-source-path = src/local\n"
+            "mxmake-omit-path =\n"
+            "    src/local/file1.py\n"
+            "    src/local/file2.py\n"
             "[mxmake-env]\n"
             "ENV_PARAM = env_value\n"
             "[mxmake-run-coverage]\n"
@@ -249,28 +257,33 @@ class TestTemplates(testing.RenderTestCase):
             {
                 "description": "Run coverage",
                 "env": {"ENV_PARAM": "env_value"},
-                "testpaths": ["sources/package/src"],
-                "sourcepaths": ["sources/package/src/package"],
+                "testpaths": ["sources/package/src", "src"],
+                "sourcepaths": ["sources/package/src/package", "src/local"],
                 "omitpaths": [
                     "sources/package/src/package/file1.py",
                     "sources/package/src/package/file2.py",
+                    "src/local/file1.py",
+                    "src/local/file2.py",
                 ],
                 "mxenv_path": tempdir + os.path.sep,
             },
         )
         self.assertEqual(template.package_paths("inexistent"), [])
         self.assertEqual(
-            template.package_paths(utils.ns_name("test-path")), ["sources/package/src"]
+            template.package_paths(utils.ns_name("test-path")),
+            ["sources/package/src", "src"],
         )
         self.assertEqual(
             template.package_paths(utils.ns_name("source-path")),
-            ["sources/package/src/package"],
+            ["sources/package/src/package", "src/local"],
         )
         self.assertEqual(
             template.package_paths(utils.ns_name("omit-path")),
             [
                 "sources/package/src/package/file1.py",
                 "sources/package/src/package/file2.py",
+                "src/local/file1.py",
+                "src/local/file2.py",
             ],
         )
 
@@ -300,6 +313,7 @@ class TestTemplates(testing.RenderTestCase):
 
                 sources=(
                     sources/package/src/package
+                    src/local
                 )
 
                 sources=$(printf ",%s" "${sources[@]}")
@@ -308,6 +322,8 @@ class TestTemplates(testing.RenderTestCase):
                 omits=(
                     sources/package/src/package/file1.py
                     sources/package/src/package/file2.py
+                    src/local/file1.py
+                    src/local/file2.py
                 )
 
                 omits=$(printf ",%s" "${omits[@]}")
@@ -317,7 +333,8 @@ class TestTemplates(testing.RenderTestCase):
                     --source=$sources \\
                     --omit=$omits \\
                     -m zope.testrunner --auto-color --auto-progress \\
-                    --test-path=sources/package/src
+                    --test-path=sources/package/src \\
+                    --test-path=src
 
                 /.../coverage report
                 /.../coverage html

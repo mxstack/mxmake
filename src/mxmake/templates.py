@@ -167,6 +167,12 @@ class TestScript(EnvironmentTemplate, ShellScriptTemplate):
                     continue
                 path = f"{package['target']}/{name}/{line}".rstrip("/")
                 paths.append(path)
+        if attr in self.config.settings:
+            for line in self.config.settings[attr].split("\n"):
+                if not line:
+                    continue
+                path = line.rstrip("/")
+                paths.append(line.rstrip("/"))
         return paths
 
 
