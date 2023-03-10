@@ -20,7 +20,7 @@
 ##############################################################################
 
 COVERAGE_TARGET:=$(SENTINEL_FOLDER)/coverage.sentinel
-$(COVERAGE_TARGET): $(MXENV_TARGET)
+$(COVERAGE_TARGET): $(TEST_TARGET)
 	@echo "Install Coverage"
 	@$(MXENV_PATH)pip install -U coverage
 	@touch $(COVERAGE_TARGET)
