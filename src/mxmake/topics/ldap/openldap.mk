@@ -32,6 +32,9 @@
 # openldap
 ##############################################################################
 
+# case `system.dependencies` domain is included
+SYSTEM_DEPENDENCIES+=libdb-dev libsasl2-dev
+
 OPENLDAP_TARGET:=$(SENTINEL_FOLDER)/openldap.sentinel
 $(OPENLDAP_TARGET): $(SENTINEL)
 	@echo "Building openldap server in '$(OPENLDAP_DIR)'"
