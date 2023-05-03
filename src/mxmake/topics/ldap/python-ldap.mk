@@ -22,7 +22,6 @@ PYTHON_LDAP_TARGET:=$(SENTINEL_FOLDER)/python-ldap.sentinel
 $(PYTHON_LDAP_TARGET): $(MXENV_TARGET) $(OPENLDAP_TARGET)
 	@$(MXENV_PATH)pip install \
 		--force-reinstall \
-		--no-use-pep517 \
 		--global-option=build_ext \
 		--global-option="-I$(OPENLDAP_DIR)/include" \
 		--global-option="-L$(OPENLDAP_DIR)/lib" \
