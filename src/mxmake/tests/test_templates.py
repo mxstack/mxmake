@@ -490,6 +490,7 @@ class TestTemplates(testing.RenderTestCase):
             "core.base.DEPLOY_TARGETS": "",
             "core.base.RUN_TARGET": "",
             "core.base.CLEAN_FS": "",
+            "core.base.INCLUDE_MAKEFILE": "include.mk",
             "core.mxenv.PYTHON_BIN": "python3",
             "core.mxenv.PYTHON_MIN_VERSION": "3.7",
             "core.mxenv.VENV_ENABLED": "true",
@@ -530,6 +531,11 @@ class TestTemplates(testing.RenderTestCase):
                 # Additional files and folders to remove when running clean target
                 # No default value.
                 CLEAN_FS?=
+
+                # Optional makefile to include before default targets. This can
+                # be used to provide custom targets or hook up to existing targets.
+                # Default: include.mk
+                INCLUDE_MAKEFILE?=include.mk
 
                 ## core.mxenv
 
@@ -654,6 +660,8 @@ class TestTemplates(testing.RenderTestCase):
                 INSTALL_TARGETS+=mxenv
                 DIRTY_TARGETS+=mxenv-dirty
                 CLEAN_TARGETS+=mxenv-clean
+
+                -include $(INCLUDE_MAKEFILE)
 
                 ##############################################################################
                 # Default targets

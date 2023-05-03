@@ -42,6 +42,11 @@
 #:[setting.CLEAN_FS]
 #:description = Additional files and folders to remove when running clean target
 #:default =
+#:
+#:[setting.INCLUDE_MAKEFILE]
+#:description = Optional makefile to include before default targets. This can
+#:  be used to provide custom targets or hook up to existing targets.
+#:default = include.mk
 
 # Defensive settings for make: https://tech.davis-hansson.com/p/make/
 SHELL:=bash
