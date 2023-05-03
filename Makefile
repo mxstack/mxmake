@@ -40,8 +40,8 @@ PYTHON_BIN?=python3
 # Default: 3.7
 PYTHON_MIN_VERSION?=3.7
 
-# Flag whether to use virtual environment.
-# If `false`, the interpreter according to `PYTHON_BIN` found in `PATH` is used.
+# Flag whether to use virtual environment. If `false`, the
+# interpreter according to `PYTHON_BIN` found in `PATH` is used.
 # Default: true
 VENV_ENABLED?=true
 
@@ -52,9 +52,10 @@ VENV_ENABLED?=true
 VENV_CREATE?=true
 
 # The folder of the virtual environment.
-# If `VENV_ENABLED` is `true` and `VENV_CREATE` is true it is used as the target folder for the virtual environment.
-# If `VENV_ENABLED` is `true` and `VENV_CREATE` is false it is expected to point to an existing virtual environment.
-# If `VENV_ENABLED` is `false` it is ignored.
+# If `VENV_ENABLED` is `true` and `VENV_CREATE` is true it is used as the
+# target folder for the virtual environment. If `VENV_ENABLED` is `true` and
+# `VENV_CREATE` is false it is expected to point to an existing virtual
+# environment. If `VENV_ENABLED` is `false` it is ignored.
 # Default: venv
 VENV_FOLDER?=venv
 
@@ -440,6 +441,7 @@ test-dirty:
 .PHONY: test-clean
 test-clean: test-dirty
 	@test -e $(MXENV_PATH)pip && $(MXENV_PATH)pip uninstall -y $(TEST_REQUIREMENTS) || :
+	@rm -rf .pytest_cache
 
 INSTALL_TARGETS+=$(TEST_TARGET)
 CLEAN_TARGETS+=test-clean
@@ -450,7 +452,7 @@ DIRTY_TARGETS+=test-dirty
 ##############################################################################
 
 COVERAGE_TARGET:=$(SENTINEL_FOLDER)/coverage.sentinel
-$(COVERAGE_TARGET): $(MXENV_TARGET)
+$(COVERAGE_TARGET): $(TEST_TARGET)
 	@echo "Install Coverage"
 	@$(MXENV_PATH)pip install -U coverage
 	@touch $(COVERAGE_TARGET)
