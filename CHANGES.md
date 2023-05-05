@@ -2,6 +2,8 @@
 
 ## 1.0a1 (unreleased)
 
+- Add `zest-releaser` domain to `applications` topic.
+
 - Support custom makefile include.
 
 - Support `pytest` as test runner and make it default if not configured
