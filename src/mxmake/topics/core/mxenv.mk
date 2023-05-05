@@ -50,11 +50,11 @@
 #:
 #:[setting.MXDEV]
 #:description = mxdev to install in virtual environment.
-#:default = https://github.com/mxstack/mxdev/archive/main.zip
+#:default = mxdev
 #:
 #:[setting.MXMAKE]
 #:description = mxmake to install in virtual environment.
-#:default = https://github.com/mxstack/mxmake/archive/develop.zip
+#:default = mxmake
 
 ##############################################################################
 # mxenv
