@@ -1,7 +1,7 @@
 [project]
 name = "mxmake"
 description = "Generates a Python project-specific Makefile by using an extensible library of configurable Makefile snippets."
-version = "1.0a1.dev6"
+version = "1.0a1"
 keywords = ["development", "deployment", "environment"]
 authors = [
   {name = "MX Stack Developers", email = "dev@bluedynamics.com" }
@@ -38,9 +38,9 @@ test = ["zope.testrunner"]
 
 [project.urls]
 Homepage = "https://github.com/mxstack/mxmake"
-Documentation = "https://mxmake.readthedocs.io"
+Documentation = "https://mxstack.github.io/mxmake"
 "Bug Reports" = "https://github.com/mxstack/mxmake/issues"
-Source = "https://github.com/mxstack/mxmake/"
+Source = "https://github.com/mxstack/mxmake"
 
 [project.scripts]
 mxmake = "mxmake.main:main"
@@ -61,6 +61,9 @@ i18n = "mxmake.topics:i18n"
 [build-system]
 requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
+
+[tool.distutils.bdist_wheel]
+universal = true
 
 [tool.setuptools]
 zip-safe = false
@@ -83,5 +86,3 @@ lines_after_imports = 2
 
 [tool.mypy]
 ignore_missing_imports = true
-
-

@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.0a1 (unreleased)
+## 1.0a1 (2023-05-05)
 
 - Add `zest-releaser` domain to `applications` topic.
 
