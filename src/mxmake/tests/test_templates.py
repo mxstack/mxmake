@@ -32,6 +32,7 @@ class TestTemplates(testing.RenderTestCase):
                 "dependencies.md": templates.Dependencies,
                 "makefile": templates.Makefile,
                 "mx.ini": templates.MxIni,
+                "pip-conf": templates.PipConf,
                 "run-coverage": templates.CoverageScript,
                 "run-tests": templates.TestScript,
                 "topics.md": templates.Topics,
@@ -467,6 +468,44 @@ class TestTemplates(testing.RenderTestCase):
                 /.../coverage html
 
                 exit 0
+                """,
+                f.read(),
+            )
+
+    @testing.template_directory()
+    def test_PipConf(self, tempdir):
+        config_file = io.StringIO()
+        config_file.write(
+            "[settings]\n"
+            "\n"
+            "[mxmake-pip-conf]\n"
+            "find-links =\n"
+            "    file:///path/to/folder\n"
+            "    https://tld.com/\n"
+        )
+        config_file.seek(0)
+
+        configuration = mxdev.Configuration(config_file, hooks=[hook.Hook()])
+        factory = templates.template.lookup("pip-conf")
+        template = factory(configuration, templates.get_template_environment())
+
+        self.assertEqual(template.description, "Pip config")
+        self.assertEqual(template.target_folder, utils.mxmake_files())
+        self.assertEqual(template.target_name, "pip.conf")
+        self.assertEqual(template.template_name, "pip.conf")
+        self.assertEqual(
+            template.template_variables,
+            {"find_links": ["file:///path/to/folder", "https://tld.com/"]},
+        )
+
+        template.write()
+        with open(os.path.join(tempdir, "pip.conf")) as f:
+            self.checkOutput(
+                """
+                [global]
+                find-links =
+                    file:///path/to/folder
+                    https://tld.com/
                 """,
                 f.read(),
             )

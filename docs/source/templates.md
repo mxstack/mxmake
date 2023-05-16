@@ -15,13 +15,16 @@ General templates, not attached to any domain:
 - `Makefile`
 - `mx.ini`
 
+Gets information from `mx.ini` and is copied to virtualenv folder by `core.mxfiles` domain if present:
+- `pip.conf`
+
 General, used in `core.packages` with source package information from `mx.ini`:
 - `additional_source_targets.mk`
 
 Used only in Sphinx extension, gets information from topic and domain metadata:
 - `topics.md`
 
-Gets information from` mx.ini` and is used by `qa.tests` or `qa.coverage` domains.
+Gets information from `mx.ini` and is used by `qa.tests` or `qa.coverage` domains:
 - `env.sh`
 - `run-tests.sh`
 - `run-coverage.sh`

@@ -18,7 +18,7 @@
 # -- Project information -----------------------------------------------------
 
 project = "mxmake"
-copyright = "2022, mxstack Contributors"
+copyright = "2022-2023, mxstack Contributors"
 author = "mxstack Contributors"
 
 # The full version, including alpha/beta/rc tags

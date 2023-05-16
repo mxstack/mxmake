@@ -6,7 +6,3 @@ There are hard and soft (dashed line) dependencies.
 
 ```{mxmakedependencies}
 ```
-
-
-
-

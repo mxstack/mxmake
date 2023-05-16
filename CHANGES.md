@@ -2,7 +2,7 @@
 
 ## 1.0a2 (unreleased)
 
-- No changes yet.
+- Add support for `pip.conf` file.
 
 ## 1.0a1 (2023-05-05)
 

@@ -198,6 +198,32 @@ class CoverageScript(TestScript):
 
 
 ##############################################################################
+# pip config template
+##############################################################################
+
+
+@template("pip-conf")
+class PipConf(MxIniBoundTemplate):
+    description: str = "Pip config"
+    target_name: str = "pip.conf"
+    template_name: str = "pip.conf"
+
+    @property
+    def target_folder(self) -> str:
+        return mxmake_files()
+
+    @property
+    def template_variables(self) -> typing.Dict[str, typing.Any]:
+        return dict(
+            find_links=[
+                link.strip()
+                for link in self.settings.get("find-links", "").split("\n")
+                if link.strip()
+            ]
+        )
+
+
+##############################################################################
 # makefile template
 ##############################################################################
 

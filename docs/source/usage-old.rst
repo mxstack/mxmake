@@ -1,9 +1,6 @@
 Usage (mostly outdated)
 =======================
 
-
-
-
 Basics
 ------
 
