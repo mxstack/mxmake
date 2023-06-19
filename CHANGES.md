@@ -3,6 +3,7 @@
 ## 1.0a2 (unreleased)
 
 - Add support for `pip.conf` file.
+- fixes #18: VENV_CREATE is ignored
 
 ## 1.0a1 (2023-05-05)
 
