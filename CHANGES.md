@@ -3,7 +3,14 @@
 ## 1.0a2 (unreleased)
 
 - Add support for `pip.conf` file.
-- fixes #18: VENV_CREATE is ignored
+
+- Fixes #18: VENV_CREATE is ignored.
+
+- Fix error when new source package gets added to `mx.ini` in
+  `Hook.generate_additional_sources_targets`.
+
+- Add `PROJECT_CONFIG` as dependency target of `SOURCES_TARGET` to make sure
+  target runs when new source package gets added to `mx.ini`.
 
 ## 1.0a1 (2023-05-05)
 

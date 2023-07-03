@@ -49,6 +49,9 @@ class Hook(mxdev.Hook):
         sources_folder = config.settings.get("default-target", "sources")
         for package_name in config.packages:
             source_folder = os.path.join(sources_folder, package_name)
+            # case new source package has been added to mx.ini
+            if not os.path.exists(source_folder):
+                continue
             for child in os.listdir(source_folder):
                 if child in ADDITIONAL_SOURCES_TARGETS:
                     additional_sources_targets.append(
