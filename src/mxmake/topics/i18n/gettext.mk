@@ -20,7 +20,7 @@
 #:default =
 #:
 #:[setting.GETTEXT_LANGUAGES]
-#:description = List of language identifiers.
+#:description = Space separated list of language identifiers.
 #:default =
 
 ##############################################################################
