@@ -1,6 +1,10 @@
 # Changelog
 
-## 1.0a2 (unreleased)
+## 1.0a3.dev0 (unreleased)
+
+- nothing yet chnaged
+
+## 1.0a2 (2023-07-07)
 
 - Add support for `pip.conf` file.
 
@@ -9,8 +13,8 @@
 - Fix error when new source package gets added to `mx.ini` in
   `Hook.generate_additional_sources_targets`.
 
-- Add `PROJECT_CONFIG` as dependency target of `SOURCES_TARGET` to make sure
-  target runs when new source package gets added to `mx.ini`.
+- Add `PROJECT_CONFIG` as the dependency target of `SOURCES_TARGET` to make
+  sure the target runs when a new source package gets added to `mx.ini`.
 
 ## 1.0a1 (2023-05-05)
 
@@ -18,7 +22,7 @@
 
 - Support custom makefile include.
 
-- Support `pytest` as test runner and make it default if not configured
+- Support `pytest` as a test runner and make it default if not configured
   otherwise.
 
 - Add `RUN_TARGET` setting to `base` domain and generate `run` target in
