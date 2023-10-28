@@ -20,7 +20,7 @@ $(JSDOC_TARGET): $(NPM_TARGET)
 
 .PHONY: jsdoc
 jsdoc: $(JSDOC_TARGET)
-	@export PATH=$PATH:$(JSDOC_PATH)
+	@export PATH=$(PATH):$(JSDOC_PATH)
 
 # extend npm dev packages
 NPM_DEV_PACKAGES+=jsdoc

@@ -2,7 +2,7 @@
 
 ## 1.0a3.dev0 (unreleased)
 
-- nothing yet chnaged
+- Fix exporting path in `jsdoc` target.
 
 ## 1.0a2 (2023-07-07)
 
