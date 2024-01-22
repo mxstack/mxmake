@@ -1,7 +1,6 @@
 from mxmake import hook
 from mxmake import testing
 
-import io
 import mxdev
 import os
 import pathlib

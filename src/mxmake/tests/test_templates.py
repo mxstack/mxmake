@@ -6,7 +6,6 @@ from mxmake import testing
 from mxmake import topics
 from mxmake import utils
 
-import io
 import mxdev
 import os
 import pathlib
