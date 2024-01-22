@@ -9,6 +9,7 @@ from mxmake import utils
 import io
 import mxdev
 import os
+import pathlib
 import typing
 
 
@@ -116,22 +117,22 @@ class TestTemplates(testing.RenderTestCase):
 
     @testing.template_directory()
     def test_TestScript(self, tempdir):
-        config_file = io.StringIO()
-        config_file.write(
-            "[settings]\n"
-            "mxmake-test-path = src\n"
-            "mxmake-test-runner = zope-testrunner\n"
-            "[mxmake-env]\n"
-            "ENV_PARAM = env_value\n"
-            "[mxmake-run-tests]\n"
-            "environment = env\n"
-            "[package]\n"
-            "url = https://github.com/org/package\n"
-            "mxmake-test-path = src\n"
-        )
-        config_file.seek(0)
+        mxini = pathlib.Path(tempdir, "mx.ini")
+        with mxini.open("w") as fd:
+            fd.write(
+                "[settings]\n"
+                "mxmake-test-path = src\n"
+                "mxmake-test-runner = zope-testrunner\n"
+                "[mxmake-env]\n"
+                "ENV_PARAM = env_value\n"
+                "[mxmake-run-tests]\n"
+                "environment = env\n"
+                "[package]\n"
+                "url = https://github.com/org/package\n"
+                "mxmake-test-path = src\n"
+            )
 
-        configuration = mxdev.Configuration(config_file, hooks=[hook.Hook()])
+        configuration = mxdev.Configuration(mxini, hooks=[hook.Hook()])
         factory = templates.template.lookup("run-tests")
         template = factory(configuration, templates.get_template_environment())
 
@@ -190,17 +191,16 @@ class TestTemplates(testing.RenderTestCase):
                 f.read(),
             )
 
-        config_file = io.StringIO()
-        config_file.write(
-            "[settings]\n"
-            "mxmake-test-runner = zope-testrunner\n"
-            "[package]\n"
-            "url = https://github.com/org/package\n"
-            "mxmake-test-path = src\n"
-        )
-        config_file.seek(0)
+        with mxini.open("w") as fd:
+            fd.write(
+                "[settings]\n"
+                "mxmake-test-runner = zope-testrunner\n"
+                "[package]\n"
+                "url = https://github.com/org/package\n"
+                "mxmake-test-path = src\n"
+            )
 
-        configuration = mxdev.Configuration(config_file, hooks=[hook.Hook()])
+        configuration = mxdev.Configuration(mxini, hooks=[hook.Hook()])
         template = factory(configuration, templates.get_template_environment())
         template.write()
         with open(os.path.join(tempdir, "run-tests.sh")) as f:
@@ -223,17 +223,16 @@ class TestTemplates(testing.RenderTestCase):
                 f.read(),
             )
 
-        config_file = io.StringIO()
-        config_file.write(
-            "[settings]\n"
-            "mxmake-test-runner = pytest\n"
-            "[package]\n"
-            "url = https://github.com/org/package\n"
-            "mxmake-test-path = src\n"
-        )
-        config_file.seek(0)
+        with mxini.open("w") as fd:
+            fd.write(
+                "[settings]\n"
+                "mxmake-test-runner = pytest\n"
+                "[package]\n"
+                "url = https://github.com/org/package\n"
+                "mxmake-test-path = src\n"
+            )
 
-        configuration = mxdev.Configuration(config_file, hooks=[hook.Hook()])
+        configuration = mxdev.Configuration(mxini, hooks=[hook.Hook()])
         template = factory(configuration, templates.get_template_environment())
         template.write()
         with open(os.path.join(tempdir, "run-tests.sh")) as f:
@@ -257,30 +256,30 @@ class TestTemplates(testing.RenderTestCase):
 
     @testing.template_directory()
     def test_CoverageScript(self, tempdir):
-        config_file = io.StringIO()
-        config_file.write(
-            "[settings]\n"
-            "mxmake-test-runner = zope-testrunner\n"
-            "mxmake-test-path = src\n"
-            "mxmake-source-path = src/local\n"
-            "mxmake-omit-path =\n"
-            "    src/local/file1.py\n"
-            "    src/local/file2.py\n"
-            "[mxmake-env]\n"
-            "ENV_PARAM = env_value\n"
-            "[mxmake-run-coverage]\n"
-            "environment = env\n"
-            "[package]\n"
-            "url = https://github.com/org/package\n"
-            "mxmake-test-path = src\n"
-            "mxmake-source-path = src/package\n"
-            "mxmake-omit-path =\n"
-            "    src/package/file1.py\n"
-            "    src/package/file2.py\n"
-        )
-        config_file.seek(0)
+        mxini = pathlib.Path(tempdir, "mx.ini")
+        with mxini.open("w") as fd:
+            fd.write(
+                "[settings]\n"
+                "mxmake-test-runner = zope-testrunner\n"
+                "mxmake-test-path = src\n"
+                "mxmake-source-path = src/local\n"
+                "mxmake-omit-path =\n"
+                "    src/local/file1.py\n"
+                "    src/local/file2.py\n"
+                "[mxmake-env]\n"
+                "ENV_PARAM = env_value\n"
+                "[mxmake-run-coverage]\n"
+                "environment = env\n"
+                "[package]\n"
+                "url = https://github.com/org/package\n"
+                "mxmake-test-path = src\n"
+                "mxmake-source-path = src/package\n"
+                "mxmake-omit-path =\n"
+                "    src/package/file1.py\n"
+                "    src/package/file2.py\n"
+            )
 
-        configuration = mxdev.Configuration(config_file, hooks=[hook.Hook()])
+        configuration = mxdev.Configuration(mxini, hooks=[hook.Hook()])
         factory = templates.template.lookup("run-coverage")
         template = factory(configuration, templates.get_template_environment())
 
@@ -382,18 +381,17 @@ class TestTemplates(testing.RenderTestCase):
                 f.read(),
             )
 
-        config_file = io.StringIO()
-        config_file.write(
-            "[settings]\n"
-            "mxmake-test-runner = zope-testrunner\n"
-            "[package]\n"
-            "url = https://github.com/org/package\n"
-            "mxmake-test-path = src\n"
-            "mxmake-source-path = src/package\n"
-        )
-        config_file.seek(0)
+        with mxini.open("w") as fd:
+            fd.write(
+                "[settings]\n"
+                "mxmake-test-runner = zope-testrunner\n"
+                "[package]\n"
+                "url = https://github.com/org/package\n"
+                "mxmake-test-path = src\n"
+                "mxmake-source-path = src/package\n"
+            )
 
-        configuration = mxdev.Configuration(config_file, hooks=[hook.Hook()])
+        configuration = mxdev.Configuration(mxini, hooks=[hook.Hook()])
         template = factory(configuration, templates.get_template_environment())
         template.write()
         with open(os.path.join(tempdir, "run-coverage.sh")) as f:
@@ -427,18 +425,17 @@ class TestTemplates(testing.RenderTestCase):
                 f.read(),
             )
 
-        config_file = io.StringIO()
-        config_file.write(
-            "[settings]\n"
-            "mxmake-test-runner = pytest\n"
-            "[package]\n"
-            "url = https://github.com/org/package\n"
-            "mxmake-test-path = src\n"
-            "mxmake-source-path = src/package\n"
-        )
-        config_file.seek(0)
+        with mxini.open("w") as fd:
+            fd.write(
+                "[settings]\n"
+                "mxmake-test-runner = pytest\n"
+                "[package]\n"
+                "url = https://github.com/org/package\n"
+                "mxmake-test-path = src\n"
+                "mxmake-source-path = src/package\n"
+            )
 
-        configuration = mxdev.Configuration(config_file, hooks=[hook.Hook()])
+        configuration = mxdev.Configuration(mxini, hooks=[hook.Hook()])
         template = factory(configuration, templates.get_template_environment())
         template.write()
         with open(os.path.join(tempdir, "run-coverage.sh")) as f:
@@ -474,18 +471,18 @@ class TestTemplates(testing.RenderTestCase):
 
     @testing.template_directory()
     def test_PipConf(self, tempdir):
-        config_file = io.StringIO()
-        config_file.write(
-            "[settings]\n"
-            "\n"
-            "[mxmake-pip-conf]\n"
-            "find-links =\n"
-            "    file:///path/to/folder\n"
-            "    https://tld.com/\n"
-        )
-        config_file.seek(0)
+        mxini = pathlib.Path(tempdir, "mx.ini")
+        with mxini.open("w") as fd:
+            fd.write(
+                "[settings]\n"
+                "\n"
+                "[mxmake-pip-conf]\n"
+                "find-links =\n"
+                "    file:///path/to/folder\n"
+                "    https://tld.com/\n"
+            )
 
-        configuration = mxdev.Configuration(config_file, hooks=[hook.Hook()])
+        configuration = mxdev.Configuration(mxini, hooks=[hook.Hook()])
         factory = templates.template.lookup("pip-conf")
         template = factory(configuration, templates.get_template_environment())
 

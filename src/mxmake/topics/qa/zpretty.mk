@@ -15,7 +15,6 @@
 #:
 #:[target.zpretty-clean]
 #:description = Uninstall zpretty.
-#:
 
 ##############################################################################
 # zpretty

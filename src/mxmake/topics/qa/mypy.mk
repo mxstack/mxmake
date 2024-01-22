@@ -19,7 +19,6 @@
 #:
 #:[target.mypy-clean]
 #:description = Uninstall mypy and removes cached data.
-#:
 
 ##############################################################################
 # mypy

@@ -1,9 +1,11 @@
+__pycache__
 *.egg-info
 *.pyc
 /.coverage
 /.mxmake/
 /.mypy_cache/
 /.pytest_cache/
+/.ruff_cache/
 /.vscode/
 /build/
 /constraints-mxdev.txt
@@ -11,4 +13,3 @@
 /docs/html/
 /requirements-mxdev.txt
 /venv/
-__pycache__

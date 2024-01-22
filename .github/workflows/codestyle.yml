@@ -18,8 +18,8 @@ jobs:
       - name: Install Dependencies
         run: make install
 
-      - name: black
-        run: make black
+      - name: ruff
+        run: make ruff-check
 
       - name: isort
         run: make isort-check
