@@ -8,18 +8,14 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      - uses: psf/black@stable
 
       - name: Set up Python 3.9
         uses: actions/setup-python@v4
         with:
           python-version: 3.9
 
-      - name: Install Dependencies
+      - name: Install Project
         run: make install
 
-      - name: ruff
-        run: make ruff-check
-
-      - name: isort
-        run: make isort-check
+      - name: Run checks
+        run: make check

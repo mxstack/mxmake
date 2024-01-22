@@ -2,6 +2,8 @@
 
 ## 1.0a3.dev0 (unreleased)
 
+- Add basic CI config file generation for github actions.
+
 - Add `ruff` domain to `qa` topic.
 
 - Fix exporting path in `jsdoc` target.

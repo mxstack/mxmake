@@ -36,6 +36,10 @@ class TestTemplates(testing.RenderTestCase):
                 "run-coverage": templates.CoverageScript,
                 "run-tests": templates.TestScript,
                 "topics.md": templates.Topics,
+                "gh-actions-docs": templates.GHActionsDocs,
+                "gh-actions-lint": templates.GHActionsLint,
+                "gh-actions-test": templates.GHActionsTest,
+                "gh-actions-typecheck": templates.GHActionsTypecheck,
             },
         )
 

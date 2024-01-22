@@ -2,6 +2,7 @@ from jinja2 import Environment
 from jinja2 import PackageLoader
 from mxmake.topics import Domain
 from mxmake.topics import load_topics
+from mxmake.utils import gh_actions_path
 from mxmake.utils import mxenv_path
 from mxmake.utils import mxmake_files
 from mxmake.utils import ns_name
@@ -378,7 +379,7 @@ class Topics(Template):
 
 
 ##############################################################################
-# dependencies.rst template
+# dependencies.md template
 ##############################################################################
 
 
@@ -404,3 +405,76 @@ class Dependencies(Template):
         raise NotImplementedError(
             "Dependencies template is not supposed to be written to file system"
         )
+
+
+##############################################################################
+# CI
+##############################################################################
+
+
+class ci_template:
+    templates: typing.List = list()
+
+    def __init__(self, name: str) -> None:
+        self.name = name
+
+    def __call__(self, ob: typing.Type["Template"]) -> typing.Type["Template"]:
+        template(self.name)(ob)
+        self.templates.append(self.name)
+        return ob
+
+
+class GHActionsTemplate(Template):
+    template_variables = dict()
+
+    @property
+    def target_folder(self) -> str:
+        return gh_actions_path()
+
+
+##############################################################################
+# gh-actions-docs template
+##############################################################################
+
+
+@ci_template("gh-actions-docs")
+class GHActionsDocs(GHActionsTemplate):
+    description: str = "Github action for generating docs"
+    target_name = "docs.yml"
+    template_name = "gh-actions-docs.yml"
+
+
+##############################################################################
+# gh-actions-lint template
+##############################################################################
+
+
+@ci_template("gh-actions-lint")
+class GHActionsLint(GHActionsTemplate):
+    description: str = "Github action to run linting"
+    target_name = "lint.yml"
+    template_name = "gh-actions-lint.yml"
+
+
+##############################################################################
+# gh-actions-test template
+##############################################################################
+
+
+@ci_template("gh-actions-test")
+class GHActionsTest(GHActionsTemplate):
+    description: str = "Github action to run tests"
+    target_name = "test.yml"
+    template_name = "gh-actions-test.yml"
+
+
+##############################################################################
+# gh-actions-typecheck template
+##############################################################################
+
+
+@ci_template("gh-actions-typecheck")
+class GHActionsTypecheck(GHActionsTemplate):
+    description: str = "Github action to running static type checks"
+    target_name = "typecheck.yml"
+    template_name = "gh-actions-typecheck.yml"

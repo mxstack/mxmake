@@ -1,4 +1,4 @@
-name: mypy
+name: Typechecks
 
 on: [push]
 
@@ -14,8 +14,8 @@ jobs:
       with:
         python-version: 3.9
 
-    - name: Install Dependencies
+    - name: Install Project
       run: make install
 
-    - name: mypy
-      run: make mypy
+    - name: Run Typechecks
+      run: make typecheck

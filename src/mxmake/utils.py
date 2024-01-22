@@ -18,6 +18,13 @@ def mxmake_files() -> str:
     return os.environ.get("MXMAKE_FILES", os.path.join(".mxmake", "files"))
 
 
+def gh_actions_path() -> str:
+    """Target folder for github actions related file generation."""
+    return os.environ.get(
+        "MXMAKE_GH_ACTIONS_PATH", os.path.join(".github", "workflows")
+    )
+
+
 def ns_name(name: str) -> str:
     """Return name prefixed by namespace."""
     return f"{NAMESPACE}{name}"

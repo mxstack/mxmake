@@ -146,6 +146,7 @@ DIRTY_TARGETS?=
 CLEAN_TARGETS?=
 PURGE_TARGETS?=
 CHECK_TARGETS?=
+TYPECHECK_TARGETS?=
 FORMAT_TARGETS?=
 
 # Defensive settings for make: https://tech.davis-hansson.com/p/make/
@@ -511,7 +512,7 @@ mypy-clean: mypy-dirty
 	@rm -rf .mypy_cache
 
 INSTALL_TARGETS+=$(MYPY_TARGET)
-CHECK_TARGETS+=mypy
+TYPECHECK_TARGETS+=mypy
 CLEAN_TARGETS+=mypy-clean
 DIRTY_TARGETS+=mypy-dirty
 
@@ -555,6 +556,9 @@ runtime-clean:
 
 .PHONY: check
 check: $(CHECK_TARGETS)
+
+.PHONY: typecheck
+typecheck: $(TYPECHECK_TARGETS)
 
 .PHONY: format
 format: $(FORMAT_TARGETS)

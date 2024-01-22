@@ -20,6 +20,12 @@ class TestUtils(unittest.TestCase):
         self.assertEqual(utils.mxmake_files(), "other")
         del os.environ["MXMAKE_FILES"]
 
+    def test_gh_actions_path(self):
+        self.assertEqual(utils.gh_actions_path(), os.path.join(".github", "workflows"))
+        os.environ["MXMAKE_GH_ACTIONS_PATH"] = "other"
+        self.assertEqual(utils.gh_actions_path(), "other")
+        del os.environ["MXMAKE_GH_ACTIONS_PATH"]
+
     def test_ns_name(self):
         self.assertEqual(utils.ns_name("foo"), "mxmake-foo")
 

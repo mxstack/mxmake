@@ -35,6 +35,7 @@ CLEAN_TARGETS?=
 PURGE_TARGETS?=
 {% if additional_targets["qa"] %}
 CHECK_TARGETS?=
+TYPECHECK_TARGETS?=
 FORMAT_TARGETS?=
 {% endif %}
 {{ sections.read() }}
@@ -79,6 +80,9 @@ runtime-clean:
 {% if additional_targets["qa"] %}
 .PHONY: check
 check: $(CHECK_TARGETS)
+
+.PHONY: typecheck
+typecheck: $(TYPECHECK_TARGETS)
 
 .PHONY: format
 format: $(FORMAT_TARGETS)
