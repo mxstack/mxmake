@@ -2,6 +2,8 @@
 
 ## 1.0a3.dev0 (unreleased)
 
+- Add `ruff` domain to `qa` topic.
+
 - Fix exporting path in `jsdoc` target.
 
 ## 1.0a2 (2023-07-07)
