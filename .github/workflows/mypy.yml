@@ -5,16 +5,17 @@ on: [push, pull_request]
 jobs:
   build:
     runs-on: ubuntu-latest
-    name: Mypy type checking
+
     steps:
     - uses: actions/checkout@v3
+
     - name: Set up Python 3.9
       uses: actions/setup-python@v4
       with:
         python-version: 3.9
+
     - name: Install Dependencies
-      run: |
-        pip install mypy types-setuptools types-docutils
+      run: make install
+
     - name: mypy
-      run: |
-        mypy src
+      run: make mypy

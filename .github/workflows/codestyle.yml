@@ -5,19 +5,21 @@ on: [push, pull_request]
 jobs:
   lint:
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v3
       - uses: psf/black@stable
+
       - name: Set up Python 3.9
         uses: actions/setup-python@v4
         with:
           python-version: 3.9
+
       - name: Install Dependencies
-        run: |
-          pip install black isort
+        run: make install
+
       - name: black
-        run: |
-          black --check src
+        run: make black
+
       - name: isort
-        run: |
-          isort --check src
+        run: make isort-check

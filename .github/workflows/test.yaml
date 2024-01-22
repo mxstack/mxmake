@@ -1,12 +1,6 @@
 name: Test mxmake
 
-on:
-  push:
-    branches:
-      - master
-  workflow_dispatch:
-    branches:
-      - master
+on: [push, pull_request]
 
 jobs:
   build:
@@ -20,12 +14,14 @@ jobs:
           - "3.8"
           - "3.9"
           - "3.10"
+          - "3.11"
+          - "3.12"
 
     steps:
-      - uses: actions/checkout@v3
+    - uses: actions/checkout@v3
 
-      - name: Install project
-        run: make install
+    - name: Install project
+      run: make install
 
-      - name: Run tests
-        run: make test
+    - name: Run tests
+      run: make test

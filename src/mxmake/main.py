@@ -58,21 +58,21 @@ def list_command(args: argparse.Namespace):
     sys.stdout.write(f"Domain {topic.name}.{domain.name}:\n")
     depends = ", ".join(domain.depends) if domain.depends else "No dependencies"
     sys.stdout.write(f"  Depends: {depends}\n")
-    sys.stdout.write(f"  Targets:")
+    sys.stdout.write("  Targets:")
     targets = domain.targets
     if not targets:
-        sys.stdout.write(f" No targets provided\n")
+        sys.stdout.write(" No targets provided\n")
     else:
-        sys.stdout.write(f"\n")
+        sys.stdout.write("\n")
         for target in targets:
             description = indent(target.description, 6 * " ").strip()
             sys.stdout.write(f"    {target.name}: {description}\n")
-    sys.stdout.write(f"  Settings:")
+    sys.stdout.write("  Settings:")
     settings = domain.settings
     if not settings:
-        sys.stdout.write(f" No settings provided\n")
+        sys.stdout.write(" No settings provided\n")
     else:
-        sys.stdout.write(f"\n")
+        sys.stdout.write("\n")
         for setting in settings:
             description = indent(setting.description, 8 * " ").strip()
             sys.stdout.write(

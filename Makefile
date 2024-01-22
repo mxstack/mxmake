@@ -7,10 +7,10 @@
 #: core.mxfiles
 #: core.packages
 #: docs.sphinx
-#: qa.black
 #: qa.coverage
 #: qa.isort
 #: qa.mypy
+#: qa.ruff
 #: qa.test
 #
 # SETTINGS (ALL CHANGES MADE BELOW SETTINGS WILL BE LOST)
@@ -72,17 +72,17 @@ MXDEV?=https://github.com/mxstack/mxdev/archive/main.zip
 # Default: mxmake
 MXMAKE?=-e .
 
+## qa.ruff
+
+# Source folder to scan for Python files to run ruff on.
+# Default: src
+RUFF_SRC?=src
+
 ## qa.isort
 
 # Source folder to scan for Python files to run isort on.
 # Default: src
 ISORT_SRC?=src
-
-## qa.black
-
-# Source folder to scan for Python files to run black on.
-# Default: src
-BLACK_SRC?=src
 
 ## docs.sphinx
 
@@ -198,8 +198,10 @@ endif
 MXENV_TARGET:=$(SENTINEL_FOLDER)/mxenv.sentinel
 $(MXENV_TARGET): $(SENTINEL)
 ifeq ("$(VENV_ENABLED)", "true")
+ifeq ("$(VENV_CREATE)", "true")
 	@echo "Setup Python Virtual Environment under '$(VENV_FOLDER)'"
 	@$(PYTHON_BIN) -m venv $(VENV_FOLDER)
+endif
 endif
 	@$(MXENV_PATH)pip install -U pip setuptools wheel
 	@$(MXENV_PATH)pip install -U $(MXDEV)
@@ -216,7 +218,9 @@ mxenv-dirty:
 .PHONY: mxenv-clean
 mxenv-clean: mxenv-dirty
 ifeq ("$(VENV_ENABLED)", "true")
+ifeq ("$(VENV_CREATE)", "true")
 	@rm -rf $(VENV_FOLDER)
+endif
 else
 	@$(MXENV_PATH)pip uninstall -y $(MXDEV)
 	@$(MXENV_PATH)pip uninstall -y $(MXMAKE)
@@ -225,6 +229,40 @@ endif
 INSTALL_TARGETS+=mxenv
 DIRTY_TARGETS+=mxenv-dirty
 CLEAN_TARGETS+=mxenv-clean
+
+##############################################################################
+# ruff
+##############################################################################
+
+RUFF_TARGET:=$(SENTINEL_FOLDER)/ruff.sentinel
+$(RUFF_TARGET): $(MXENV_TARGET)
+	@echo "Install Ruff"
+	@$(MXENV_PATH)pip install ruff
+	@touch $(RUFF_TARGET)
+
+.PHONY: ruff-check
+ruff-check: $(RUFF_TARGET)
+	@echo "Run ruff check"
+	@$(MXENV_PATH)ruff check $(RUFF_SRC)
+
+.PHONY: ruff-format
+ruff-format: $(RUFF_TARGET)
+	@echo "Run ruff format"
+	@$(MXENV_PATH)ruff format $(RUFF_SRC)
+
+.PHONY: ruff-dirty
+ruff-dirty:
+	@rm -f $(RUFF_TARGET)
+
+.PHONY: ruff-clean
+ruff-clean: ruff-dirty
+	@test -e $(MXENV_PATH)pip && $(MXENV_PATH)pip uninstall -y ruff || :
+
+INSTALL_TARGETS+=$(RUFF_TARGET)
+CHECK_TARGETS+=ruff-check
+FORMAT_TARGETS+=ruff-format
+DIRTY_TARGETS+=ruff-dirty
+CLEAN_TARGETS+=ruff-clean
 
 ##############################################################################
 # isort
@@ -259,40 +297,6 @@ CHECK_TARGETS+=isort-check
 FORMAT_TARGETS+=isort-format
 DIRTY_TARGETS+=isort-dirty
 CLEAN_TARGETS+=isort-clean
-
-##############################################################################
-# black
-##############################################################################
-
-BLACK_TARGET:=$(SENTINEL_FOLDER)/black.sentinel
-$(BLACK_TARGET): $(MXENV_TARGET)
-	@echo "Install Black"
-	@$(MXENV_PATH)pip install black
-	@touch $(BLACK_TARGET)
-
-.PHONY: black-check
-black-check: $(BLACK_TARGET)
-	@echo "Run black checks"
-	@$(MXENV_PATH)black --check $(BLACK_SRC)
-
-.PHONY: black-format
-black-format: $(BLACK_TARGET)
-	@echo "Run black format"
-	@$(MXENV_PATH)black $(BLACK_SRC)
-
-.PHONY: black-dirty
-black-dirty:
-	@rm -f $(BLACK_TARGET)
-
-.PHONY: black-clean
-black-clean: black-dirty
-	@test -e $(MXENV_PATH)pip && $(MXENV_PATH)pip uninstall -y black || :
-
-INSTALL_TARGETS+=$(BLACK_TARGET)
-CHECK_TARGETS+=black-check
-FORMAT_TARGETS+=black-format
-DIRTY_TARGETS+=black-dirty
-CLEAN_TARGETS+=black-clean
 
 ##############################################################################
 # sphinx
@@ -370,6 +374,7 @@ $(FILES_TARGET): $(PROJECT_CONFIG) $(MXENV_TARGET) $(SOURCES_TARGET) $(LOCAL_PAC
 	$(call set_mxfiles_env,$(MXENV_PATH),$(MXMAKE_FILES))
 	@$(MXENV_PATH)mxdev -n -c $(PROJECT_CONFIG)
 	$(call unset_mxfiles_env,$(MXENV_PATH),$(MXMAKE_FILES))
+	@test -e $(MXMAKE_FILES)/pip.conf && cp $(MXMAKE_FILES)/pip.conf $(VENV_FOLDER)/pip.conf || :
 	@touch $(FILES_TARGET)
 
 .PHONY: mxfiles
