@@ -57,7 +57,7 @@ example-clean:
 
 
 @dataclass
-class TestDomain(topics.Domain):
+class _TestDomain(topics.Domain):
     depends_: typing.List[str] = field(default_factory=list)
     soft_depends_: typing.List[str] = field(default_factory=list)
 
@@ -177,23 +177,23 @@ class TestTopics(unittest.TestCase):
         self.assertEqual(str(err), "Conflicting domain names: ['b', 'c']")
 
     def test_CircularDependencyDomainError(self):
-        domain = TestDomain(topic="t1", name="f1", depends_=["f2"], file="f1.mk")
+        domain = _TestDomain(topic="t1", name="f1", depends_=["f2"], file="f1.mk")
         err = topics.CircularDependencyDomainError([domain])
         self.assertEqual(
             str(err),
             (
-                "Domains define circular dependencies: [TestDomain("
+                "Domains define circular dependencies: [_TestDomain("
                 "topic='t1', name='f1', file='f1.mk', depends_=['f2'], soft_depends_=[])]"
             ),
         )
 
     def test_MissingDependencyDomainError(self):
-        domain = TestDomain(topic="t", name="t", depends_=["missing"], file="t.mk")
+        domain = _TestDomain(topic="t", name="t", depends_=["missing"], file="t.mk")
         err = topics.MissingDependencyDomainError(domain)
         self.assertEqual(
             str(err),
             (
-                "Domain define missing dependency: TestDomain("
+                "Domain define missing dependency: _TestDomain("
                 "topic='t', name='t', file='t.mk', depends_=['missing'], soft_depends_=[])"
             ),
         )
@@ -203,39 +203,39 @@ class TestTopics(unittest.TestCase):
             topics.DomainConflictError,
             topics.resolve_domain_dependencies,
             [
-                TestDomain(topic="t", name="f", depends_=["t.f1"], file="t.mk"),
-                TestDomain(topic="t", name="f", depends_=["t.f1"], file="t.mk"),
+                _TestDomain(topic="t", name="f", depends_=["t.f1"], file="t.mk"),
+                _TestDomain(topic="t", name="f", depends_=["t.f1"], file="t.mk"),
             ],
         )
 
-        f1 = TestDomain(topic="t", name="f1", depends_=["t.f2"], file="f1.mk")
-        f2 = TestDomain(topic="t", name="f2", depends_=["t.f3"], file="f2.mk")
-        f3 = TestDomain(topic="t", name="f3", file="f3.mk")
+        f1 = _TestDomain(topic="t", name="f1", depends_=["t.f2"], file="f1.mk")
+        f2 = _TestDomain(topic="t", name="f2", depends_=["t.f3"], file="f2.mk")
+        f3 = _TestDomain(topic="t", name="f3", file="f3.mk")
         self.assertEqual(topics.resolve_domain_dependencies([f1, f2, f3]), [f3, f2, f1])
         self.assertEqual(topics.resolve_domain_dependencies([f2, f1, f3]), [f3, f2, f1])
         self.assertEqual(topics.resolve_domain_dependencies([f1, f3, f2]), [f3, f2, f1])
 
-        f1 = TestDomain(topic="t", name="f1", depends_=["t.f2"], file="f1.mk")
-        f2 = TestDomain(topic="t", name="f2", depends_=["t.f1"], file="f2.mk")
+        f1 = _TestDomain(topic="t", name="f1", depends_=["t.f2"], file="f1.mk")
+        f2 = _TestDomain(topic="t", name="f2", depends_=["t.f1"], file="f2.mk")
         self.assertRaises(
             topics.CircularDependencyDomainError,
             topics.resolve_domain_dependencies,
             [f1, f2],
         )
 
-        f1 = TestDomain(topic="t", name="f1", depends_=["t.f2"], file="f1.mk")
-        f2 = TestDomain(topic="t", name="f2", depends_=["t.missing"], file="f2.mk")
+        f1 = _TestDomain(topic="t", name="f1", depends_=["t.f2"], file="f1.mk")
+        f2 = _TestDomain(topic="t", name="f2", depends_=["t.missing"], file="f2.mk")
         self.assertRaises(
             topics.MissingDependencyDomainError,
             topics.resolve_domain_dependencies,
             [f1, f2],
         )
 
-        f1 = TestDomain(topic="t", name="f1", depends_=["t.f2", "t.f4"], file="f1.mk")
-        f2 = TestDomain(topic="t", name="f2", depends_=["t.f3", "t.f4"], file="f2.mk")
-        f3 = TestDomain(topic="t", name="f3", depends_=["t.f4", "t.f5"], file="f3.mk")
-        f4 = TestDomain(topic="t", name="f4", depends_=["t.f5"], file="f4.mk")
-        f5 = TestDomain(topic="t", name="f5", file="f5.mk")
+        f1 = _TestDomain(topic="t", name="f1", depends_=["t.f2", "t.f4"], file="f1.mk")
+        f2 = _TestDomain(topic="t", name="f2", depends_=["t.f3", "t.f4"], file="f2.mk")
+        f3 = _TestDomain(topic="t", name="f3", depends_=["t.f4", "t.f5"], file="f3.mk")
+        f4 = _TestDomain(topic="t", name="f4", depends_=["t.f5"], file="f4.mk")
+        f5 = _TestDomain(topic="t", name="f5", file="f5.mk")
         self.assertEqual(
             topics.resolve_domain_dependencies([f1, f2, f3, f4, f5]),
             [f5, f4, f3, f2, f1],
@@ -253,18 +253,18 @@ class TestTopics(unittest.TestCase):
             [f5, f4, f3, f2, f1],
         )
 
-        f1 = TestDomain(topic="t", name="f1", depends_=["t.f2", "t.f3"], file="f1.mk")
-        f2 = TestDomain(topic="t", name="f2", depends_=["t.f1", "t.f3"], file="f2.mk")
-        f3 = TestDomain(topic="t", name="f3", depends_=["t.f1", "t.f2"], file="f3.mk")
+        f1 = _TestDomain(topic="t", name="f1", depends_=["t.f2", "t.f3"], file="f1.mk")
+        f2 = _TestDomain(topic="t", name="f2", depends_=["t.f1", "t.f3"], file="f2.mk")
+        f3 = _TestDomain(topic="t", name="f3", depends_=["t.f1", "t.f2"], file="f3.mk")
         self.assertRaises(
             topics.CircularDependencyDomainError,
             topics.resolve_domain_dependencies,
             [f1, f2, f3],
         )
 
-        f1 = TestDomain(topic="t", name="f1", depends_=["t.f2", "t.f3"], file="f1.ext")
-        f2 = TestDomain(topic="t", name="f2", depends_=["t.f1", "t.f3"], file="f2.ext")
-        f3 = TestDomain(topic="t", name="f3", depends_=["t.f1", "t.f4"], file="f3.ext")
+        f1 = _TestDomain(topic="t", name="f1", depends_=["t.f2", "t.f3"], file="f1.ext")
+        f2 = _TestDomain(topic="t", name="f2", depends_=["t.f1", "t.f3"], file="f2.ext")
+        f3 = _TestDomain(topic="t", name="f3", depends_=["t.f1", "t.f4"], file="f3.ext")
         self.assertRaises(
             topics.MissingDependencyDomainError,
             topics.resolve_domain_dependencies,
@@ -289,11 +289,11 @@ class TestTopics(unittest.TestCase):
         )
 
     def test_set_domain_runtime_depends(self):
-        f1 = TestDomain(topic="t", name="f1", file="f1.ext")
-        f2 = TestDomain(
+        f1 = _TestDomain(topic="t", name="f1", file="f1.ext")
+        f2 = _TestDomain(
             topic="t", name="f2", soft_depends_=["t.f1", "t.f4"], file="f2.ext"
         )
-        f3 = TestDomain(
+        f3 = _TestDomain(
             topic="t",
             name="f3",
             depends_=["t.f2"],
