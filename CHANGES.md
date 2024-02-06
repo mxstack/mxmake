@@ -2,8 +2,7 @@
 
 ## 1.0a4 (unreleased)
 
-
-- Nothing changed yet.
+- Add `wtr` (Web test runner) domain to `js` topic.
 
 
 ## 1.0a3 (2024-02-06)
