@@ -2,6 +2,8 @@
 
 ## 1.0a3.dev0 (unreleased)
 
+- Add `typecheck` target and use it for mypy instead of `check` target.
+
 - Add basic CI config file generation for github actions.
 
 - Add `ruff` domain to `qa` topic.
