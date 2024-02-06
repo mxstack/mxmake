@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.0a3.dev0 (unreleased)
+## 1.0a3 (2024-02-06)
 
 - Add `typecheck` target and use it for mypy instead of `check` target.
 
