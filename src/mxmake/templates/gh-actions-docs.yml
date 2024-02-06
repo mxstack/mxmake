@@ -23,9 +23,9 @@ jobs:
 
     - name: Deploy Docs
       uses: peaceiris/actions-gh-pages@v3
-      if: ${{ github.event_name == 'workflow_dispatch' }}
+      if: {{ "${{ github.event_name == 'workflow_dispatch' }}" }}
       with:
         publish_branch: gh-pages
-        github_token: ${{ secrets.GITHUB_TOKEN }}
+        github_token: {{ "${{ secrets.GITHUB_TOKEN }}" }}
         publish_dir: docs/html/
         force_orphan: true

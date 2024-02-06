@@ -1,4 +1,5 @@
 from mxmake.parser import MakefileParser
+from mxmake.templates import ci_template
 from mxmake.templates import get_template_environment
 from mxmake.templates import template
 from mxmake.topics import collect_missing_dependencies
@@ -196,6 +197,22 @@ def init_command(args: argparse.Namespace):
             mx_ini_template.write()
     else:
         print("Skip generation of mx configuration file, file already exists")
+
+    # ci generation
+    print("\nDo you want to create CI related files?")
+    yn = inquirer.text(message="y/N")
+    if yn in ["y", "Y"]:
+        # ci_template
+        ci_choice = inquirer.prompt(
+            [
+                inquirer.Checkbox(
+                    "ci", message="Generate CI files", choices=ci_template.templates
+                )
+            ]
+        )
+        for template_name in ci_choice["ci"]:
+            factory = template.lookup(template_name)
+            factory(get_template_environment()).write()
 
 
 init_parser = command_parsers.add_parser("init", help="Initialize project")

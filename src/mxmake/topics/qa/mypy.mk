@@ -45,6 +45,6 @@ mypy-clean: mypy-dirty
 	@rm -rf .mypy_cache
 
 INSTALL_TARGETS+=$(MYPY_TARGET)
-CHECK_TARGETS+=mypy
+TYPECHECK_TARGETS+=mypy
 CLEAN_TARGETS+=mypy-clean
 DIRTY_TARGETS+=mypy-dirty
