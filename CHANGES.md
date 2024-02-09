@@ -2,6 +2,8 @@
 
 ## 1.0a4 (unreleased)
 
+- Rename `PYTHON_BIN` to `PRIMARY_PYTHON` in `mxenv` domain.
+
 - Use `python -m pip` all over the place instead of `pip` executable.
 
 - Introduce `MXENV_PYTHON`. It defines the Python binary used for all
@@ -9,9 +11,9 @@
 
 - Remove ruff cache when running `make ruff-clean` target.
 
-- Add `wtr` (Web test runner) domain to `js` topic.
 - Fix #20: make VENV_ENABLED=false test does not work.
 
+- Add `wtr` (Web test runner) domain to `js` topic.
 
 ## 1.0a3 (2024-02-06)
 

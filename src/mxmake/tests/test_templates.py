@@ -530,7 +530,7 @@ class TestTemplates(testing.RenderTestCase):
             "core.base.RUN_TARGET": "",
             "core.base.CLEAN_FS": "",
             "core.base.INCLUDE_MAKEFILE": "include.mk",
-            "core.mxenv.PYTHON_BIN": "python3",
+            "core.mxenv.PRIMARY_PYTHON": "python3",
             "core.mxenv.PYTHON_MIN_VERSION": "3.7",
             "core.mxenv.VENV_ENABLED": "true",
             "core.mxenv.VENV_CREATE": "true",
@@ -578,16 +578,17 @@ class TestTemplates(testing.RenderTestCase):
 
                 ## core.mxenv
 
-                # Python interpreter to use.
+                # Primary Python interpreter to use. It is used to create the
+                # virtual environment if `VENV_ENABLED` and `VENV_CREATE` are set to `true`.
                 # Default: python3
-                PYTHON_BIN?=python3
+                PRIMARY_PYTHON?=python3
 
                 # Minimum required Python version.
                 # Default: 3.7
                 PYTHON_MIN_VERSION?=3.7
 
                 # Flag whether to use virtual environment. If `false`, the
-                # interpreter according to `PYTHON_BIN` found in `PATH` is used.
+                # interpreter according to `PRIMARY_PYTHON` found in `PATH` is used.
                 # Default: true
                 VENV_ENABLED?=true
 
@@ -639,20 +640,20 @@ class TestTemplates(testing.RenderTestCase):
                 SENTINEL_FOLDER?=$(MXMAKE_FOLDER)/sentinels
                 SENTINEL?=$(SENTINEL_FOLDER)/about.txt
                 $(SENTINEL):
-                    @mkdir -p $(SENTINEL_FOLDER)
-                    @echo "Sentinels for the Makefile process." > $(SENTINEL)
+                	@mkdir -p $(SENTINEL_FOLDER)
+                	@echo "Sentinels for the Makefile process." > $(SENTINEL)
 
                 ##############################################################################
                 # mxenv
                 ##############################################################################
 
                 # Check if given Python is installed
-                ifeq (,$(shell which $(PYTHON_BIN)))
-                $(error "PYTHON=$(PYTHON_BIN) not found in $(PATH)")
+                ifeq (,$(shell which $(PRIMARY_PYTHON)))
+                $(error "PYTHON=$(PRIMARY_PYTHON) not found in $(PATH)")
                 endif
 
                 # Check if given Python version is ok
-                PYTHON_VERSION_OK=$(shell $(PYTHON_BIN) -c "import sys; print((int(sys.version_info[0]), int(sys.version_info[1])) >= tuple(map(int, '$(PYTHON_MIN_VERSION)'.split('.'))))")
+                PYTHON_VERSION_OK=$(shell $(PRIMARY_PYTHON) -c "import sys; print((int(sys.version_info[0]), int(sys.version_info[1])) >= tuple(map(int, '$(PYTHON_MIN_VERSION)'.split('.'))))")
                 ifeq ($(PYTHON_VERSION_OK),0)
                 $(error "Need Python >= $(PYTHON_MIN_VERSION)")
                 endif
@@ -668,39 +669,39 @@ class TestTemplates(testing.RenderTestCase):
                 MXENV_PYTHON=$(MXENV_PATH)python
                 else
                 MXENV_PATH=
-                MXENV_PYTHON=$(PYTHON_BIN)
+                MXENV_PYTHON=$(PRIMARY_PYTHON)
                 endif
 
                 MXENV_TARGET:=$(SENTINEL_FOLDER)/mxenv.sentinel
                 $(MXENV_TARGET): $(SENTINEL)
                 ifeq ("$(VENV_ENABLED)", "true")
                 ifeq ("$(VENV_CREATE)", "true")
-                    @echo "Setup Python Virtual Environment under '$(VENV_FOLDER)'"
-                    @$(PYTHON_BIN) -m venv $(VENV_FOLDER)
+                	@echo "Setup Python Virtual Environment under '$(VENV_FOLDER)'"
+                	@$(PRIMARY_PYTHON) -m venv $(VENV_FOLDER)
                 endif
                 endif
-                    @$(MXENV_PYTHON) -m ensurepip -U
-                    @$(MXENV_PYTHON) -m pip install -U pip setuptools wheel
-                    @$(MXENV_PYTHON) -m pip install -U $(MXDEV)
-                    @$(MXENV_PYTHON) -m pip install -U $(MXMAKE)
-                    @touch $(MXENV_TARGET)
+                	@$(MXENV_PYTHON) -m ensurepip -U
+                	@$(MXENV_PYTHON) -m pip install -U pip setuptools wheel
+                	@$(MXENV_PYTHON) -m pip install -U $(MXDEV)
+                	@$(MXENV_PYTHON) -m pip install -U $(MXMAKE)
+                	@touch $(MXENV_TARGET)
 
                 .PHONY: mxenv
                 mxenv: $(MXENV_TARGET)
 
                 .PHONY: mxenv-dirty
                 mxenv-dirty:
-                    @rm -f $(MXENV_TARGET)
+                	@rm -f $(MXENV_TARGET)
 
                 .PHONY: mxenv-clean
                 mxenv-clean: mxenv-dirty
                 ifeq ("$(VENV_ENABLED)", "true")
                 ifeq ("$(VENV_CREATE)", "true")
-                    @rm -rf $(VENV_FOLDER)
+                	@rm -rf $(VENV_FOLDER)
                 endif
                 else
-                    @$(MXENV_PYTHON) -m pip uninstall -y $(MXDEV)
-                    @$(MXENV_PYTHON) -m pip uninstall -y $(MXMAKE)
+                	@$(MXENV_PYTHON) -m pip uninstall -y $(MXDEV)
+                	@$(MXENV_PYTHON) -m pip uninstall -y $(MXMAKE)
                 endif
 
                 INSTALL_TARGETS+=mxenv
@@ -715,11 +716,11 @@ class TestTemplates(testing.RenderTestCase):
 
                 INSTALL_TARGET:=$(SENTINEL_FOLDER)/install.sentinel
                 $(INSTALL_TARGET): $(INSTALL_TARGETS)
-                    @touch $(INSTALL_TARGET)
+                	@touch $(INSTALL_TARGET)
 
                 .PHONY: install
                 install: $(INSTALL_TARGET)
-                    @touch $(INSTALL_TARGET)
+                	@touch $(INSTALL_TARGET)
 
                 .PHONY: run
                 run: $(RUN_TARGET)
@@ -729,21 +730,22 @@ class TestTemplates(testing.RenderTestCase):
 
                 .PHONY: dirty
                 dirty: $(DIRTY_TARGETS)
-                    @rm -f $(INSTALL_TARGET)
+                	@rm -f $(INSTALL_TARGET)
 
                 .PHONY: clean
                 clean: dirty $(CLEAN_TARGETS)
-                    @rm -rf $(CLEAN_TARGETS) $(MXMAKE_FOLDER) $(CLEAN_FS)
+                	@rm -rf $(CLEAN_TARGETS) $(MXMAKE_FOLDER) $(CLEAN_FS)
 
                 .PHONY: purge
                 purge: clean $(PURGE_TARGETS)
 
                 .PHONY: runtime-clean
                 runtime-clean:
-                    @echo "Remove runtime artifacts, like byte-code and caches."
-                    @find . -name '*.py[c|o]' -delete
-                    @find . -name '*~' -exec rm -f {} +
-                    @find . -name '__pycache__' -exec rm -fr {} +
+                	@echo "Remove runtime artifacts, like byte-code and caches."
+                	@find . -name '*.py[c|o]' -delete
+                	@find . -name '*~' -exec rm -f {} +
+                	@find . -name '__pycache__' -exec rm -fr {} +
+
                 """,
                 f.read(),
             )

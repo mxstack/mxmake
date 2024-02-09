@@ -5,7 +5,7 @@
 #:
 #:[target.mxenv]
 #:description = Setup the Python environment.
-#: Creates a Python virtual environment using the built-in `venv` module if
+#:  Creates a Python virtual environment using the built-in `venv` module if
 #:  `VENV_CREATE` is `true`. The following Python packages are installed
 #:  respective updated:
 #:    - pip
@@ -21,8 +21,9 @@
 #:description = Removes virtual environment if `VENV_CREATE` is `true`,
 #:  otherwise uninstall environment related python packages.
 #:
-#:[setting.PYTHON_BIN]
-#:description = Python interpreter to use.
+#:[setting.PRIMARY_PYTHON]
+#:description = Primary Python interpreter to use. It is used to create the
+#:  virtual environment if `VENV_ENABLED` and `VENV_CREATE` are set to `true`.
 #:default = python3
 #:
 #:[setting.PYTHON_MIN_VERSION]
@@ -31,7 +32,7 @@
 #:
 #:[setting.VENV_ENABLED]
 #:description = Flag whether to use virtual environment. If `false`, the
-#:  interpreter according to `PYTHON_BIN` found in `PATH` is used.
+#:  interpreter according to `PRIMARY_PYTHON` found in `PATH` is used.
 #:default = true
 #:
 #:[setting.VENV_CREATE]
@@ -61,12 +62,12 @@
 ##############################################################################
 
 # Check if given Python is installed
-ifeq (,$(shell which $(PYTHON_BIN)))
-$(error "PYTHON=$(PYTHON_BIN) not found in $(PATH)")
+ifeq (,$(shell which $(PRIMARY_PYTHON)))
+$(error "PYTHON=$(PRIMARY_PYTHON) not found in $(PATH)")
 endif
 
 # Check if given Python version is ok
-PYTHON_VERSION_OK=$(shell $(PYTHON_BIN) -c "import sys; print((int(sys.version_info[0]), int(sys.version_info[1])) >= tuple(map(int, '$(PYTHON_MIN_VERSION)'.split('.'))))")
+PYTHON_VERSION_OK=$(shell $(PRIMARY_PYTHON) -c "import sys; print((int(sys.version_info[0]), int(sys.version_info[1])) >= tuple(map(int, '$(PYTHON_MIN_VERSION)'.split('.'))))")
 ifeq ($(PYTHON_VERSION_OK),0)
 $(error "Need Python >= $(PYTHON_MIN_VERSION)")
 endif
@@ -82,7 +83,7 @@ MXENV_PATH=$(VENV_FOLDER)/bin/
 MXENV_PYTHON=$(MXENV_PATH)python
 else
 MXENV_PATH=
-MXENV_PYTHON=$(PYTHON_BIN)
+MXENV_PYTHON=$(PRIMARY_PYTHON)
 endif
 
 MXENV_TARGET:=$(SENTINEL_FOLDER)/mxenv.sentinel
@@ -90,7 +91,7 @@ $(MXENV_TARGET): $(SENTINEL)
 ifeq ("$(VENV_ENABLED)", "true")
 ifeq ("$(VENV_CREATE)", "true")
 	@echo "Setup Python Virtual Environment under '$(VENV_FOLDER)'"
-	@$(PYTHON_BIN) -m venv $(VENV_FOLDER)
+	@$(PRIMARY_PYTHON) -m venv $(VENV_FOLDER)
 endif
 endif
 	@$(MXENV_PYTHON) -m ensurepip -U
