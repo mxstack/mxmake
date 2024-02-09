@@ -12,6 +12,8 @@ class TestUtils(unittest.TestCase):
         self.assertEqual(utils.mxenv_path(), os.path.join("venv", "bin") + os.path.sep)
         os.environ["MXMAKE_MXENV_PATH"] = "other"
         self.assertEqual(utils.mxenv_path(), "other" + os.path.sep)
+        os.environ["MXMAKE_MXENV_PATH"] = ""
+        self.assertEqual(utils.mxenv_path(), "")
         del os.environ["MXMAKE_MXENV_PATH"]
 
     def test_mxmake_files(self):
