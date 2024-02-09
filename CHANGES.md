@@ -3,6 +3,7 @@
 ## 1.0a4 (unreleased)
 
 - Add `wtr` (Web test runner) domain to `js` topic.
+- Fix #20: make VENV_ENABLED=false test does not work.
 
 
 ## 1.0a3 (2024-02-06)

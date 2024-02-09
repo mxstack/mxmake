@@ -8,7 +8,7 @@ NAMESPACE = "mxmake-"
 def mxenv_path() -> str:
     """MX environment path."""
     path = os.environ.get("MXMAKE_MXENV_PATH", os.path.join("venv", "bin"))
-    if not path.endswith(os.path.sep):
+    if path and not path.endswith(os.path.sep):
         path = f"{path}{os.path.sep}"
     return path
 
