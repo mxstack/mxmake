@@ -639,8 +639,8 @@ class TestTemplates(testing.RenderTestCase):
                 SENTINEL_FOLDER?=$(MXMAKE_FOLDER)/sentinels
                 SENTINEL?=$(SENTINEL_FOLDER)/about.txt
                 $(SENTINEL):
-                	@mkdir -p $(SENTINEL_FOLDER)
-                	@echo "Sentinels for the Makefile process." > $(SENTINEL)
+                    @mkdir -p $(SENTINEL_FOLDER)
+                    @echo "Sentinels for the Makefile process." > $(SENTINEL)
 
                 ##############################################################################
                 # mxenv
@@ -665,39 +665,42 @@ class TestTemplates(testing.RenderTestCase):
                 # determine the executable path
                 ifeq ("$(VENV_ENABLED)", "true")
                 MXENV_PATH=$(VENV_FOLDER)/bin/
+                MXENV_PYTHON=$(MXENV_PATH)python
                 else
                 MXENV_PATH=
+                MXENV_PYTHON=$(PYTHON_BIN)
                 endif
 
                 MXENV_TARGET:=$(SENTINEL_FOLDER)/mxenv.sentinel
                 $(MXENV_TARGET): $(SENTINEL)
                 ifeq ("$(VENV_ENABLED)", "true")
                 ifeq ("$(VENV_CREATE)", "true")
-                	@echo "Setup Python Virtual Environment under '$(VENV_FOLDER)'"
-                	@$(PYTHON_BIN) -m venv $(VENV_FOLDER)
+                    @echo "Setup Python Virtual Environment under '$(VENV_FOLDER)'"
+                    @$(PYTHON_BIN) -m venv $(VENV_FOLDER)
                 endif
                 endif
-                	@$(MXENV_PATH)pip install -U pip setuptools wheel
-                	@$(MXENV_PATH)pip install -U $(MXDEV)
-                	@$(MXENV_PATH)pip install -U $(MXMAKE)
-                	@touch $(MXENV_TARGET)
+                    @$(MXENV_PYTHON) -m ensurepip -U
+                    @$(MXENV_PYTHON) -m pip install -U pip setuptools wheel
+                    @$(MXENV_PYTHON) -m pip install -U $(MXDEV)
+                    @$(MXENV_PYTHON) -m pip install -U $(MXMAKE)
+                    @touch $(MXENV_TARGET)
 
                 .PHONY: mxenv
                 mxenv: $(MXENV_TARGET)
 
                 .PHONY: mxenv-dirty
                 mxenv-dirty:
-                	@rm -f $(MXENV_TARGET)
+                    @rm -f $(MXENV_TARGET)
 
                 .PHONY: mxenv-clean
                 mxenv-clean: mxenv-dirty
                 ifeq ("$(VENV_ENABLED)", "true")
                 ifeq ("$(VENV_CREATE)", "true")
-                	@rm -rf $(VENV_FOLDER)
+                    @rm -rf $(VENV_FOLDER)
                 endif
                 else
-                	@$(MXENV_PATH)pip uninstall -y $(MXDEV)
-                	@$(MXENV_PATH)pip uninstall -y $(MXMAKE)
+                    @$(MXENV_PYTHON) -m pip uninstall -y $(MXDEV)
+                    @$(MXENV_PYTHON) -m pip uninstall -y $(MXMAKE)
                 endif
 
                 INSTALL_TARGETS+=mxenv
@@ -712,11 +715,11 @@ class TestTemplates(testing.RenderTestCase):
 
                 INSTALL_TARGET:=$(SENTINEL_FOLDER)/install.sentinel
                 $(INSTALL_TARGET): $(INSTALL_TARGETS)
-                	@touch $(INSTALL_TARGET)
+                    @touch $(INSTALL_TARGET)
 
                 .PHONY: install
                 install: $(INSTALL_TARGET)
-                	@touch $(INSTALL_TARGET)
+                    @touch $(INSTALL_TARGET)
 
                 .PHONY: run
                 run: $(RUN_TARGET)
@@ -726,22 +729,21 @@ class TestTemplates(testing.RenderTestCase):
 
                 .PHONY: dirty
                 dirty: $(DIRTY_TARGETS)
-                	@rm -f $(INSTALL_TARGET)
+                    @rm -f $(INSTALL_TARGET)
 
                 .PHONY: clean
                 clean: dirty $(CLEAN_TARGETS)
-                	@rm -rf $(CLEAN_TARGETS) $(MXMAKE_FOLDER) $(CLEAN_FS)
+                    @rm -rf $(CLEAN_TARGETS) $(MXMAKE_FOLDER) $(CLEAN_FS)
 
                 .PHONY: purge
                 purge: clean $(PURGE_TARGETS)
 
                 .PHONY: runtime-clean
                 runtime-clean:
-                	@echo "Remove runtime artifacts, like byte-code and caches."
-                	@find . -name '*.py[c|o]' -delete
-                	@find . -name '*~' -exec rm -f {} +
-                	@find . -name '__pycache__' -exec rm -fr {} +
-
+                    @echo "Remove runtime artifacts, like byte-code and caches."
+                    @find . -name '*.py[c|o]' -delete
+                    @find . -name '*~' -exec rm -f {} +
+                    @find . -name '__pycache__' -exec rm -fr {} +
                 """,
                 f.read(),
             )

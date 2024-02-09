@@ -21,7 +21,7 @@
 TWISTED_TARGET:=$(SENTINEL_FOLDER)/twisted.sentinel
 $(TWISTED_TARGET): $(MXENV_TARGET)
 	@echo "Install twisted"
-	@$(MXENV_PATH)pip install Twisted
+	@$(MXENV_PYTHON) -m pip install Twisted
 	@touch $(TWISTED_TARGET)
 
 .PHONY: twisted-start
@@ -35,7 +35,7 @@ twisted-dirty:
 
 .PHONY: twisted-clean
 twisted-clean: twisted-dirty
-	@test -e $(MXENV_PATH)pip && $(MXENV_PATH)pip uninstall -y Twisted || :
+	@test -e $(MXENV_PYTHON) && $(MXENV_PYTHON) -m pip uninstall -y Twisted || :
 
 INSTALL_TARGETS+=$(TWISTED_TARGET)
 CLEAN_TARGETS+=twisted-clean

@@ -23,7 +23,7 @@
 ZPRETTY_TARGET:=$(SENTINEL_FOLDER)/zpretty.sentinel
 $(ZPRETTY_TARGET): $(MXENV_TARGET)
 	@echo "Install zpretty"
-	@$(MXENV_PATH)pip install zpretty
+	@$(MXENV_PYTHON) -m pip install zpretty
 	@touch $(ZPRETTY_TARGET)
 
 .PHONY: zpretty-check
@@ -42,7 +42,7 @@ zpretty-dirty:
 
 .PHONY: zpretty-clean
 zpretty-clean: zpretty-dirty
-	@test -e $(MXENV_PATH)pip && $(MXENV_PATH)pip uninstall -y zpretty || :
+	@test -e $(MXENV_PYTHON) && $(MXENV_PYTHON) -m pip uninstall -y zpretty || :
 
 INSTALL_TARGETS+=$(ZPRETTY_TARGET)
 CHECK_TARGETS+=zpretty-check

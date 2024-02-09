@@ -20,7 +20,7 @@
 COOKIECUTTER_TARGET:=$(SENTINEL_FOLDER)/cookiecutter.sentinel
 $(COOKIECUTTER_TARGET): $(MXENV_TARGET)
 	@echo "Install cookiecutter"
-	@$(MXENV_PATH)pip install "cookiecutter>=2.1.1"
+	@$(MXENV_PYTHON) -m pip install "cookiecutter>=2.1.1"
 	@touch $(COOKIECUTTER_TARGET)
 
 .PHONY: cookiecutter-dirty
@@ -29,7 +29,7 @@ cookiecutter-dirty:
 
 .PHONY: cookiecutter-clean
 cookiecutter-clean: cookiecutter-dirty
-	@test -e $(MXENV_PATH)pip && $(MXENV_PATH)pip uninstall -y cookiecutter || :
+	@test -e $(MXENV_PYTHON) && $(MXENV_PYTHON) -m pip uninstall -y cookiecutter || :
 	@rm -f $(COOKIECUTTER_TARGET)
 
 DIRTY_TARGETS+=cookiecutter-dirty

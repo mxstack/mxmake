@@ -2,6 +2,13 @@
 
 ## 1.0a4 (unreleased)
 
+- Use `python -m pip` all over the place instead of `pip` executable.
+
+- Introduce `MXENV_PYTHON`. It defines the Python binary used for all
+  mxmake operations.
+
+- Remove ruff cache when running `make ruff-clean` target.
+
 - Add `wtr` (Web test runner) domain to `js` topic.
 
 

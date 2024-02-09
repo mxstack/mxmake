@@ -23,7 +23,7 @@
 BLACK_TARGET:=$(SENTINEL_FOLDER)/black.sentinel
 $(BLACK_TARGET): $(MXENV_TARGET)
 	@echo "Install Black"
-	@$(MXENV_PATH)pip install black
+	@$(MXENV_PYTHON) -m pip install black
 	@touch $(BLACK_TARGET)
 
 .PHONY: black-check
@@ -42,7 +42,7 @@ black-dirty:
 
 .PHONY: black-clean
 black-clean: black-dirty
-	@test -e $(MXENV_PATH)pip && $(MXENV_PATH)pip uninstall -y black || :
+	@test -e $(MXENV_PYTHON) && $(MXENV_PYTHON) -m pip uninstall -y black || :
 
 INSTALL_TARGETS+=$(BLACK_TARGET)
 CHECK_TARGETS+=black-check

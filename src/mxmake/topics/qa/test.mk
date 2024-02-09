@@ -28,7 +28,7 @@
 TEST_TARGET:=$(SENTINEL_FOLDER)/test.sentinel
 $(TEST_TARGET): $(MXENV_TARGET)
 	@echo "Install $(TEST_REQUIREMENTS)"
-	@$(MXENV_PATH)pip install $(TEST_REQUIREMENTS)
+	@$(MXENV_PYTHON) -m pip install $(TEST_REQUIREMENTS)
 	@touch $(TEST_TARGET)
 
 .PHONY: test
@@ -43,7 +43,7 @@ test-dirty:
 
 .PHONY: test-clean
 test-clean: test-dirty
-	@test -e $(MXENV_PATH)pip && $(MXENV_PATH)pip uninstall -y $(TEST_REQUIREMENTS) || :
+	@test -e $(MXENV_PYTHON) && $(MXENV_PYTHON) -m pip uninstall -y $(TEST_REQUIREMENTS) || :
 	@rm -rf .pytest_cache
 
 INSTALL_TARGETS+=$(TEST_TARGET)

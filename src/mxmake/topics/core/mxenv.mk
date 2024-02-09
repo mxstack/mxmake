@@ -79,8 +79,10 @@ endif
 # determine the executable path
 ifeq ("$(VENV_ENABLED)", "true")
 MXENV_PATH=$(VENV_FOLDER)/bin/
+MXENV_PYTHON=$(MXENV_PATH)python
 else
 MXENV_PATH=
+MXENV_PYTHON=$(PYTHON_BIN)
 endif
 
 MXENV_TARGET:=$(SENTINEL_FOLDER)/mxenv.sentinel
@@ -91,9 +93,10 @@ ifeq ("$(VENV_CREATE)", "true")
 	@$(PYTHON_BIN) -m venv $(VENV_FOLDER)
 endif
 endif
-	@$(MXENV_PATH)pip install -U pip setuptools wheel
-	@$(MXENV_PATH)pip install -U $(MXDEV)
-	@$(MXENV_PATH)pip install -U $(MXMAKE)
+	@$(MXENV_PYTHON) -m ensurepip -U
+	@$(MXENV_PYTHON) -m pip install -U pip setuptools wheel
+	@$(MXENV_PYTHON) -m pip install -U $(MXDEV)
+	@$(MXENV_PYTHON) -m pip install -U $(MXMAKE)
 	@touch $(MXENV_TARGET)
 
 .PHONY: mxenv
@@ -110,8 +113,8 @@ ifeq ("$(VENV_CREATE)", "true")
 	@rm -rf $(VENV_FOLDER)
 endif
 else
-	@$(MXENV_PATH)pip uninstall -y $(MXDEV)
-	@$(MXENV_PATH)pip uninstall -y $(MXMAKE)
+	@$(MXENV_PYTHON) -m pip uninstall -y $(MXDEV)
+	@$(MXENV_PYTHON) -m pip uninstall -y $(MXMAKE)
 endif
 
 INSTALL_TARGETS+=mxenv

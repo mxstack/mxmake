@@ -193,8 +193,10 @@ endif
 # determine the executable path
 ifeq ("$(VENV_ENABLED)", "true")
 MXENV_PATH=$(VENV_FOLDER)/bin/
+MXENV_PYTHON=$(MXENV_PATH)python
 else
 MXENV_PATH=
+MXENV_PYTHON=$(PYTHON_BIN)
 endif
 
 MXENV_TARGET:=$(SENTINEL_FOLDER)/mxenv.sentinel
@@ -205,9 +207,10 @@ ifeq ("$(VENV_CREATE)", "true")
 	@$(PYTHON_BIN) -m venv $(VENV_FOLDER)
 endif
 endif
-	@$(MXENV_PATH)pip install -U pip setuptools wheel
-	@$(MXENV_PATH)pip install -U $(MXDEV)
-	@$(MXENV_PATH)pip install -U $(MXMAKE)
+	@$(MXENV_PYTHON) -m ensurepip -U
+	@$(MXENV_PYTHON) -m pip install -U pip setuptools wheel
+	@$(MXENV_PYTHON) -m pip install -U $(MXDEV)
+	@$(MXENV_PYTHON) -m pip install -U $(MXMAKE)
 	@touch $(MXENV_TARGET)
 
 .PHONY: mxenv
@@ -224,8 +227,8 @@ ifeq ("$(VENV_CREATE)", "true")
 	@rm -rf $(VENV_FOLDER)
 endif
 else
-	@$(MXENV_PATH)pip uninstall -y $(MXDEV)
-	@$(MXENV_PATH)pip uninstall -y $(MXMAKE)
+	@$(MXENV_PYTHON) -m pip uninstall -y $(MXDEV)
+	@$(MXENV_PYTHON) -m pip uninstall -y $(MXMAKE)
 endif
 
 INSTALL_TARGETS+=mxenv
@@ -239,7 +242,7 @@ CLEAN_TARGETS+=mxenv-clean
 RUFF_TARGET:=$(SENTINEL_FOLDER)/ruff.sentinel
 $(RUFF_TARGET): $(MXENV_TARGET)
 	@echo "Install Ruff"
-	@$(MXENV_PATH)pip install ruff
+	@$(MXENV_PYTHON) -m pip install ruff
 	@touch $(RUFF_TARGET)
 
 .PHONY: ruff-check
@@ -258,7 +261,8 @@ ruff-dirty:
 
 .PHONY: ruff-clean
 ruff-clean: ruff-dirty
-	@test -e $(MXENV_PATH)pip && $(MXENV_PATH)pip uninstall -y ruff || :
+	@test -e $(MXENV_PYTHON) && $(MXENV_PYTHON) -m pip uninstall -y ruff || :
+	@rm -rf .ruff_cache
 
 INSTALL_TARGETS+=$(RUFF_TARGET)
 CHECK_TARGETS+=ruff-check
@@ -273,7 +277,7 @@ CLEAN_TARGETS+=ruff-clean
 ISORT_TARGET:=$(SENTINEL_FOLDER)/isort.sentinel
 $(ISORT_TARGET): $(MXENV_TARGET)
 	@echo "Install isort"
-	@$(MXENV_PATH)pip install isort
+	@$(MXENV_PYTHON) -m pip install isort
 	@touch $(ISORT_TARGET)
 
 .PHONY: isort-check
@@ -292,7 +296,7 @@ isort-dirty:
 
 .PHONY: isort-clean
 isort-clean: isort-dirty
-	@test -e $(MXENV_PATH)pip && $(MXENV_PATH)pip uninstall -y isort || :
+	@test -e $(MXENV_PYTHON) && $(MXENV_PYTHON) -m pip uninstall -y isort || :
 
 INSTALL_TARGETS+=$(ISORT_TARGET)
 CHECK_TARGETS+=isort-check
@@ -313,7 +317,7 @@ SPHINX_AUTOBUILD_BIN=$(MXENV_PATH)sphinx-autobuild
 DOCS_TARGET:=$(SENTINEL_FOLDER)/sphinx.sentinel
 $(DOCS_TARGET): $(MXENV_TARGET)
 	@echo "Install Sphinx"
-	@$(MXENV_PATH)pip install -U sphinx sphinx-autobuild $(DOCS_REQUIREMENTS)
+	@$(MXENV_PYTHON) -m pip install -U sphinx sphinx-autobuild $(DOCS_REQUIREMENTS)
 	@touch $(DOCS_TARGET)
 
 .PHONY: docs
@@ -332,6 +336,8 @@ docs-dirty:
 
 .PHONY: docs-clean
 docs-clean: docs-dirty
+	@test -e $(MXENV_PYTHON) && $(MXENV_PYTHON) -m pip uninstall -y \
+		sphinx sphinx-autobuild $(DOCS_REQUIREMENTS) || :
 	@rm -rf $(DOCS_TARGET_FOLDER)
 
 INSTALL_TARGETS+=$(DOCS_TARGET)
@@ -407,8 +413,8 @@ INSTALLED_PACKAGES=$(MXMAKE_FILES)/installed.txt
 PACKAGES_TARGET:=$(INSTALLED_PACKAGES)
 $(PACKAGES_TARGET): $(FILES_TARGET) $(ADDITIONAL_SOURCES_TARGETS)
 	@echo "Install python packages"
-	@$(MXENV_PATH)pip install -r $(FILES_TARGET)
-	@$(MXENV_PATH)pip freeze > $(INSTALLED_PACKAGES)
+	@$(MXENV_PYTHON) -m pip install -r $(FILES_TARGET)
+	@$(MXENV_PYTHON) -m pip freeze > $(INSTALLED_PACKAGES)
 	@touch $(PACKAGES_TARGET)
 
 .PHONY: packages
@@ -421,8 +427,8 @@ packages-dirty:
 .PHONY: packages-clean
 packages-clean:
 	@test -e $(FILES_TARGET) \
-		&& test -e $(MXENV_PATH)pip \
-		&& $(MXENV_PATH)pip uninstall -y -r $(FILES_TARGET) \
+		&& test -e $(MXENV_PYTHON) \
+		&& $(MXENV_PYTHON) -m pip uninstall -y -r $(FILES_TARGET) \
 		|| :
 	@rm -f $(PACKAGES_TARGET)
 
@@ -437,7 +443,7 @@ CLEAN_TARGETS+=packages-clean
 TEST_TARGET:=$(SENTINEL_FOLDER)/test.sentinel
 $(TEST_TARGET): $(MXENV_TARGET)
 	@echo "Install $(TEST_REQUIREMENTS)"
-	@$(MXENV_PATH)pip install $(TEST_REQUIREMENTS)
+	@$(MXENV_PYTHON) -m pip install $(TEST_REQUIREMENTS)
 	@touch $(TEST_TARGET)
 
 .PHONY: test
@@ -452,7 +458,7 @@ test-dirty:
 
 .PHONY: test-clean
 test-clean: test-dirty
-	@test -e $(MXENV_PATH)pip && $(MXENV_PATH)pip uninstall -y $(TEST_REQUIREMENTS) || :
+	@test -e $(MXENV_PYTHON) && $(MXENV_PYTHON) -m pip uninstall -y $(TEST_REQUIREMENTS) || :
 	@rm -rf .pytest_cache
 
 INSTALL_TARGETS+=$(TEST_TARGET)
@@ -466,7 +472,7 @@ DIRTY_TARGETS+=test-dirty
 COVERAGE_TARGET:=$(SENTINEL_FOLDER)/coverage.sentinel
 $(COVERAGE_TARGET): $(TEST_TARGET)
 	@echo "Install Coverage"
-	@$(MXENV_PATH)pip install -U coverage
+	@$(MXENV_PYTHON) -m pip install -U coverage
 	@touch $(COVERAGE_TARGET)
 
 .PHONY: coverage
@@ -481,7 +487,7 @@ coverage-dirty:
 
 .PHONY: coverage-clean
 coverage-clean: coverage-dirty
-	@test -e $(MXENV_PATH)pip && $(MXENV_PATH)pip uninstall -y coverage || :
+	@test -e $(MXENV_PYTHON) && $(MXENV_PYTHON) -m pip uninstall -y coverage || :
 	@rm -rf .coverage htmlcov
 
 INSTALL_TARGETS+=$(COVERAGE_TARGET)
@@ -495,7 +501,7 @@ CLEAN_TARGETS+=coverage-clean
 MYPY_TARGET:=$(SENTINEL_FOLDER)/mypy.sentinel
 $(MYPY_TARGET): $(MXENV_TARGET)
 	@echo "Install mypy"
-	@$(MXENV_PATH)pip install mypy $(MYPY_REQUIREMENTS)
+	@$(MXENV_PYTHON) -m pip install mypy $(MYPY_REQUIREMENTS)
 	@touch $(MYPY_TARGET)
 
 .PHONY: mypy
@@ -509,7 +515,7 @@ mypy-dirty:
 
 .PHONY: mypy-clean
 mypy-clean: mypy-dirty
-	@test -e $(MXENV_PATH)pip && $(MXENV_PATH)pip uninstall -y mypy || :
+	@test -e $(MXENV_PYTHON) && $(MXENV_PYTHON) -m pip uninstall -y mypy || :
 	@rm -rf .mypy_cache
 
 INSTALL_TARGETS+=$(MYPY_TARGET)
@@ -524,7 +530,7 @@ DIRTY_TARGETS+=mypy-dirty
 ZEST_RELEASER_TARGET:=$(SENTINEL_FOLDER)/zest-releaser.sentinel
 $(ZEST_RELEASER_TARGET): $(MXENV_TARGET)
 	@echo "Install zest.releaser"
-	@$(MXENV_PATH)pip install zest.releaser
+	@$(MXENV_PYTHON) -m pip install zest.releaser
 	@touch $(ZEST_RELEASER_TARGET)
 
 .PHONY: zest-releaser-prerelease
@@ -553,7 +559,7 @@ zest-releaser-dirty:
 
 .PHONY: zest-releaser-clean
 zest-releaser-clean: zest-releaser-dirty
-	@test -e $(MXENV_PATH)pip && $(MXENV_PATH)pip uninstall -y zest.releaser || :
+	@test -e $(MXENV_PYTHON) && $(MXENV_PYTHON) -m pip uninstall -y zest.releaser || :
 
 INSTALL_TARGETS+=$(ZEST_RELEASER_TARGET)
 DIRTY_TARGETS+=zest-releaser-dirty

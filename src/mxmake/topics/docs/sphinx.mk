@@ -39,7 +39,7 @@ SPHINX_AUTOBUILD_BIN=$(MXENV_PATH)sphinx-autobuild
 DOCS_TARGET:=$(SENTINEL_FOLDER)/sphinx.sentinel
 $(DOCS_TARGET): $(MXENV_TARGET)
 	@echo "Install Sphinx"
-	@$(MXENV_PATH)pip install -U sphinx sphinx-autobuild $(DOCS_REQUIREMENTS)
+	@$(MXENV_PYTHON) -m pip install -U sphinx sphinx-autobuild $(DOCS_REQUIREMENTS)
 	@touch $(DOCS_TARGET)
 
 .PHONY: docs
@@ -58,6 +58,8 @@ docs-dirty:
 
 .PHONY: docs-clean
 docs-clean: docs-dirty
+	@test -e $(MXENV_PYTHON) && $(MXENV_PYTHON) -m pip uninstall -y \
+		sphinx sphinx-autobuild $(DOCS_REQUIREMENTS) || :
 	@rm -rf $(DOCS_TARGET_FOLDER)
 
 INSTALL_TARGETS+=$(DOCS_TARGET)

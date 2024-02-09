@@ -29,7 +29,7 @@
 ZEST_RELEASER_TARGET:=$(SENTINEL_FOLDER)/zest-releaser.sentinel
 $(ZEST_RELEASER_TARGET): $(MXENV_TARGET)
 	@echo "Install zest.releaser"
-	@$(MXENV_PATH)pip install zest.releaser
+	@$(MXENV_PYTHON) -m pip install zest.releaser
 	@touch $(ZEST_RELEASER_TARGET)
 
 .PHONY: zest-releaser-prerelease
@@ -58,7 +58,7 @@ zest-releaser-dirty:
 
 .PHONY: zest-releaser-clean
 zest-releaser-clean: zest-releaser-dirty
-	@test -e $(MXENV_PATH)pip && $(MXENV_PATH)pip uninstall -y zest.releaser || :
+	@test -e $(MXENV_PYTHON) && $(MXENV_PYTHON) -m pip uninstall -y zest.releaser || :
 
 INSTALL_TARGETS+=$(ZEST_RELEASER_TARGET)
 DIRTY_TARGETS+=zest-releaser-dirty

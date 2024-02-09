@@ -23,7 +23,7 @@
 RUFF_TARGET:=$(SENTINEL_FOLDER)/ruff.sentinel
 $(RUFF_TARGET): $(MXENV_TARGET)
 	@echo "Install Ruff"
-	@$(MXENV_PATH)pip install ruff
+	@$(MXENV_PYTHON) -m pip install ruff
 	@touch $(RUFF_TARGET)
 
 .PHONY: ruff-check
@@ -42,7 +42,8 @@ ruff-dirty:
 
 .PHONY: ruff-clean
 ruff-clean: ruff-dirty
-	@test -e $(MXENV_PATH)pip && $(MXENV_PATH)pip uninstall -y ruff || :
+	@test -e $(MXENV_PYTHON) && $(MXENV_PYTHON) -m pip uninstall -y ruff || :
+	@rm -rf .ruff_cache
 
 INSTALL_TARGETS+=$(RUFF_TARGET)
 CHECK_TARGETS+=ruff-check

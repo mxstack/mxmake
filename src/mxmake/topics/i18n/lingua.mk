@@ -27,7 +27,7 @@
 LINGUA_TARGET:=$(SENTINEL_FOLDER)/lingua.sentinel
 $(LINGUA_TARGET): $(MXENV_TARGET)
 	@echo "Install Lingua"
-	@$(MXENV_PATH)pip install chameleon lingua $(LINGUA_PLUGINS)
+	@$(MXENV_PYTHON) -m pip install chameleon lingua $(LINGUA_PLUGINS)
 	@touch $(LINGUA_TARGET)
 
 PHONY: lingua-extract
@@ -46,7 +46,7 @@ lingua-dirty:
 
 .PHONY: lingua-clean
 lingua-clean: lingua-dirty
-	@test -e $(MXENV_PATH)pip && $(MXENV_PATH)pip uninstall -y \
+	@test -e $(MXENV_PYTHON) && $(MXENV_PYTHON) -m pip uninstall -y \
 		chameleon lingua $(LINGUA_PLUGINS) || :
 
 INSTALL_TARGETS+=$(LINGUA_TARGET)
