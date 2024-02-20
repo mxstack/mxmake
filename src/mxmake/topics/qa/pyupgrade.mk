@@ -24,7 +24,6 @@
 # pyupgrade
 ##############################################################################
 
-PYUPGRADE_PARAMETERS?=
 PYUPGRADE_TARGET:=$(SENTINEL_FOLDER)/pyupgrade.sentinel
 $(PYUPGRADE_TARGET): $(MXENV_TARGET)
 	@echo "Install pyupgrade"
