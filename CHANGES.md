@@ -17,6 +17,10 @@
 
 - Add pyupgrade based code formatter, see https://pypi.org/project/pyupgrade/.
 
+- Add `ZOPE_TEMPLATE_CHECKOUT` option to zope domain to allow pinning to a tag, branch or revision (uses cookiecutter `--checkout`).
+
+- Add phony target `cookiecutter` to be able to just install it.
+
 ## 1.0a3 (2024-02-06)
 
 - Add `typecheck` target and use it for mypy instead of `check` target.

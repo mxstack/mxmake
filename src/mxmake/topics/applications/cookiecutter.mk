@@ -23,6 +23,9 @@ $(COOKIECUTTER_TARGET): $(MXENV_TARGET)
 	@$(MXENV_PYTHON) -m pip install "cookiecutter>=2.6.0"
 	@touch $(COOKIECUTTER_TARGET)
 
+.PHONY: cookiecutter
+cookiecutter: $(COOKIECUTTER_TARGET)
+
 .PHONY: cookiecutter-dirty
 cookiecutter-dirty:
 	@rm -f $(COOKIECUTTER_TARGET)

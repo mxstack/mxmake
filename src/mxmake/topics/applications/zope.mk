@@ -14,6 +14,10 @@
 #:description = cookiecutter configuration file to use
 #:default = https://github.com/plone/cookiecutter-zope-instance
 #:
+#:[setting.ZOPE_TEMPLATE_CHECKOUT]
+#:description = cookiecutter branch, tag or commit to checkout from the ZOPE_TEMPLATE
+#:default = main
+#:
 #:[setting.ZOPE_BASE_FOLDER]
 #:description = The Zope folder "instance" will be generated relative to this existing folder.
 #:default = .
@@ -56,7 +60,7 @@ ${ZOPE_CONFIGURATION_FILE}:
 
 $(ZOPE_INSTANCE_TARGET): $(COOKIECUTTER_TARGET) $(ZOPE_CONFIGURATION_FILE)
 	@echo Create Plone/Zope configuration from $(ZOPE_TEMPLATE) to $(ZOPE_INSTANCE_FOLDER)
-	@$(MXENV_PATH)cookiecutter -f --no-input --config-file $(ZOPE_CONFIGURATION_FILE) --output-dir $(ZOPE_BASE_FOLDER) $(ZOPE_TEMPLATE)
+	@$(MXENV_PATH)cookiecutter -f --no-input --checkout ${ZOPE_TEMPLATE_CHECKOUT} --config-file $(ZOPE_CONFIGURATION_FILE) --output-dir $(ZOPE_BASE_FOLDER) $(ZOPE_TEMPLATE)
 
 .PHONY: zope-instance
 zope-instance: $(ZOPE_INSTANCE_TARGET) $(SOURCES)
