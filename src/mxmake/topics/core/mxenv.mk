@@ -81,10 +81,8 @@ endif
 ifeq ("$(VENV_ENABLED)", "true")
 export PATH:=$(shell pwd)/$(VENV_FOLDER)/bin/:$(shell pwd)/node_modules/.bin/:$(PATH)
 export VIRTUAL_ENV=$(VENV_FOLDER)
-MXENV_PATH=$(VENV_FOLDER)/bin/
-MXENV_PYTHON=$(MXENV_PATH)python
+MXENV_PYTHON=python
 else
-MXENV_PATH=
 MXENV_PYTHON=$(PRIMARY_PYTHON)
 endif
 

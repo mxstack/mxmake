@@ -21,7 +21,7 @@ omits=$(printf ",%s" "${omits[@]}")
 omits=${omits:1}
 {%- endif %}
 
-{{ mxenv_path }}coverage run \
+coverage run \
     --source=$sources \
 {% if omitpaths %}
     --omit=$omits \
@@ -32,6 +32,6 @@ omits=${omits:1}
 
 {% endfor %}
 
-{{ mxenv_path }}coverage report
-{{ mxenv_path }}coverage html
+coverage report
+coverage html
 {% endblock %}

@@ -5,14 +5,6 @@ import typing
 NAMESPACE = "mxmake-"
 
 
-def mxenv_path() -> str:
-    """MX environment path."""
-    path = os.environ.get("MXMAKE_MXENV_PATH", os.path.join("venv", "bin"))
-    if path and not path.endswith(os.path.sep):
-        path = f"{path}{os.path.sep}"
-    return path
-
-
 def mxmake_files() -> str:
     """Target folder for mxmake related file generation."""
     return os.environ.get("MXMAKE_FILES", os.path.join(".mxmake", "files"))

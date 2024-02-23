@@ -148,8 +148,7 @@ class TestTemplates(testing.RenderTestCase):
             {
                 "description": "Run tests",
                 "env": {"ENV_PARAM": "env_value"},
-                "testpaths": ["sources/package/src", "src"],
-                "mxenv_path": tempdir + os.path.sep,
+                "testpaths": ["sources/package/src", "src"]
             },
         )
         self.assertEqual(template.package_paths("inexistent"), [])
@@ -302,8 +301,7 @@ class TestTemplates(testing.RenderTestCase):
                     "sources/package/src/package/file2.py",
                     "src/local/file1.py",
                     "src/local/file2.py",
-                ],
-                "mxenv_path": tempdir + os.path.sep,
+                ]
             },
         )
         self.assertEqual(template.package_paths("inexistent"), [])
@@ -665,10 +663,8 @@ class TestTemplates(testing.RenderTestCase):
 
                 # determine the executable path
                 ifeq ("$(VENV_ENABLED)", "true")
-                MXENV_PATH=$(VENV_FOLDER)/bin/
-                MXENV_PYTHON=$(MXENV_PATH)python
+                MXENV_PYTHON=python
                 else
-                MXENV_PATH=
                 MXENV_PYTHON=$(PRIMARY_PYTHON)
                 endif
 
