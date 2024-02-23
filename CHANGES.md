@@ -2,7 +2,9 @@
 
 ## 1.0a4 (unreleased)
 
-- Get rid of `MXENV_PATH`. Instead, export `PATH` with virtual environment and node modules bin folders.
+- Export `PATH` with virtual environment and node modules bin folders.
+
+- Get rid of `MXENV_PATH`.
 
 - Rename `PYTHON_BIN` to `PRIMARY_PYTHON` in `mxenv` domain.
 

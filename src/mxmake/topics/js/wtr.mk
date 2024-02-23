@@ -25,4 +25,4 @@ NPM_DEV_PACKAGES+=\
 
 .PHONY: wtr
 wtr: $(NPM_TARGET)
-	@$(NPM_PREFIX)/node_modules/.bin/web-test-runner $(WTR_OPTIONS) --config $(WTR_CONFIG)
+	@web-test-runner $(WTR_OPTIONS) --config $(WTR_CONFIG)
