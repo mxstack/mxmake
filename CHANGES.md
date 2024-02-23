@@ -2,6 +2,10 @@
 
 ## 1.0a4 (unreleased)
 
+- Export `PATH` with virtual environment and node modules bin folders.
+
+- Get rid of `MXENV_PATH`.
+
 - Rename `PYTHON_BIN` to `PRIMARY_PYTHON` in `mxenv` domain.
 
 - Use `python -m pip` all over the place instead of `pip` executable.

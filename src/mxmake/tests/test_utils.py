@@ -8,14 +8,6 @@ class TestUtils(unittest.TestCase):
     def test_namespace(self):
         self.assertEqual(utils.NAMESPACE, "mxmake-")
 
-    def test_mxenv_path(self):
-        self.assertEqual(utils.mxenv_path(), os.path.join("venv", "bin") + os.path.sep)
-        os.environ["MXMAKE_MXENV_PATH"] = "other"
-        self.assertEqual(utils.mxenv_path(), "other" + os.path.sep)
-        os.environ["MXMAKE_MXENV_PATH"] = ""
-        self.assertEqual(utils.mxenv_path(), "")
-        del os.environ["MXMAKE_MXENV_PATH"]
-
     def test_mxmake_files(self):
         self.assertEqual(utils.mxmake_files(), os.path.join(".mxmake", "files"))
         os.environ["MXMAKE_FILES"] = "other"

@@ -3,7 +3,6 @@ from jinja2 import PackageLoader
 from mxmake.topics import Domain
 from mxmake.topics import load_topics
 from mxmake.utils import gh_actions_path
-from mxmake.utils import mxenv_path
 from mxmake.utils import mxmake_files
 from mxmake.utils import ns_name
 
@@ -158,7 +157,6 @@ class TestScript(EnvironmentTemplate, ShellScriptTemplate):
         return dict(
             description=self.description,
             env=self.env,
-            mxenv_path=mxenv_path(),
             testpaths=self.package_paths(ns_name("test-path")),
         )
 

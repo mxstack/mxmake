@@ -79,10 +79,10 @@ endif
 
 # determine the executable path
 ifeq ("$(VENV_ENABLED)", "true")
-MXENV_PATH=$(VENV_FOLDER)/bin/
-MXENV_PYTHON=$(MXENV_PATH)python
+export PATH:=$(shell pwd)/$(VENV_FOLDER)/bin/:$(PATH)
+export VIRTUAL_ENV=$(VENV_FOLDER)
+MXENV_PYTHON=python
 else
-MXENV_PATH=
 MXENV_PYTHON=$(PRIMARY_PYTHON)
 endif
 

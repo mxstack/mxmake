@@ -193,10 +193,10 @@ endif
 
 # determine the executable path
 ifeq ("$(VENV_ENABLED)", "true")
-MXENV_PATH=$(VENV_FOLDER)/bin/
-MXENV_PYTHON=$(MXENV_PATH)python
+export PATH:=$(shell pwd)/$(VENV_FOLDER)/bin/:$(PATH)
+export VIRTUAL_ENV=$(VENV_FOLDER)
+MXENV_PYTHON=python
 else
-MXENV_PATH=
 MXENV_PYTHON=$(PRIMARY_PYTHON)
 endif
 
@@ -249,12 +249,12 @@ $(RUFF_TARGET): $(MXENV_TARGET)
 .PHONY: ruff-check
 ruff-check: $(RUFF_TARGET)
 	@echo "Run ruff check"
-	@$(MXENV_PATH)ruff check $(RUFF_SRC)
+	@ruff check $(RUFF_SRC)
 
 .PHONY: ruff-format
 ruff-format: $(RUFF_TARGET)
 	@echo "Run ruff format"
-	@$(MXENV_PATH)ruff format $(RUFF_SRC)
+	@ruff format $(RUFF_SRC)
 
 .PHONY: ruff-dirty
 ruff-dirty:
@@ -284,12 +284,12 @@ $(ISORT_TARGET): $(MXENV_TARGET)
 .PHONY: isort-check
 isort-check: $(ISORT_TARGET)
 	@echo "Run isort check"
-	@$(MXENV_PATH)isort --check $(ISORT_SRC)
+	@isort --check $(ISORT_SRC)
 
 .PHONY: isort-format
 isort-format: $(ISORT_TARGET)
 	@echo "Run isort format"
-	@$(MXENV_PATH)isort $(ISORT_SRC)
+	@isort $(ISORT_SRC)
 
 .PHONY: isort-dirty
 isort-dirty:
@@ -312,8 +312,8 @@ CLEAN_TARGETS+=isort-clean
 # additional targets required for building docs.
 DOCS_TARGETS+=
 
-SPHINX_BIN=$(MXENV_PATH)sphinx-build
-SPHINX_AUTOBUILD_BIN=$(MXENV_PATH)sphinx-autobuild
+SPHINX_BIN=sphinx-build
+SPHINX_AUTOBUILD_BIN=sphinx-autobuild
 
 DOCS_TARGET:=$(SENTINEL_FOLDER)/sphinx.sentinel
 $(DOCS_TARGET): $(MXENV_TARGET)
@@ -357,13 +357,11 @@ MXMAKE_FILES?=$(MXMAKE_FOLDER)/files
 
 # set environment variables for mxmake
 define set_mxfiles_env
-	@export MXMAKE_MXENV_PATH=$(1)
-	@export MXMAKE_FILES=$(2)
+	@export MXMAKE_FILES=$(1)
 endef
 
 # unset environment variables for mxmake
 define unset_mxfiles_env
-	@unset MXMAKE_MXENV_PATH
 	@unset MXMAKE_FILES
 endef
 
@@ -380,9 +378,9 @@ FILES_TARGET:=requirements-mxdev.txt
 $(FILES_TARGET): $(PROJECT_CONFIG) $(MXENV_TARGET) $(SOURCES_TARGET) $(LOCAL_PACKAGE_FILES)
 	@echo "Create project files"
 	@mkdir -p $(MXMAKE_FILES)
-	$(call set_mxfiles_env,$(MXENV_PATH),$(MXMAKE_FILES))
-	@$(MXENV_PATH)mxdev -n -c $(PROJECT_CONFIG)
-	$(call unset_mxfiles_env,$(MXENV_PATH),$(MXMAKE_FILES))
+	$(call set_mxfiles_env,$(MXMAKE_FILES))
+	@mxdev -n -c $(PROJECT_CONFIG)
+	$(call unset_mxfiles_env)
 	@test -e $(MXMAKE_FILES)/pip.conf && cp $(MXMAKE_FILES)/pip.conf $(VENV_FOLDER)/pip.conf || :
 	@touch $(FILES_TARGET)
 
@@ -508,7 +506,7 @@ $(MYPY_TARGET): $(MXENV_TARGET)
 .PHONY: mypy
 mypy: $(PACKAGES_TARGET) $(MYPY_TARGET)
 	@echo "Run mypy"
-	@$(MXENV_PATH)mypy $(MYPY_SRC)
+	@mypy $(MYPY_SRC)
 
 .PHONY: mypy-dirty
 mypy-dirty:
@@ -537,22 +535,22 @@ $(ZEST_RELEASER_TARGET): $(MXENV_TARGET)
 .PHONY: zest-releaser-prerelease
 zest-releaser-prerelease: $(ZEST_RELEASER_TARGET)
 	@echo "Run prerelease"
-	@$(MXENV_PATH)prerelease
+	@prerelease
 
 .PHONY: zest-releaser-release
 zest-releaser-release: $(ZEST_RELEASER_TARGET)
 	@echo "Run release"
-	@$(MXENV_PATH)release
+	@release
 
 .PHONY: zest-releaser-postrelease
 zest-releaser-postrelease: $(ZEST_RELEASER_TARGET)
 	@echo "Run postrelease"
-	@$(MXENV_PATH)postrelease
+	@postrelease
 
 .PHONY: zest-releaser-fullrelease
 zest-releaser-fullrelease: $(ZEST_RELEASER_TARGET)
 	@echo "Run fullrelease"
-	@$(MXENV_PATH)fullrelease
+	@fullrelease
 
 .PHONY: zest-releaser-dirty
 zest-releaser-dirty:

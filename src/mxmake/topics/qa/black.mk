@@ -29,12 +29,12 @@ $(BLACK_TARGET): $(MXENV_TARGET)
 .PHONY: black-check
 black-check: $(BLACK_TARGET)
 	@echo "Run black checks"
-	@$(MXENV_PATH)black --check $(BLACK_SRC)
+	@black --check $(BLACK_SRC)
 
 .PHONY: black-format
 black-format: $(BLACK_TARGET)
 	@echo "Run black format"
-	@$(MXENV_PATH)black $(BLACK_SRC)
+	@black $(BLACK_SRC)
 
 .PHONY: black-dirty
 black-dirty:

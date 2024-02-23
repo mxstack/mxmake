@@ -33,7 +33,7 @@ $(MYPY_TARGET): $(MXENV_TARGET)
 .PHONY: mypy
 mypy: $(PACKAGES_TARGET) $(MYPY_TARGET)
 	@echo "Run mypy"
-	@$(MXENV_PATH)mypy $(MYPY_SRC)
+	@mypy $(MYPY_SRC)
 
 .PHONY: mypy-dirty
 mypy-dirty:

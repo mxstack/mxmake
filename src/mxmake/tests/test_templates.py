@@ -149,7 +149,6 @@ class TestTemplates(testing.RenderTestCase):
                 "description": "Run tests",
                 "env": {"ENV_PARAM": "env_value"},
                 "testpaths": ["sources/package/src", "src"],
-                "mxenv_path": tempdir + os.path.sep,
             },
         )
         self.assertEqual(template.package_paths("inexistent"), [])
@@ -181,14 +180,11 @@ class TestTemplates(testing.RenderTestCase):
                 trap unsetenv ERR INT
 
                 setenv
-
-                /.../zope-testrunner --auto-color --auto-progress \\
+                zope-testrunner --auto-color --auto-progress \\
                     --test-path=sources/package/src \\
                     --test-path=src \\
                     --module=$1
-
                 unsetenv
-
                 exit 0
                 """,
                 f.read(),
@@ -217,7 +213,7 @@ class TestTemplates(testing.RenderTestCase):
                 # Run tests
                 set -e
 
-                /.../zope-testrunner --auto-color --auto-progress \\
+                zope-testrunner --auto-color --auto-progress \\
                     --test-path=sources/package/src \\
                     --module=$1
 
@@ -249,7 +245,7 @@ class TestTemplates(testing.RenderTestCase):
                 # Run tests
                 set -e
 
-                /.../pytest \\
+                pytest \\
                     sources/package/src
 
                 exit 0
@@ -303,7 +299,6 @@ class TestTemplates(testing.RenderTestCase):
                     "src/local/file1.py",
                     "src/local/file2.py",
                 ],
-                "mxenv_path": tempdir + os.path.sep,
             },
         )
         self.assertEqual(template.package_paths("inexistent"), [])
@@ -348,7 +343,6 @@ class TestTemplates(testing.RenderTestCase):
                 trap unsetenv ERR INT
 
                 setenv
-
                 sources=(
                     sources/package/src/package
                     src/local
@@ -366,19 +360,16 @@ class TestTemplates(testing.RenderTestCase):
 
                 omits=$(printf ",%s" "${omits[@]}")
                 omits=${omits:1}
-
-                /.../coverage run \\
+                coverage run \\
                     --source=$sources \\
                     --omit=$omits \\
                     -m zope.testrunner --auto-color --auto-progress \\
                     --test-path=sources/package/src \\
                     --test-path=src
 
-                /.../coverage report
-                /.../coverage html
-
+                coverage report
+                coverage html
                 unsetenv
-
                 exit 0
                 """,
                 f.read(),
@@ -415,13 +406,14 @@ class TestTemplates(testing.RenderTestCase):
                 sources=$(printf ",%s" "${sources[@]}")
                 sources=${sources:1}
 
-                /.../coverage run \\
+
+                coverage run \\
                     --source=$sources \\
                     -m zope.testrunner --auto-color --auto-progress \\
                     --test-path=sources/package/src
 
-                /.../coverage report
-                /.../coverage html
+                coverage report
+                coverage html
 
                 exit 0
                 """,
@@ -459,13 +451,14 @@ class TestTemplates(testing.RenderTestCase):
                 sources=$(printf ",%s" "${sources[@]}")
                 sources=${sources:1}
 
-                /.../coverage run \\
+
+                coverage run \\
                     --source=$sources \\
                     -m pytest \\
                     sources/package/src
 
-                /.../coverage report
-                /.../coverage html
+                coverage report
+                coverage html
 
                 exit 0
                 """,
@@ -665,10 +658,10 @@ class TestTemplates(testing.RenderTestCase):
 
                 # determine the executable path
                 ifeq ("$(VENV_ENABLED)", "true")
-                MXENV_PATH=$(VENV_FOLDER)/bin/
-                MXENV_PYTHON=$(MXENV_PATH)python
+                export PATH:=$(shell pwd)/$(VENV_FOLDER)/bin/:$(PATH)
+                export VIRTUAL_ENV=$(VENV_FOLDER)
+                MXENV_PYTHON=python
                 else
-                MXENV_PATH=
                 MXENV_PYTHON=$(PRIMARY_PYTHON)
                 endif
 

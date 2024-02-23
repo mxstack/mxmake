@@ -41,6 +41,8 @@
 # npm
 ##############################################################################
 
+export PATH:=$(shell pwd)/$(NPM_PREFIX)/node_modules/.bin/:$(PATH)
+
 # case `system.dependencies` domain is included
 SYSTEM_DEPENDENCIES+=npm
 

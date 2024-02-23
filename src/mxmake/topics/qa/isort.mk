@@ -29,12 +29,12 @@ $(ISORT_TARGET): $(MXENV_TARGET)
 .PHONY: isort-check
 isort-check: $(ISORT_TARGET)
 	@echo "Run isort check"
-	@$(MXENV_PATH)isort --check $(ISORT_SRC)
+	@isort --check $(ISORT_SRC)
 
 .PHONY: isort-format
 isort-format: $(ISORT_TARGET)
 	@echo "Run isort format"
-	@$(MXENV_PATH)isort $(ISORT_SRC)
+	@isort $(ISORT_SRC)
 
 .PHONY: isort-dirty
 isort-dirty:

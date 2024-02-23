@@ -29,12 +29,12 @@ $(ZPRETTY_TARGET): $(MXENV_TARGET)
 .PHONY: zpretty-check
 zpretty-check: $(ZPRETTY_TARGET)
 	@echo "Run zpretty check in: $(ZPRETTY_SRC)"
-	@find $(ZPRETTY_SRC) -name '*.zcml' -or -name '*.xml' -exec $(MXENV_PATH)zpretty --check {} +
+	@find $(ZPRETTY_SRC) -name '*.zcml' -or -name '*.xml' -exec zpretty --check {} +
 
 .PHONY: zpretty-format
 zpretty-format: $(ZPRETTY_TARGET)
 	@echo "Run zpretty format in: $(ZPRETTY_SRC)"
-	@find $(ZPRETTY_SRC) -name '*.zcml' -or -name '*.xml' -exec $(MXENV_PATH)zpretty -i {} +
+	@find $(ZPRETTY_SRC) -name '*.zcml' -or -name '*.xml' -exec zpretty -i {} +
 
 .PHONY: zpretty-dirty
 zpretty-dirty:

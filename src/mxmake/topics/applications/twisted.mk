@@ -27,7 +27,7 @@ $(TWISTED_TARGET): $(MXENV_TARGET)
 .PHONY: twisted-start
 twisted-start: $(TWISTED_TARGET)
 	@echo "Run Twisted"
-	@$(MXENV_PATH)twistd $(TWISTED_TWISTD_OPTIONS) $(TWISTED_TAC_FILE)
+	@twistd $(TWISTED_TWISTD_OPTIONS) $(TWISTED_TAC_FILE)
 
 .PHONY: twisted-dirty
 twisted-dirty:

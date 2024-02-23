@@ -40,7 +40,6 @@ class template_directory:
         def wrapper(*a):
             tempdir = tempfile.mkdtemp()
             os.environ["MXMAKE_FILES"] = tempdir
-            os.environ["MXMAKE_MXENV_PATH"] = tempdir
             os.environ["MXMAKE_GH_ACTIONS_PATH"] = tempdir
             try:
                 if self.reset_registry:
@@ -51,7 +50,6 @@ class template_directory:
             finally:
                 shutil.rmtree(tempdir)
                 del os.environ["MXMAKE_FILES"]
-                del os.environ["MXMAKE_MXENV_PATH"]
                 del os.environ["MXMAKE_GH_ACTIONS_PATH"]
 
         return wrapper
