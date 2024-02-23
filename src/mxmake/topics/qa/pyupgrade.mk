@@ -33,7 +33,7 @@ $(PYUPGRADE_TARGET): $(MXENV_TARGET)
 .PHONY: pyupgrade-format
 pyupgrade-format: $(PYUPGRADE_TARGET)
 	@echo "Run pyupgrade format in: $(PYUPGRADE_SRC)"
-	@find $(PYUPGRADE_SRC) -name '*.py' -exec $(MXENV_PATH)pyupgrade $(PYUPGRADE_PARAMETERS) {} +
+	@find $(PYUPGRADE_SRC) -name '*.py' -exec pyupgrade $(PYUPGRADE_PARAMETERS) {} +
 
 .PHONY: pyupgrade-dirty
 pyupgrade-dirty:

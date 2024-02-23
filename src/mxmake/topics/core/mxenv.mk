@@ -79,6 +79,8 @@ endif
 
 # determine the executable path
 ifeq ("$(VENV_ENABLED)", "true")
+export PATH?=$(shell pwd)/$(VENV_FOLDER)/bin/:$(shell pwd)/node_modules/.bin/:$(PATH)
+export VIRTUAL_ENV=$(VENV_FOLDER)
 MXENV_PATH=$(VENV_FOLDER)/bin/
 MXENV_PYTHON=$(MXENV_PATH)python
 else

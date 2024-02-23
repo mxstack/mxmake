@@ -35,22 +35,22 @@ $(ZEST_RELEASER_TARGET): $(MXENV_TARGET)
 .PHONY: zest-releaser-prerelease
 zest-releaser-prerelease: $(ZEST_RELEASER_TARGET)
 	@echo "Run prerelease"
-	@$(MXENV_PATH)prerelease
+	@prerelease
 
 .PHONY: zest-releaser-release
 zest-releaser-release: $(ZEST_RELEASER_TARGET)
 	@echo "Run release"
-	@$(MXENV_PATH)release
+	@release
 
 .PHONY: zest-releaser-postrelease
 zest-releaser-postrelease: $(ZEST_RELEASER_TARGET)
 	@echo "Run postrelease"
-	@$(MXENV_PATH)postrelease
+	@postrelease
 
 .PHONY: zest-releaser-fullrelease
 zest-releaser-fullrelease: $(ZEST_RELEASER_TARGET)
 	@echo "Run fullrelease"
-	@$(MXENV_PATH)fullrelease
+	@fullrelease
 
 .PHONY: zest-releaser-dirty
 zest-releaser-dirty:

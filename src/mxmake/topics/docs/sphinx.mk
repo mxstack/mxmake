@@ -33,8 +33,8 @@
 # additional targets required for building docs.
 DOCS_TARGETS+=
 
-SPHINX_BIN=$(MXENV_PATH)sphinx-build
-SPHINX_AUTOBUILD_BIN=$(MXENV_PATH)sphinx-autobuild
+SPHINX_BIN=sphinx-build
+SPHINX_AUTOBUILD_BIN=sphinx-autobuild
 
 DOCS_TARGET:=$(SENTINEL_FOLDER)/sphinx.sentinel
 $(DOCS_TARGET): $(MXENV_TARGET)

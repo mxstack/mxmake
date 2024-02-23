@@ -29,12 +29,12 @@ $(RUFF_TARGET): $(MXENV_TARGET)
 .PHONY: ruff-check
 ruff-check: $(RUFF_TARGET)
 	@echo "Run ruff check"
-	@$(MXENV_PATH)ruff check $(RUFF_SRC)
+	@ruff check $(RUFF_SRC)
 
 .PHONY: ruff-format
 ruff-format: $(RUFF_TARGET)
 	@echo "Run ruff format"
-	@$(MXENV_PATH)ruff format $(RUFF_SRC)
+	@ruff format $(RUFF_SRC)
 
 .PHONY: ruff-dirty
 ruff-dirty:

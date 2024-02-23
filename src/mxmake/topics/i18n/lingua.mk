@@ -33,7 +33,7 @@ $(LINGUA_TARGET): $(MXENV_TARGET)
 PHONY: lingua-extract
 lingua-extract: $(LINGUA_TARGET)
 	@echo "Extract messages"
-	@$(MXENV_PATH)pot-create \
+	@pot-create \
 		"$(LINGUA_SEARCH_PATH)" \
 		-o "$(GETTEXT_LOCALES_PATH)/$(GETTEXT_DOMAIN).pot"
 
