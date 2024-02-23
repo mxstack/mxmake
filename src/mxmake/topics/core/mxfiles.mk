@@ -55,7 +55,7 @@ $(FILES_TARGET): $(PROJECT_CONFIG) $(MXENV_TARGET) $(SOURCES_TARGET) $(LOCAL_PAC
 	@mkdir -p $(MXMAKE_FILES)
 	$(call set_mxfiles_env,$(MXENV_PATH),$(MXMAKE_FILES))
 	@mxdev -n -c $(PROJECT_CONFIG)
-	$(call unset_mxfiles_env,$(MXENV_PATH),$(MXMAKE_FILES))
+	$(call unset_mxfiles_env)
 	@test -e $(MXMAKE_FILES)/pip.conf && cp $(MXMAKE_FILES)/pip.conf $(VENV_FOLDER)/pip.conf || :
 	@touch $(FILES_TARGET)
 
