@@ -47,6 +47,14 @@
 #:description = Optional makefile to include before default targets. This can
 #:  be used to provide custom targets or hook up to existing targets.
 #:default = include.mk
+#:
+#:[setting.EXTRA_PATH]
+#:description = Optional additional directories to be added to PATH in format
+#:  `/path/to/dir/:/path/to/other/dir`. Gets inserted first, thus gets searched
+#:  first.
+#:default =
+
+export PATH:=$(if $(EXTRA_PATH),"$(EXTRA_PATH):","")$(PATH)
 
 # Defensive settings for make: https://tech.davis-hansson.com/p/make/
 SHELL:=bash

@@ -523,6 +523,7 @@ class TestTemplates(testing.RenderTestCase):
             "core.base.RUN_TARGET": "",
             "core.base.CLEAN_FS": "",
             "core.base.INCLUDE_MAKEFILE": "include.mk",
+            "core.base.EXTRA_PATH": "",
             "core.mxenv.PRIMARY_PYTHON": "python3",
             "core.mxenv.PYTHON_MIN_VERSION": "3.7",
             "core.mxenv.VENV_ENABLED": "true",
@@ -568,6 +569,12 @@ class TestTemplates(testing.RenderTestCase):
                 # be used to provide custom targets or hook up to existing targets.
                 # Default: include.mk
                 INCLUDE_MAKEFILE?=include.mk
+
+                # Optional additional directories to be added to PATH in format
+                # `/path/to/dir/:/path/to/other/dir`. Gets inserted first, thus gets searched
+                # first.
+                # No default value.
+                EXTRA_PATH?=
 
                 ## core.mxenv
 
@@ -616,6 +623,8 @@ class TestTemplates(testing.RenderTestCase):
                 CLEAN_TARGETS?=
                 PURGE_TARGETS?=
 
+                export PATH:=$(if $(EXTRA_PATH),"$(EXTRA_PATH):","")$(PATH)
+
                 # Defensive settings for make: https://tech.davis-hansson.com/p/make/
                 SHELL:=bash
                 .ONESHELL:
@@ -658,7 +667,7 @@ class TestTemplates(testing.RenderTestCase):
 
                 # determine the executable path
                 ifeq ("$(VENV_ENABLED)", "true")
-                export PATH:=$(shell pwd)/$(VENV_FOLDER)/bin/:$(PATH)
+                export PATH:=$(shell pwd)/$(VENV_FOLDER)/bin:$(PATH)
                 export VIRTUAL_ENV=$(VENV_FOLDER)
                 MXENV_PYTHON=python
                 else
