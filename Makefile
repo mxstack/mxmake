@@ -157,7 +157,7 @@ CHECK_TARGETS?=
 TYPECHECK_TARGETS?=
 FORMAT_TARGETS?=
 
-export PATH:=$(if $(EXTRA_PATH),"$(EXTRA_PATH):","")$(PATH)
+export PATH:=$(if $(EXTRA_PATH),$(EXTRA_PATH):,)$(PATH)
 
 # Defensive settings for make: https://tech.davis-hansson.com/p/make/
 SHELL:=bash
