@@ -27,7 +27,7 @@
 PYUPGRADE_TARGET:=$(SENTINEL_FOLDER)/pyupgrade.sentinel
 $(PYUPGRADE_TARGET): $(MXENV_TARGET)
 	@echo "Install pyupgrade"
-	@$(MXENV_PYTHON) -m pip install pyupgrade
+	@$(PYTHON_PACKAGE_COMMAND) install pyupgrade
 	@touch $(PYUPGRADE_TARGET)
 
 .PHONY: pyupgrade-format

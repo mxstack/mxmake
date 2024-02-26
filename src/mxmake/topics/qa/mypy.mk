@@ -27,7 +27,7 @@
 MYPY_TARGET:=$(SENTINEL_FOLDER)/mypy.sentinel
 $(MYPY_TARGET): $(MXENV_TARGET)
 	@echo "Install mypy"
-	@$(MXENV_PYTHON) -m pip install mypy $(MYPY_REQUIREMENTS)
+	@$(PYTHON_PACKAGE_COMMAND) install mypy $(MYPY_REQUIREMENTS)
 	@touch $(MYPY_TARGET)
 
 .PHONY: mypy

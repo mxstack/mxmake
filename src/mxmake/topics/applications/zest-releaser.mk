@@ -29,7 +29,7 @@
 ZEST_RELEASER_TARGET:=$(SENTINEL_FOLDER)/zest-releaser.sentinel
 $(ZEST_RELEASER_TARGET): $(MXENV_TARGET)
 	@echo "Install zest.releaser"
-	@$(MXENV_PYTHON) -m pip install zest.releaser
+	@$(PYTHON_PACKAGE_COMMAND) install zest.releaser
 	@touch $(ZEST_RELEASER_TARGET)
 
 .PHONY: zest-releaser-prerelease

@@ -22,7 +22,7 @@
 COVERAGE_TARGET:=$(SENTINEL_FOLDER)/coverage.sentinel
 $(COVERAGE_TARGET): $(TEST_TARGET)
 	@echo "Install Coverage"
-	@$(MXENV_PYTHON) -m pip install -U coverage
+	@$(PYTHON_PACKAGE_COMMAND) install -U coverage
 	@touch $(COVERAGE_TARGET)
 
 .PHONY: coverage

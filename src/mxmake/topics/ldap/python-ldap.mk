@@ -23,7 +23,7 @@ SYSTEM_DEPENDENCIES+=python3-dev libldap2-dev libssl-dev libsasl2-dev
 
 PYTHON_LDAP_TARGET:=$(SENTINEL_FOLDER)/python-ldap.sentinel
 $(PYTHON_LDAP_TARGET): $(MXENV_TARGET) $(OPENLDAP_TARGET)
-	@$(MXENV_PYTHON) -m pip install \
+	@$(PYTHON_PACKAGE_COMMAND) install \
 		--force-reinstall \
 		python-ldap
 	@touch $(PYTHON_LDAP_TARGET)

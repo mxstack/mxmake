@@ -587,6 +587,15 @@ class TestTemplates(testing.RenderTestCase):
                 # Default: 3.7
                 PYTHON_MIN_VERSION?=3.7
 
+                # Install packages using the given package installer method.
+                # Supported are `pip` and `uv`. If uv is used, its global availability is
+                # checked. Otherwise, is is installed, either in the virtual environment or
+                # using the `PRIMARY_PYTHON`, dependent on the `VENV_ENABLED` setting. If
+                # `VENV_ENABLED` and uv is selected, uv is used to create the virtual
+                # environment.
+                # Default: pip
+                PYTHON_PACKAGE_INSTALLER?=pip
+
                 # Flag whether to use virtual environment. If `false`, the
                 # interpreter according to `PRIMARY_PYTHON` found in `PATH` is used.
                 # Default: true
@@ -683,9 +692,9 @@ class TestTemplates(testing.RenderTestCase):
                 endif
                 endif
                 	@$(MXENV_PYTHON) -m ensurepip -U
-                	@$(MXENV_PYTHON) -m pip install -U pip setuptools wheel
-                	@$(MXENV_PYTHON) -m pip install -U $(MXDEV)
-                	@$(MXENV_PYTHON) -m pip install -U $(MXMAKE)
+                	@$(PYTHON_PACKAGE_COMMAND) install -U pip setuptools wheel
+                	@$(PYTHON_PACKAGE_COMMAND) install -U $(MXDEV)
+                	@$(PYTHON_PACKAGE_COMMAND) install -U $(MXMAKE)
                 	@touch $(MXENV_TARGET)
 
                 .PHONY: mxenv
@@ -702,8 +711,8 @@ class TestTemplates(testing.RenderTestCase):
                 	@rm -rf $(VENV_FOLDER)
                 endif
                 else
-                	@$(MXENV_PYTHON) -m pip uninstall -y $(MXDEV)
-                	@$(MXENV_PYTHON) -m pip uninstall -y $(MXMAKE)
+                	@$(PYTHON_PACKAGE_COMMAND) uninstall -y $(MXDEV)
+                	@$(PYTHON_PACKAGE_COMMAND) uninstall -y $(MXMAKE)
                 endif
 
                 INSTALL_TARGETS+=mxenv

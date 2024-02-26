@@ -23,7 +23,7 @@
 BLACK_TARGET:=$(SENTINEL_FOLDER)/black.sentinel
 $(BLACK_TARGET): $(MXENV_TARGET)
 	@echo "Install Black"
-	@$(MXENV_PYTHON) -m pip install black
+	@$(PYTHON_PACKAGE_COMMAND) install black
 	@touch $(BLACK_TARGET)
 
 .PHONY: black-check

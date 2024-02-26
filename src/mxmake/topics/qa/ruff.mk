@@ -23,7 +23,7 @@
 RUFF_TARGET:=$(SENTINEL_FOLDER)/ruff.sentinel
 $(RUFF_TARGET): $(MXENV_TARGET)
 	@echo "Install Ruff"
-	@$(MXENV_PYTHON) -m pip install ruff
+	@$(PYTHON_PACKAGE_COMMAND) install ruff
 	@touch $(RUFF_TARGET)
 
 .PHONY: ruff-check
