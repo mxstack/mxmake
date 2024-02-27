@@ -165,7 +165,9 @@ class Topic:
 
 @functools.lru_cache(maxsize=4096)
 def load_topics() -> typing.List[Topic]:
-    return [ep.load() for ep in entry_points(group="mxmake.topics")]
+    eps = entry_points()
+    ep_topics = [ep for ep in eps if ep.group == "mxmake.topics"]
+    return [ep.load() for ep in ep_topics]
 
 
 def get_topic(name: str) -> Topic:
