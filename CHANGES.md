@@ -2,6 +2,18 @@
 
 ## 1.0a4 (unreleased)
 
+- Support `mxmake update` command, updating the Makefile without prompting for settings.
+
+- Use importlib.metadata to load entrypoints.
+
+- Add support for uv as fast alternative to pip #25.
+
+- Remove Python 3.7 from CI. Still works though.
+
+- Run test on GH-Actions on platform macos-latest.
+
+- Use `pathlib.Path` instead of `os.path`.
+
 - Add `EXTRA_PATH` setting to `base` domain in `core` topic. Can be used to
   specify additional directories added to environment `PATH`.
 
@@ -11,10 +23,7 @@
 
 - Rename `PYTHON_BIN` to `PRIMARY_PYTHON` in `mxenv` domain.
 
-- Use `python -m pip` all over the place instead of `pip` executable.
-
-- Introduce `MXENV_PYTHON`. It defines the Python binary used for all
-  mxmake operations.
+- Introduce `MXENV_PYTHON`. It defines the Python executable used for mxmake operations.
 
 - Remove ruff cache when running `make ruff-clean` target.
 
@@ -27,18 +36,6 @@
 - Add `ZOPE_TEMPLATE_CHECKOUT` option to zope domain to allow pinning to a tag, branch or revision (uses cookiecutter `--checkout`).
 
 - Add phony target `cookiecutter` to be able to just install it.
-
-- Add support for uv as fast alternative to pip #25.
-
-- Run test on GH-Actions on platform macos-latest.
-
-- Drop Python 3.7 support.
-
-- Use `pathlib.Path` instead of `os.path`.
-
-- Support `mxmake update` command, updating the Makefile without prompting for settings.
-
-- Use importlib.metadata to load entrypoints.
 
 ## 1.0a3 (2024-02-06)
 
