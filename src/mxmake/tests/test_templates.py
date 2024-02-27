@@ -699,7 +699,7 @@ class TestTemplates(testing.RenderTestCase):
                 $(MXENV_TARGET): $(SENTINEL)
                 ifeq ("$(VENV_ENABLED)", "true")
                 ifeq ("$(VENV_CREATE)", "true")
-                ifeq ("$(PYTHON_PACKAGE_INSTALLER)$(MXENV_UV_GLOBAL)", "uvtrue")
+                ifeq ("$(PYTHON_PACKAGE_INSTALLER)$(MXENV_UV_GLOBAL)","uvtrue")
                 	@echo "Setup Python Virtual Environment using package 'uv' at '$(VENV_FOLDER)'"
                 	@uv venv -p $(PRIMARY_PYTHON) --seed $(VENV_FOLDER)
                 else
@@ -707,7 +707,7 @@ class TestTemplates(testing.RenderTestCase):
                 	@$(PRIMARY_PYTHON) -m venv $(VENV_FOLDER)
                 	@$(MXENV_PYTHON) -m ensurepip -U
                 endif
-                ifeq ("$(PYTHON_PACKAGE_INSTALLER)$(MXENV_UV_GLOBAL)", "uvfalse")
+                ifeq ("$(PYTHON_PACKAGE_INSTALLER)$(MXENV_UV_GLOBAL)","uvfalse")
                 	@echo "Install uv"
                 	@$(MXENV_PYTHON) -m pip install uv
                 endif
