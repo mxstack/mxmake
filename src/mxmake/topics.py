@@ -142,7 +142,7 @@ class Domain:
             fd.write(line)
 
 
-@dataclass
+@dataclass(unsafe_hash=True)
 class Topic:
     name: str
     directory: Path
@@ -181,7 +181,10 @@ def load_topics() -> typing.List[Topic]:
         if "mxmake.topics" not in eps:
             return []
         topics_eps = eps["mxmake.topics"]  # type: ignore
-    return [ep.load() for ep in topics_eps]  # type: ignore
+    # XXX: for some reasons entry points are loaded twice. not sure if this
+    #      is a glitch when installing with uv or something related to
+    #      importlib.metadata.entry_points
+    return list(set([ep.load() for ep in topics_eps]))  # type: ignore
 
 
 def get_topic(name: str) -> Topic:
