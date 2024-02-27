@@ -91,15 +91,11 @@ list_parser.add_argument("-d", "--domain", help="Domain name")
 
 
 ##############################################################################
-# init
+# init/update
 ##############################################################################
 
 
-def init_command(args: argparse.Namespace):
-    print("\n#######################")
-    print("# mxmake initialization")
-    print("#######################\n")
-
+def create_config(prompt: bool):
     # obtain target folder
     target_folder = Path.cwd()
 
@@ -108,7 +104,7 @@ def init_command(args: argparse.Namespace):
 
     # obtain topics to include
     topics = load_topics()
-    if args.update:
+    if not prompt:
         print("Update Makefile without prompting for settings.")
         topic_choice = {"topic": list(parser.topics)}
     else:
@@ -140,7 +136,7 @@ def init_command(args: argparse.Namespace):
         # domain generated yet
         else:
             selected_fqns = [domain.fqn for domain in topic.domains]
-        if args.update:
+        if not prompt:
             print(
                 f"- update topic {topic_name} with domains "
                 f"{', '.join([fqdn.split('.')[1] for fqdn in selected_fqns])}."
@@ -179,12 +175,12 @@ def init_command(args: argparse.Namespace):
             if sfqn in parser.settings:
                 setting_default = parser.settings[sfqn]
             domain_settings[sfqn] = setting_default
-            if args.update:
+            if not prompt:
                 continue
             settings_question.append(
                 inquirer.Text(sfqn, message=sfqn, default=setting_default)
             )
-        if not args.update:
+        if prompt:
             print(f"Edit Settings for {domain.fqn}?")
             yn = inquirer.text(message="y/N")
             if yn in ["Y", "y"]:
@@ -202,7 +198,7 @@ def init_command(args: argparse.Namespace):
         print("Skip generation of Makefile, nothing selected")
 
     # mx ini generation
-    if not args.update and not (target_folder / "mx.ini").exists():
+    if prompt and not (target_folder / "mx.ini").exists():
         print("\n``mx.ini`` configuration file not exists. Create One?")
         yn = inquirer.text(message="Y/n")
         if yn not in ["n", "N"]:
@@ -211,13 +207,13 @@ def init_command(args: argparse.Namespace):
                 target_folder, domains, get_template_environment()
             )
             mx_ini_template.write()
-    elif args.update and not (target_folder / "mx.ini").exists():
+    elif not prompt and not (target_folder / "mx.ini").exists():
         print("No generation of mx configuration on update (file does not exist).")
     else:
         print("Skip generation of mx configuration file, file already exists")
 
     # ci generation
-    if not args.update:
+    if prompt:
         print("\nDo you want to create CI related files?")
         yn = inquirer.text(message="y/N")
         if yn in ["y", "Y"]:
@@ -234,14 +230,28 @@ def init_command(args: argparse.Namespace):
                 factory(get_template_environment()).write()
 
 
+def init_command(args: argparse.Namespace):
+    print("\n#######################")
+    print("# mxmake initialization")
+    print("#######################\n")
+
+    create_config(prompt=True)
+
+
 init_parser = command_parsers.add_parser("init", help="Initialize project")
-init_parser.add_argument(
-    "-u",
-    "--update",
-    help="Update the Makefile without prompting for settings",
-    action="store_true",
-)
 init_parser.set_defaults(func=init_command)
+
+
+def update_command(args: argparse.Namespace):
+    print("\n###############")
+    print("# mxmake update")
+    print("###############\n")
+
+    create_config(prompt=False)
+
+
+update_parser = command_parsers.add_parser("update", help="Update makefile")
+update_parser.set_defaults(func=update_command)
 
 
 ##############################################################################

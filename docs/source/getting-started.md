@@ -61,10 +61,6 @@ Thus they are often prefixed.
 
 Each setting provides a description and an optional default value.
 
-To update the Makefile without beeing prompted interactive, run:
-
-```shell
-mxmake init --update
-```
+To update the Makefile without beeing prompted interactive, run `mxmake update`.
 
 For details read the chapter [on topics and it's domains](topics-and-domains).

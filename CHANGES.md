@@ -36,7 +36,8 @@
 
 - Use `pathlib.Path` instead of `os.path`.
 
-- Support `--update` flag in `mxmake init` command, updating the Makefile without prompting for settings.
+- Support `mxmake update` command, updating the Makefile without prompting for settings.
+
 - Use importlib.metadata to load entrypoints.
 
 ## 1.0a3 (2024-02-06)
