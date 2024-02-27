@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import os
 import typing
 
@@ -5,15 +7,18 @@ import typing
 NAMESPACE = "mxmake-"
 
 
-def mxmake_files() -> str:
+def mxmake_files() -> Path:
     """Target folder for mxmake related file generation."""
-    return os.environ.get("MXMAKE_FILES", os.path.join(".mxmake", "files"))
+    return Path(os.environ.get("MXMAKE_FILES", Path(".mxmake") / "files"))
 
 
-def gh_actions_path() -> str:
+def gh_actions_path() -> Path:
     """Target folder for github actions related file generation."""
-    return os.environ.get(
-        "MXMAKE_GH_ACTIONS_PATH", os.path.join(".github", "workflows")
+    return Path(
+        os.environ.get(
+            "MXMAKE_GH_ACTIONS_PATH",
+            Path(".github") / "workflows",
+        )
     )
 
 

@@ -5,7 +5,6 @@ from mxmake import testing
 from mxmake import topics
 
 import configparser
-import os
 import typing
 import unittest
 
@@ -89,8 +88,8 @@ class TestTopics(unittest.TestCase):
 
     @testing.temp_directory
     def test_Domain(self, tmpdir):
-        domain_path = os.path.join(tmpdir, "domain.mk")
-        with open(domain_path, "w") as f:
+        domain_path = tmpdir / "domain.mk"
+        with domain_path.open("w") as f:
             f.write(MAKEFILE_TEMPLATE)
 
         domain = topics.Domain(topic="topic", name="example", file=domain_path)
@@ -134,27 +133,27 @@ class TestTopics(unittest.TestCase):
         self.assertEqual(settings[0].description, "Setting A")
         self.assertEqual(settings[0].default, "A")
 
-        out_path = os.path.join(tmpdir, "domain_out.mk")
-        with open(out_path, "w") as fd:
+        out_path = tmpdir / "domain_out.mk"
+        with out_path.open("w") as fd:
             domain.write_to(fd)
-        with open(out_path) as fd:
+        with out_path.open() as fd:
             out_content = fd.readlines()
         self.assertEqual(out_content[0], "SETTING_A?=A\n")
         self.assertEqual(out_content[-1], "\t@rm -f $(EXAMPLE_TARGET)\n")
 
     @testing.temp_directory
     def test_Topic(self, tmpdir):
-        topicdir = os.path.join(tmpdir, "topic")
-        os.mkdir(topicdir)
-        with open(os.path.join(topicdir, "metadata.ini"), "w") as f:
+        topicdir = tmpdir / "topic"
+        topicdir.mkdir()
+        with (topicdir / "metadata.ini").open("w") as f:
             f.write("[metadata]\n")
             f.write("title = Title\n")
             f.write("description = Description\n")
-        with open(os.path.join(topicdir, "domain-a.mk"), "w") as f:
+        with (topicdir / "domain-a.mk").open("w") as f:
             f.write("\n")
-        with open(os.path.join(topicdir, "domain-b.mk"), "w") as f:
+        with (topicdir / "domain-b.mk").open("w") as f:
             f.write("\n")
-        with open(os.path.join(topicdir, "somethinelse"), "w") as f:
+        with (topicdir / "somethinelse").open("w") as f:
             f.write("\n")
 
         topic = topics.Topic(name="topic", directory=topicdir)

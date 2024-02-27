@@ -1,12 +1,12 @@
 from collections import Counter
 from dataclasses import dataclass
+from pathlib import Path
 from pkg_resources import iter_entry_points
 
 import configparser
 import functools
 import io
 import operator
-import os
 import typing
 
 
@@ -27,7 +27,7 @@ class Target:
 class Domain:
     topic: str
     name: str
-    file: str
+    file: Path
 
     def __post_init__(self) -> None:
         # Runtime dependencies contain the list of dependencies used for
@@ -44,9 +44,9 @@ class Domain:
 
     @property
     def file_data(self) -> typing.List[str]:
-        if hasattr(self, "_file_data"):
-            return self._file_data
-        with open(self.file) as f:
+        if (_file_data := getattr(self, "_file_data", None)) is not None:
+            return _file_data
+        with self.file.open() as f:
             self.file_data = f.readlines()
         return self._file_data
 
@@ -56,8 +56,8 @@ class Domain:
 
     @property
     def config(self) -> configparser.ConfigParser:
-        if hasattr(self, "_config"):
-            return self._config
+        if (_config := getattr(self, "_config", None)) is not None:
+            return _config
         data = io.StringIO()
         for line in self.file_data:
             if line.startswith("#:"):
@@ -136,11 +136,11 @@ class Domain:
 @dataclass
 class Topic:
     name: str
-    directory: str
+    directory: Path
 
     def __post_init__(self) -> None:
         config = configparser.ConfigParser(default_section="metadata")
-        config.read(os.path.join(self.directory, "metadata.ini"))
+        config.read(self.directory / "metadata.ini")
         self.title = config.get("metadata", "title")
         self.description = config.get("metadata", "description")
 
@@ -149,11 +149,11 @@ class Topic:
         return [
             Domain(
                 topic=self.name,
-                name=name[:-3],
-                file=os.path.join(self.directory, name),
+                name=name.stem,
+                file=self.directory / name,
             )
-            for name in sorted(os.listdir(self.directory))
-            if name.endswith(".mk")
+            for name in sorted(self.directory.iterdir())
+            if name.suffix == ".mk"
         ]
 
     def domain(self, name: str) -> typing.Optional[Domain]:
@@ -293,15 +293,13 @@ def set_domain_runtime_depends(domains: typing.List[Domain]) -> None:
 # topics shipped within mxmake
 ##############################################################################
 
-topics_dir = os.path.join(os.path.dirname(__file__), "topics")
+topics_dir = Path(__file__).parent / "topics"
 
-core = Topic(name="core", directory=os.path.join(topics_dir, "core"))
-docs = Topic(name="docs", directory=os.path.join(topics_dir, "docs"))
-js = Topic(name="js", directory=os.path.join(topics_dir, "js"))
-ldap = Topic(name="ldap", directory=os.path.join(topics_dir, "ldap"))
-qa = Topic(name="qa", directory=os.path.join(topics_dir, "qa"))
-system = Topic(name="system", directory=os.path.join(topics_dir, "system"))
-applications = Topic(
-    name="applications", directory=os.path.join(topics_dir, "applications")
-)
-i18n = Topic(name="i18n", directory=os.path.join(topics_dir, "i18n"))
+core = Topic(name="core", directory=topics_dir / "core")
+docs = Topic(name="docs", directory=topics_dir / "docs")
+js = Topic(name="js", directory=topics_dir / "js")
+ldap = Topic(name="ldap", directory=topics_dir / "ldap")
+qa = Topic(name="qa", directory=topics_dir / "qa")
+system = Topic(name="system", directory=topics_dir / "system")
+applications = Topic(name="applications", directory=topics_dir / "applications")
+i18n = Topic(name="i18n", directory=topics_dir / "i18n")

@@ -3,7 +3,6 @@ from mxmake import templates
 from mxmake import testing
 from mxmake import topics
 
-import os
 import unittest
 
 
@@ -37,7 +36,7 @@ class TestParser(unittest.TestCase):
 
         template.write()
 
-        makefile_path = os.path.join(tempdir, "Makefile")
+        makefile_path = tempdir / "Makefile"
         makefile_parser = parser.MakefileParser(makefile_path)
 
         self.assertEqual(

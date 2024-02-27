@@ -1,4 +1,5 @@
 from mxmake import utils
+from pathlib import Path
 
 import os
 import unittest
@@ -9,15 +10,15 @@ class TestUtils(unittest.TestCase):
         self.assertEqual(utils.NAMESPACE, "mxmake-")
 
     def test_mxmake_files(self):
-        self.assertEqual(utils.mxmake_files(), os.path.join(".mxmake", "files"))
+        self.assertEqual(utils.mxmake_files(), Path(".mxmake") / "files")
         os.environ["MXMAKE_FILES"] = "other"
-        self.assertEqual(utils.mxmake_files(), "other")
+        self.assertEqual(utils.mxmake_files(), Path("other"))
         del os.environ["MXMAKE_FILES"]
 
     def test_gh_actions_path(self):
-        self.assertEqual(utils.gh_actions_path(), os.path.join(".github", "workflows"))
+        self.assertEqual(utils.gh_actions_path(), Path(".github") / "workflows")
         os.environ["MXMAKE_GH_ACTIONS_PATH"] = "other"
-        self.assertEqual(utils.gh_actions_path(), "other")
+        self.assertEqual(utils.gh_actions_path(), Path("other"))
         del os.environ["MXMAKE_GH_ACTIONS_PATH"]
 
     def test_ns_name(self):
