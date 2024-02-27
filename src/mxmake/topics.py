@@ -1,13 +1,22 @@
 from collections import Counter
 from dataclasses import dataclass
+from importlib.metadata import entry_points
 from pathlib import Path
-from pkg_resources import iter_entry_points
 
 import configparser
 import functools
 import io
 import operator
 import typing
+
+
+try:
+    # do we have Python 3.12+
+    from importlib.metadata import EntryPoints  # type: ignore # noqa: F401
+
+    HAS_IMPORTLIB_ENTRYPOINTS = True
+except ImportError:
+    HAS_IMPORTLIB_ENTRYPOINTS = False
 
 
 @dataclass
@@ -165,7 +174,14 @@ class Topic:
 
 @functools.lru_cache(maxsize=4096)
 def load_topics() -> typing.List[Topic]:
-    return [ep.load() for ep in iter_entry_points("mxmake.topics")]
+    if HAS_IMPORTLIB_ENTRYPOINTS:
+        topics_eps = entry_points(group="mxmake.topics")  # type: ignore
+    else:
+        eps = entry_points()
+        if "mxmake.topics" not in eps:
+            return []
+        topics_eps = eps["mxmake.topics"]  # type: ignore
+    return [ep.load() for ep in topics_eps]  # type: ignore
 
 
 def get_topic(name: str) -> Topic:
