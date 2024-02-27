@@ -10,6 +10,15 @@ import operator
 import typing
 
 
+try:
+    # do we have Python 3.12+
+    from importlib.metadata import EntryPoints  # type: ignore # noqa: F401
+
+    HAS_IMPORTLIB_ENTRYPOINTS = True
+except ImportError:
+    HAS_IMPORTLIB_ENTRYPOINTS = False
+
+
 @dataclass
 class Setting:
     name: str
@@ -165,9 +174,14 @@ class Topic:
 
 @functools.lru_cache(maxsize=4096)
 def load_topics() -> typing.List[Topic]:
-    eps = entry_points()
-    ep_topics = [ep for ep in eps if ep.group == "mxmake.topics"]
-    return [ep.load() for ep in ep_topics]
+    if HAS_IMPORTLIB_ENTRYPOINTS:
+        topics_eps = entry_points(group="mxmake.topics")  # type: ignore
+    else:
+        eps = entry_points()
+        if "mxmake.topics" not in eps:
+            return []
+        topics_eps = eps["mxmake.topics"]  # type: ignore
+    return [ep.load() for ep in topics_eps]  # type: ignore
 
 
 def get_topic(name: str) -> Topic:
