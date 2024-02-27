@@ -65,7 +65,7 @@ PYTHON_PACKAGE_INSTALLER?=uv
 # Flag whether to use a global installed 'uv' or install
 # it in the virtual environment.
 # Default: false
-PYTHON_UV_GLOBAL?=true
+PYTHON_UV_GLOBAL?=false
 
 # Flag whether to use virtual environment. If `false`, the
 # interpreter according to `PRIMARY_PYTHON` found in `PATH` is used.
