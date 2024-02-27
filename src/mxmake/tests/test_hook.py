@@ -2,15 +2,13 @@ from mxmake import hook
 from mxmake import testing
 
 import mxdev
-import os
-import pathlib
 import unittest
 
 
 class TestHook(unittest.TestCase):
     @testing.template_directory()
     def test_Hook(self, tempdir):
-        mxini = pathlib.Path(tempdir, "mx.ini")
+        mxini = tempdir / "mx.ini"
         with mxini.open("w") as fd:
             fd.write(
                 "[settings]\n" "mxmake-templates = run-tests run-coverage inexistent"
@@ -21,5 +19,6 @@ class TestHook(unittest.TestCase):
         state = mxdev.State(configuration=configuration)
         hook_.write(state)
         self.assertEqual(
-            sorted(os.listdir(tempdir)), ["mx.ini", "run-coverage.sh", "run-tests.sh"]
+            [entry.name for entry in sorted(tempdir.iterdir())],
+            ["mx.ini", "run-coverage.sh", "run-tests.sh"],
         )

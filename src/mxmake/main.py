@@ -9,13 +9,13 @@ from mxmake.topics import load_topics
 from mxmake.topics import resolve_domain_dependencies
 from mxmake.topics import set_domain_runtime_depends
 from operator import attrgetter
+from pathlib import Path
 from textwrap import indent
 
 import argparse
 import inquirer
 import logging
 import mxdev
-import os
 import sys
 
 
@@ -99,10 +99,10 @@ def init_command(args: argparse.Namespace):
     print("#######################\n")
 
     # obtain target folder
-    target_folder = os.getcwd()
+    target_folder = Path.cwd()
 
     # parse existing makefile
-    parser = MakefileParser(os.path.join(target_folder, "Makefile"))
+    parser = MakefileParser(target_folder / "Makefile")
 
     # obtain topics to include
     topics = load_topics()
@@ -186,7 +186,7 @@ def init_command(args: argparse.Namespace):
         print("Skip generation of Makefile, nothing selected")
 
     # mx ini generation
-    if not os.path.exists(os.path.join(target_folder, "mx.ini")):
+    if not (target_folder / "mx.ini").exists():
         print("\n``mx.ini`` configuration file not exists. Create One?")
         yn = inquirer.text(message="Y/n")
         if yn not in ["n", "N"]:

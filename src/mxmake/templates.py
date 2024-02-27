@@ -5,11 +5,11 @@ from mxmake.topics import load_topics
 from mxmake.utils import gh_actions_path
 from mxmake.utils import mxmake_files
 from mxmake.utils import ns_name
+from pathlib import Path
 
 import abc
 import io
 import mxdev
-import os
 import typing
 
 
@@ -58,7 +58,7 @@ class Template(abc.ABC):
         self.environment = environment
 
     @abc.abstractproperty
-    def target_folder(self) -> str:
+    def target_folder(self) -> Path:
         """Target folder for rendered template."""
 
     @abc.abstractproperty
@@ -78,20 +78,21 @@ class Template(abc.ABC):
         if not self.environment:
             raise RuntimeError("Cannot write template without environment")
         target_folder = self.target_folder
-        os.makedirs(target_folder, exist_ok=True)
-        target_path = os.path.join(target_folder, self.target_name)
+        target_folder.mkdir(exist_ok=True)
+        target_path = target_folder / self.target_name
         template = self.environment.get_template(self.template_name)
-        with open(target_path, "w") as f:
+        with target_path.open("w") as f:
             f.write(template.render(**self.template_variables))
-        os.chmod(target_path, self.file_mode)
+        target_path.chmod(self.file_mode)
 
     def remove(self) -> bool:
         """Remove rendered template if exists. Return bool if file existed."""
-        target_path = os.path.join(self.target_folder, self.target_name)
-        if os.path.exists(target_path):
-            os.remove(target_path)
-            return True
-        return False
+        target_path = self.target_folder / self.target_name
+        try:
+            target_path.unlink()
+        except FileNotFoundError:
+            return False
+        return True
 
 
 class MxIniBoundTemplate(Template):
@@ -141,7 +142,7 @@ class TestScript(EnvironmentTemplate, ShellScriptTemplate):
         return self.config.settings.get("mxmake-test-runner", "pytest")
 
     @property
-    def target_folder(self) -> str:
+    def target_folder(self) -> Path:
         return mxmake_files()
 
     @property
@@ -208,7 +209,7 @@ class PipConf(MxIniBoundTemplate):
     template_name: str = "pip.conf"
 
     @property
-    def target_folder(self) -> str:
+    def target_folder(self) -> Path:
         return mxmake_files()
 
     @property
@@ -232,11 +233,11 @@ class Makefile(Template):
     description: str = "Makefile"
     target_name = "Makefile"
     template_name = "Makefile"
-    target_folder = ""
+    target_folder = Path()
 
     def __init__(
         self,
-        target_folder: str,
+        target_folder: Path,
         domains: typing.List[Domain],
         domain_settings: typing.Dict[str, str],
         environment: typing.Union[Environment, None] = None,
@@ -306,7 +307,7 @@ class AdditionalSourcesTargets(Template):
         self.additional_sources_targets = additional_sources_targets
 
     @property
-    def target_folder(self) -> str:
+    def target_folder(self) -> Path:
         return mxmake_files()
 
     @property
@@ -324,11 +325,11 @@ class MxIni(Template):
     description: str = "mx configutation file"
     target_name = "mx.ini"
     template_name = "mx.ini"
-    target_folder = ""
+    target_folder = Path()
 
     def __init__(
         self,
-        target_folder: str,
+        target_folder: Path,
         domains: typing.List[Domain],
         environment: typing.Union[Environment, None] = None,
     ) -> None:
@@ -357,7 +358,7 @@ class Topics(Template):
     description: str = "Topics documentation for sphinx"
     target_name = ""
     template_name = "topics.md"
-    target_folder = ""
+    target_folder = Path()
 
     @property
     def template_variables(self) -> typing.Dict[str, typing.Any]:
@@ -386,7 +387,7 @@ class Dependencies(Template):
     description: str = "Dependencies documentation for sphinx"
     target_name = ""
     template_name = "dependencies.md"
-    target_folder = ""
+    target_folder = Path()
 
     @property
     def template_variables(self) -> typing.Dict[str, typing.Any]:
@@ -426,7 +427,7 @@ class GHActionsTemplate(Template):
     template_variables = dict()
 
     @property
-    def target_folder(self) -> str:
+    def target_folder(self) -> Path:
         return gh_actions_path()
 
 

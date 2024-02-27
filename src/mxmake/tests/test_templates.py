@@ -5,10 +5,9 @@ from mxmake import templates
 from mxmake import testing
 from mxmake import topics
 from mxmake import utils
+from pathlib import Path
 
 import mxdev
-import os
-import pathlib
 import typing
 
 
@@ -44,7 +43,7 @@ class TestTemplates(testing.RenderTestCase):
         )
 
     @testing.template_directory()
-    def test_Template(self, tempdir: str):
+    def test_Template(self, tempdir: Path):
         # cannot instantiate abstract template
         with self.assertRaises(TypeError):
             templates.Template()  # type: ignore
@@ -63,12 +62,12 @@ class TestTemplates(testing.RenderTestCase):
             template.write()
 
         # write template
-        with open(os.path.join(tempdir, "target.in"), "w") as f:
+        with (tempdir / "target.in").open("w") as f:
             f.write("{{ param }}")
         environment = Environment(loader=FileSystemLoader(tempdir))
         template = Template(environment)
         template.write()
-        with open(os.path.join(tempdir, "target.out")) as f:
+        with (tempdir / "target.out").open() as f:
             self.assertEqual(f.read(), "value")
 
         # check file mode
@@ -78,7 +77,7 @@ class TestTemplates(testing.RenderTestCase):
         # remove remplate
         removed = template.remove()
         self.assertTrue(removed)
-        self.assertFalse(os.path.exists(os.path.join(tempdir, "target.out")))
+        self.assertFalse((tempdir / "target.out").exists())
         self.assertFalse(template.remove())
 
     @testing.template_directory()
@@ -86,7 +85,7 @@ class TestTemplates(testing.RenderTestCase):
         # create test template
         class Template(templates.MxIniBoundTemplate):
             name = "template"
-            target_folder = ""
+            target_folder = Path()
             target_name = ""
             template_name = ""
             template_variables = {}
@@ -120,7 +119,7 @@ class TestTemplates(testing.RenderTestCase):
 
     @testing.template_directory()
     def test_TestScript(self, tempdir):
-        mxini = pathlib.Path(tempdir, "mx.ini")
+        mxini = tempdir / "mx.ini"
         with mxini.open("w") as fd:
             fd.write(
                 "[settings]\n"
@@ -158,7 +157,7 @@ class TestTemplates(testing.RenderTestCase):
         )
 
         template.write()
-        with open(os.path.join(tempdir, "run-tests.sh")) as f:
+        with (tempdir / "run-tests.sh").open() as f:
             self.checkOutput(
                 """
                 #!/usr/bin/env bash
@@ -202,7 +201,7 @@ class TestTemplates(testing.RenderTestCase):
         configuration = mxdev.Configuration(mxini, hooks=[hook.Hook()])
         template = factory(configuration, templates.get_template_environment())
         template.write()
-        with open(os.path.join(tempdir, "run-tests.sh")) as f:
+        with (tempdir / "run-tests.sh").open() as f:
             self.checkOutput(
                 """
                 #!/usr/bin/env bash
@@ -234,7 +233,7 @@ class TestTemplates(testing.RenderTestCase):
         configuration = mxdev.Configuration(mxini, hooks=[hook.Hook()])
         template = factory(configuration, templates.get_template_environment())
         template.write()
-        with open(os.path.join(tempdir, "run-tests.sh")) as f:
+        with (tempdir / "run-tests.sh").open() as f:
             self.checkOutput(
                 """
                 #!/usr/bin/env bash
@@ -255,7 +254,7 @@ class TestTemplates(testing.RenderTestCase):
 
     @testing.template_directory()
     def test_CoverageScript(self, tempdir):
-        mxini = pathlib.Path(tempdir, "mx.ini")
+        mxini = tempdir / "mx.ini"
         with mxini.open("w") as fd:
             fd.write(
                 "[settings]\n"
@@ -321,7 +320,7 @@ class TestTemplates(testing.RenderTestCase):
         )
 
         template.write()
-        with open(os.path.join(tempdir, "run-coverage.sh")) as f:
+        with (tempdir / "run-coverage.sh").open() as f:
             self.checkOutput(
                 """
                 #!/usr/bin/env bash
@@ -388,7 +387,7 @@ class TestTemplates(testing.RenderTestCase):
         configuration = mxdev.Configuration(mxini, hooks=[hook.Hook()])
         template = factory(configuration, templates.get_template_environment())
         template.write()
-        with open(os.path.join(tempdir, "run-coverage.sh")) as f:
+        with (tempdir / "run-coverage.sh").open() as f:
             self.checkOutput(
                 """
                 #!/usr/bin/env bash
@@ -433,7 +432,7 @@ class TestTemplates(testing.RenderTestCase):
         configuration = mxdev.Configuration(mxini, hooks=[hook.Hook()])
         template = factory(configuration, templates.get_template_environment())
         template.write()
-        with open(os.path.join(tempdir, "run-coverage.sh")) as f:
+        with (tempdir / "run-coverage.sh").open() as f:
             self.checkOutput(
                 """
                 #!/usr/bin/env bash
@@ -467,7 +466,7 @@ class TestTemplates(testing.RenderTestCase):
 
     @testing.template_directory()
     def test_PipConf(self, tempdir):
-        mxini = pathlib.Path(tempdir, "mx.ini")
+        mxini = tempdir / "mx.ini"
         with mxini.open("w") as fd:
             fd.write(
                 "[settings]\n"
@@ -492,7 +491,7 @@ class TestTemplates(testing.RenderTestCase):
         )
 
         template.write()
-        with open(os.path.join(tempdir, "pip.conf")) as f:
+        with (tempdir / "pip.conf").open() as f:
             self.checkOutput(
                 """
                 [global]
@@ -509,8 +508,7 @@ class TestTemplates(testing.RenderTestCase):
         template = factory(["a", "b"], templates.get_template_environment())
         template.write()
 
-        path = os.path.join(tempdir, "additional_sources_targets.mk")
-        with open(path) as f:
+        with (tempdir / "additional_sources_targets.mk").open() as f:
             self.checkOutput("ADDITIONAL_SOURCES_TARGETS=$(wildcard a b)", f.read())
 
     @testing.temp_directory
@@ -540,7 +538,7 @@ class TestTemplates(testing.RenderTestCase):
         )
 
         template.write()
-        with open(os.path.join(tempdir, "Makefile")) as f:
+        with (tempdir / "Makefile").open() as f:
             self.checkOutput(
                 """
                 ##############################################################################
@@ -798,7 +796,7 @@ class TestTemplates(testing.RenderTestCase):
         template = factory(tempdir, domains, templates.get_template_environment())
 
         template.write()
-        with open(os.path.join(tempdir, "mx.ini")) as f:
+        with (tempdir / "mx.ini").open() as f:
             self.checkOutput(
                 """
                 [settings]

@@ -1,6 +1,6 @@
 from mxmake.topics import get_domain
+from pathlib import Path
 
-import os
 import typing
 
 
@@ -11,7 +11,7 @@ class SettingMissing(Exception):
 
 
 class MakefileParser:
-    def __init__(self, path: str):
+    def __init__(self, path: Path):
         self.path = path
         self.fqns: typing.List = []
         self.topics: typing.Dict = {}
@@ -61,9 +61,9 @@ class MakefileParser:
         return value
 
     def parse(self) -> None:
-        if not os.path.exists(self.path):
+        if not self.path.exists():
             return
-        with open(self.path) as fd:
+        with self.path.open() as fd:
             lines = [line.rstrip() for line in fd.readlines() if line.strip()]
             self.parse_fqns(lines)
             self.parse_settings(lines)

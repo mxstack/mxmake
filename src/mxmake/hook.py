@@ -3,10 +3,10 @@ from mxmake.templates import template
 from mxmake.utils import list_value
 from mxmake.utils import NAMESPACE
 from mxmake.utils import ns_name
+from pathlib import Path
 
 import logging
 import mxdev
-import os
 
 
 logger = logging.getLogger("mxmake")
@@ -46,17 +46,15 @@ class Hook(mxdev.Hook):
     def generate_additional_sources_targets(self, state: mxdev.State):
         config = state.configuration
         additional_sources_targets = []
-        sources_folder = config.settings.get("default-target", "sources")
+        sources_folder = Path(config.settings.get("default-target", "sources"))
         for package_name in config.packages:
-            source_folder = os.path.join(sources_folder, package_name)
+            source_folder = sources_folder / package_name
             # case new source package has been added to mx.ini
-            if not os.path.exists(source_folder):
+            if not source_folder.exists():
                 continue
-            for child in os.listdir(source_folder):
+            for child in source_folder.iterdir():
                 if child in ADDITIONAL_SOURCES_TARGETS:
-                    additional_sources_targets.append(
-                        os.path.join(source_folder, child)
-                    )
+                    additional_sources_targets.append(source_folder / child)
         if not additional_sources_targets:
             return
         environment = get_template_environment()

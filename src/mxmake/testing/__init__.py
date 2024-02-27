@@ -1,5 +1,6 @@
 from contextlib import contextmanager
 from mxmake import templates
+from pathlib import Path
 
 import doctest
 import mxdev
@@ -11,7 +12,7 @@ import unittest
 
 
 def temp_directory(fn):
-    tempdir = tempfile.mkdtemp()
+    tempdir = Path(tempfile.mkdtemp())
 
     def wrapper(self):
         try:
@@ -38,9 +39,9 @@ class template_directory:
 
     def __call__(self, fn: typing.Callable):
         def wrapper(*a):
-            tempdir = tempfile.mkdtemp()
-            os.environ["MXMAKE_FILES"] = tempdir
-            os.environ["MXMAKE_GH_ACTIONS_PATH"] = tempdir
+            tempdir = Path(tempfile.mkdtemp())
+            os.environ["MXMAKE_FILES"] = str(tempdir)
+            os.environ["MXMAKE_GH_ACTIONS_PATH"] = str(tempdir)
             try:
                 if self.reset_registry:
                     with reset_template_registry():
