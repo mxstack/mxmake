@@ -3,6 +3,7 @@ from mxmake.templates import ci_template
 from mxmake.templates import get_template_environment
 from mxmake.templates import template
 from mxmake.topics import collect_missing_dependencies
+from mxmake.topics import Domain
 from mxmake.topics import get_domain
 from mxmake.topics import get_topic
 from mxmake.topics import load_topics
@@ -17,6 +18,7 @@ import inquirer
 import logging
 import mxdev
 import sys
+import typing
 
 
 logger = logging.getLogger("mxmake")
@@ -106,21 +108,25 @@ def init_command(args: argparse.Namespace):
 
     # obtain topics to include
     topics = load_topics()
-    topic_choice = inquirer.prompt(
-        [
-            inquirer.Checkbox(
-                "topic",
-                message="Include topics",
-                choices=[d.name for d in topics],
-                default=list(parser.topics),
-            )
-        ]
-    )
+    if args.update:
+        print("Update Makefile without prompting for settings.")
+        topic_choice = {"topic": list(parser.topics)}
+    else:
+        topic_choice = inquirer.prompt(
+            [
+                inquirer.Checkbox(
+                    "topic",
+                    message="Include topics",
+                    choices=[d.name for d in topics],
+                    default=list(parser.topics),
+                )
+            ]
+        )
     if topic_choice is None:
         return
 
     # obtain domains to include
-    domains = []
+    domains: typing.List[Domain] = []
     for topic_name in topic_choice["topic"]:
         topic = get_topic(topic_name)
         all_fqns = [domain.fqn for domain in topic.domains]
@@ -134,6 +140,13 @@ def init_command(args: argparse.Namespace):
         # domain generated yet
         else:
             selected_fqns = [domain.fqn for domain in topic.domains]
+        if args.update:
+            print(
+                f"- update topic {topic_name} with domains "
+                f"{', '.join([fqdn.split('.')[1] for fqdn in selected_fqns])}."
+            )
+            domains.extend((get_domain(fqn) for fqn in selected_fqns))
+            continue
         domains_choice = inquirer.prompt(
             [
                 inquirer.Checkbox(
@@ -166,14 +179,17 @@ def init_command(args: argparse.Namespace):
             if sfqn in parser.settings:
                 setting_default = parser.settings[sfqn]
             domain_settings[sfqn] = setting_default
+            if args.update:
+                continue
             settings_question.append(
                 inquirer.Text(sfqn, message=sfqn, default=setting_default)
             )
-        print(f"Edit Settings for {domain.fqn}?")
-        yn = inquirer.text(message="y/N")
-        if yn in ["Y", "y"]:
-            domain_settings.update(inquirer.prompt(settings_question))
-        print("")
+        if not args.update:
+            print(f"Edit Settings for {domain.fqn}?")
+            yn = inquirer.text(message="y/N")
+            if yn in ["Y", "y"]:
+                domain_settings.update(inquirer.prompt(settings_question))
+            print("")
 
     if domains:
         # generate makefile
@@ -186,7 +202,7 @@ def init_command(args: argparse.Namespace):
         print("Skip generation of Makefile, nothing selected")
 
     # mx ini generation
-    if not (target_folder / "mx.ini").exists():
+    if not args.update and not (target_folder / "mx.ini").exists():
         print("\n``mx.ini`` configuration file not exists. Create One?")
         yn = inquirer.text(message="Y/n")
         if yn not in ["n", "N"]:
@@ -195,27 +211,36 @@ def init_command(args: argparse.Namespace):
                 target_folder, domains, get_template_environment()
             )
             mx_ini_template.write()
+    elif args.update and not (target_folder / "mx.ini").exists():
+        print("No generation of mx configuration on update (file does not exist).")
     else:
         print("Skip generation of mx configuration file, file already exists")
 
     # ci generation
-    print("\nDo you want to create CI related files?")
-    yn = inquirer.text(message="y/N")
-    if yn in ["y", "Y"]:
-        # ci_template
-        ci_choice = inquirer.prompt(
-            [
-                inquirer.Checkbox(
-                    "ci", message="Generate CI files", choices=ci_template.templates
-                )
-            ]
-        )
-        for template_name in ci_choice["ci"]:
-            factory = template.lookup(template_name)
-            factory(get_template_environment()).write()
+    if not args.update:
+        print("\nDo you want to create CI related files?")
+        yn = inquirer.text(message="y/N")
+        if yn in ["y", "Y"]:
+            # ci_template
+            ci_choice = inquirer.prompt(
+                [
+                    inquirer.Checkbox(
+                        "ci", message="Generate CI files", choices=ci_template.templates
+                    )
+                ]
+            )
+            for template_name in ci_choice["ci"]:
+                factory = template.lookup(template_name)
+                factory(get_template_environment()).write()
 
 
 init_parser = command_parsers.add_parser("init", help="Initialize project")
+init_parser.add_argument(
+    "-u",
+    "--update",
+    help="Update the Makefile without prompting for settings",
+    action="store_true",
+)
 init_parser.set_defaults(func=init_command)
 
 

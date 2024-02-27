@@ -36,6 +36,8 @@
 
 - Use `pathlib.Path` instead of `os.path`.
 
+- Support `--update` flag in `mxmake init` command, updating the Makefile without prompting for settings.
+
 ## 1.0a3 (2024-02-06)
 
 - Add `typecheck` target and use it for mypy instead of `check` target.
