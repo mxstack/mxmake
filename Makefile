@@ -55,7 +55,7 @@ PYTHON_MIN_VERSION?=3.7
 
 # Install packages using the given package installer method.
 # Supported are `pip` and `uv`. If uv is used, its global availability is
-# checked. Otherwise, is is installed, either in the virtual environment or
+# checked. Otherwise, it is installed, either in the virtual environment or
 # using the `PRIMARY_PYTHON`, dependent on the `VENV_ENABLED` setting. If
 # `VENV_ENABLED` and uv is selected, uv is used to create the virtual
 # environment.
@@ -213,7 +213,7 @@ ifeq ($(shell [[ "$(VENV_ENABLED)" == "true" && "$(VENV_FOLDER)" == "" ]] && ech
 $(error "VENV_FOLDER must be configured if VENV_ENABLED is true")
 endif
 
-# determine the executable path
+# Determine the executable path
 ifeq ("$(VENV_ENABLED)", "true")
 export PATH:=$(shell pwd)/$(VENV_FOLDER)/bin:$(PATH)
 export VIRTUAL_ENV=$(VENV_FOLDER)
@@ -222,41 +222,34 @@ else
 MXENV_PYTHON=$(PRIMARY_PYTHON)
 endif
 
-# determine the package installer
+# Determine the package installer
 ifeq ("$(PYTHON_PACKAGE_INSTALLER)","uv")
-# use uv
 PYTHON_PACKAGE_COMMAND=uv pip
 else
-# use/default to pip
 PYTHON_PACKAGE_COMMAND=$(MXENV_PYTHON) -m pip
-endif # /PYTHON_PACKAGE_INSTALLER
+endif
 
 MXENV_TARGET:=$(SENTINEL_FOLDER)/mxenv.sentinel
 $(MXENV_TARGET): $(SENTINEL)
 ifeq ("$(VENV_ENABLED)", "true")
-# Use a venv
 ifeq ("$(VENV_CREATE)", "true")
-# Create a venv
 ifeq ("$(PYTHON_PACKAGE_INSTALLER)$(PYTHON_UV_GLOBAL)", "uvtrue")
-# create venv with global uv
 	@echo "Setup Python Virtual Environment using package 'uv' at '$(VENV_FOLDER)'"
 	@uv venv -p $(PRIMARY_PYTHON) --seed $(VENV_FOLDER)
 else
 	@echo "Setup Python Virtual Environment using module 'venv' at '$(VENV_FOLDER)'"
 	@$(MXENV_PYTHON) -m venv $(VENV_FOLDER)
 	@$(MXENV_PYTHON) -m ensurepip -U
-endif # /PYTHON_PACKAGE_INSTALLER uv and PYTHON_UV_GLOBAL
-
+endif
 ifeq ("$(PYTHON_PACKAGE_INSTALLER)$(PYTHON_UV_GLOBAL)", "uvfalse")
 	@echo "Install uv"
 	@$(MXENV_PYTHON) -m pip install uv
-endif # /PYTHON_PACKAGE_INSTALLER uv and not PYTHON_UV_GLOBAL
-    # always update pip, setuptools and wheel
+endif
 	@$(PYTHON_PACKAGE_COMMAND) install -U pip setuptools wheel
-endif # /VENV_CREATE
+endif
 else
 	@echo "Using system Python interpreter"
-endif # /VENV_ENABLED
+endif
 	@echo "Install/Update MXStack Python packages"
 	@$(PYTHON_PACKAGE_COMMAND) install -U $(MXDEV) $(MXMAKE)
 	@touch $(MXENV_TARGET)
