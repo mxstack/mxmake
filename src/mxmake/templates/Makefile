@@ -38,6 +38,9 @@ CHECK_TARGETS?=
 TYPECHECK_TARGETS?=
 FORMAT_TARGETS?=
 {% endif %}
+{% if additional_targets["js"] %}
+JS_TARGETS?=
+{% endif %}
 {{ sections.read() }}
 -include $(INCLUDE_MAKEFILE)
 

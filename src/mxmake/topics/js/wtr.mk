@@ -24,5 +24,5 @@ NPM_DEV_PACKAGES+=\
 	@web/dev-server-import-maps
 
 .PHONY: wtr
-wtr: $(NPM_TARGET)
+wtr: $(JS_TARGETS) $(NPM_TARGET)
 	@web-test-runner $(WTR_OPTIONS) --config $(WTR_CONFIG)

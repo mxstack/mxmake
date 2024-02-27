@@ -26,5 +26,5 @@ NPM_DEV_PACKAGES+=\
 	karma-module-resolver-preprocessor
 
 .PHONY: karma
-karma: $(NPM_TARGET)
+karma: $(JS_TARGETS) $(NPM_TARGET)
 	@karma start $(KARMA_CONFIG) $(KARMA_OPTIONS)

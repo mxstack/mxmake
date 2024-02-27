@@ -30,6 +30,6 @@
 NPM_DEV_PACKAGES+=sass
 
 .PHONY: scss
-scss: $(NPM_TARGET)
+scss: $(JS_TARGETS) $(NPM_TARGET)
 	@sass $(SCSS_OPTIONS) $(SCSS_SOURCE) $(SCSS_TARGET)
 	@sass $(SCSS_OPTIONS) --style compressed $(SCSS_SOURCE) $(SCSS_MIN_TARGET)

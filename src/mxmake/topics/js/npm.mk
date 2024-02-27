@@ -2,6 +2,7 @@
 #:title = Node Package Manager
 #:description = Provide targets for working with Node Package Manager
 #:depends = core.base
+#:soft-depends = js.nvm
 #:
 #:[target.npm]
 #:description = Installs packages with NPM.
@@ -75,7 +76,7 @@ $(NPM_TARGET): $(SENTINEL)
 	@touch $(NPM_TARGET)
 
 .PHONY: npm
-npm: $(NPM_TARGET)
+npm: $(JS_TARGETS) $(NPM_TARGET)
 
 .PHONY: npm-dirty
 npm-dirty:

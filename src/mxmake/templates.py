@@ -277,6 +277,7 @@ class Makefile(Template):
         additional_targets = {}
         topics = {domain.topic for domain in self.domains}
         additional_targets["qa"] = "qa" in topics
+        additional_targets["js"] = "js" in topics
         # additional_targets["docs"] = "docs" in topics
         # return template variables
         return dict(
