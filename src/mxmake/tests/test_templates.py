@@ -527,7 +527,7 @@ class TestTemplates(testing.RenderTestCase):
             "core.mxenv.PRIMARY_PYTHON": "python3",
             "core.mxenv.PYTHON_MIN_VERSION": "3.7",
             "core.mxenv.PYTHON_PACKAGE_INSTALLER": "pip",
-            "core.mxenv.PYTHON_UV_GLOBAL": "false",
+            "core.mxenv.MXENV_UV_GLOBAL": "false",
             "core.mxenv.VENV_ENABLED": "true",
             "core.mxenv.VENV_CREATE": "true",
             "core.mxenv.VENV_FOLDER": "venv",
@@ -601,7 +601,7 @@ class TestTemplates(testing.RenderTestCase):
                 # Flag whether to use a global installed 'uv' or install
                 # it in the virtual environment.
                 # Default: false
-                PYTHON_UV_GLOBAL?=false
+                MXENV_UV_GLOBAL?=false
 
                 # Flag whether to use virtual environment. If `false`, the
                 # interpreter according to `PRIMARY_PYTHON` found in `PATH` is used.
@@ -701,7 +701,7 @@ class TestTemplates(testing.RenderTestCase):
                 $(MXENV_TARGET): $(SENTINEL)
                 ifeq ("$(VENV_ENABLED)", "true")
                 ifeq ("$(VENV_CREATE)", "true")
-                ifeq ("$(PYTHON_PACKAGE_INSTALLER)$(PYTHON_UV_GLOBAL)", "uvtrue")
+                ifeq ("$(PYTHON_PACKAGE_INSTALLER)$(MXENV_UV_GLOBAL)", "uvtrue")
                 	@echo "Setup Python Virtual Environment using package 'uv' at '$(VENV_FOLDER)'"
                 	@uv venv -p $(PRIMARY_PYTHON) --seed $(VENV_FOLDER)
                 else
@@ -709,7 +709,7 @@ class TestTemplates(testing.RenderTestCase):
                 	@$(MXENV_PYTHON) -m venv $(VENV_FOLDER)
                 	@$(MXENV_PYTHON) -m ensurepip -U
                 endif
-                ifeq ("$(PYTHON_PACKAGE_INSTALLER)$(PYTHON_UV_GLOBAL)", "uvfalse")
+                ifeq ("$(PYTHON_PACKAGE_INSTALLER)$(MXENV_UV_GLOBAL)", "uvfalse")
                 	@echo "Install uv"
                 	@$(MXENV_PYTHON) -m pip install uv
                 endif
