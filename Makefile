@@ -516,9 +516,9 @@ $(COVERAGE_TARGET): $(TEST_TARGET)
 
 .PHONY: coverage
 coverage: $(FILES_TARGET) $(SOURCES_TARGET) $(PACKAGES_TARGET) $(COVERAGE_TARGET)
-	@echo "Run coverage"
-	@test -z "$(COVERAGE_COMMAND)" && echo "No coverage command defined"
-	@test -z "$(COVERAGE_COMMAND)" || bash -c "$(COVERAGE_COMMAND)"
+	@test -z "$(COVERAGE_COMMAND)" && echo "No coverage command defined" && exit 1 || :
+	@echo "Run coverage using $(COVERAGE_COMMAND)"
+	@/usr/bin/env bash -c "$(COVERAGE_COMMAND)"
 
 .PHONY: coverage-dirty
 coverage-dirty:
