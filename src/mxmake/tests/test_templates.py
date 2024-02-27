@@ -704,7 +704,7 @@ class TestTemplates(testing.RenderTestCase):
                 	@uv venv -p $(PRIMARY_PYTHON) --seed $(VENV_FOLDER)
                 else
                 	@echo "Setup Python Virtual Environment using module 'venv' at '$(VENV_FOLDER)'"
-                	@$(MXENV_PYTHON) -m venv $(VENV_FOLDER)
+                	@$(PRIMARY_PYTHON) -m venv $(VENV_FOLDER)
                 	@$(MXENV_PYTHON) -m ensurepip -U
                 endif
                 ifeq ("$(PYTHON_PACKAGE_INSTALLER)$(MXENV_UV_GLOBAL)", "uvfalse")
