@@ -1,7 +1,7 @@
 from collections import Counter
 from dataclasses import dataclass
+from importlib.metadata import entry_points
 from pathlib import Path
-from pkg_resources import iter_entry_points
 
 import configparser
 import functools
@@ -165,7 +165,7 @@ class Topic:
 
 @functools.lru_cache(maxsize=4096)
 def load_topics() -> typing.List[Topic]:
-    return [ep.load() for ep in iter_entry_points("mxmake.topics")]
+    return [ep.load() for ep in entry_points(group="mxmake.topics")]
 
 
 def get_topic(name: str) -> Topic:

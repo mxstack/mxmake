@@ -29,10 +29,7 @@ dependencies = [
 dynamic = ["readme"]
 
 [project.optional-dependencies]
-mypy = [
-    "types-setuptools",
-    "types-pkg-resources",
-]
+mypy = []
 docs = ["Sphinx", "sphinxcontrib-mermaid"]
 test = ["zope.testrunner"]
 

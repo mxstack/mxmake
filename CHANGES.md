@@ -36,6 +36,8 @@
 
 - Use `pathlib.Path` instead of `os.path`.
 
+- Use importlib.metadata to load entrypoints.
+
 ## 1.0a3 (2024-02-06)
 
 - Add `typecheck` target and use it for mypy instead of `check` target.
