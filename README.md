@@ -15,7 +15,6 @@ It targets the development environments for Python packages but may be used outs
 
 The detailed `mxmake` documentation is available [mxstack.github.io/mxmake](https://mxstack.github.io/mxmake).
 
-
 # Copyright
 
 - Copyright (c) 2022-2024 mxstack Contributors

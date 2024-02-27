@@ -21,7 +21,7 @@
 TWISTED_TARGET:=$(SENTINEL_FOLDER)/twisted.sentinel
 $(TWISTED_TARGET): $(MXENV_TARGET)
 	@echo "Install twisted"
-	@$(MXENV_PYTHON) -m pip install Twisted
+	@$(PYTHON_PACKAGE_COMMAND) install Twisted
 	@touch $(TWISTED_TARGET)
 
 .PHONY: twisted-start

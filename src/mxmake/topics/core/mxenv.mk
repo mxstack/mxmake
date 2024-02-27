@@ -30,9 +30,23 @@
 #:description = Minimum required Python version.
 #:default = 3.7
 #:
+#:[setting.PYTHON_PACKAGE_INSTALLER]
+#:description = Install packages using the given package installer method.
+#:  Supported are `pip` and `uv`. If uv is used, its global availability is
+#:  checked. Otherwise, it is installed, either in the virtual environment or
+#:  using the `PRIMARY_PYTHON`, dependent on the `VENV_ENABLED` setting. If
+#:  `VENV_ENABLED` and uv is selected, uv is used to create the virtual
+#:  environment.
+#:default = pip
+#:
+#:[setting.MXENV_UV_GLOBAL]
+#:description = Flag whether to use a global installed 'uv' or install
+#:  it in the virtual environment.
+#:default = false
+#:
 #:[setting.VENV_ENABLED]
 #:description = Flag whether to use virtual environment. If `false`, the
-#:  interpreter according to `PRIMARY_PYTHON` found in `PATH` is used.
+#: interpreter according to `PRIMARY_PYTHON` found in `PATH` is used.
 #:default = true
 #:
 #:[setting.VENV_CREATE]
@@ -77,7 +91,7 @@ ifeq ($(shell [[ "$(VENV_ENABLED)" == "true" && "$(VENV_FOLDER)" == "" ]] && ech
 $(error "VENV_FOLDER must be configured if VENV_ENABLED is true")
 endif
 
-# determine the executable path
+# Determine the executable path
 ifeq ("$(VENV_ENABLED)", "true")
 export PATH:=$(shell pwd)/$(VENV_FOLDER)/bin:$(PATH)
 export VIRTUAL_ENV=$(VENV_FOLDER)
@@ -86,18 +100,36 @@ else
 MXENV_PYTHON=$(PRIMARY_PYTHON)
 endif
 
+# Determine the package installer
+ifeq ("$(PYTHON_PACKAGE_INSTALLER)","uv")
+PYTHON_PACKAGE_COMMAND=uv pip
+else
+PYTHON_PACKAGE_COMMAND=$(MXENV_PYTHON) -m pip
+endif
+
 MXENV_TARGET:=$(SENTINEL_FOLDER)/mxenv.sentinel
 $(MXENV_TARGET): $(SENTINEL)
 ifeq ("$(VENV_ENABLED)", "true")
 ifeq ("$(VENV_CREATE)", "true")
-	@echo "Setup Python Virtual Environment under '$(VENV_FOLDER)'"
-	@$(PRIMARY_PYTHON) -m venv $(VENV_FOLDER)
-endif
-endif
+ifeq ("$(PYTHON_PACKAGE_INSTALLER)$(MXENV_UV_GLOBAL)", "uvtrue")
+	@echo "Setup Python Virtual Environment using package 'uv' at '$(VENV_FOLDER)'"
+	@uv venv -p $(PRIMARY_PYTHON) --seed $(VENV_FOLDER)
+else
+	@echo "Setup Python Virtual Environment using module 'venv' at '$(VENV_FOLDER)'"
+	@$(MXENV_PYTHON) -m venv $(VENV_FOLDER)
 	@$(MXENV_PYTHON) -m ensurepip -U
-	@$(MXENV_PYTHON) -m pip install -U pip setuptools wheel
-	@$(MXENV_PYTHON) -m pip install -U $(MXDEV)
-	@$(MXENV_PYTHON) -m pip install -U $(MXMAKE)
+endif
+ifeq ("$(PYTHON_PACKAGE_INSTALLER)$(MXENV_UV_GLOBAL)", "uvfalse")
+	@echo "Install uv"
+	@$(MXENV_PYTHON) -m pip install uv
+endif
+	@$(PYTHON_PACKAGE_COMMAND) install -U pip setuptools wheel
+endif
+else
+	@echo "Using system Python interpreter"
+endif
+	@echo "Install/Update MXStack Python packages"
+	@$(PYTHON_PACKAGE_COMMAND) install -U $(MXDEV) $(MXMAKE)
 	@touch $(MXENV_TARGET)
 
 .PHONY: mxenv
@@ -114,8 +146,8 @@ ifeq ("$(VENV_CREATE)", "true")
 	@rm -rf $(VENV_FOLDER)
 endif
 else
-	@$(MXENV_PYTHON) -m pip uninstall -y $(MXDEV)
-	@$(MXENV_PYTHON) -m pip uninstall -y $(MXMAKE)
+	@$(PYTHON_PACKAGE_COMMAND) uninstall -y $(MXDEV)
+	@$(PYTHON_PACKAGE_COMMAND) uninstall -y $(MXMAKE)
 endif
 
 INSTALL_TARGETS+=mxenv

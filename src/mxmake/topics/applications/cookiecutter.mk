@@ -20,7 +20,7 @@
 COOKIECUTTER_TARGET:=$(SENTINEL_FOLDER)/cookiecutter.sentinel
 $(COOKIECUTTER_TARGET): $(MXENV_TARGET)
 	@echo "Install cookiecutter"
-	@$(MXENV_PYTHON) -m pip install "cookiecutter>=2.6.0"
+	@$(PYTHON_PACKAGE_COMMAND) install "cookiecutter>=2.6.0"
 	@touch $(COOKIECUTTER_TARGET)
 
 .PHONY: cookiecutter
