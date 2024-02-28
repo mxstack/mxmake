@@ -241,14 +241,14 @@ else
 	@$(PRIMARY_PYTHON) -m venv $(VENV_FOLDER)
 	@$(MXENV_PYTHON) -m ensurepip -U
 endif
-ifeq ("$(PYTHON_PACKAGE_INSTALLER)$(MXENV_UV_GLOBAL)","uvfalse")
-	@echo "Install uv"
-	@$(MXENV_PYTHON) -m pip install uv
-endif
 	@$(PYTHON_PACKAGE_COMMAND) install -U pip setuptools wheel
 endif
 else
 	@echo "Using system Python interpreter"
+endif
+ifeq ("$(PYTHON_PACKAGE_INSTALLER)$(MXENV_UV_GLOBAL)","uvfalse")
+	@echo "Install uv"
+	@$(MXENV_PYTHON) -m pip install uv
 endif
 	@echo "Install/Update MXStack Python packages"
 	@$(PYTHON_PACKAGE_COMMAND) install -U $(MXDEV) $(MXMAKE)
