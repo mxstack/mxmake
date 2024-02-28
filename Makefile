@@ -126,6 +126,13 @@ DOCS_REQUIREMENTS?=sphinx-conestack-theme myst-parser sphinxcontrib-mermaid
 # Default: mx.ini
 PROJECT_CONFIG?=mx.ini
 
+## core.packages
+
+# Allow prerelease and development versions.
+# By default, the package installer only finds stable versions.
+# Default: false
+PACKAGES_ALLOW_PRERELEASES?=false
+
 ## qa.test
 
 # The command which gets executed. Defaults to the location the
@@ -241,7 +248,6 @@ else
 	@$(PRIMARY_PYTHON) -m venv $(VENV_FOLDER)
 	@$(MXENV_PYTHON) -m ensurepip -U
 endif
-	@$(PYTHON_PACKAGE_COMMAND) install -U pip setuptools wheel
 endif
 else
 	@echo "Using system Python interpreter"
@@ -250,6 +256,7 @@ ifeq ("$(PYTHON_PACKAGE_INSTALLER)$(MXENV_UV_GLOBAL)","uvfalse")
 	@echo "Install uv"
 	@$(MXENV_PYTHON) -m pip install uv
 endif
+	@$(PYTHON_PACKAGE_COMMAND) install -U pip setuptools wheel
 	@echo "Install/Update MXStack Python packages"
 	@$(PYTHON_PACKAGE_COMMAND) install -U $(MXDEV) $(MXMAKE)
 	@touch $(MXENV_TARGET)
@@ -449,10 +456,20 @@ ADDITIONAL_SOURCES_TARGETS?=
 
 INSTALLED_PACKAGES=$(MXMAKE_FILES)/installed.txt
 
+ifeq ("$(PACKAGES_ALLOW_PRERELEASES)","true")
+ifeq ("$(PYTHON_PACKAGE_INSTALLER)","uv")
+PACKAGES_PRERELEASES=--prerelease=allow
+else
+PACKAGES_PRERELEASES=--pre
+endif
+else
+PACKAGES_PRERELEASES=
+endif
+
 PACKAGES_TARGET:=$(INSTALLED_PACKAGES)
 $(PACKAGES_TARGET): $(FILES_TARGET) $(ADDITIONAL_SOURCES_TARGETS)
 	@echo "Install python packages"
-	@$(PYTHON_PACKAGE_COMMAND) install -r $(FILES_TARGET)
+	@$(PYTHON_PACKAGE_COMMAND) install $(PACKAGES_PRERELEASES) -r $(FILES_TARGET)
 	@$(PYTHON_PACKAGE_COMMAND) freeze > $(INSTALLED_PACKAGES)
 	@touch $(PACKAGES_TARGET)
 
