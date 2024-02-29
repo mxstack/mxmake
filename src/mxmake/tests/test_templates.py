@@ -651,15 +651,13 @@ class TestTemplates(testing.RenderTestCase):
 
                 # mxmake folder
                 MXMAKE_FOLDER?=.mxmake
-
-                # Sentinel files
+                 # Sentinel files
                 SENTINEL_FOLDER?=$(MXMAKE_FOLDER)/sentinels
                 SENTINEL?=$(SENTINEL_FOLDER)/about.txt
                 $(SENTINEL):
                 	@mkdir -p $(SENTINEL_FOLDER)
                 	@echo "Sentinels for the Makefile process." > $(SENTINEL)
-
-                ##############################################################################
+                 ##############################################################################
                 # mxenv
                 ##############################################################################
 
@@ -707,15 +705,15 @@ class TestTemplates(testing.RenderTestCase):
                 	@$(PRIMARY_PYTHON) -m venv $(VENV_FOLDER)
                 	@$(MXENV_PYTHON) -m ensurepip -U
                 endif
+                endif
+                else
+                	@echo "Using system Python interpreter"
+                endif
                 ifeq ("$(PYTHON_PACKAGE_INSTALLER)$(MXENV_UV_GLOBAL)","uvfalse")
                 	@echo "Install uv"
                 	@$(MXENV_PYTHON) -m pip install uv
                 endif
                 	@$(PYTHON_PACKAGE_COMMAND) install -U pip setuptools wheel
-                endif
-                else
-                	@echo "Using system Python interpreter"
-                endif
                 	@echo "Install/Update MXStack Python packages"
                 	@$(PYTHON_PACKAGE_COMMAND) install -U $(MXDEV) $(MXMAKE)
                 	@touch $(MXENV_TARGET)
@@ -743,12 +741,10 @@ class TestTemplates(testing.RenderTestCase):
                 CLEAN_TARGETS+=mxenv-clean
 
                 -include $(INCLUDE_MAKEFILE)
-
-                ##############################################################################
+                 ##############################################################################
                 # Default targets
                 ##############################################################################
-
-                INSTALL_TARGET:=$(SENTINEL_FOLDER)/install.sentinel
+                 INSTALL_TARGET:=$(SENTINEL_FOLDER)/install.sentinel
                 $(INSTALL_TARGET): $(INSTALL_TARGETS)
                 	@touch $(INSTALL_TARGET)
 
