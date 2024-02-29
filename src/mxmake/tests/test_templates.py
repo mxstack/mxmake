@@ -679,8 +679,8 @@ class TestTemplates(testing.RenderTestCase):
 
                 # Determine the executable path
                 ifeq ("$(VENV_ENABLED)", "true")
-                export PATH:=$(shell pwd)/$(VENV_FOLDER)/bin:$(PATH)
-                export VIRTUAL_ENV=$(VENV_FOLDER)
+                export PATH:=$(realpath $(VENV_FOLDER))/bin:$(PATH)
+                export VIRTUAL_ENV=$(realpath $(VENV_FOLDER))
                 MXENV_PYTHON=python
                 else
                 MXENV_PYTHON=$(PRIMARY_PYTHON)
