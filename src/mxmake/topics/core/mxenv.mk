@@ -91,6 +91,11 @@ ifeq ($(shell [[ "$(VENV_ENABLED)" == "true" && "$(VENV_FOLDER)" == "" ]] && ech
 $(error "VENV_FOLDER must be configured if VENV_ENABLED is true")
 endif
 
+# Check if global python is used with uv (this is not supported by uv)
+ifeq ("$(VENV_ENABLED)$(PYTHON_PACKAGE_INSTALLER)","falseuv")
+$(error "Package installer uv does not work with a global Python interpreter.")
+endif
+
 # Determine the executable path
 ifeq ("$(VENV_ENABLED)", "true")
 export PATH:=$(abspath $(VENV_FOLDER))/bin:$(PATH)
