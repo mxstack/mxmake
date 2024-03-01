@@ -1,0 +1,72 @@
+name: Variants of Python/VENV and installer type tests
+
+on: [push]
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version:
+        # we test on lowest and highest supported versions
+        - "3.8"
+        - "3.12"
+        os:
+          - ubuntu-latest
+          - macos-latest
+    runs-on: ${{ matrix.os }}
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python-version }}
+        cache: "pip"
+    - name: VENV to be created with pip
+      run: |
+        make VENV_ENABLED=true VENV_CREATE=true PYTHON_PACKAGE_INSTALLER=pip test
+        make clean
+    - name: VENV to be created with uv to be installed
+      run: |
+        make VENV_ENABLED=true VENV_CREATE=true PYTHON_PACKAGE_INSTALLER=uv MXENV_UV_GLOBAL=false test
+        make clean
+    - name: VENV to be created with uv globally pre-installed
+      run: |
+        pip install uv
+        make VENV_ENABLED=true VENV_CREATE=true PYTHON_PACKAGE_INSTALLER=uv MXENV_UV_GLOBAL=true test
+        make clean
+        pip uninstall -y uv
+    - name: VENV pre-installed with pip
+      run: |
+        python -m venv existingvenv
+        make VENV_ENABLED=true VENV_CREATE=false VENV_FOLDER=existingvenv PYTHON_PACKAGE_INSTALLER=pip test
+        make clean
+        rm -rf existingvenv
+    - name: VENV pre-installed with uv to be installed
+      run: |
+        python -m venv existingvenv
+        make VENV_ENABLED=true VENV_CREATE=false VENV_FOLDER=existingvenv PYTHON_PACKAGE_INSTALLER=uv MXENV_UV_GLOBAL=false test
+        make clean
+        rm -rf existingvenv
+    - name: VENV pre-installed with uv globally pre-installed
+      run: |
+        python -m venv existingvenv
+        pip install uv
+        make VENV_ENABLED=true VENV_CREATE=false VENV_FOLDER=existingvenv PYTHON_PACKAGE_INSTALLER=uv MXENV_UV_GLOBAL=true test
+        make clean
+        pip uninstall -y uv
+        rm -rf existingvenv
+    - name: Global Python with pip
+      run: |
+        make VENV_ENABLED=false VENV_CREATE=false PYTHON_PACKAGE_INSTALLER=pip test
+        make clean
+    - name: Global Python with uv to be installed
+      run: |
+        make VENV_ENABLED=false VENV_CREATE=false PYTHON_PACKAGE_INSTALLER=uv MXENV_UV_GLOBAL=false test
+        make clean
+    - name: Global Python with uv globally pre-installed
+      run: |
+        pip install uv
+        make VENV_ENABLED=false VENV_CREATE=false PYTHON_PACKAGE_INSTALLER=uv MXENV_UV_GLOBAL=true test
+        make clean
+        pip uninstall -y uv
