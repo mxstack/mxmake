@@ -34,6 +34,7 @@
 - Add pyupgrade based code formatter, see https://pypi.org/project/pyupgrade/.
 
 - Add `ZOPE_TEMPLATE_CHECKOUT` option to zope domain to allow pinning to a tag, branch or revision (uses cookiecutter `--checkout`).
+  If empty, do not apply `--checkout` option.
 
 - Add phony target `cookiecutter` to be able to just install it.
 

@@ -15,7 +15,7 @@
 #:default = https://github.com/plone/cookiecutter-zope-instance
 #:
 #:[setting.ZOPE_TEMPLATE_CHECKOUT]
-#:description = cookiecutter branch, tag or commit to checkout from the ZOPE_TEMPLATE
+#:description = cookiecutter branch, tag or commit to checkout from the ZOPE_TEMPLATE. If empty, `--checkout` is not passed to cookiecutter.
 #:default = main
 #:
 #:[setting.ZOPE_BASE_FOLDER]
@@ -55,12 +55,18 @@
 ZOPE_INSTANCE_FOLDER:=$(ZOPE_BASE_FOLDER)/instance
 ZOPE_INSTANCE_TARGET:=$(ZOPE_INSTANCE_FOLDER)/etc/zope.ini $(ZOPE_INSTANCE_FOLDER)/etc/zope.conf $(ZOPE_INSTANCE_FOLDER)/etc/site.zcml
 
+ifeq (,$(ZOPE_TEMPLATE_CHECKOUT))
+	ZOPE_COOKIECUTTER_TEMPLATE_OPTIONS=
+else
+	ZOPE_COOKIECUTTER_TEMPLATE_OPTIONS=--checkout $(ZOPE_TEMPLATE_CHECKOUT)
+endif
+
 ${ZOPE_CONFIGURATION_FILE}:
 	@touch ${ZOPE_CONFIGURATION_FILE}
 
 $(ZOPE_INSTANCE_TARGET): $(COOKIECUTTER_TARGET) $(ZOPE_CONFIGURATION_FILE)
 	@echo Create Plone/Zope configuration from $(ZOPE_TEMPLATE) to $(ZOPE_INSTANCE_FOLDER)
-	@cookiecutter -f --no-input --checkout ${ZOPE_TEMPLATE_CHECKOUT} --config-file $(ZOPE_CONFIGURATION_FILE) --output-dir $(ZOPE_BASE_FOLDER) $(ZOPE_TEMPLATE)
+	@cookiecutter -f --no-input ${ZOPE_COOKIECUTTER_TEMPLATE_OPTIONS} --config-file $(ZOPE_CONFIGURATION_FILE) --output-dir $(ZOPE_BASE_FOLDER) $(ZOPE_TEMPLATE)
 
 .PHONY: zope-instance
 zope-instance: $(ZOPE_INSTANCE_TARGET) $(SOURCES)
