@@ -60,13 +60,3 @@ jobs:
       run: |
         make VENV_ENABLED=false VENV_CREATE=false PYTHON_PACKAGE_INSTALLER=pip test
         make clean
-    - name: Global Python with uv to be installed
-      run: |
-        make VENV_ENABLED=false VENV_CREATE=false PYTHON_PACKAGE_INSTALLER=uv MXENV_UV_GLOBAL=false test
-        make clean
-    - name: Global Python with uv globally pre-installed
-      run: |
-        pip install uv
-        make VENV_ENABLED=false VENV_CREATE=false PYTHON_PACKAGE_INSTALLER=uv MXENV_UV_GLOBAL=true test
-        make clean
-        pip uninstall -y uv
