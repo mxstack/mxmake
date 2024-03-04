@@ -6,10 +6,10 @@ __pycache__
 /.mypy_cache/
 /.pytest_cache/
 /.ruff_cache/
+/.venv/
 /.vscode/
 /build/
 /constraints-mxdev.txt
 /dist/
 /docs/html/
 /requirements-mxdev.txt
-/venv/

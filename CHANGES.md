@@ -38,6 +38,10 @@
 
 - Add phony target `cookiecutter` to be able to just install it.
 
+- Add feature to pass options to zest-releaser commands.
+
+- Change default for venv folder to `.venv`, since this is established practice.
+
 ## 1.0a3 (2024-02-06)
 
 - Add `typecheck` target and use it for mypy instead of `check` target.

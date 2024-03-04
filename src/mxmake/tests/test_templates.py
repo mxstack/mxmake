@@ -528,7 +528,7 @@ class TestTemplates(testing.RenderTestCase):
             "core.mxenv.MXENV_UV_GLOBAL": "false",
             "core.mxenv.VENV_ENABLED": "true",
             "core.mxenv.VENV_CREATE": "true",
-            "core.mxenv.VENV_FOLDER": "venv",
+            "core.mxenv.VENV_FOLDER": ".venv",
             "core.mxenv.MXDEV": "mxdev",
             "core.mxenv.MXMAKE": "mxmake",
         }
@@ -617,8 +617,8 @@ class TestTemplates(testing.RenderTestCase):
                 # target folder for the virtual environment. If `VENV_ENABLED` is `true` and
                 # `VENV_CREATE` is false it is expected to point to an existing virtual
                 # environment. If `VENV_ENABLED` is `false` it is ignored.
-                # Default: venv
-                VENV_FOLDER?=venv
+                # Default: .venv
+                VENV_FOLDER?=.venv
 
                 # mxdev to install in virtual environment.
                 # Default: mxdev
@@ -675,6 +675,11 @@ class TestTemplates(testing.RenderTestCase):
                 # Check if venv folder is configured if venv is enabled
                 ifeq ($(shell [[ "$(VENV_ENABLED)" == "true" && "$(VENV_FOLDER)" == "" ]] && echo "true"),"true")
                 $(error "VENV_FOLDER must be configured if VENV_ENABLED is true")
+                endif
+
+                # Check if global python is used with uv (this is not supported by uv)
+                ifeq ("$(VENV_ENABLED)$(PYTHON_PACKAGE_INSTALLER)","falseuv")
+                $(error "Package installer uv does not work with a global Python interpreter.")
                 endif
 
                 # Determine the executable path

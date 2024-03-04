@@ -61,7 +61,7 @@
 #:  target folder for the virtual environment. If `VENV_ENABLED` is `true` and
 #:  `VENV_CREATE` is false it is expected to point to an existing virtual
 #:  environment. If `VENV_ENABLED` is `false` it is ignored.
-#:default = venv
+#:default = .venv
 #:
 #:[setting.MXDEV]
 #:description = mxdev to install in virtual environment.
@@ -89,6 +89,11 @@ endif
 # Check if venv folder is configured if venv is enabled
 ifeq ($(shell [[ "$(VENV_ENABLED)" == "true" && "$(VENV_FOLDER)" == "" ]] && echo "true"),"true")
 $(error "VENV_FOLDER must be configured if VENV_ENABLED is true")
+endif
+
+# Check if global python is used with uv (this is not supported by uv)
+ifeq ("$(VENV_ENABLED)$(PYTHON_PACKAGE_INSTALLER)","falseuv")
+$(error "Package installer uv does not work with a global Python interpreter.")
 endif
 
 # Determine the executable path

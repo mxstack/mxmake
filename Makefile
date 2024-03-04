@@ -83,8 +83,8 @@ VENV_CREATE?=true
 # target folder for the virtual environment. If `VENV_ENABLED` is `true` and
 # `VENV_CREATE` is false it is expected to point to an existing virtual
 # environment. If `VENV_ENABLED` is `false` it is ignored.
-# Default: venv
-VENV_FOLDER?=venv
+# Default: .venv
+VENV_FOLDER?=.venv
 
 # mxdev to install in virtual environment.
 # Default: mxdev
@@ -166,6 +166,24 @@ MYPY_SRC?=src
 # Default: types-setuptools
 MYPY_REQUIREMENTS?=types-setuptools types-docutils
 
+## applications.zest-releaser
+
+# Options to pass to zest.releaser prerelease command.
+# No default value.
+ZEST_RELEASER_PRERELEASE_OPTIONS?=
+
+# Options to pass to zest.releaser release command.
+# No default value.
+ZEST_RELEASER_RELEASE_OPTIONS?=
+
+# Options to pass to zest.releaser postrelease command.
+# No default value.
+ZEST_RELEASER_POSTRELEASE_OPTIONS?=
+
+# Options to pass to zest.releaser fullrelease command.
+# No default value.
+ZEST_RELEASER_FULLRELEASE_OPTIONS?=
+
 ##############################################################################
 # END SETTINGS - DO NOT EDIT BELOW THIS LINE
 ##############################################################################
@@ -218,6 +236,11 @@ endif
 # Check if venv folder is configured if venv is enabled
 ifeq ($(shell [[ "$(VENV_ENABLED)" == "true" && "$(VENV_FOLDER)" == "" ]] && echo "true"),"true")
 $(error "VENV_FOLDER must be configured if VENV_ENABLED is true")
+endif
+
+# Check if global python is used with uv (this is not supported by uv)
+ifeq ("$(VENV_ENABLED)$(PYTHON_PACKAGE_INSTALLER)","falseuv")
+$(error "Package installer uv does not work with a global Python interpreter.")
 endif
 
 # Determine the executable path
@@ -592,22 +615,22 @@ $(ZEST_RELEASER_TARGET): $(MXENV_TARGET)
 .PHONY: zest-releaser-prerelease
 zest-releaser-prerelease: $(ZEST_RELEASER_TARGET)
 	@echo "Run prerelease"
-	@prerelease
+	@prerelease $(ZEST_RELEASER_PRERELEASE_OPTIONS)
 
 .PHONY: zest-releaser-release
 zest-releaser-release: $(ZEST_RELEASER_TARGET)
 	@echo "Run release"
-	@release
+	@release $(ZEST_RELEASER_RELEASE_OPTIONS)
 
 .PHONY: zest-releaser-postrelease
 zest-releaser-postrelease: $(ZEST_RELEASER_TARGET)
 	@echo "Run postrelease"
-	@postrelease
+	@postrelease $(ZEST_RELEASER_POSTRELEASE_OPTIONS)
 
 .PHONY: zest-releaser-fullrelease
 zest-releaser-fullrelease: $(ZEST_RELEASER_TARGET)
 	@echo "Run fullrelease"
-	@fullrelease
+	@fullrelease $(ZEST_RELEASER_FULLRELEASE_OPTIONS)
 
 .PHONY: zest-releaser-dirty
 zest-releaser-dirty:
