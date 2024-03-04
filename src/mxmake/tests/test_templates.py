@@ -528,7 +528,7 @@ class TestTemplates(testing.RenderTestCase):
             "core.mxenv.MXENV_UV_GLOBAL": "false",
             "core.mxenv.VENV_ENABLED": "true",
             "core.mxenv.VENV_CREATE": "true",
-            "core.mxenv.VENV_FOLDER": "venv",
+            "core.mxenv.VENV_FOLDER": ".venv",
             "core.mxenv.MXDEV": "mxdev",
             "core.mxenv.MXMAKE": "mxmake",
         }
@@ -617,8 +617,8 @@ class TestTemplates(testing.RenderTestCase):
                 # target folder for the virtual environment. If `VENV_ENABLED` is `true` and
                 # `VENV_CREATE` is false it is expected to point to an existing virtual
                 # environment. If `VENV_ENABLED` is `false` it is ignored.
-                # Default: venv
-                VENV_FOLDER?=venv
+                # Default: .venv
+                VENV_FOLDER?=.venv
 
                 # mxdev to install in virtual environment.
                 # Default: mxdev

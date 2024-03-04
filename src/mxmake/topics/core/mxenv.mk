@@ -61,7 +61,7 @@
 #:  target folder for the virtual environment. If `VENV_ENABLED` is `true` and
 #:  `VENV_CREATE` is false it is expected to point to an existing virtual
 #:  environment. If `VENV_ENABLED` is `false` it is ignored.
-#:default = venv
+#:default = .venv
 #:
 #:[setting.MXDEV]
 #:description = mxdev to install in virtual environment.
