@@ -10,6 +10,7 @@ It targets the development environments for Python packages but may be used outs
 [![Tests](https://github.com/mxstack/mxmake/actions/workflows/test.yml/badge.svg)](https://github.com/mxstack/mxmake/actions/workflows/test.yml)
 [![Typecheck](https://github.com/mxstack/mxmake/actions/workflows/typecheck.yml/badge.svg)](https://github.com/mxstack/mxmake/actions/workflows/typecheck.yml)
 [![Lint](https://github.com/mxstack/mxmake/actions/workflows/lint.yml/badge.svg)](https://github.com/mxstack/mxmake/actions/workflows/lint.yml)
+[![Variants](https://github.com/mxstack/mxmake/actions/workflows/variants.yml/badge.svg)](https://github.com/mxstack/mxmake/actions/workflows/variants.yml)
 
 # Documentation
 
