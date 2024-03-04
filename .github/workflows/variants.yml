@@ -1,4 +1,4 @@
-name: Variants of Python/VENV and installer type tests
+name: Python/VENV/Installer Variants
 
 on: [push]
 
