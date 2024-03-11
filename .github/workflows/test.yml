@@ -18,6 +18,7 @@ jobs:
           - macos-latest
           - windows-latest
         exclude:
+          # python 3.8 and windows do not like each other here, so we do not support it
           - python-version: "3.8"
             os: windows-latest
     runs-on: ${{ matrix.os }}
