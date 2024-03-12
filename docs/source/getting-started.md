@@ -18,11 +18,6 @@ cd myproject
 
 You can either install *mxmake* globally or in a virtual environment.
 
-```{note}
-While *mxstack* is under development, use the unreleased `develop` branch and install with
-`pip install git+https://github.com/mxstack/mxmake.git@develop`.
-```
-
 For global installation do a `pip install mxmake`, otherwise create a virtual environment, activate it, and install it like so:
 
 ```shell
@@ -42,6 +37,8 @@ If in doubt select the `core` topic and then just hit {kbd}`Return` until done.
 
 This creates an empty `mx.ini` (only if it does not exist already) and a `Makefile`.
 
+To update an existing Makefile without beeing prompted interactive, run `mxmake update`.
+
 ## How to change the settings
 
 The `Makefile` consists of three sections:
@@ -51,7 +48,7 @@ The `Makefile` consists of three sections:
 1. Makefile logic (do not edit)
 
 The header is not intended for editing, thus it does not cause any harm by adding or removing domains here.
-It is considered during the execution of `mxmake init`.
+It is considered during the execution of `mxmake init` respective `mxmake update`.
 Added or removed topics are checked or unchecked accordingly on the next run.
 
 The settings section is where customization is happening.
@@ -61,6 +58,17 @@ Thus they are often prefixed.
 
 Each setting provides a description and an optional default value.
 
-To update the Makefile without beeing prompted interactive, run `mxmake update`.
-
 For details read the chapter [on topics and it's domains](topics-and-domains).
+
+
+## How to use on the Windows operating system
+
+mxmake on Windows needs a bash shell.
+Fortunatly the GIT VCS comes with the git-bash.
+Please follow  [GIT's official installation instructions](https://git-scm.com/download/win).
+
+Install [make as described here](https://gist.github.com/evanwill/0207876c3243bbb6863e65ec5dc3f058#make)
+
+Further you need a [Python >=3.9 installation.](https://www.python.org/downloads/windows/).
+
+Dependent on the topics and domains you use, you might need to install additional software.

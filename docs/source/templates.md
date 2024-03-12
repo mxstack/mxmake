@@ -8,7 +8,7 @@ It is used for general purpose internal file generation and also can be used for
 
 ## Internal templates
 
-Internally it is used to generate base files on `mxmake init`.
+Internally it is used to generate base files on `mxmake init` respective `mxmake update`.
 
 General templates, not attached to any domain:
 

@@ -16,6 +16,11 @@ jobs:
         os:
           - ubuntu-latest
           - macos-latest
+          - windows-latest
+        exclude:
+          # python 3.8 and windows do not like each other here, so we do not support it
+          - python-version: "3.8"
+            os: windows-latest
     runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v4
@@ -24,8 +29,15 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
         cache: "pip"
-    - name: Install Project
+    - name: Install Project (Windows)
+      if: runner.os == 'Windows'
+      run: make MAKESHELL='C:/Program Files/Git/usr/bin/bash' install
+    - name: Install Project (Unix)
+      if: runner.os != 'Windows'
       run: make install
-
-    - name: Run Tests
+    - name: Run Tests (Windows)
+      if: runner.os == 'Windows'
+      run: make MAKESHELL='C:/Program Files/Git/usr/bin/bash' test
+    - name: Run Tests (Unix)
+      if: runner.os != 'Windows'
       run: make test
