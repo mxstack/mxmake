@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.0a4 (unreleased)
+## 1.0a4 (2024-03-12)
 
 - Add experimental windows support.
 
