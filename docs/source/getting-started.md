@@ -67,6 +67,8 @@ mxmake on Windows needs a bash shell.
 Fortunatly the GIT VCS comes with the git-bash.
 Please follow  [GIT's official installation instructions](https://git-scm.com/download/win).
 
+Install [make as described here](https://gist.github.com/evanwill/0207876c3243bbb6863e65ec5dc3f058#make)
+
 Further you need a [Python >=3.9 installation.](https://www.python.org/downloads/windows/).
 
 Dependent on the topics and domains you use, you might need to install additional software.
