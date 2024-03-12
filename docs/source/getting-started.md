@@ -37,6 +37,8 @@ If in doubt select the `core` topic and then just hit {kbd}`Return` until done.
 
 This creates an empty `mx.ini` (only if it does not exist already) and a `Makefile`.
 
+To update an existing Makefile without beeing prompted interactive, run `mxmake update`.
+
 ## How to change the settings
 
 The `Makefile` consists of three sections:
@@ -46,7 +48,7 @@ The `Makefile` consists of three sections:
 1. Makefile logic (do not edit)
 
 The header is not intended for editing, thus it does not cause any harm by adding or removing domains here.
-It is considered during the execution of `mxmake init`.
+It is considered during the execution of `mxmake init` respective `mxmake update`.
 Added or removed topics are checked or unchecked accordingly on the next run.
 
 The settings section is where customization is happening.
@@ -55,8 +57,6 @@ Setting names must be unique among all domains.
 Thus they are often prefixed.
 
 Each setting provides a description and an optional default value.
-
-To update the Makefile without beeing prompted interactive, run `mxmake update`.
 
 For details read the chapter [on topics and it's domains](topics-and-domains).
 
