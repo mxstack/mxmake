@@ -2,6 +2,8 @@
 
 ## 1.0a4 (unreleased)
 
+- Add experimental windows support.
+
 - Support `mxmake update` command, updating the Makefile without prompting for settings.
 
 - Use importlib.metadata to load entrypoints.
