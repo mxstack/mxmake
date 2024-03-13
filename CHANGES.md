@@ -2,9 +2,7 @@
 
 ## 1.0a5 (unreleased)
 
-
-- Nothing changed yet.
-
+- Depend on `mxdev>=4.0.2`, which fixes the deprecation of `pkg_resources` and use the provided infrastructure of mxdev to handle entry_points in mxmake.
 
 ## 1.0a4 (2024-03-12)
 
