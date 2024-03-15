@@ -2,15 +2,18 @@
 
 ## 1.0a5 (unreleased)
 
+- Add `Makefile` as dependency target for `SENTINEL` target to make sure
+  target execution if Makefile changes.
 
-- Nothing changed yet.
-
+- Depend on `mxdev>=4.0.2`, which fixes the deprecation of `pkg_resources` and
+  use the provided infrastructure of mxdev to handle entry_points in mxmake.
 
 ## 1.0a4 (2024-03-12)
 
 - Add experimental windows support.
 
-- Support `mxmake update` command, updating the Makefile without prompting for settings.
+- Support `mxmake update` command, updating the Makefile without prompting for
+  settings.
 
 - Use importlib.metadata to load entrypoints.
 
@@ -31,7 +34,8 @@
 
 - Rename `PYTHON_BIN` to `PRIMARY_PYTHON` in `mxenv` domain.
 
-- Introduce `MXENV_PYTHON`. It defines the Python executable used for mxmake operations.
+- Introduce `MXENV_PYTHON`. It defines the Python executable used for mxmake
+  operations.
 
 - Remove ruff cache when running `make ruff-clean` target.
 
@@ -41,8 +45,9 @@
 
 - Add pyupgrade based code formatter, see https://pypi.org/project/pyupgrade/.
 
-- Add `ZOPE_TEMPLATE_CHECKOUT` option to zope domain to allow pinning to a tag, branch or revision (uses cookiecutter `--checkout`).
-  If empty, do not apply `--checkout` option.
+- Add `ZOPE_TEMPLATE_CHECKOUT` option to zope domain to allow pinning to a tag,
+  branch or revision (uses cookiecutter `--checkout`). If empty, do not apply
+  `--checkout` option.
 
 - Add phony target `cookiecutter` to be able to just install it.
 

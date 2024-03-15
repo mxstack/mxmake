@@ -23,7 +23,7 @@ classifiers = [
 ]
 dependencies = [
     "Jinja2",
-    "mxdev",
+    "mxdev>=4.0.2",
     "inquirer",
 ]
 dynamic = ["readme"]

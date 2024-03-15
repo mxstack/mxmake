@@ -1,6 +1,6 @@
 from collections import Counter
 from dataclasses import dataclass
-from importlib.metadata import entry_points
+from mxdev.entry_points import load_eps_by_group
 from pathlib import Path
 
 import configparser
@@ -8,15 +8,6 @@ import functools
 import io
 import operator
 import typing
-
-
-try:
-    # do we have Python 3.12+
-    from importlib.metadata import EntryPoints  # type: ignore # noqa: F401
-
-    HAS_IMPORTLIB_ENTRYPOINTS = True
-except ImportError:
-    HAS_IMPORTLIB_ENTRYPOINTS = False
 
 
 @dataclass
@@ -174,17 +165,7 @@ class Topic:
 
 @functools.lru_cache(maxsize=4096)
 def load_topics() -> typing.List[Topic]:
-    if HAS_IMPORTLIB_ENTRYPOINTS:
-        topics_eps = entry_points(group="mxmake.topics")  # type: ignore
-    else:
-        eps = entry_points()
-        if "mxmake.topics" not in eps:
-            return []
-        topics_eps = eps["mxmake.topics"]  # type: ignore
-    # XXX: for some reasons entry points are loaded twice. not sure if this
-    #      is a glitch when installing with uv or something related to
-    #      importlib.metadata.entry_points
-    return list(set([ep.load() for ep in topics_eps]))  # type: ignore
+    return [ep.load() for ep in load_eps_by_group("mxmake.topics")]  # type: ignore
 
 
 def get_topic(name: str) -> Topic:
