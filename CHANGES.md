@@ -2,6 +2,9 @@
 
 ## 1.0a5 (unreleased)
 
+- Perform `mxenv` domain related checks inside target to support setups
+  which install their own python environment.
+
 - Add `Makefile` as dependency target for `SENTINEL` target to make sure
   target execution if Makefile changes.
 
