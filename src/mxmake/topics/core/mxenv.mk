@@ -75,27 +75,6 @@
 # mxenv
 ##############################################################################
 
-# Check if given Python is installed
-ifeq (,$(shell which $(PRIMARY_PYTHON)))
-$(error "PYTHON=$(PRIMARY_PYTHON) not found in $(PATH)")
-endif
-
-# Check if given Python version is ok
-PYTHON_VERSION_OK=$(shell $(PRIMARY_PYTHON) -c "import sys; print((int(sys.version_info[0]), int(sys.version_info[1])) >= tuple(map(int, '$(PYTHON_MIN_VERSION)'.split('.'))))")
-ifeq ($(PYTHON_VERSION_OK),0)
-$(error "Need Python >= $(PYTHON_MIN_VERSION)")
-endif
-
-# Check if venv folder is configured if venv is enabled
-ifeq ($(shell [[ "$(VENV_ENABLED)" == "true" && "$(VENV_FOLDER)" == "" ]] && echo "true"),"true")
-$(error "VENV_FOLDER must be configured if VENV_ENABLED is true")
-endif
-
-# Check if global python is used with uv (this is not supported by uv)
-ifeq ("$(VENV_ENABLED)$(PYTHON_PACKAGE_INSTALLER)","falseuv")
-$(error "Package installer uv does not work with a global Python interpreter.")
-endif
-
 # Determine the executable path
 ifeq ("$(VENV_ENABLED)", "true")
 export VIRTUAL_ENV=$(abspath $(VENV_FOLDER))
@@ -119,6 +98,12 @@ endif
 
 MXENV_TARGET:=$(SENTINEL_FOLDER)/mxenv.sentinel
 $(MXENV_TARGET): $(SENTINEL)
+	@$(PRIMARY_PYTHON) -c "import sys; vi = sys.version_info; sys.exit(1 if (int(vi[0]), int(vi[1])) >= tuple(map(int, '$(PYTHON_MIN_VERSION)'.split('.'))) else 0)" \
+		&& echo "Need Python >= $(PYTHON_MIN_VERSION)" && exit 1 || :
+	@[[ "$(VENV_ENABLED)" == "true" && "$(VENV_FOLDER)" == "" ]] \
+		&& echo "VENV_FOLDER must be configured if VENV_ENABLED is true" && exit 1 || :
+	@[[ "$(VENV_ENABLED)$(PYTHON_PACKAGE_INSTALLER)" == "falseuv" ]] \
+		&& echo "Package installer uv does not work with a global Python interpreter." && exit 1 || :
 ifeq ("$(VENV_ENABLED)", "true")
 ifeq ("$(VENV_CREATE)", "true")
 ifeq ("$(PYTHON_PACKAGE_INSTALLER)$(MXENV_UV_GLOBAL)","uvtrue")
