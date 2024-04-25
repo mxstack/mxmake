@@ -21,6 +21,12 @@ jobs:
           # python 3.8 and windows do not like each other here, so we do not support it
           - python-version: "3.8"
             os: windows-latest
+          # GH does not support macos and python 3.8
+          - python-version: "3.8"
+            os: macos-latest
+          # GH does not support macos and python 3.9
+          - python-version: "3.9"
+            os: macos-latest
     runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v4
