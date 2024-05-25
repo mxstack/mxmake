@@ -2,6 +2,9 @@
 
 ## 1.0a5 (unreleased)
 
+- Add `LINGUA_OPTIONS` setting to `lingua` domain in `i18n` topic. Can be used
+  for passing additional command line options to `pot-create`.
+
 - Perform `mxenv` domain related checks inside target to support setups
   which install their own python environment.
 

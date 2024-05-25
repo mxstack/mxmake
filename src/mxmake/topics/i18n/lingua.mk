@@ -19,6 +19,10 @@
 #:[setting.LINGUA_PLUGINS]
 #:description = Python packages containing lingua extensions.
 #:default =
+#:
+#:[setting.LINGUA_OPTIONS]
+#:description = Command line options passed to `pot-create`
+#:default =
 
 ##############################################################################
 # lingua
@@ -34,7 +38,7 @@ PHONY: lingua-extract
 lingua-extract: $(LINGUA_TARGET)
 	@echo "Extract messages"
 	@pot-create \
-		"$(LINGUA_SEARCH_PATH)" \
+		"$(LINGUA_SEARCH_PATH)" $(LINGUA_OPTIONS) \
 		-o "$(GETTEXT_LOCALES_PATH)/$(GETTEXT_DOMAIN).pot"
 
 PHONY: lingua
