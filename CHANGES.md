@@ -2,6 +2,9 @@
 
 ## 1.0a5 (unreleased)
 
+- Export `OS` environment variable in `mxenv` domain to prevent warning on
+  sub make calls.
+
 - Add `LINGUA_OPTIONS` setting to `lingua` domain in `i18n` topic. Can be used
   for passing additional command line options to `pot-create`.
 
