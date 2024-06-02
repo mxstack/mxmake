@@ -48,7 +48,7 @@ However, there are instances where the steps in the build process do not create 
 In such cases, it becomes difficult to determine if a target needs to be rebuilt.
 To overcome this challenge, other methods, such as using sentinel files, can be employed to keep track of the state of the build process.
 
-```{info}
+```{note}
 Sentinel files are used to indicate whether a target has been built, or if a process has been completed.
 ```
 

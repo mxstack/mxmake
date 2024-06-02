@@ -54,12 +54,14 @@ Added or removed topics are checked or unchecked accordingly on the next run.
 The settings section is where customization is happening.
 Domains can provide configurable settings.
 Setting names must be unique among all domains.
-Thus they are often prefixed.
+Thus they are usually prefixed.
 
 Each setting provides a description and an optional default value.
 
 For details read the chapter [on topics and it's domains](topics-and-domains).
 
+Do not add custom settings to settings section.
+They will be lost on next `mxmake init` respective `mxmake update` run.
 
 ## How to use on the Windows operating system
 

@@ -29,7 +29,12 @@ dependencies = [
 dynamic = ["readme"]
 
 [project.optional-dependencies]
-docs = ["Sphinx", "sphinxcontrib-mermaid"]
+docs = [
+    "myst-parser",
+    "sphinx-conestack-theme==1.0.1",
+    "Sphinx",
+    "sphinxcontrib-mermaid",
+]
 test = ["zope.testrunner"]
 
 [project.urls]

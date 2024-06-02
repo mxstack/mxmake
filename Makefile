@@ -118,7 +118,7 @@ DOCS_TARGET_FOLDER?=docs/html
 
 # Documentation Python requirements to be installed (via pip).
 # No default value.
-DOCS_REQUIREMENTS?=sphinx-conestack-theme myst-parser sphinxcontrib-mermaid
+DOCS_REQUIREMENTS?=
 
 ## core.mxfiles
 
@@ -214,13 +214,15 @@ MXMAKE_FOLDER?=.mxmake
 # Sentinel files
 SENTINEL_FOLDER?=$(MXMAKE_FOLDER)/sentinels
 SENTINEL?=$(SENTINEL_FOLDER)/about.txt
-$(SENTINEL): Makefile
+$(SENTINEL): $(firstword $(MAKEFILE_LIST))
 	@mkdir -p $(SENTINEL_FOLDER)
 	@echo "Sentinels for the Makefile process." > $(SENTINEL)
 
 ##############################################################################
 # mxenv
 ##############################################################################
+
+export OS:=$(OS)
 
 # Determine the executable path
 ifeq ("$(VENV_ENABLED)", "true")

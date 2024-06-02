@@ -14,7 +14,6 @@ For details on *mxdev* read its documentation.
 
 In addition to the Makefile, *mxmake* also creates helper scripts for development, such as scripts for testing.
 
-
 ## Table of Contents
 
 ```{toctree}
@@ -30,5 +29,4 @@ dependencies
 make
 contributing
 usage-old
-
 ```

@@ -1,63 +1,6 @@
 Usage (mostly outdated)
 =======================
 
-Basics
-------
-
-To bootstrap a new project with *mxmake*, create a project for your project:
-
-.. code-block:: sh
-
-    $ wget https://raw.githubusercontent.com/mxstack/mxmake/main/makefiles/Makefile
-    $ wget https://raw.githubusercontent.com/mxstack/mxmake/main/examples/mx.ini
-
-Optionally create ``mk`` folder and inside create ``project.mk`` for project
-specific settings, includes and custom make targets. If this file is present it
-gets included when running make:
-
-.. code-block:: sh
-
-    $ mkdir mk
-    $ cd mk
-    $ wget https://raw.githubusercontent.com/mxstack/mxmake/main/examples/project.mk
-
-After proper :ref:`Configuration` of the ini file, run:
-
-.. code-block:: sh
-
-    $ make install
-
-This installs a Python virtual environment, generates the relevant files,
-checks out the sources defined in ``mx.ini`` and installs everything using
-pip.
-
-To run the test suite, type:
-
-.. code-block:: sh
-
-    $ make test
-
-Run code coverage and create coverage report:
-
-.. code-block:: sh
-
-    $ make coverage
-
-Cleanup the development environment:
-
-.. code-block:: sh
-
-    $ make clean
-
-Cleanup everything including the sources:
-
-.. code-block:: sh
-
-    $ make full-clean
-
-See :ref:`Targets` for more information about the available make targets.
-
-
 .. _Configuration:
 
 Configuration
@@ -86,40 +29,12 @@ See :ref:`Templates` for documations about the available templates.
 See `here <https://github.com/mxstack/mxdev>`_ for more documentation
 about the ``mxdev`` config file.
 
-
-Make
-----
-
-``mxmake`` provides a generic `Makefile` for managing common install and
-development tasks. This file contains a set of unified make targets for working
-on your project.
-
-At the end of the `Makefile`, a file named `project.mk` gets included if
-present. It is expected in the `mk` folder of your project. This file is
-supposed to contain project specific includes, setting overrides and additional
-cutom targets.
-
-An example `project.mk` can be found
-`here <https://github.com/mxstack/mxmake/tree/master/examples>`_.
-
-The generic ``mxmake`` `Makefile` and a set of useful domain specific make files
-to be included in your project can be found
-`here <https://github.com/mxstack/mxmake/tree/master/makefiles>`_.
-
-
-.. _Targets:
-
-Targets
-~~~~~~~
-
-The available make targets are build with ``make <targetname>``.
-
+.. _Templates:
 
 Templates
 ---------
 
 The following section describes the templates which can be build by ``mxmake``.
-
 
 .. _run-tests:
 
@@ -131,7 +46,7 @@ utilizes ``zope-testrunner``, thus expects it to be installed.
 
 The generation target is ``scripts/run-tests.sh``.
 
-Invocation of the test run is done via :ref:`test` make target.
+Invocation of the test run is done via `test` make target.
 
 Configuration looks like so:
 
@@ -155,7 +70,6 @@ Configuration looks like so:
     # relative path to package checkout directory to search for tests
     mxmake-test-path = src
 
-
 .. _run-coverage:
 
 run-coverage
@@ -167,7 +81,7 @@ packages to be installed.
 
 The generation target is ``scripts/run-coverage.sh``.
 
-Invocation of the coverage run is done via :ref:`coverage` make target.
+Invocation of the coverage run is done via `coverage` make target.
 
 Configuration looks like so:
 
