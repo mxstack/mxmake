@@ -822,16 +822,16 @@ class TestTemplates(testing.RenderTestCase):
                 f.read(),
             )
 
-    @testing.temp_directory
+    @testing.template_directory()
     def test_PloneCreateSite_all_defaults(self, tempdir):
         mxini = tempdir / "mx.ini"
-        # with mxini.open("w") as fd:
-        #     fd.write(
-        #         "[settings]\n"
-        #         "\n"
-        #         "[mxmake-plone-createsite]\n"
-        #         "distribution = mxmake.test:default\n"
-        #     )
+        with mxini.open("w") as fd:
+            fd.write(
+                "[settings]\n"
+                "\n"
+                "[mxmake-plone-createsite]\n"
+                "distribution = mxmake.test:default\n"
+            )
         with mxini.open("w") as fd:
             fd.write("[settings]\n")
         configuration = mxdev.Configuration(mxini, hooks=[hook.Hook()])
@@ -856,11 +856,62 @@ class TestTemplates(testing.RenderTestCase):
             },
         )
 
-        # for some reason here the template.write() fails - in real use it works
-        # template.write()
-        # with (tempdir / "plone-createsite.py").open() as f:
-        #     self.checkOutput(
-        #         """
-        #         """,
-        #         f.read(),
-        #     )
+        template.write()
+        with (tempdir / "plone-createsite.py").open() as f:
+            self.checkOutput(
+                """
+                from AccessControl.SecurityManagement import newSecurityManager
+                from plone.distribution.api.site import create
+                from Products.CMFPlone.factory import _DEFAULT_PROFILE
+                from Testing.makerequest import makerequest
+
+                import os
+                import transaction
+
+
+                TRUTHY = frozenset(("t", "true", "y", "yes", "on", "1"))
+
+
+                def asbool(value: str|bool|None) -> bool:
+                    \"\"\"Return the boolean value ``True`` if the case-lowered value of string
+                    input ``s`` is a :term:`truthy string`. If ``s`` is already one of the
+                    boolean values ``True`` or ``False``, return it.
+                    \"\"\"
+                    if value is None:
+                        return False
+                    if isinstance(value, bool):
+                        return value
+                    return value.strip().lower() in TRUTHY
+
+
+                DELETE_EXISTING = asbool(os.getenv("DELETE_EXISTING"))
+
+
+                app = makerequest(globals()["app"])
+                admin = app.acl_users.getUserById("admin")
+                newSecurityManager(None, admin.__of__(app.acl_users))
+
+                config = {
+                    "site_id": "Plone",
+                    "title": "Plone Site",
+                    "setup_content": "False",
+                    "default_language": "en",
+                    "portal_timezone": "UTC",
+                    "extension_ids": [
+                        "plone.volto:default",
+                    ],
+                    "profile_id": _DEFAULT_PROFILE,
+                }
+
+                if config["site_id"] in app.objectIds() and DELETE_EXISTING:
+                    app.manage_delObjects([config["site_id"]])
+                    transaction.commit()
+                    app._p_jar.sync()
+
+                if config["site_id"] not in app.objectIds():
+                    site = create(app, "", config)
+                    transaction.commit()
+                    app._p_jar.sync()
+                """,
+                f.read(),
+            )
