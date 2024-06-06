@@ -11,7 +11,6 @@
 #:
 #:[target.cookiecutter-clean]
 #:description = Uninstall cookiecutter.
-#:
 
 ##############################################################################
 # cookiecutter

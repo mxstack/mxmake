@@ -45,8 +45,6 @@
 #:
 #:[target.zope-purge]
 #:description = Removes the whole Zope instance folder including database.
-#:
-
 
 ##############################################################################
 # zope

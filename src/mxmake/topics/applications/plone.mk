@@ -13,11 +13,9 @@
 #:description = Path to the script to create or purge a Plone site
 #:default = .mxmake/files/plone-site.py
 
-
 ##############################################################################
 # plone
 ##############################################################################
-
 
 .PHONY: plone-site-create
 plone-site-create: $(ZOPE_RUN_TARGET)
