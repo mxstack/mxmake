@@ -480,15 +480,15 @@ class GHActionsTypecheck(GHActionsTemplate):
 
 
 ##############################################################################
-# plone-createsite template
+# plone-site template
 ##############################################################################
 
 
-@template("plone-createsite")
-class PloneCreatesitePy(MxIniBoundTemplate):
-    description: str = "Plone create site script"
-    target_name = "plone-createsite.py"
-    template_name = "plone-createsite.py"
+@template("plone-site")
+class PloneSitePy(MxIniBoundTemplate):
+    description: str = "Script to create or purge a Plone site"
+    target_name = "plone-site.py"
+    template_name = "plone-site.py"
 
     @property
     def target_folder(self) -> Path:

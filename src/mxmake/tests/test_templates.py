@@ -39,7 +39,7 @@ class TestTemplates(testing.RenderTestCase):
                 "gh-actions-lint": templates.GHActionsLint,
                 "gh-actions-test": templates.GHActionsTest,
                 "gh-actions-typecheck": templates.GHActionsTypecheck,
-                "plone-createsite": templates.PloneCreatesitePy,
+                "plone-site": templates.PloneSitePy,
             },
         )
 
@@ -829,19 +829,19 @@ class TestTemplates(testing.RenderTestCase):
             fd.write(
                 "[settings]\n"
                 "\n"
-                "[mxmake-plone-createsite]\n"
+                "[mxmake-plone-site]\n"
                 "distribution = mxmake.test:default\n"
             )
         with mxini.open("w") as fd:
             fd.write("[settings]\n")
         configuration = mxdev.Configuration(mxini, hooks=[hook.Hook()])
-        factory = templates.template.lookup("plone-createsite")
+        factory = templates.template.lookup("plone-site")
         template = factory(configuration, templates.get_template_environment())
 
-        self.assertEqual(template.description, "Plone create site script")
+        self.assertEqual(template.description, "Script to create or purge a Plone site")
         self.assertEqual(template.target_folder, utils.mxmake_files())
-        self.assertEqual(template.target_name, "plone-createsite.py")
-        self.assertEqual(template.template_name, "plone-createsite.py")
+        self.assertEqual(template.target_name, "plone-site.py")
+        self.assertEqual(template.template_name, "plone-site.py")
         self.assertEqual(
             template.template_variables,
             {
@@ -857,7 +857,7 @@ class TestTemplates(testing.RenderTestCase):
         )
 
         template.write()
-        with (tempdir / "plone-createsite.py").open() as f:
+        with (tempdir / "plone-site.py").open() as f:
             self.checkOutput(
                 """
                 from AccessControl.SecurityManagement import newSecurityManager
