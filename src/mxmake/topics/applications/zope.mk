@@ -54,6 +54,7 @@
 
 ZOPE_INSTANCE_FOLDER:=$(ZOPE_BASE_FOLDER)/instance
 ZOPE_INSTANCE_TARGET:=$(ZOPE_INSTANCE_FOLDER)/etc/zope.ini $(ZOPE_INSTANCE_FOLDER)/etc/zope.conf $(ZOPE_INSTANCE_FOLDER)/etc/site.zcml
+ZOPE_RUN_TARGET:=$(ZOPE_INSTANCE_TARGET) $(PACKAGES_TARGET)
 
 ifeq (,$(ZOPE_TEMPLATE_CHECKOUT))
 	ZOPE_COOKIECUTTER_TEMPLATE_OPTIONS=
@@ -72,17 +73,17 @@ $(ZOPE_INSTANCE_TARGET): $(COOKIECUTTER_TARGET) $(ZOPE_CONFIGURATION_FILE)
 zope-instance: $(ZOPE_INSTANCE_TARGET) $(SOURCES)
 
 .PHONY: zope-start
-zope-start: $(ZOPE_INSTANCE_TARGET) $(PACKAGES_TARGET)
+zope-start: $(ZOPE_RUN_TARGET)
 	@echo "Start Zope/Plone with configuration in $(ZOPE_INSTANCE_FOLDER)"
 	@runwsgi -v "$(ZOPE_INSTANCE_FOLDER)/etc/zope.ini"
 
 .PHONY: zope-debug
-zope-debug: $(ZOPE_INSTANCE_TARGET) $(PACKAGES_TARGET)
+zope-debug: $(ZOPE_RUN_TARGET)
 	@echo "Start Zope/Plone with configuration in $(ZOPE_INSTANCE_FOLDER)"
 	@zconsole debug "$(ZOPE_INSTANCE_FOLDER)/etc/zope.ini"
 
 .PHONY: zope-runscript
-zope-runscript: $(ZOPE_INSTANCE_TARGET) $(PACKAGES_TARGET)
+zope-runscript: $(ZOPE_RUN_TARGET)
 	@echo "Run Zope/Plone Console Script $(ZOPE_SCRIPTNAME) in $(ZOPE_INSTANCE_FOLDER)"
 	@zconsole run "$(ZOPE_INSTANCE_FOLDER)/etc/zope.ini" $(ZOPE_SCRIPTNAME)
 

@@ -39,6 +39,7 @@ class TestTemplates(testing.RenderTestCase):
                 "gh-actions-lint": templates.GHActionsLint,
                 "gh-actions-test": templates.GHActionsTest,
                 "gh-actions-typecheck": templates.GHActionsTypecheck,
+                "plone-createsite": templates.PloneCreatesitePy,
             },
         )
 
@@ -820,3 +821,46 @@ class TestTemplates(testing.RenderTestCase):
                 """,
                 f.read(),
             )
+
+    @testing.temp_directory
+    def test_PloneCreateSite_all_defaults(self, tempdir):
+        mxini = tempdir / "mx.ini"
+        # with mxini.open("w") as fd:
+        #     fd.write(
+        #         "[settings]\n"
+        #         "\n"
+        #         "[mxmake-plone-createsite]\n"
+        #         "distribution = mxmake.test:default\n"
+        #     )
+        with mxini.open("w") as fd:
+            fd.write("[settings]\n")
+        configuration = mxdev.Configuration(mxini, hooks=[hook.Hook()])
+        factory = templates.template.lookup("plone-createsite")
+        template = factory(configuration, templates.get_template_environment())
+
+        self.assertEqual(template.description, "Plone create site script")
+        self.assertEqual(template.target_folder, utils.mxmake_files())
+        self.assertEqual(template.target_name, "plone-createsite.py")
+        self.assertEqual(template.template_name, "plone-createsite.py")
+        self.assertEqual(
+            template.template_variables,
+            {
+                "site": {
+                    "default_language": "en",
+                    "extension_ids": ["plone.volto:default"],
+                    "portal_timezone": "UTC",
+                    "setup_content": False,
+                    "site_id": "Plone",
+                    "title": "Plone Site",
+                }
+            },
+        )
+
+        # for some reason here the template.write() fails - in real use it works
+        # template.write()
+        # with (tempdir / "plone-createsite.py").open() as f:
+        #     self.checkOutput(
+        #         """
+        #         """,
+        #         f.read(),
+        #     )

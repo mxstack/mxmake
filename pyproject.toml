@@ -85,3 +85,9 @@ lines_after_imports = 2
 [tool.mypy]
 ignore_missing_imports = true
 python_version = 3.8
+
+[tool.ruff]
+# Exclude a variety of commonly ignored directories.
+exclude = [
+    "src/mxmake/templates/plone-createsite.py",
+]
