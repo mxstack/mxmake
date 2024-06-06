@@ -38,12 +38,6 @@ define unset_mxfiles_env
 	@unset MXMAKE_FILES
 endef
 
-MXFILES_FOLDER_TARGET:=$(SENTINEL_FOLDER)/mxfiles_folder.sentinel
-$(MXFILES_FOLDER_TARGET): $(SENTINEL)
-	@echo "Create MX Files folder"
-	@mkdir -p $(MXMAKE_FILES)
-	@touch $(MXFILES_FOLDER_TARGET)
-
 $(PROJECT_CONFIG):
 ifneq ("$(wildcard $(PROJECT_CONFIG))","")
 	@touch $(PROJECT_CONFIG)
@@ -54,8 +48,9 @@ endif
 LOCAL_PACKAGE_FILES:=$(wildcard pyproject.toml setup.cfg setup.py requirements.txt constraints.txt)
 
 FILES_TARGET:=requirements-mxdev.txt
-$(FILES_TARGET): $(PROJECT_CONFIG) $(MXENV_TARGET) $(SOURCES_TARGET) $(LOCAL_PACKAGE_FILES) $(MXFILES_FOLDER_TARGET)
+$(FILES_TARGET): $(PROJECT_CONFIG) $(MXENV_TARGET) $(SOURCES_TARGET) $(LOCAL_PACKAGE_FILES)
 	@echo "Create project files"
+	@mkdir -p $(MXMAKE_FILES)
 	$(call set_mxfiles_env,$(MXMAKE_FILES))
 	@mxdev -n -c $(PROJECT_CONFIG)
 	$(call unset_mxfiles_env)
