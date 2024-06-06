@@ -22,12 +22,7 @@ def asbool(value: str|bool|None) -> bool:
     return value.strip().lower() in TRUTHY
 
 
-DELETE_EXISTING = asbool(os.getenv("DELETE_EXISTING"))
-
-
-app = makerequest(globals()["app"])
-admin = app.acl_users.getUserById("admin")
-newSecurityManager(None, admin.__of__(app.acl_users))
+PLONE_SITE_PURGE = asbool(os.getenv("PLONE_SITE_PURGE"))
 
 config = {
 {% for key, value in site.items() %}
@@ -43,13 +38,26 @@ config = {
 {% endfor %}
     "profile_id": _DEFAULT_PROFILE,
 }
+config["setup_content"] = asbool(config["setup_content"])
 
-if config["site_id"] in app.objectIds() and DELETE_EXISTING:
-    app.manage_delObjects([config["site_id"]])
-    transaction.commit()
-    app._p_jar.sync()
+app = makerequest(globals()["app"])
+admin = app.acl_users.getUserById("admin")
+newSecurityManager(None, admin.__of__(app.acl_users))
 
-if config["site_id"] not in app.objectIds():
-    site = create(app, "{{ distribution }}", config)
-    transaction.commit()
-    app._p_jar.sync()
+if PLONE_SITE_PURGE:
+    if config["site_id"] in app.objectIds():
+        app.manage_delObjects([config["site_id"]])
+        transaction.commit()
+        app._p_jar.sync()
+    else:
+        print(f"Site with id {config['site_id']} does not exist!")
+    exit(0)
+
+
+if config["site_id"] in app.objectIds():
+    print(f"Site with id {config['site_id']} already exists!")
+    exit(1)
+
+site = create(app, "{{ distribution }}", config)
+transaction.commit()
+app._p_jar.sync()
