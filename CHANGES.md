@@ -17,6 +17,9 @@
 - Depend on `mxdev>=4.0.2`, which fixes the deprecation of `pkg_resources` and
   use the provided infrastructure of mxdev to handle entry_points in mxmake.
 
+- Add Plone site creation and purging in new `plone` domain.
+
+
 ## 1.0a4 (2024-03-12)
 
 - Add experimental windows support.
