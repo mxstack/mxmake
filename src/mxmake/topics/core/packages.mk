@@ -17,6 +17,7 @@
 #:description = Allow prerelease and development versions.
 #:  By default, the package installer only finds stable versions.
 #:default = false
+
 ##############################################################################
 # packages
 ##############################################################################

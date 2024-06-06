@@ -477,3 +477,41 @@ class GHActionsTypecheck(GHActionsTemplate):
     description: str = "Github action to running static type checks"
     target_name = "typecheck.yml"
     template_name = "gh-actions-typecheck.yml"
+
+
+##############################################################################
+# plone-site template
+##############################################################################
+
+
+@template("plone-site")
+class PloneSitePy(MxIniBoundTemplate):
+    description: str = "Script to create or purge a Plone site"
+    target_name = "plone-site.py"
+    template_name = "plone-site.py"
+
+    @property
+    def target_folder(self) -> Path:
+        return mxmake_files()
+
+    @property
+    def template_variables(self):
+        site = {}
+        vars = {"site": site}
+        site.setdefault("site_id", "Plone")
+        site.setdefault("title", "Plone Site")
+        site.setdefault("setup_content", False)
+        site.setdefault("default_language", "en")
+        site.setdefault("portal_timezone", "UTC")
+        site.setdefault("extension_ids", "")
+        site.update(**self.settings)
+        if "distribution" in site:
+            vars["distribution"] = site.pop("distribution")
+
+        # handle extension ids
+        site["extension_ids"] = [
+            eid.strip() for eid in site["extension_ids"].split("\n") if eid.strip()
+        ]
+        if not site["extension_ids"]:
+            site["extension_ids"] = ["plone.volto:default"]
+        return vars

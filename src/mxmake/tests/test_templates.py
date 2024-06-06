@@ -39,6 +39,7 @@ class TestTemplates(testing.RenderTestCase):
                 "gh-actions-lint": templates.GHActionsLint,
                 "gh-actions-test": templates.GHActionsTest,
                 "gh-actions-typecheck": templates.GHActionsTypecheck,
+                "plone-site": templates.PloneSitePy,
             },
         )
 
@@ -818,5 +819,107 @@ class TestTemplates(testing.RenderTestCase):
                 environment = env
 
                 """,
+                f.read(),
+            )
+
+    @testing.template_directory()
+    def test_PloneSite_all_defaults(self, tempdir):
+        mxini = tempdir / "mx.ini"
+        with mxini.open("w") as fd:
+            fd.write(
+                "[settings]\n"
+                "\n"
+                "[mxmake-plone-site]\n"
+                "distribution = mxmake.test:default\n"
+            )
+        with mxini.open("w") as fd:
+            fd.write("[settings]\n")
+        configuration = mxdev.Configuration(mxini, hooks=[hook.Hook()])
+        factory = templates.template.lookup("plone-site")
+        template = factory(configuration, templates.get_template_environment())
+
+        self.assertEqual(template.description, "Script to create or purge a Plone site")
+        self.assertEqual(template.target_folder, utils.mxmake_files())
+        self.assertEqual(template.target_name, "plone-site.py")
+        self.assertEqual(template.template_name, "plone-site.py")
+        self.assertEqual(
+            template.template_variables,
+            {
+                "site": {
+                    "default_language": "en",
+                    "extension_ids": ["plone.volto:default"],
+                    "portal_timezone": "UTC",
+                    "setup_content": False,
+                    "site_id": "Plone",
+                    "title": "Plone Site",
+                }
+            },
+        )
+
+        template.write()
+        with (tempdir / "plone-site.py").open() as f:
+            self.checkOutput(
+                '''
+                from AccessControl.SecurityManagement import newSecurityManager
+                from plone.distribution.api.site import create
+                from Products.CMFPlone.factory import _DEFAULT_PROFILE
+                from Testing.makerequest import makerequest
+
+                import os
+                import transaction
+
+
+                TRUTHY = frozenset(("t", "true", "y", "yes", "on", "1"))
+
+
+                def asbool(value: str|bool|None) -> bool:
+                    """Return the boolean value ``True`` if the case-lowered value of string
+                    input ``s`` is a :term:`truthy string`. If ``s`` is already one of the
+                    boolean values ``True`` or ``False``, return it.
+                    """
+                    if value is None:
+                        return False
+                    if isinstance(value, bool):
+                        return value
+                    return value.strip().lower() in TRUTHY
+
+
+                PLONE_SITE_PURGE = asbool(os.getenv("PLONE_SITE_PURGE"))
+
+                config = {
+                    "site_id": "Plone",
+                    "title": "Plone Site",
+                    "setup_content": "False",
+                    "default_language": "en",
+                    "portal_timezone": "UTC",
+                    "extension_ids": [
+                        "plone.volto:default",
+                    ],
+                    "profile_id": _DEFAULT_PROFILE,
+                }
+                config["setup_content"] = asbool(config["setup_content"])
+
+                app = makerequest(globals()["app"])
+                admin = app.acl_users.getUserById("admin")
+                newSecurityManager(None, admin.__of__(app.acl_users))
+
+                if PLONE_SITE_PURGE:
+                    if config["site_id"] in app.objectIds():
+                        app.manage_delObjects([config["site_id"]])
+                        transaction.commit()
+                        app._p_jar.sync()
+                    else:
+                        print(f"Site with id {config['site_id']} does not exist!")
+                    exit(0)
+
+
+                if config["site_id"] in app.objectIds():
+                    print(f"Site with id {config['site_id']} already exists!")
+                    exit(1)
+
+                site = create(app, "", config)
+                transaction.commit()
+                app._p_jar.sync()
+                ''',
                 f.read(),
             )
