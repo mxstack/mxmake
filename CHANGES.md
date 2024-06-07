@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.0a5 (unreleased)
+## 1.0a5 (2024-06-07)
 
 - Export `OS` environment variable in `mxenv` domain to prevent warning on
   sub make calls.
