@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.0a6 (unreleased)
+
+
+- Nothing changed yet.
+
+
 ## 1.0a5 (2024-06-07)
 
 - Export `OS` environment variable in `mxenv` domain to prevent warning on
