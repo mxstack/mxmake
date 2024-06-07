@@ -1,4 +1,6 @@
 include *.md
+exclude Makefile
+exclude mx.ini
 recursive-include src/mxmake/templates *
 recursive-include src/mxmake/topics *
 recursive-exclude *.pyc *.pyo
