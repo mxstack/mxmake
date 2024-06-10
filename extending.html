@@ -1,0 +1,411 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>Extending mxmake &#8212; mxmake 1.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/conestack.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Domain dependencies" href="dependencies.html" />
+    <link rel="prev" title="Generate files using templates" href="templates.html" />
+<link rel="stylesheet" type="text/css" src="_static/bootstrap.css" />
+<script src="_static/bootstrap.bundle.min.js"></script>
+<script src="_static/conestack.js"></script>
+
+  </head><body>
+
+  <noscript>
+    <style type="text/css">
+      #searchbox,
+      #searchdesc {
+        display: none;
+      }
+      @media (max-width: 768px) {
+        #navbar-toggle {
+          display: none;
+        }
+        #cs-mobile-menu {
+          display: block;
+        }
+        #cs-layout {
+          margin-top: 12rem;
+        }
+        #cs-ext-links {
+          margin-right: 2rem!important;
+        }
+      }
+    </style>
+  </noscript>
+
+  
+  <header class="navbar navbar-expand-md" id="header">
+    <nav class="container-xxl flex-wrap flex-md-nowrap p-0" id="cs-nav">
+  <a id="logo" class="navbar-brand p-0 me-2" href="index.html">
+    <img src="_static/mxmake-logo.svg"
+         alt="Logo"
+         width="40px"
+         height="40px" />
+    <span>mxmake</span>
+  </a>
+
+      
+  <div id="nav-search" class="ms-auto">
+    <div id="searchbox" class="nav-item me-3" role="search">
+      <form class="search input-group" action="search.html" method="get">
+        <input type="text" class="form-control" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+        <button type="submit" 
+                class="bi bi-search input-group-text"
+                btn-title="Search documentation"></button>
+      </form>
+    </div>
+  </div>
+      
+  <div id="cs-ext-links"class="me-3">
+    <ul class="navbar-nav flex-row ms-md-auto">
+  <li class="nav-item" data-title="GitHub">
+    <a class="nav-link p-2" href="https://github.com/mxstack/mxmake" target="_blank" rel="noopener">
+      <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" class="navbar-nav-svg d-inline-block align-text-top" viewBox="0 0 512 499.36" role="img"><title>GitHub</title><path fill="currentColor" fill-rule="evenodd" d="M256 0C114.64 0 0 114.61 0 256c0 113.09 73.34 209 175.08 242.9 12.8 2.35 17.47-5.56 17.47-12.34 0-6.08-.22-22.18-.35-43.54-71.2 15.49-86.2-34.34-86.2-34.34-11.64-29.57-28.42-37.45-28.42-37.45-23.27-15.84 1.73-15.55 1.73-15.55 25.69 1.81 39.21 26.38 39.21 26.38 22.84 39.12 59.92 27.82 74.5 21.27 2.33-16.54 8.94-27.82 16.25-34.22-56.84-6.43-116.6-28.43-116.6-126.49 0-27.95 10-50.8 26.35-68.69-2.63-6.48-11.42-32.5 2.51-67.75 0 0 21.49-6.88 70.4 26.24a242.65 242.65 0 0 1 128.18 0c48.87-33.13 70.33-26.24 70.33-26.24 14 35.25 5.18 61.27 2.55 67.75 16.41 17.9 26.31 40.75 26.31 68.69 0 98.35-59.85 120-116.88 126.32 9.19 7.9 17.38 23.53 17.38 47.41 0 34.22-.31 61.83-.31 70.23 0 6.85 4.61 14.81 17.6 12.31C438.72 464.97 512 369.08 512 256.02 512 114.62 397.37 0 256 0z"></path></svg>
+    </a>
+  </li>
+
+  <li class="nav-item" data-title="Pypi">
+    <a class="nav-link p-2" href="https://pypi.org/project/mxmake" target="_blank" rel="noopener">
+      <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="36" height="36" viewBox="0 0 50 50" role="img" style=" fill:#000000;"><path d="M 25 2 C 20.941406 2 18.1875 2.96875 16.4375 4.375 C 14.6875 5.78125 14 7.589844 14 9.09375 L 14 14 L 24 14 L 24 15 L 9.09375 15 C 7.265625 15 5.410156 15.792969 4.09375 17.46875 C 2.777344 19.144531 2 21.644531 2 25 C 2 28.355469 2.777344 30.855469 4.09375 32.53125 C 5.410156 34.207031 7.265625 35 9.09375 35 L 14 35 L 14 40.90625 C 14 42.410156 14.6875 44.21875 16.4375 45.625 C 18.1875 47.03125 20.941406 48 25 48 C 29.058594 48 31.8125 47.03125 33.5625 45.625 C 35.3125 44.21875 36 42.410156 36 40.90625 L 36 36 L 26 36 L 26 35 L 40.90625 35 C 42.734375 35 44.589844 34.207031 45.90625 32.53125 C 47.222656 30.855469 48 28.355469 48 25 C 48 21.644531 47.222656 19.144531 45.90625 17.46875 C 44.589844 15.792969 42.734375 15 40.90625 15 L 36 15 L 36 9.09375 C 36 7.550781 35.316406 5.738281 33.5625 4.34375 C 31.808594 2.949219 29.054688 2 25 2 Z M 25 4 C 28.746094 4 31.015625 4.875 32.3125 5.90625 C 33.609375 6.9375 34 8.136719 34 9.09375 L 34 21 C 34 22.65625 32.65625 24 31 24 L 19 24 C 16.941406 24 15.167969 25.269531 14.40625 27.0625 C 14.277344 27.359375 14.160156 27.675781 14.09375 28 C 14.027344 28.324219 14 28.65625 14 29 L 14 33 L 9.09375 33 C 7.824219 33 6.648438 32.503906 5.6875 31.28125 C 4.726563 30.058594 4 28.042969 4 25 C 4 21.957031 4.726563 19.941406 5.6875 18.71875 C 6.648438 17.496094 7.824219 17 9.09375 17 L 26 17 L 26 12 L 16 12 L 16 9.09375 C 16 8.199219 16.386719 6.980469 17.6875 5.9375 C 18.988281 4.894531 21.257813 4 25 4 Z M 20 7 C 18.898438 7 18 7.898438 18 9 C 18 10.101563 18.898438 11 20 11 C 21.101563 11 22 10.101563 22 9 C 22 7.898438 21.101563 7 20 7 Z M 36 17 L 40.90625 17 C 42.175781 17 43.351563 17.496094 44.3125 18.71875 C 45.273438 19.941406 46 21.957031 46 25 C 46 28.042969 45.273438 30.058594 44.3125 31.28125 C 43.351563 32.503906 42.175781 33 40.90625 33 L 24 33 L 24 38 L 34 38 L 34 40.90625 C 34 41.800781 33.613281 43.019531 32.3125 44.0625 C 31.011719 45.105469 28.742188 46 25 46 C 21.257813 46 18.988281 45.105469 17.6875 44.0625 C 16.386719 43.019531 16 41.800781 16 40.90625 L 16 29 C 16 28.792969 16.023438 28.601563 16.0625 28.40625 C 16.34375 27.039063 17.550781 26 19 26 L 31 26 C 33.746094 26 36 23.746094 36 21 Z M 30 39 C 28.898438 39 28 39.898438 28 41 C 28 42.101563 28.898438 43 30 43 C 31.101563 43 32 42.101563 32 41 C 32 39.898438 31.101563 39 30 39 Z"></path></svg>
+    </a>
+  </li>
+
+    </ul>
+  </div>
+
+
+      <button id="navbar-toggle" class="navbar-toggler p-0 me-4" type="button" data-bs-toggle="collapse" data-bs-target="#cs-mobile-menu">
+        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" class="bi" fill="currentColor" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M2.5 11.5A.5.5 0 0 1 3 11h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4A.5.5 0 0 1 3 7h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4A.5.5 0 0 1 3 3h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5z"></path></svg>
+      </button>
+
+      <div class="collapse container-fluid m-0 p-3" id="cs-mobile-menu"><nav class="cs-mobile-toc">
+  <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="getting-started.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="topics.html">Topics and Domains</a></li>
+<li class="toctree-l1"><a class="reference internal" href="templates.html">Generate files using templates</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Extending mxmake</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dependencies.html">Domain dependencies</a></li>
+<li class="toctree-l1"><a class="reference internal" href="make.html">A short primer on make</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage-old.html">Usage (mostly outdated)</a></li>
+</ul>
+
+</nav>
+      </div>
+    </nav>
+  </header>
+  
+
+  <div class="container-xxl my-md-4" id="cs-layout">
+    
+  <aside id="cs-sidebar" class="ms-4 sphinxsidebar"><nav class="cs-nav-toc">
+  <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="getting-started.html">Getting started</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="getting-started.html#how-to-bootstrap-a-project-with-mxmake">How to bootstrap a project with mxmake</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting-started.html#how-to-change-the-settings">How to change the settings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting-started.html#how-to-use-on-the-windows-operating-system">How to use on the Windows operating system</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="topics.html">Topics and Domains</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="topics.html#ldap">LDAP</a></li>
+<li class="toctree-l2"><a class="reference internal" href="topics.html#javascript">Javascript</a></li>
+<li class="toctree-l2"><a class="reference internal" href="topics.html#i18n">i18n</a></li>
+<li class="toctree-l2"><a class="reference internal" href="topics.html#applications">Applications</a></li>
+<li class="toctree-l2"><a class="reference internal" href="topics.html#docs">Docs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="topics.html#core">Core</a></li>
+<li class="toctree-l2"><a class="reference internal" href="topics.html#qa">QA</a></li>
+<li class="toctree-l2"><a class="reference internal" href="topics.html#system">System</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="templates.html">Generate files using templates</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="templates.html#internal-templates">Internal templates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="templates.html#how-to-write-custom-templates">How to write custom templates</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Extending mxmake</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#topics-and-domains">Topics and domains</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#writing-custom-domains">Writing custom domains</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="dependencies.html">Domain dependencies</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="dependencies.html#diagram">Diagram</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="make.html">A short primer on make</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="make.html#dependency-management">Dependency management</a></li>
+<li class="toctree-l2"><a class="reference internal" href="make.html#the-phony-target">The “phony” target</a></li>
+<li class="toctree-l2"><a class="reference internal" href="make.html#sentinel-files">Sentinel files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="make.html#variables">Variables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="make.html#further-reading">Further Reading</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="contributing.html#source-code">Source Code</a></li>
+<li class="toctree-l2"><a class="reference internal" href="contributing.html#copyright-licence">Copyright &amp; Licence</a></li>
+<li class="toctree-l2"><a class="reference internal" href="contributing.html#contributors">Contributors</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="usage-old.html">Usage (mostly outdated)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="usage-old.html#configuration">Configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage-old.html#templates">Templates</a></li>
+</ul>
+</li>
+</ul>
+
+</nav>
+    
+  </aside>
+    
+
+    
+      <main class="document cs-main order-1" role="main">
+    
+      <div class="ps-lg-4 mt-3 cs-content">
+        
+  <section id="extending-mxmake">
+<h1>Extending mxmake<a class="headerlink" href="#extending-mxmake" title="Permalink to this heading">#</a></h1>
+<section id="topics-and-domains">
+<h2>Topics and domains<a class="headerlink" href="#topics-and-domains" title="Permalink to this heading">#</a></h2>
+<p>The features provided by <em>mxmake</em> are organized into “domains,” which are grouped together under “topics.”
+Each domain offers a collection of settings and targets for the make process and may have dependencies on other domains.</p>
+</section>
+<section id="writing-custom-domains">
+<h2>Writing custom domains<a class="headerlink" href="#writing-custom-domains" title="Permalink to this heading">#</a></h2>
+<p><em>mxmake</em> treats all files with <code class="docutils literal notranslate"><span class="pre">.mk</span></code> suffix inside a topic folder as a domain.
+To extend an existing topic, add a file named <code class="docutils literal notranslate"><span class="pre">yourdomain.mk</span></code>.
+It will be integrated automatically.</p>
+<p>To create a new <code class="docutils literal notranslate"><span class="pre">topic</span></code> create a folder containing a file named <code class="docutils literal notranslate"><span class="pre">metadata.ini</span></code> providing topic title and description:</p>
+<div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span class="k">[metadata]</span>
+<span class="na">title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">Topic title</span>
+<span class="na">description</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">Topic topic description.</span>
+</pre></div>
+</div>
+<p>Then its required to create a <code class="docutils literal notranslate"><span class="pre">Topic</span></code> object in python:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">mytopic</span> <span class="o">=</span> <span class="n">Topic</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;mytopic&quot;</span><span class="p">,</span> <span class="n">directory</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">topics_dir</span><span class="p">,</span> <span class="s2">&quot;mytopic&quot;</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>And finally this topic needs to be registered as package entry point in <code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code>:</p>
+<div class="highlight-toml notranslate"><div class="highlight"><pre><span></span><span class="k">[project.entry-points.</span><span class="s2">&quot;mxmake.topics&quot;</span><span class="k">]</span>
+<span class="n">mytopic</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;mxmake.topics:mytopic&quot;</span>
+</pre></div>
+</div>
+<section id="the-domain-makefile">
+<h3>The domain makefile<a class="headerlink" href="#the-domain-makefile" title="Permalink to this heading">#</a></h3>
+<p>The domain file provides a title and description, it’s dependencies, the available settings with default values and a set of make targets.</p>
+<section id="the-domain-header">
+<h4>The domain header<a class="headerlink" href="#the-domain-header" title="Permalink to this heading">#</a></h4>
+<p>The documentation and available settings and it’s default values are extracted from the domain file header.
+Each line starting with <code class="docutils literal notranslate"><span class="pre">#:</span></code> gets interpreted as <code class="docutils literal notranslate"><span class="pre">ini</span></code> format and read with <code class="docutils literal notranslate"><span class="pre">configparser</span></code>.</p>
+<p>The essential base information of each domain looks like this:</p>
+<div class="highlight-makefile notranslate"><div class="highlight"><pre><span></span><span class="c">#:[mydomain]</span>
+<span class="c">#:title = Domain title</span>
+<span class="c">#:description = Domain description</span>
+<span class="c">#:depends =</span>
+<span class="c">#:    topic.domain</span>
+<span class="c">#:    topic.otherdomain</span>
+<span class="c">#:soft-depends = topic.domain</span>
+</pre></div>
+</div>
+<p>The main section gets named after the <code class="docutils literal notranslate"><span class="pre">domain</span></code> name, and forms in conjunction with <code class="docutils literal notranslate"><span class="pre">topic</span></code> name the full qualified name, or FQN.</p>
+<p>The FQN is used to declare dependencies.
+<code class="docutils literal notranslate"><span class="pre">depends</span></code> contain the hard dependencies, which are all domains required to run the domain’s targets.
+<code class="docutils literal notranslate"><span class="pre">soft-depends</span></code> defines domains which are optional, but if present need to be loaded first to make optional features work properly.</p>
+<p>All sections prefixed with <code class="docutils literal notranslate"><span class="pre">target.</span></code>  describe the public API of the domain.
+It gets used for generating the documentation and as help text on the CLI.</p>
+<p>A target definition looks like this:</p>
+<div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span class="c1">#:[target.mydomain]</span>
+<span class="c1">#:description = Target description.</span>
+</pre></div>
+</div>
+<p>All sections prefixed with <code class="docutils literal notranslate"><span class="pre">setting.</span></code> define a domain specific setting.
+Setting names must be unique among all domains.
+Settings usually provide a senceful default.
+All settings from all domains gets rendered into the final Makefile before the domains gets rendered.
+They are editable, setting values are parsed when updating the Makefile.</p>
+<p>A setting definition looks like this:</p>
+<div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span class="c1">#:[setting.SETTING_NAME]</span>
+<span class="c1">#:description = Setting description. Gets used for documentation generation and as help text on the CLI.</span>
+<span class="c1">#:default = default_value</span>
+</pre></div>
+</div>
+</section>
+<section id="target-naming-conventions">
+<h4>Target naming conventions<a class="headerlink" href="#target-naming-conventions" title="Permalink to this heading">#</a></h4>
+<p>All domains included in <code class="docutils literal notranslate"><span class="pre">mxmake</span></code> follow a target naming convention.
+You are <code class="docutils literal notranslate"><span class="pre">encouraged</span></code> to follow this convention when writing domains to keep usage of the domain intuitive.</p>
+<dl class="simple myst">
+<dt>The following naming should be taken into account:</dt><dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">domainname</span></code></dt><dd><p>The main target is named after the domain.
+It is responsible to execute the tasks the domain is dedicated to, like running a linter, starting an application, etc.</p>
+</dd>
+</dl>
+</dd>
+<dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">domainname-dirty</span></code></dt><dd><p>Targets postfixed with <code class="docutils literal notranslate"><span class="pre">-dirty</span></code> are supposed to modify the filsystem in a way that next time make runs the main target the domain dependencies are reinstalled.</p>
+</dd>
+</dl>
+</dd>
+<dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">domainname-clean</span></code></dt><dd><p>Targets postfixed with <code class="docutils literal notranslate"><span class="pre">-clean</span></code> are supposed to remove domain related files and uninstall domain related tools.</p>
+</dd>
+</dl>
+</dd>
+<dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">domainname-purge</span></code></dt><dd><p>Targets postfixed with <code class="docutils literal notranslate"><span class="pre">-purge</span></code> are supposed to perform the same steps as the <code class="docutils literal notranslate"><span class="pre">clean</span></code> target does, additionally removing runtime data.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+<section id="the-domain-sentinel">
+<h4>The domain sentinel<a class="headerlink" href="#the-domain-sentinel" title="Permalink to this heading">#</a></h4>
+<p>Since <em>make</em> keeps track of file modification timestamps, installation related targets should be bound to some installation related file(s).
+This ensures that targets are not run if not necessary.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Sometimes there are no reliable files created to depend on, therefor sentinel files are used.</p>
+</div>
+<p><a class="reference internal" href="make.html#make-sentinel-files"><span class="std std-ref">Sentinel files</span></a> are created during installation, and removed on <code class="docutils literal notranslate"><span class="pre">dirty</span></code> and <code class="docutils literal notranslate"><span class="pre">clean</span></code>, to mimic the behavior of depending on “real” domain related files.</p>
+<p>The basic pattern for using a sentinel file is shown here by installing a python package with pip:</p>
+<div class="highlight-makefile notranslate"><div class="highlight"><pre><span></span><span class="c"># this is our sentinel file</span>
+<span class="nv">DOMAIN_TARGET</span><span class="o">:=</span><span class="k">$(</span>SENTINEL_FOLDER<span class="k">)</span>/domain.sentinel
+
+<span class="c"># The sentinel file is defined as target and depends on the existence of</span>
+<span class="c"># the MXENV_TARGET, which ensures the correct execution environment.</span>
+<span class="c"># Once we installed our package, we `touch` the sentinel file, which creates</span>
+<span class="c"># the file if it not exists. Each make run now skips the install step as long</span>
+<span class="c"># as the sentinel file ist not modified or remove.</span>
+<span class="nf">$(DOMAIN_TARGET)</span><span class="o">:</span><span class="w"> </span><span class="k">$(</span><span class="nv">MXENV_TARGET</span><span class="k">)</span>
+<span class="w">	</span>@echo<span class="w"> </span><span class="s2">&quot;Install Package&quot;</span>
+<span class="w">	</span>@<span class="k">$(</span>MXENV_PATH<span class="k">)</span>pip<span class="w"> </span>install<span class="w"> </span>package
+<span class="w">	</span>@touch<span class="w"> </span><span class="k">$(</span>DOMAIN_TARGET<span class="k">)</span>
+
+<span class="c"># The main domain target depends on the sentinel, causing the package to be</span>
+<span class="c"># installed if the sentinel not exists or has been modified since last make run.</span>
+<span class="nf">.PHONY</span><span class="o">:</span><span class="w"> </span><span class="n">domain</span>
+<span class="nf">domain</span><span class="o">:</span><span class="w"> </span><span class="k">$(</span><span class="nv">DOMAIN_TARGET</span><span class="k">)</span>
+<span class="w">	</span>@echo<span class="w"> </span><span class="s2">&quot;Do something with the installed package&quot;</span>
+
+<span class="c"># In the `dirty` target, we remove the sentinel, which causes make to run the</span>
+<span class="c"># install steps next time make builds a target which depends on our sentinel.</span>
+<span class="nf">.PHONY</span><span class="o">:</span><span class="w"> </span><span class="n">domain</span>-<span class="n">dirty</span>
+<span class="nf">domain-dirty</span><span class="o">:</span>
+<span class="w">	</span>@rm<span class="w"> </span>-f<span class="w"> </span><span class="k">$(</span>DOMAIN_TARGET<span class="k">)</span>
+
+<span class="c"># The `clean` target simply depends on the `dirty` target which removes the</span>
+<span class="c"># sentinel and additionally uninstalls the installed package.</span>
+<span class="nf">.PHONY</span><span class="o">:</span><span class="w"> </span><span class="n">domain</span>-<span class="n">clean</span>
+<span class="nf">domain-clean</span><span class="o">:</span><span class="w"> </span><span class="n">domain</span>-<span class="n">dirty</span>
+<span class="w">	</span>@test<span class="w"> </span>-e<span class="w"> </span><span class="k">$(</span>MXENV_PATH<span class="k">)</span>pip<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="k">$(</span>MXENV_PATH<span class="k">)</span>pip<span class="w"> </span>uninstall<span class="w"> </span>-y<span class="w"> </span>package<span class="w"> </span><span class="o">||</span><span class="w"> </span>:
+</pre></div>
+</div>
+</section>
+<section id="extending-default-targets">
+<h4>Extending default targets<a class="headerlink" href="#extending-default-targets" title="Permalink to this heading">#</a></h4>
+<dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">mxmake</span></code> generates a set of default targets where domain related targets can hook themselves up.</dt><dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">install</span></code></dt><dd><p>To cause a domain related target to run on <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">install</span></code>, <code class="docutils literal notranslate"><span class="pre">INSTALL_TARGETS</span></code> must be extended, e.g. <code class="docutils literal notranslate"><span class="pre">INSTALL_TARGETS+=domain-install</span></code>.</p>
+</dd>
+</dl>
+</dd>
+<dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">deploy</span></code></dt><dd><p>To cause a domain related target to run on <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">deploy</span></code>, <code class="docutils literal notranslate"><span class="pre">DEPLOY_TARGETS</span></code> must be extended, e.g. <code class="docutils literal notranslate"><span class="pre">DEPLOY_TARGETS+=domain-deploy</span></code>.</p>
+</dd>
+</dl>
+</dd>
+<dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">dirty</span></code></dt><dd><p>To cause a domain related target to run on <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">dirty</span></code>, <code class="docutils literal notranslate"><span class="pre">DIRTY_TARGETS</span></code> must be extended, e.g. <code class="docutils literal notranslate"><span class="pre">DIRTY_TARGETS+=domain-dirty</span></code>.</p>
+</dd>
+</dl>
+</dd>
+<dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">clean</span></code></dt><dd><p>To cause a domain related target to run on <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">clean</span></code>, <code class="docutils literal notranslate"><span class="pre">CLEAN_TARGETS</span></code> must be extended, e.g. <code class="docutils literal notranslate"><span class="pre">CLEAN_TARGETS+=domain-clean</span></code>.</p>
+</dd>
+</dl>
+</dd>
+<dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">purge</span></code></dt><dd><p>To cause a domain related target to run on <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">purge</span></code>, <code class="docutils literal notranslate"><span class="pre">PURGE_TARGETS</span></code> must be extended, e.g. <code class="docutils literal notranslate"><span class="pre">PURGE_TARGETS+=domain-purge</span></code>.</p>
+</dd>
+</dl>
+</dd>
+<dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">check</span></code></dt><dd><p><code class="docutils literal notranslate"><span class="pre">check</span></code> target is <code class="docutils literal notranslate"><span class="pre">qa</span></code> topic related and only gets generated if one or more domains from the <code class="docutils literal notranslate"><span class="pre">qa</span></code> topic are included.
+To cause a domain related target to run on <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">check</span></code>, <code class="docutils literal notranslate"><span class="pre">CHECK_TARGETS</span></code> must be extended, e.g. <code class="docutils literal notranslate"><span class="pre">CHECK_TARGETS+=domain-check</span></code>.</p>
+</dd>
+</dl>
+</dd>
+<dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">format</span></code></dt><dd><p><code class="docutils literal notranslate"><span class="pre">format</span></code> target is <code class="docutils literal notranslate"><span class="pre">qa</span></code> topic related and only gets generated if one or more domains from the <code class="docutils literal notranslate"><span class="pre">qa</span></code> topic are included.
+To cause a domain related target to run on <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">format</span></code>, <code class="docutils literal notranslate"><span class="pre">FORMAT_TARGETS</span></code> must be extended, e.g. <code class="docutils literal notranslate"><span class="pre">FORMAT_TARGETS+=domain-format</span></code>.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</section>
+</section>
+</section>
+
+
+      </div>
+
+    
+  <div class="cs-local-toc mx-4 mt-4 mb-5 my-md-0 ps-xl-3 mb-lg-5 text-muted">
+    <strong class="d-block h6 my-2 pb-2 border-bottom">On this page</strong>
+    <nav id="TableOfContents">
+      <ul>
+<li><a class="reference internal" href="#topics-and-domains">Topics and domains</a></li>
+<li><a class="reference internal" href="#writing-custom-domains">Writing custom domains</a><ul>
+<li><a class="reference internal" href="#the-domain-makefile">The domain makefile</a><ul>
+<li><a class="reference internal" href="#the-domain-header">The domain header</a></li>
+<li><a class="reference internal" href="#target-naming-conventions">Target naming conventions</a></li>
+<li><a class="reference internal" href="#the-domain-sentinel">The domain sentinel</a></li>
+<li><a class="reference internal" href="#extending-default-targets">Extending default targets</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+    </nav>
+  </div>
+    
+    </main>
+  </div><div class="container footer" role="contentinfo">
+  <footer class="d-flex flex-wrap justify-content-between align-items-center pt-2 my-4 border-top"><ul class="pb-2 mb-3 nav container border-bottom">
+  <li class="nav-item col-md-6 col">
+    <a href="templates.html"
+       title="previous chapter"
+       class="nav-link px-2 text-muted previous-chapter">Generate files using templates</a>
+  </li>
+  <li class="nav-item col-md-6 col text-end">
+    <a href="dependencies.html"
+       title="next chapter"
+       class="nav-link px-2 text-muted next-chapter">Domain dependencies</a>
+  </li>
+</ul>
+      <div class="container text-center text-muted pt-2 pb-2">
+          &#169; Copyright 2022-2024, mxstack Contributors.
+      </div>
+      <div class="container text-center text-muted pt-2 pb-2">
+        Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.0.0.
+      </div>
+  </footer>
+</div>
+
+  </body>
+</html>
