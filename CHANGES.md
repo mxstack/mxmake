@@ -2,9 +2,7 @@
 
 ## 1.0a6 (unreleased)
 
-
-- Nothing changed yet.
-
+- Add `plone-site` template configuration to `mx.ini` template.
 
 ## 1.0a5 (2024-06-07)
 
@@ -24,7 +22,6 @@
   use the provided infrastructure of mxdev to handle entry_points in mxmake.
 
 - Add Plone site creation and purging in new `plone` domain.
-
 
 ## 1.0a4 (2024-03-12)
 

@@ -342,9 +342,16 @@ class MxIni(Template):
         mxmake_templates = []
         for domain in self.domains:
             if domain.fqn == "qa.test":
-                mxmake_templates.append("run-tests")
+                template = dict(name="run-tests", settings=dict(environment="env"))
+                mxmake_templates.append(template)
             if domain.fqn == "qa.coverage":
-                mxmake_templates.append("run-coverage")
+                template = dict(name="run-coverage", settings=dict(environment="env"))
+                mxmake_templates.append(template)
+            if domain.fqn == "applications.plone":
+                template = dict(
+                    name="plone-site", settings=dict(distribution="default")
+                )
+                mxmake_templates.append(template)
         return dict(mxmake_templates=mxmake_templates)
 
 

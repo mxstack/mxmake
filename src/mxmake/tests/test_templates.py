@@ -787,6 +787,7 @@ class TestTemplates(testing.RenderTestCase):
         domains = [
             topics.get_domain("qa.test"),
             topics.get_domain("qa.coverage"),
+            topics.get_domain("applications.plone"),
         ]
         domains = topics.collect_missing_dependencies(domains)
 
@@ -805,12 +806,16 @@ class TestTemplates(testing.RenderTestCase):
 
                 # templates to generate
                 mxmake-templates =
+                    plone-site
                     run-coverage
                     run-tests
 
                 # environment variables
                 [mxmake-env]
                 # VAR = value
+
+                [mxmake-plone-site]
+                distribution = default
 
                 [mxmake-run-coverage]
                 environment = env
