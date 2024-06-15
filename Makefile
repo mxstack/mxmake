@@ -164,7 +164,7 @@ MYPY_SRC?=src
 
 # Mypy Python requirements to be installed (via pip).
 # Default: types-setuptools
-MYPY_REQUIREMENTS?=types-setuptools types-docutils
+MYPY_REQUIREMENTS?=types-setuptools types-docutils types-PyYAML
 
 ## applications.zest-releaser
 
