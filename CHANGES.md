@@ -2,6 +2,11 @@
 
 ## 1.0a6 (unreleased)
 
+- Fix bug in `Template.write` when creating target folders to also create
+  parent folders if not exists.
+
+- Add support for preseeds configuration files.
+
 - Add `plone-site` template configuration to `mx.ini` template.
 
 ## 1.0a5 (2024-06-07)

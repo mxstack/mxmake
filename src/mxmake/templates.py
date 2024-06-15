@@ -78,7 +78,7 @@ class Template(abc.ABC):
         if not self.environment:
             raise RuntimeError("Cannot write template without environment")
         target_folder = self.target_folder
-        target_folder.mkdir(exist_ok=True)
+        target_folder.mkdir(parents=True, exist_ok=True)
         target_path = target_folder / self.target_name
         template = self.environment.get_template(self.template_name)
         with target_path.open("w") as f:

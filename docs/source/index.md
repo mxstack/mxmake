@@ -23,6 +23,7 @@ maxdepth: 2
 
 getting-started
 topics
+preseeds
 templates
 extending
 dependencies

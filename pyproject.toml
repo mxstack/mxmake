@@ -22,9 +22,10 @@ classifiers = [
     "Programming Language :: Python :: 3.12",
 ]
 dependencies = [
+    "inquirer",
     "Jinja2",
     "mxdev>=4.0.2",
-    "inquirer",
+    "pyyaml"
 ]
 dynamic = ["readme"]
 

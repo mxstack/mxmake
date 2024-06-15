@@ -19,6 +19,7 @@ import logging
 import mxdev
 import sys
 import typing
+import yaml
 
 
 logger = logging.getLogger("mxmake")
@@ -95,7 +96,11 @@ list_parser.add_argument("-d", "--domain", help="Domain name")
 ##############################################################################
 
 
-def create_config(prompt: bool):
+def create_config(prompt: bool, preseeds: dict):
+    if prompt and preseeds:
+        sys.stdout.write("Either use prompt or preseeds, not both\n")
+        sys.exit(1)
+
     # obtain target folder
     target_folder = Path.cwd()
 
@@ -104,8 +109,11 @@ def create_config(prompt: bool):
 
     # obtain topics to include
     topics = load_topics()
-    if not prompt:
-        print("Update Makefile without prompting for settings.")
+    if preseeds:
+        sys.stdout.write("Collect topics from preseeds.\n")
+        topic_choice = {"topic": list(preseeds.get("topics", {}).keys())}
+    elif not prompt:
+        sys.stdout.write("Update Makefile without prompting for settings.\n")
         topic_choice = {"topic": list(parser.topics)}
     else:
         topic_choice = inquirer.prompt(
@@ -119,7 +127,8 @@ def create_config(prompt: bool):
             ]
         )
     if topic_choice is None:
-        return
+        sys.stdout.write("No topics selected. Abort\n")
+        sys.exit(1)
 
     # obtain domains to include
     domains: typing.List[Domain] = []
@@ -136,10 +145,18 @@ def create_config(prompt: bool):
         # domain generated yet
         else:
             selected_fqns = [domain.fqn for domain in topic.domains]
+        if preseeds:
+            selected_fqns = [
+                f"{topic_name}.{domain_name}"
+                for domain_name in preseeds["topics"][topic_name]
+            ]
+            sys.stdout.write(f"Collect domains for topic {topic_name} from preseeds.\n")
+            domains.extend((get_domain(fqn) for fqn in selected_fqns))
+            continue
         if not prompt:
-            print(
+            sys.stdout.write(
                 f"- update topic {topic_name} with domains "
-                f"{', '.join([fqdn.split('.')[1] for fqdn in selected_fqns])}."
+                f"{', '.join([fqdn.split('.')[1] for fqdn in selected_fqns])}.\n"
             )
             domains.extend((get_domain(fqn) for fqn in selected_fqns))
             continue
@@ -154,7 +171,8 @@ def create_config(prompt: bool):
             ]
         )
         if domains_choice is None:
-            return
+            sys.stdout.write("No domains selected. Abort\n")
+            sys.exit(1)
         for fqn in domains_choice["domains"]:
             domains.append(get_domain(fqn))
     domains = collect_missing_dependencies(domains)
@@ -171,21 +189,32 @@ def create_config(prompt: bool):
         for setting in settings:
             sfqn = f"{domain.fqn}.{setting.name}"
             setting_default = setting.default
+            # use default setting from preseeds
+            if preseeds:
+                unset = object()
+                preseed_topic = preseeds.get("topics", {}).get(domain.topic)
+                preseed_domain = preseed_topic.get(domain.name) if preseed_topic else {}
+                preseed_value = (
+                    preseed_domain.get(setting.name, unset) if preseed_domain else unset
+                )
+                setting_default = (
+                    preseed_value if preseed_value is not unset else setting_default
+                )
             # use configured setting from parser if set
-            if sfqn in parser.settings:
+            elif sfqn in parser.settings:
                 setting_default = parser.settings[sfqn]
             domain_settings[sfqn] = setting_default
-            if not prompt:
+            if not prompt or preseeds:
                 continue
             settings_question.append(
                 inquirer.Text(sfqn, message=sfqn, default=setting_default)
             )
         if prompt:
-            print(f"Edit Settings for {domain.fqn}?")
+            sys.stdout.write(f"Edit Settings for {domain.fqn}?\n")
             yn = inquirer.text(message="y/N")
             if yn in ["Y", "y"]:
                 domain_settings.update(inquirer.prompt(settings_question))
-            print("")
+            sys.stdout.write("\n")
 
     if domains:
         # generate makefile
@@ -195,11 +224,11 @@ def create_config(prompt: bool):
         )
         makefile_template.write()
     else:
-        print("Skip generation of Makefile, nothing selected")
+        sys.stdout.write("Skip generation of Makefile, nothing selected\n")
 
     # mx ini generation
     if prompt and not (target_folder / "mx.ini").exists():
-        print("\n``mx.ini`` configuration file not exists. Create One?")
+        sys.stdout.write("\n``mx.ini`` configuration file not exists. Create One?\n")
         yn = inquirer.text(message="Y/n")
         if yn not in ["n", "N"]:
             factory = template.lookup("mx.ini")
@@ -207,14 +236,23 @@ def create_config(prompt: bool):
                 target_folder, domains, get_template_environment()
             )
             mx_ini_template.write()
-    elif not prompt and not (target_folder / "mx.ini").exists():
-        print("No generation of mx configuration on update (file does not exist).")
+    elif not prompt and not preseeds and not (target_folder / "mx.ini").exists():
+        sys.stdout.write(
+            "No generation of mx configuration on update (file does not exist).\n"
+        )
+    elif preseeds and "mx-ini" in preseeds and not (target_folder / "mx.ini").exists():
+        sys.stdout.write("Generate mx configuration file\n")
+        factory = template.lookup("mx.ini")
+        mx_ini_template = factory(target_folder, domains, get_template_environment())
+        mx_ini_template.write()
     else:
-        print("Skip generation of mx configuration file, file already exists")
+        sys.stdout.write(
+            "Skip generation of mx configuration file, file already exists\n"
+        )
 
     # ci generation
     if prompt:
-        print("\nDo you want to create CI related files?")
+        sys.stdout.write("\nDo you want to create CI related files?\n")
         yn = inquirer.text(message="y/N")
         if yn in ["y", "Y"]:
             # ci_template
@@ -228,26 +266,43 @@ def create_config(prompt: bool):
             for template_name in ci_choice["ci"]:
                 factory = template.lookup(template_name)
                 factory(get_template_environment()).write()
+    elif preseeds and "ci-templates" in preseeds:
+        for template_name in preseeds["ci-templates"]:
+            sys.stdout.write(f"Generate CI file from {template_name} template\n")
+            factory = template.lookup(template_name)
+            factory(get_template_environment()).write()
 
 
 def init_command(args: argparse.Namespace):
-    print("\n#######################")
-    print("# mxmake initialization")
-    print("#######################\n")
+    sys.stdout.write("\n#######################\n")
+    sys.stdout.write("# mxmake initialization\n")
+    sys.stdout.write("#######################\n\n")
 
-    create_config(prompt=True)
+    prompt = True
+    preseeds = None
+    if args.preseeds:
+        prompt = False
+        with open(args.preseeds) as fd:
+            preseeds = yaml.load(fd.read(), yaml.SafeLoader)
+
+    create_config(prompt=prompt, preseeds=preseeds)
 
 
 init_parser = command_parsers.add_parser("init", help="Initialize project")
 init_parser.set_defaults(func=init_command)
+init_parser.add_argument("-p", "--preseeds", help="Preseeds file")
 
 
 def update_command(args: argparse.Namespace):
-    print("\n###############")
-    print("# mxmake update")
-    print("###############\n")
+    sys.stdout.write("\n###############\n")
+    sys.stdout.write("# mxmake update\n")
+    sys.stdout.write("###############\n\n")
 
-    create_config(prompt=False)
+    if not Path("Makefile").exists():
+        sys.stdout.write("Makefile not exists, abort\n")
+        sys.exit(1)
+
+    create_config(prompt=False, preseeds=None)
 
 
 update_parser = command_parsers.add_parser("update", help="Update makefile")
