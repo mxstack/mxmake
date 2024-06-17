@@ -32,6 +32,7 @@ class TestTemplates(testing.RenderTestCase):
                 "makefile": templates.Makefile,
                 "mx.ini": templates.MxIni,
                 "pip-conf": templates.PipConf,
+                "proxy": templates.ProxyMk,
                 "run-coverage": templates.CoverageScript,
                 "run-tests": templates.TestScript,
                 "topics.md": templates.Topics,
@@ -831,13 +832,6 @@ class TestTemplates(testing.RenderTestCase):
     def test_PloneSite_all_defaults(self, tempdir):
         mxini = tempdir / "mx.ini"
         with mxini.open("w") as fd:
-            fd.write(
-                "[settings]\n"
-                "\n"
-                "[mxmake-plone-site]\n"
-                "distribution = mxmake.test:default\n"
-            )
-        with mxini.open("w") as fd:
             fd.write("[settings]\n")
         configuration = mxdev.Configuration(mxini, hooks=[hook.Hook()])
         factory = templates.template.lookup("plone-site")
@@ -928,3 +922,37 @@ class TestTemplates(testing.RenderTestCase):
                 ''',
                 f.read(),
             )
+
+    @testing.template_directory()
+    def test_ProxyMk(self, tempdir):
+        mxini = tempdir / "mx.ini"
+        with mxini.open("w") as fd:
+            fd.write(
+                "[settings]\n"
+                "\n"
+                "[mxmake-proxy]\n"
+                "folder1 = *\n"
+                "folder2 =\n"
+                "    applications.plone\n"
+                "    i18n-lingua\n"
+            )
+        configuration = mxdev.Configuration(mxini, hooks=[hook.Hook()])
+        factory = templates.template.lookup("proxy")
+        template = factory(configuration, templates.get_template_environment())
+
+        self.assertEqual(template.description, "Contains proxy targets for Makefiles of source folders")
+        self.assertEqual(template.target_folder, utils.mxmake_files())
+        self.assertEqual(template.target_name, "proxy.mk")
+        self.assertEqual(template.template_name, "proxy.mk")
+        self.assertEqual(
+            template.template_variables,
+            {}
+        )
+
+        #template.write()
+        #with (tempdir / "proxy.mk").open() as f:
+        #    self.checkOutput(
+        #        '''
+        #        ''',
+        #        f.read(),
+        #    )

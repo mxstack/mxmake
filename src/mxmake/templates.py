@@ -525,3 +525,26 @@ class PloneSitePy(MxIniBoundTemplate):
         if not site["extension_ids"]:
             site["extension_ids"] = ["plone.volto:default"]
         return vars
+
+
+##############################################################################
+# proxy targets template
+##############################################################################
+
+
+@template("proxy")
+class ProxyMk(MxIniBoundTemplate):
+    description: str = "Contains proxy targets for Makefiles of source folders"
+    target_name = "proxy.mk"
+    template_name = "proxy.mk"
+
+    @property
+    def target_folder(self) -> Path:
+        return mxmake_files()
+
+    @property
+    def template_variables(self):
+        targets = {}
+        for key, value in self.settings.items():
+            ...
+        return targets
