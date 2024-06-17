@@ -340,11 +340,14 @@ class MxIni(Template):
     @property
     def template_variables(self) -> typing.Dict[str, typing.Any]:
         mxmake_templates = []
+        mxmake_env = False
         for domain in self.domains:
             if domain.fqn == "qa.test":
+                mxmake_env = True
                 template = dict(name="run-tests", settings=dict(environment="env"))
                 mxmake_templates.append(template)
             if domain.fqn == "qa.coverage":
+                mxmake_env = True
                 template = dict(name="run-coverage", settings=dict(environment="env"))
                 mxmake_templates.append(template)
             if domain.fqn == "applications.plone":
@@ -352,7 +355,7 @@ class MxIni(Template):
                     name="plone-site", settings=dict(distribution="default")
                 )
                 mxmake_templates.append(template)
-        return dict(mxmake_templates=mxmake_templates)
+        return dict(mxmake_templates=mxmake_templates, mxmake_env=mxmake_env)
 
 
 ##############################################################################

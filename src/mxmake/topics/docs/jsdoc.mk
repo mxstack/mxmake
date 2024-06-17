@@ -1,14 +1,11 @@
 #:[jsdoc]
 #:title = JSDoc Documentation
 #:description = JSDoc installation and integration into Sphinx.
-#:depends = js.npm
+#:depends = js.nodejs
 
 ##############################################################################
 # jsdoc
 ##############################################################################
 
-# extend npm dev packages
-NPM_DEV_PACKAGES+=jsdoc
-
-# extend sphinx requirements and docs targets
+NODEJS_DEV_PACKAGES+=jsdoc
 DOCS_REQUIREMENTS+=sphinx_js

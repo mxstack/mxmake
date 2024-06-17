@@ -1,7 +1,7 @@
 #:[wtr]
 #:title = Web test runner
 #:description = Run JavaScript tests using web test runner.
-#:depends = js.npm
+#:depends = js.nodejs
 #:
 #:[target.wtr]
 #:description = Execute web test runner.
@@ -18,11 +18,10 @@
 # web test runner
 ##############################################################################
 
-# extend npm dev packages
-NPM_DEV_PACKAGES+=\
+NODEJS_DEV_PACKAGES+=\
 	@web/test-runner \
 	@web/dev-server-import-maps
 
 .PHONY: wtr
-wtr: $(NPM_TARGET)
+wtr: $(NODEJS_TARGET)
 	@web-test-runner $(WTR_OPTIONS) --config $(WTR_CONFIG)

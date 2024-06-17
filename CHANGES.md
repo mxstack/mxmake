@@ -9,6 +9,11 @@
 
 - Add `plone-site` template configuration to `mx.ini` template.
 
+**Breaking changes**
+
+- Rename `npm` domain to `nodejs` and add support for using `pnpm` as
+  alternative package manager.
+
 ## 1.0a5 (2024-06-07)
 
 - Export `OS` environment variable in `mxenv` domain to prevent warning on

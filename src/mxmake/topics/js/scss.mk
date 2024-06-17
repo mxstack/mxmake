@@ -1,7 +1,7 @@
 #:[scss]
 #:title = SCSS Compiler
 #:description = Compile Stylesheets using SCSS.
-#:depends = js.npm
+#:depends = js.nodejs
 #:
 #:[target.scss]
 #:description = Run SCSS Stylesheet Compiler.
@@ -26,10 +26,9 @@
 # scss
 ##############################################################################
 
-# extend npm dev packages
-NPM_DEV_PACKAGES+=sass
+NODEJS_DEV_PACKAGES+=sass
 
 .PHONY: scss
-scss: $(NPM_TARGET)
+scss: $(NODEJS_TARGET)
 	@sass $(SCSS_OPTIONS) $(SCSS_SOURCE) $(SCSS_TARGET)
 	@sass $(SCSS_OPTIONS) --style compressed $(SCSS_SOURCE) $(SCSS_MIN_TARGET)
