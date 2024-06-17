@@ -2,7 +2,6 @@
 #:title = System dependencies
 #:description = System dependency management.
 #:depends = core.base
-#:soft-depends = js.npm
 #:
 #:[target.system-dependencies]
 #:description = Install system dependencies.

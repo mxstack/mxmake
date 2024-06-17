@@ -1,7 +1,7 @@
 #:[karma]
 #:title = Karma tests
 #:description = Run JavaScript tests using karma.
-#:depends = js.npm
+#:depends = js.nodejs
 #:
 #:[target.karma]
 #:description = Run karma.
@@ -18,13 +18,12 @@
 # karma
 ##############################################################################
 
-# extend npm dev packages
-NPM_DEV_PACKAGES+=\
+NODEJS_DEV_PACKAGES+=\
 	karma \
 	karma-coverage \
 	karma-chrome-launcher \
 	karma-module-resolver-preprocessor
 
 .PHONY: karma
-karma: $(NPM_TARGET)
+karma: $(NODEJS_TARGET)
 	@karma start $(KARMA_CONFIG) $(KARMA_OPTIONS)
