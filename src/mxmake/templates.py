@@ -1,6 +1,7 @@
 from jinja2 import Environment
 from jinja2 import PackageLoader
 from mxmake.topics import Domain
+from mxmake.topics import get_topic
 from mxmake.topics import load_topics
 from mxmake.utils import gh_actions_path
 from mxmake.utils import mxmake_files
@@ -277,7 +278,6 @@ class Makefile(Template):
         additional_targets = {}
         topics = {domain.topic for domain in self.domains}
         additional_targets["qa"] = "qa" in topics
-        # additional_targets["docs"] = "docs" in topics
         # return template variables
         return dict(
             settings=settings,
@@ -525,3 +525,42 @@ class PloneSitePy(MxIniBoundTemplate):
         if not site["extension_ids"]:
             site["extension_ids"] = ["plone.volto:default"]
         return vars
+
+
+##############################################################################
+# proxy targets template
+##############################################################################
+
+
+@template("proxy")
+class ProxyMk(MxIniBoundTemplate):
+    description: str = "Contains proxy targets for Makefiles of source folders"
+    target_name = "proxy.mk"
+    template_name = "proxy.mk"
+
+    @property
+    def target_folder(self) -> Path:
+        return mxmake_files()
+
+    @property
+    def template_variables(self):
+        targets = []
+        for folder, proxy in self.settings.items():
+            for item in [item.strip() for item in proxy.split('\n') if item.strip()]:
+                topic_name, domain_names = item.split(':')
+                topic = get_topic(topic_name.strip())
+                domain_names = domain_names.split(',')
+                domains = []
+                for domain_name in domain_names:
+                    if domain_name == '*':
+                        domains = topic.domains
+                        break
+                    else:
+                        domains.append(topic.domain(domain_name.strip()))
+                for domain in domains:
+                    for target in domain.targets:
+                        targets.append(dict(
+                            name=target.name,
+                            folder=folder
+                        ))
+        return dict(targets=targets)
