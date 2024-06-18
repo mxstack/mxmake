@@ -741,6 +741,10 @@ class TestTemplates(testing.RenderTestCase):
                 DIRTY_TARGETS+=mxenv-dirty
                 CLEAN_TARGETS+=mxenv-clean
 
+                ##############################################################################
+                # Custom includes
+                ##############################################################################
+
                 -include $(INCLUDE_MAKEFILE)
 
                 ##############################################################################
@@ -931,10 +935,9 @@ class TestTemplates(testing.RenderTestCase):
                 "[settings]\n"
                 "\n"
                 "[mxmake-proxy]\n"
-                "folder1 = *\n"
-                "folder2 =\n"
-                "    applications.plone\n"
-                "    i18n-lingua\n"
+                "folder =\n"
+                "    applications:plone\n"
+                "    i18n:*\n"
             )
         configuration = mxdev.Configuration(mxini, hooks=[hook.Hook()])
         factory = templates.template.lookup("proxy")
@@ -946,13 +949,53 @@ class TestTemplates(testing.RenderTestCase):
         self.assertEqual(template.template_name, "proxy.mk")
         self.assertEqual(
             template.template_variables,
-            {}
+            {'targets': [
+                {'name': 'plone-site-create', 'folder': 'folder'},
+                {'name': 'plone-site-purge', 'folder': 'folder'},
+                {'name': 'gettext-create', 'folder': 'folder'},
+                {'name': 'gettext-update', 'folder': 'folder'},
+                {'name': 'gettext-compile', 'folder': 'folder'},
+                {'name': 'lingua-extract', 'folder': 'folder'},
+                {'name': 'lingua', 'folder': 'folder'}
+            ]}
         )
 
-        #template.write()
-        #with (tempdir / "proxy.mk").open() as f:
-        #    self.checkOutput(
-        #        '''
-        #        ''',
-        #        f.read(),
-        #    )
+        template.write()
+        with (tempdir / "proxy.mk").open() as f:
+            self.checkOutput(
+                '''
+                ##############################################################################
+                # proxy targets
+                ##############################################################################
+
+                .PHONY: folder-plone-site-create
+                folder-plone-site-create:
+                	$(MAKE) -C "./folder/" plone-site-create
+
+                .PHONY: folder-plone-site-purge
+                folder-plone-site-purge:
+                	$(MAKE) -C "./folder/" plone-site-purge
+
+                .PHONY: folder-gettext-create
+                folder-gettext-create:
+                	$(MAKE) -C "./folder/" gettext-create
+
+                .PHONY: folder-gettext-update
+                folder-gettext-update:
+                	$(MAKE) -C "./folder/" gettext-update
+
+                .PHONY: folder-gettext-compile
+                folder-gettext-compile:
+                	$(MAKE) -C "./folder/" gettext-compile
+
+                .PHONY: folder-lingua-extract
+                folder-lingua-extract:
+                	$(MAKE) -C "./folder/" lingua-extract
+
+                .PHONY: folder-lingua
+                folder-lingua:
+                	$(MAKE) -C "./folder/" lingua
+
+                ''',
+                f.read(),
+            )

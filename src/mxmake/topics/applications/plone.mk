@@ -4,10 +4,12 @@
 #:depends = applications.zope
 #:
 #:[target.plone-site-create]
-#:description = Creates a Plone site using the script provided in `PLONE_SITE_SCRIPT` configuration.
+#:description = Creates a Plone site using the script provided in
+#:  `PLONE_SITE_SCRIPT` configuration.
 #:
 #:[target.plone-site-purge]
-#:description = Removes the Plone instance from the database, but the database itself is kept.
+#:description = Removes the Plone instance from the database, but the database
+#:  itself is kept.
 #:
 #:[setting.PLONE_SITE_SCRIPT]
 #:description = Path to the script to create or purge a Plone site
