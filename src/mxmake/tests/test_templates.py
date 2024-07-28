@@ -877,7 +877,7 @@ class TestTemplates(testing.RenderTestCase):
                 TRUTHY = frozenset(("t", "true", "y", "yes", "on", "1"))
 
 
-                def asbool(value: str|bool|None) -> bool:
+                def asbool(value: str | bool | None) -> bool:
                     """Return the boolean value ``True`` if the case-lowered value of string
                     input ``s`` is a :term:`truthy string`. If ``s`` is already one of the
                     boolean values ``True`` or ``False``, return it.
@@ -889,7 +889,14 @@ class TestTemplates(testing.RenderTestCase):
                     return value.strip().lower() in TRUTHY
 
 
-                PLONE_SITE_PURGE = asbool(os.getenv("PLONE_SITE_PURGE"))
+                PLONE_SITE_PURGE = asbool(os.getenv("PLONE_SITE_PURGE", "false"))
+                PLONE_SITE_PURGE_FAIL_IF_NOT_EXISTS = asbool(
+                    os.getenv("PLONE_SITE_PURGE_FAIL_IF_NOT_EXISTS", "true")
+                )
+                PLONE_SITE_CREATE = asbool(os.getenv("PLONE_SITE_CREATE", "true"))
+                PLONE_SITE_CREATE_FAIL_IF_EXISTS = asbool(
+                    os.getenv("PLONE_SITE_CREATE_FAIL_IF_EXISTS", "true")
+                )
 
                 config = {
                     "site_id": "Plone",
@@ -913,18 +920,33 @@ class TestTemplates(testing.RenderTestCase):
                         app.manage_delObjects([config["site_id"]])
                         transaction.commit()
                         app._p_jar.sync()
+                        print(f"Existing site with id={config['site_id']} purged!")
+                        if not PLONE_SITE_CREATE:
+                            print("Done.")
+                            exit(0)
                     else:
-                        print(f"Site with id {config['site_id']} does not exist!")
-                    exit(0)
+                        print(f"Site with id={config['site_id']} does not exist!")
+                        if PLONE_SITE_PURGE_FAIL_IF_NOT_EXISTS:
+                            print("...failure!")
+                            exit(1)
+                        if not PLONE_SITE_CREATE:
+                            print("Done.")
+                            exit(0)
 
+                if PLONE_SITE_CREATE:
+                    if config["site_id"] in app.objectIds():
+                        print(f"Site with id={config['site_id']} already exists!")
+                        if PLONE_SITE_CREATE_FAIL_IF_EXISTS:
+                            print("...failure!")
+                            exit(1)
+                        print("Done.")
+                        exit(0)
 
-                if config["site_id"] in app.objectIds():
-                    print(f"Site with id {config['site_id']} already exists!")
-                    exit(1)
-
-                site = create(app, "", config)
-                transaction.commit()
-                app._p_jar.sync()
+                    site = create(app, "", config)
+                    transaction.commit()
+                    app._p_jar.sync()
+                    print(f"New site with id={config['site_id']} created!")
+                    print("Done.")
                 ''',
                 f.read(),
             )
