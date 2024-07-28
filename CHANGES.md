@@ -9,6 +9,8 @@
 
 - Add `plone-site` template configuration to `mx.ini` template.
 
+- More fine grained control over plone site creation and purging.
+
 ## 1.0a5 (2024-06-07)
 
 - Export `OS` environment variable in `mxenv` domain to prevent warning on
