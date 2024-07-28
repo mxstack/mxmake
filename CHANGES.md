@@ -11,6 +11,8 @@
 
 - More fine grained control over plone site creation and purging.
 
+- Drop Python 3.8 in tests.
+
 ## 1.0a5 (2024-06-07)
 
 - Export `OS` environment variable in `mxenv` domain to prevent warning on

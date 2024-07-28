@@ -6,7 +6,7 @@ keywords = ["development", "deployment", "make"]
 authors = [
   {name = "MX Stack Developers", email = "dev@bluedynamics.com" }
 ]
-requires-python = ">=3.7"
+requires-python = ">=3.9"
 license = { text = "BSD 2-Clause License" }
 classifiers = [
     "Development Status :: 3 - Alpha",
