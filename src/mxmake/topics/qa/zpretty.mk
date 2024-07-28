@@ -23,18 +23,18 @@
 ZPRETTY_TARGET:=$(SENTINEL_FOLDER)/zpretty.sentinel
 $(ZPRETTY_TARGET): $(MXENV_TARGET)
 	@echo "Install zpretty"
-	@$(PYTHON_PACKAGE_COMMAND) install zpretty
+	@$(PYTHON_PACKAGE_COMMAND) install "zpretty>=3.1.0"
 	@touch $(ZPRETTY_TARGET)
 
 .PHONY: zpretty-check
 zpretty-check: $(ZPRETTY_TARGET)
 	@echo "Run zpretty check in: $(ZPRETTY_SRC)"
-	@find $(ZPRETTY_SRC) -name '*.zcml' -or -name '*.xml' -exec zpretty --check {} +
+	@zpretty --check $(ZPRETTY_SRC)
 
 .PHONY: zpretty-format
 zpretty-format: $(ZPRETTY_TARGET)
 	@echo "Run zpretty format in: $(ZPRETTY_SRC)"
-	@find $(ZPRETTY_SRC) -name '*.zcml' -or -name '*.xml' -exec zpretty -i {} +
+	@zpretty -i $(ZPRETTY_SRC)
 
 .PHONY: zpretty-dirty
 zpretty-dirty:
