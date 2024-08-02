@@ -11,7 +11,7 @@
 
 - More fine grained control over plone site creation and purging.
 
-- Drop Python 3.8 in tests.
+- Drop Python 3.8 and set all defaults to a Python 3.9 minimum.
 
 ## 1.0a5 (2024-06-07)
 
