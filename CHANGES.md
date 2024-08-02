@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.0a7 (unreleased)
+
+
+- Nothing changed yet.
+
+
 ## 1.0a6 (2024-08-02)
 
 - Fix bug in `Template.write` when creating target folders to also create
