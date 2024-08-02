@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.0a6 (unreleased)
+## 1.0a6 (2024-08-02)
 
 - Fix bug in `Template.write` when creating target folders to also create
   parent folders if not exists.
