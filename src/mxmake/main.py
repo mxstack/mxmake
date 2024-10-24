@@ -199,9 +199,8 @@ def create_config(
                 preseed_value = (
                     preseed_domain.get(setting.name, unset) if preseed_domain else unset
                 )
-                setting_default = (
-                    preseed_value if preseed_value is not unset else setting_default
-                )
+                if preseed_value is unset:
+                    preseed_value = setting_default
             # use configured setting from parser if set
             elif sfqn in parser.settings:
                 setting_default = parser.settings[sfqn]

@@ -1,6 +1,15 @@
 # Changelog
 
-## 1.0a6 (unreleased)
+## 1.0a7 (unreleased)
+
+- Add proxy target support.
+
+**Breaking changes**
+
+- Rename `npm` domain to `nodejs` and add support for using `pnpm` as
+  alternative package manager.
+
+## 1.0a6 (2024-08-02)
 
 - Fix bug in `Template.write` when creating target folders to also create
   parent folders if not exists.
@@ -9,10 +18,9 @@
 
 - Add `plone-site` template configuration to `mx.ini` template.
 
-**Breaking changes**
+- More fine grained control over plone site creation and purging.
 
-- Rename `npm` domain to `nodejs` and add support for using `pnpm` as
-  alternative package manager.
+- Drop Python 3.8 and set all defaults to a Python 3.9 minimum.
 
 ## 1.0a5 (2024-06-07)
 

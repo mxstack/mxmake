@@ -32,6 +32,7 @@ class TestTemplates(testing.RenderTestCase):
                 "makefile": templates.Makefile,
                 "mx.ini": templates.MxIni,
                 "pip-conf": templates.PipConf,
+                "proxy": templates.ProxyMk,
                 "run-coverage": templates.CoverageScript,
                 "run-tests": templates.TestScript,
                 "topics.md": templates.Topics,
@@ -524,7 +525,7 @@ class TestTemplates(testing.RenderTestCase):
             "core.base.INCLUDE_MAKEFILE": "include.mk",
             "core.base.EXTRA_PATH": "",
             "core.mxenv.PRIMARY_PYTHON": "python3",
-            "core.mxenv.PYTHON_MIN_VERSION": "3.7",
+            "core.mxenv.PYTHON_MIN_VERSION": "3.9",
             "core.mxenv.PYTHON_PACKAGE_INSTALLER": "pip",
             "core.mxenv.MXENV_UV_GLOBAL": "false",
             "core.mxenv.VENV_ENABLED": "true",
@@ -585,8 +586,8 @@ class TestTemplates(testing.RenderTestCase):
                 PRIMARY_PYTHON?=python3
 
                 # Minimum required Python version.
-                # Default: 3.7
-                PYTHON_MIN_VERSION?=3.7
+                # Default: 3.9
+                PYTHON_MIN_VERSION?=3.9
 
                 # Install packages using the given package installer method.
                 # Supported are `pip` and `uv`. If uv is used, its global availability is
@@ -740,6 +741,10 @@ class TestTemplates(testing.RenderTestCase):
                 DIRTY_TARGETS+=mxenv-dirty
                 CLEAN_TARGETS+=mxenv-clean
 
+                ##############################################################################
+                # Custom includes
+                ##############################################################################
+
                 -include $(INCLUDE_MAKEFILE)
 
                 ##############################################################################
@@ -831,13 +836,6 @@ class TestTemplates(testing.RenderTestCase):
     def test_PloneSite_all_defaults(self, tempdir):
         mxini = tempdir / "mx.ini"
         with mxini.open("w") as fd:
-            fd.write(
-                "[settings]\n"
-                "\n"
-                "[mxmake-plone-site]\n"
-                "distribution = mxmake.test:default\n"
-            )
-        with mxini.open("w") as fd:
             fd.write("[settings]\n")
         configuration = mxdev.Configuration(mxini, hooks=[hook.Hook()])
         factory = templates.template.lookup("plone-site")
@@ -877,7 +875,7 @@ class TestTemplates(testing.RenderTestCase):
                 TRUTHY = frozenset(("t", "true", "y", "yes", "on", "1"))
 
 
-                def asbool(value: str|bool|None) -> bool:
+                def asbool(value: str | bool | None) -> bool:
                     """Return the boolean value ``True`` if the case-lowered value of string
                     input ``s`` is a :term:`truthy string`. If ``s`` is already one of the
                     boolean values ``True`` or ``False``, return it.
@@ -889,7 +887,14 @@ class TestTemplates(testing.RenderTestCase):
                     return value.strip().lower() in TRUTHY
 
 
-                PLONE_SITE_PURGE = asbool(os.getenv("PLONE_SITE_PURGE"))
+                PLONE_SITE_PURGE = asbool(os.getenv("PLONE_SITE_PURGE", "false"))
+                PLONE_SITE_PURGE_FAIL_IF_NOT_EXISTS = asbool(
+                    os.getenv("PLONE_SITE_PURGE_FAIL_IF_NOT_EXISTS", "true")
+                )
+                PLONE_SITE_CREATE = asbool(os.getenv("PLONE_SITE_CREATE", "true"))
+                PLONE_SITE_CREATE_FAIL_IF_EXISTS = asbool(
+                    os.getenv("PLONE_SITE_CREATE_FAIL_IF_EXISTS", "true")
+                )
 
                 config = {
                     "site_id": "Plone",
@@ -913,18 +918,111 @@ class TestTemplates(testing.RenderTestCase):
                         app.manage_delObjects([config["site_id"]])
                         transaction.commit()
                         app._p_jar.sync()
+                        print(f"Existing site with id={config['site_id']} purged!")
+                        if not PLONE_SITE_CREATE:
+                            print("Done.")
+                            exit(0)
                     else:
-                        print(f"Site with id {config['site_id']} does not exist!")
-                    exit(0)
+                        print(f"Site with id={config['site_id']} does not exist!")
+                        if PLONE_SITE_PURGE_FAIL_IF_NOT_EXISTS:
+                            print("...failure!")
+                            exit(1)
+                        if not PLONE_SITE_CREATE:
+                            print("Done.")
+                            exit(0)
 
+                if PLONE_SITE_CREATE:
+                    if config["site_id"] in app.objectIds():
+                        print(f"Site with id={config['site_id']} already exists!")
+                        if PLONE_SITE_CREATE_FAIL_IF_EXISTS:
+                            print("...failure!")
+                            exit(1)
+                        print("Done.")
+                        exit(0)
 
-                if config["site_id"] in app.objectIds():
-                    print(f"Site with id {config['site_id']} already exists!")
-                    exit(1)
+                    site = create(app, "", config)
+                    transaction.commit()
+                    app._p_jar.sync()
+                    print(f"New site with id={config['site_id']} created!")
+                    print("Done.")
+                ''',
+                f.read(),
+            )
 
-                site = create(app, "", config)
-                transaction.commit()
-                app._p_jar.sync()
+    @testing.template_directory()
+    def test_ProxyMk(self, tempdir):
+        mxini = tempdir / "mx.ini"
+        with mxini.open("w") as fd:
+            fd.write(
+                "[settings]\n"
+                "\n"
+                "[mxmake-proxy]\n"
+                "folder =\n"
+                "    applications:plone\n"
+                "    i18n:*\n"
+            )
+        configuration = mxdev.Configuration(mxini, hooks=[hook.Hook()])
+        factory = templates.template.lookup("proxy")
+        template = factory(configuration, templates.get_template_environment())
+
+        self.assertEqual(template.description, "Contains proxy targets for Makefiles of source folders")
+        self.assertEqual(template.target_folder, utils.mxmake_files())
+        self.assertEqual(template.target_name, "proxy.mk")
+        self.assertEqual(template.template_name, "proxy.mk")
+        self.assertEqual(
+            template.template_variables,
+            {'targets': [
+                {'name': 'plone-site-create', 'folder': 'folder'},
+                {'name': 'plone-site-purge', 'folder': 'folder'},
+                {'name': 'plone-site-recreate', 'folder': 'folder'},
+                {'name': 'gettext-create', 'folder': 'folder'},
+                {'name': 'gettext-update', 'folder': 'folder'},
+                {'name': 'gettext-compile', 'folder': 'folder'},
+                {'name': 'lingua-extract', 'folder': 'folder'},
+                {'name': 'lingua', 'folder': 'folder'}
+            ]}
+        )
+
+        template.write()
+        with (tempdir / "proxy.mk").open() as f:
+            self.checkOutput(
+                '''
+                ##############################################################################
+                # proxy targets
+                ##############################################################################
+
+                .PHONY: folder-plone-site-create
+                folder-plone-site-create:
+                	$(MAKE) -C "./folder/" plone-site-create
+
+                .PHONY: folder-plone-site-purge
+                folder-plone-site-purge:
+                	$(MAKE) -C "./folder/" plone-site-purge
+
+                .PHONY: folder-plone-site-recreate
+                folder-plone-site-recreate:
+                	$(MAKE) -C "./folder/" plone-site-recreate
+
+                .PHONY: folder-gettext-create
+                folder-gettext-create:
+                	$(MAKE) -C "./folder/" gettext-create
+
+                .PHONY: folder-gettext-update
+                folder-gettext-update:
+                	$(MAKE) -C "./folder/" gettext-update
+
+                .PHONY: folder-gettext-compile
+                folder-gettext-compile:
+                	$(MAKE) -C "./folder/" gettext-compile
+
+                .PHONY: folder-lingua-extract
+                folder-lingua-extract:
+                	$(MAKE) -C "./folder/" lingua-extract
+
+                .PHONY: folder-lingua
+                folder-lingua:
+                	$(MAKE) -C "./folder/" lingua
+
                 ''',
                 f.read(),
             )
