@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.0a8 (unreleased)
+## 1.0a8 (2024-10-24)
 
 
 - Fix preseed value reading.
