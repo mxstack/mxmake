@@ -31,5 +31,5 @@ ci-templates:
 Now initialize the project with the preseeds:
 
 ```shell
-$ make init -p preseeds.yaml
+$ mxmake init -p preseeds.yaml
 ```
