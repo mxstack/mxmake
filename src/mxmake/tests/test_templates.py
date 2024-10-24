@@ -525,7 +525,7 @@ class TestTemplates(testing.RenderTestCase):
             "core.base.INCLUDE_MAKEFILE": "include.mk",
             "core.base.EXTRA_PATH": "",
             "core.mxenv.PRIMARY_PYTHON": "python3",
-            "core.mxenv.PYTHON_MIN_VERSION": "3.7",
+            "core.mxenv.PYTHON_MIN_VERSION": "3.9",
             "core.mxenv.PYTHON_PACKAGE_INSTALLER": "pip",
             "core.mxenv.MXENV_UV_GLOBAL": "false",
             "core.mxenv.VENV_ENABLED": "true",
@@ -586,8 +586,8 @@ class TestTemplates(testing.RenderTestCase):
                 PRIMARY_PYTHON?=python3
 
                 # Minimum required Python version.
-                # Default: 3.7
-                PYTHON_MIN_VERSION?=3.7
+                # Default: 3.9
+                PYTHON_MIN_VERSION?=3.9
 
                 # Install packages using the given package installer method.
                 # Supported are `pip` and `uv`. If uv is used, its global availability is
@@ -974,6 +974,7 @@ class TestTemplates(testing.RenderTestCase):
             {'targets': [
                 {'name': 'plone-site-create', 'folder': 'folder'},
                 {'name': 'plone-site-purge', 'folder': 'folder'},
+                {'name': 'plone-site-recreate', 'folder': 'folder'},
                 {'name': 'gettext-create', 'folder': 'folder'},
                 {'name': 'gettext-update', 'folder': 'folder'},
                 {'name': 'gettext-compile', 'folder': 'folder'},
@@ -997,6 +998,10 @@ class TestTemplates(testing.RenderTestCase):
                 .PHONY: folder-plone-site-purge
                 folder-plone-site-purge:
                 	$(MAKE) -C "./folder/" plone-site-purge
+
+                .PHONY: folder-plone-site-recreate
+                folder-plone-site-recreate:
+                	$(MAKE) -C "./folder/" plone-site-recreate
 
                 .PHONY: folder-gettext-create
                 folder-gettext-create:
