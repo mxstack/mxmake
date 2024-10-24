@@ -28,7 +28,7 @@
 #:
 #:[setting.PYTHON_MIN_VERSION]
 #:description = Minimum required Python version.
-#:default = 3.7
+#:default = 3.9
 #:
 #:[setting.PYTHON_PACKAGE_INSTALLER]
 #:description = Install packages using the given package installer method.
