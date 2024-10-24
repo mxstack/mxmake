@@ -190,7 +190,7 @@ def create_config(
         settings_question = []
         for setting in settings:
             sfqn = f"{domain.fqn}.{setting.name}"
-            setting_default = setting.default
+            setting_default: typing.Union[typing.Any, object] = setting.default
             # use default setting from preseeds
             if preseeds:
                 unset = object()
@@ -199,8 +199,9 @@ def create_config(
                 preseed_value = (
                     preseed_domain.get(setting.name, unset) if preseed_domain else unset
                 )
-                if preseed_value is unset:
-                    preseed_value = setting_default
+                setting_default = (
+                    preseed_value if preseed_value is not unset else setting_default
+                )
             # use configured setting from parser if set
             elif sfqn in parser.settings:
                 setting_default = parser.settings[sfqn]

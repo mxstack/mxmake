@@ -3,7 +3,7 @@
 ## 1.0a8 (unreleased)
 
 
-- Nothing changed yet.
+- Fix preseed value reading.
 
 
 ## 1.0a7 (2024-10-24)
