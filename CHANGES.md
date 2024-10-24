@@ -2,6 +2,8 @@
 
 ## 1.0a7 (unreleased)
 
+- Add proxy target support.
+
 **Breaking changes**
 
 - Rename `npm` domain to `nodejs` and add support for using `pnpm` as
