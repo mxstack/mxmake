@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.0a7 (unreleased)
+## 1.0a7 (2024-10-24)
 
 - Add proxy target support.
 
