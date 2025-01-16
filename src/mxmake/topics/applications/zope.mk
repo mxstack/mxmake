@@ -78,12 +78,12 @@ zope-start: $(ZOPE_RUN_TARGET)
 .PHONY: zope-debug
 zope-debug: $(ZOPE_RUN_TARGET)
 	@echo "Start Zope/Plone with configuration in $(ZOPE_INSTANCE_FOLDER)"
-	@zconsole debug "$(ZOPE_INSTANCE_FOLDER)/etc/zope.ini"
+	@zconsole debug "$(ZOPE_INSTANCE_FOLDER)/etc/zope.conf"
 
 .PHONY: zope-runscript
 zope-runscript: $(ZOPE_RUN_TARGET)
 	@echo "Run Zope/Plone Console Script $(ZOPE_SCRIPTNAME) in $(ZOPE_INSTANCE_FOLDER)"
-	@zconsole run "$(ZOPE_INSTANCE_FOLDER)/etc/zope.ini" $(ZOPE_SCRIPTNAME)
+	@zconsole run "$(ZOPE_INSTANCE_FOLDER)/etc/zope.conf" $(ZOPE_SCRIPTNAME)
 
 .PHONY: zope-dirty
 zope-dirty:
