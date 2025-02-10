@@ -3,7 +3,8 @@
 ## 1.0a9 (unreleased)
 
 
-- Nothing changed yet.
+- Fix `zope.mk`, wrong config file was passed to zconsole.
+  Now zope-debug and zope-runscript are functional.
 
 
 ## 1.0a8 (2024-10-24)
