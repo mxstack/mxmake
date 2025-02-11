@@ -13,13 +13,13 @@
 
     jobs:
       lint:
-        uses: "./.github/workflows/test.yaml"
+        uses: "./.github/workflows/test.yml"
       tests:
-        uses: "./.github/workflows/lint.yaml"
+        uses: "./.github/workflows/lint.yml"
       variants:
-        uses: "./.github/workflows/variants.yaml"
+        uses: "./.github/workflows/variants.yml"
       typecheck:
-        uses: "./.github/workflows/typecheck.yaml"
+        uses: "./.github/workflows/typecheck.yml"
 
       # Always build & lint package.
       build-package:
