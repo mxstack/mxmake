@@ -87,4 +87,4 @@
       docs:
         needs:
           - release-pypi
-        uses: "./.github/workflows/docs.yaml"
+        uses: "./.github/workflows/docs.yml"
