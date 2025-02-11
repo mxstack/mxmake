@@ -25,7 +25,10 @@
       build-package:
         name: Build & verify package
         needs:
+          - lint
           - tests
+          - variants
+          - typecheck
         runs-on: ubuntu-latest
         permissions:
           attestations: write
