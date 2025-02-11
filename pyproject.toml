@@ -1,7 +1,7 @@
 [project]
 name = "mxmake"
 description = "Generates a Python project-specific Makefile by using an extensible library of configurable Makefile snippets."
-version = "1.0a9.dev0"
+version = "1.0.dev1"
 keywords = ["development", "deployment", "make"]
 authors = [
   {name = "MX Stack Developers", email = "dev@bluedynamics.com" }
@@ -9,17 +9,17 @@ authors = [
 requires-python = ">=3.9"
 license = { text = "BSD 2-Clause License" }
 classifiers = [
-    "Development Status :: 3 - Alpha",
+    "Development Status :: 5 - Production/Stable",
     "Intended Audience :: Developers",
     "Topic :: Software Development :: Build Tools",
     "License :: OSI Approved :: BSD License",
     "Operating System :: OS Independent",
     "Programming Language :: Python",
-    "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
 ]
 dependencies = [
     "inquirer",

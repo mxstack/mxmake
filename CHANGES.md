@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.0a9 (unreleased)
+## 1.0 (unreleased)
 
 
 - Fix `zope.mk`, wrong config file was passed to zconsole.
