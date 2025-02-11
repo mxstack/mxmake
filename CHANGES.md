@@ -1,7 +1,8 @@
 # Changelog
 
-## 1.0 (unreleased)
+## 1.0 (2025-02-11)
 
+- Chore: Add release workflow.
 
 - Fix `zope.mk`, wrong config file was passed to zconsole.
   Now zope-debug and zope-runscript are functional.
