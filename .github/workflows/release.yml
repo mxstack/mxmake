@@ -12,7 +12,7 @@
 
 
     jobs:
-      test:
+      tests:
         uses: "./.github/workflows/test.yml"
       lint:
         uses: "./.github/workflows/lint.yml"
