@@ -37,6 +37,20 @@
 #:[setting.ZOPE_SCRIPTNAME]
 #:description = script to run
 #:
+#:[target.zope-adduser]
+#:description = Adds an [emergency user](https://zope.readthedocs.io/en/latest/zopebook/Security.html#zope-emergency-user) to Zope.
+#:   This is an user with the Manager role created in the Zope application roots user folder!
+#:   This is not meant to do user management, but to get access to a Zope site if all other passwords are gone.
+#:   The user name must not exist already in the application roots user folder.
+#:   ZOPE_USER_NAME and ZOPE_USER_PASSWORD should not be set in the Makefile, but passed in as environment variables.
+#:	 Example: `make ZOPE_USER_NAME=emergency ZOPE_USER_PASSWORD=verysecret adduser`
+#:
+#:[setting.ZOPE_USER_NAME]
+#:description = user name to create
+#:
+#:[setting.ZOPE_USER_PASSWORD]
+#:description = user name to create
+#:
 #:[target.zope-dirty]
 #:description = Touches the configuration file to force a rebuild of the Zope instance.
 #:
@@ -84,6 +98,11 @@ zope-debug: $(ZOPE_RUN_TARGET)
 zope-runscript: $(ZOPE_RUN_TARGET)
 	@echo "Run Zope/Plone Console Script $(ZOPE_SCRIPTNAME) in $(ZOPE_INSTANCE_FOLDER)"
 	@zconsole run "$(ZOPE_INSTANCE_FOLDER)/etc/zope.conf" $(ZOPE_SCRIPTNAME)
+
+.PHONY: zope-adduser
+zope-adduser: $(ZOPE_RUN_TARGET)
+	@echo "Run Zope addzopeuser to create an emergency user '$(ZOPE_USER_NAME)' with role 'Manager'"
+	@addzopeuser -c "$(ZOPE_INSTANCE_FOLDER)/etc/zope.conf" $(ZOPE_USER_NAME) $(ZOPE_USER_PASSWORD)
 
 .PHONY: zope-dirty
 zope-dirty:
