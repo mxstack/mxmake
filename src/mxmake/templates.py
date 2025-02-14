@@ -498,7 +498,7 @@ class GHActionsTypecheck(GHActionsTemplate):
 class PloneSitePy(MxIniBoundTemplate):
     description: str = "Script to create or purge a Plone site"
     target_name = "plone-site.py"
-    template_name = "plone-site.py"
+    template_name = "plone-site.py.tpl"
 
     @property
     def target_folder(self) -> Path:

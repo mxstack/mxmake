@@ -844,7 +844,7 @@ class TestTemplates(testing.RenderTestCase):
         self.assertEqual(template.description, "Script to create or purge a Plone site")
         self.assertEqual(template.target_folder, utils.mxmake_files())
         self.assertEqual(template.target_name, "plone-site.py")
-        self.assertEqual(template.template_name, "plone-site.py")
+        self.assertEqual(template.template_name, "plone-site.py.tpl")
         self.assertEqual(
             template.template_variables,
             {
