@@ -5,11 +5,12 @@ from .topics import resolve_domain_dependencies
 from .topics import set_domain_runtime_depends
 
 import os
+import pathlib
 import sys
 import textwrap
 
 
-def print_help(makefile: "pathlib.Path"):
+def print_help(makefile: pathlib.Path):
     """Parse the Makefile and print the help."""
 
     parser = MakefileParser(makefile)
@@ -30,9 +31,7 @@ def print_help(makefile: "pathlib.Path"):
         if help_domain and domain.name != help_domain:
             continue
         topic = get_topic(domain.topic)
-        sys.stdout.write(
-            f"DOMAIN '{domain.name}' (topic {topic.title})\n"
-        )
+        sys.stdout.write(f"DOMAIN '{domain.name}' (topic {topic.title})\n")
         sys.stdout.write(
             "\n".join(
                 textwrap.wrap(
@@ -62,7 +61,7 @@ def print_help(makefile: "pathlib.Path"):
                 sys.stdout.write("\n\n")
                 lvl -= 1
         if help_domain:
-            sys.stdout.write(f"ARGUMENTS\n\n")
+            sys.stdout.write("ARGUMENTS\n\n")
             for setting in domain.settings:
                 fqn_setting = f"{domain.fqn}.{setting.name}"
                 sys.stdout.write(
@@ -81,7 +80,6 @@ def print_help(makefile: "pathlib.Path"):
                 sys.stdout.write("\n\n")
         else:
             sys.stdout.write("\n\n")
-
 
     if not help_domain:
         sys.stdout.write("")
