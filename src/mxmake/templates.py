@@ -546,21 +546,18 @@ class ProxyMk(MxIniBoundTemplate):
     def template_variables(self):
         targets = []
         for folder, proxy in self.settings.items():
-            for item in [item.strip() for item in proxy.split('\n') if item.strip()]:
-                topic_name, domain_names = item.split(':')
+            for item in [item.strip() for item in proxy.split("\n") if item.strip()]:
+                topic_name, domain_names = item.split(":")
                 topic = get_topic(topic_name.strip())
-                domain_names = domain_names.split(',')
+                domain_names = domain_names.split(",")
                 domains = []
                 for domain_name in domain_names:
-                    if domain_name == '*':
+                    if domain_name == "*":
                         domains = topic.domains
                         break
                     else:
                         domains.append(topic.domain(domain_name.strip()))
                 for domain in domains:
                     for target in domain.targets:
-                        targets.append(dict(
-                            name=target.name,
-                            folder=folder
-                        ))
+                        targets.append(dict(name=target.name, folder=folder))
         return dict(targets=targets)

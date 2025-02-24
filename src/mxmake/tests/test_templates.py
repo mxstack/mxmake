@@ -965,28 +965,33 @@ class TestTemplates(testing.RenderTestCase):
         factory = templates.template.lookup("proxy")
         template = factory(configuration, templates.get_template_environment())
 
-        self.assertEqual(template.description, "Contains proxy targets for Makefiles of source folders")
+        self.assertEqual(
+            template.description,
+            "Contains proxy targets for Makefiles of source folders",
+        )
         self.assertEqual(template.target_folder, utils.mxmake_files())
         self.assertEqual(template.target_name, "proxy.mk")
         self.assertEqual(template.template_name, "proxy.mk")
         self.assertEqual(
             template.template_variables,
-            {'targets': [
-                {'name': 'plone-site-create', 'folder': 'folder'},
-                {'name': 'plone-site-purge', 'folder': 'folder'},
-                {'name': 'plone-site-recreate', 'folder': 'folder'},
-                {'name': 'gettext-create', 'folder': 'folder'},
-                {'name': 'gettext-update', 'folder': 'folder'},
-                {'name': 'gettext-compile', 'folder': 'folder'},
-                {'name': 'lingua-extract', 'folder': 'folder'},
-                {'name': 'lingua', 'folder': 'folder'}
-            ]}
+            {
+                "targets": [
+                    {"name": "plone-site-create", "folder": "folder"},
+                    {"name": "plone-site-purge", "folder": "folder"},
+                    {"name": "plone-site-recreate", "folder": "folder"},
+                    {"name": "gettext-create", "folder": "folder"},
+                    {"name": "gettext-update", "folder": "folder"},
+                    {"name": "gettext-compile", "folder": "folder"},
+                    {"name": "lingua-extract", "folder": "folder"},
+                    {"name": "lingua", "folder": "folder"},
+                ]
+            },
         )
 
         template.write()
         with (tempdir / "proxy.mk").open() as f:
             self.checkOutput(
-                '''
+                """
                 ##############################################################################
                 # proxy targets
                 ##############################################################################
@@ -1023,6 +1028,6 @@ class TestTemplates(testing.RenderTestCase):
                 folder-lingua:
                 	$(MAKE) -C "./folder/" lingua
 
-                ''',
+                """,
                 f.read(),
             )

@@ -4,6 +4,7 @@
 # DOMAINS:
 #: applications.zest-releaser
 #: core.base
+#: core.help
 #: core.mxenv
 #: core.mxfiles
 #: core.packages
@@ -50,7 +51,7 @@ EXTRA_PATH?=
 PRIMARY_PYTHON?=python3
 
 # Minimum required Python version.
-# Default: 3.7
+# Default: 3.9
 PYTHON_MIN_VERSION?=3.9
 
 # Install packages using the given package installer method.
@@ -165,6 +166,12 @@ MYPY_SRC?=src
 # Mypy Python requirements to be installed (via pip).
 # Default: types-setuptools
 MYPY_REQUIREMENTS?=types-setuptools types-docutils types-PyYAML
+
+## core.help
+
+# Request to show all targets, descriptions and arguments for a given domain.
+# No default value.
+HELP_DOMAIN?=
 
 ## applications.zest-releaser
 
@@ -595,6 +602,14 @@ CLEAN_TARGETS+=mypy-clean
 DIRTY_TARGETS+=mypy-dirty
 
 ##############################################################################
+# help
+##############################################################################
+
+.PHONY: help
+help: $(MXENV_TARGET)
+	@mxmake help-generator
+
+##############################################################################
 # zest-releaser
 ##############################################################################
 
@@ -635,6 +650,10 @@ zest-releaser-clean: zest-releaser-dirty
 INSTALL_TARGETS+=$(ZEST_RELEASER_TARGET)
 DIRTY_TARGETS+=zest-releaser-dirty
 CLEAN_TARGETS+=zest-releaser-clean
+
+##############################################################################
+# Custom includes
+##############################################################################
 
 -include $(INCLUDE_MAKEFILE)
 
