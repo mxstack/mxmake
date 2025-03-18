@@ -120,3 +120,4 @@ zope-purge: zope-dirty
 INSTALL_TARGETS+=zope-instance
 DIRTY_TARGETS+=zope-dirty
 CLEAN_TARGETS+=zope-clean
+PURGE_TARGETS+=zope-purge

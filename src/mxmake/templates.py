@@ -352,7 +352,8 @@ class MxIni(Template):
                 mxmake_templates.append(template)
             if domain.fqn == "applications.plone":
                 template = dict(
-                    name="plone-site", settings=dict(distribution="default")
+                    name="plone-site",
+                    settings=dict(distribution="volto", extension_ids="plone.volto:default"),
                 )
                 mxmake_templates.append(template)
         return dict(mxmake_templates=mxmake_templates, mxmake_env=mxmake_env)
@@ -522,8 +523,6 @@ class PloneSitePy(MxIniBoundTemplate):
         site["extension_ids"] = [
             eid.strip() for eid in site["extension_ids"].split("\n") if eid.strip()
         ]
-        if not site["extension_ids"]:
-            site["extension_ids"] = ["plone.volto:default"]
         return vars
 
 
