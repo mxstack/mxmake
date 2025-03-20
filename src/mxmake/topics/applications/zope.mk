@@ -82,7 +82,7 @@ $(ZOPE_INSTANCE_TARGET): $(COOKIECUTTER_TARGET) $(ZOPE_CONFIGURATION_FILE)
 	@cookiecutter -f --no-input ${ZOPE_COOKIECUTTER_TEMPLATE_OPTIONS} --config-file $(ZOPE_CONFIGURATION_FILE) --output-dir $(ZOPE_BASE_FOLDER) $(ZOPE_TEMPLATE)
 
 .PHONY: zope-instance
-zope-instance: $(ZOPE_INSTANCE_TARGET) $(SOURCES)
+zope-instance: $(ZOPE_INSTANCE_TARGET) $(SOURCES_TARGET)
 
 .PHONY: zope-start
 zope-start: $(ZOPE_RUN_TARGET)
