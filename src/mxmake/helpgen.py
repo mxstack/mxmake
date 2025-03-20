@@ -44,7 +44,7 @@ def print_help(makefile: pathlib.Path):
         )
         sys.stdout.write("\n\nTARGETS\n\n")
         for target in domain.targets:
-            sys.stdout.write(f"{idnt*lvl}{target.name}\n")
+            sys.stdout.write(f"{idnt * lvl}{target.name}\n")
             if help_domain:
                 lvl += 1
                 found = True
@@ -65,7 +65,7 @@ def print_help(makefile: pathlib.Path):
             for setting in domain.settings:
                 fqn_setting = f"{domain.fqn}.{setting.name}"
                 sys.stdout.write(
-                    f"{idnt*lvl}{setting.name}={parser.settings.get(fqn_setting) or '<not set>'}\n"
+                    f"{idnt * lvl}{setting.name}={parser.settings.get(fqn_setting) or '<not set>'}\n"
                 )
                 sys.stdout.write(
                     "\n".join(

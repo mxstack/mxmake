@@ -10,9 +10,7 @@ class TestHook(unittest.TestCase):
     def test_Hook(self, tempdir):
         mxini = tempdir / "mx.ini"
         with mxini.open("w") as fd:
-            fd.write(
-                "[settings]\n" "mxmake-templates = run-tests run-coverage inexistent"
-            )
+            fd.write("[settings]\nmxmake-templates = run-tests run-coverage inexistent")
 
         hook_ = hook.Hook()
         configuration = mxdev.Configuration(mxini, hooks=[hook_])
