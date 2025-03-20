@@ -61,8 +61,8 @@ applications = "mxmake.topics:applications"
 i18n = "mxmake.topics:i18n"
 
 [build-system]
-requires = ["setuptools"]
-build-backend = "setuptools.build_meta"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
 [tool.distutils.bdist_wheel]
 universal = true

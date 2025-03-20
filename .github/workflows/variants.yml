@@ -13,7 +13,7 @@ jobs:
         python-version:
         # we test on lowest and highest supported versions
         - "3.9"
-        - "3.12"
+        - "3.13"
         os:
           - ubuntu-latest
           - macos-latest
