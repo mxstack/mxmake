@@ -665,7 +665,7 @@ class TestTemplates(testing.RenderTestCase):
                 # mxenv
                 ##############################################################################
 
-                export OS:=$(OS)
+                OS?=
 
                 # Determine the executable path
                 ifeq ("$(VENV_ENABLED)", "true")
