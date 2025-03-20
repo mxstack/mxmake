@@ -2,6 +2,8 @@
 
 ## 1.1.0 (2025-03-20)
 
+- Chore: Build-system update and minor cleanups.
+
 - Feature: Add help system (make help).
 
 - Feature: Add target `zope-adduser` to create an emergency user.
