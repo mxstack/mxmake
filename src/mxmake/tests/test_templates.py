@@ -851,7 +851,7 @@ class TestTemplates(testing.RenderTestCase):
             {
                 "site": {
                     "default_language": "en",
-                    'extension_ids': [],
+                    "extension_ids": [],
                     "portal_timezone": "UTC",
                     "setup_content": False,
                     "site_id": "Plone",

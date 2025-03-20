@@ -353,7 +353,9 @@ class MxIni(Template):
             if domain.fqn == "applications.plone":
                 template = dict(
                     name="plone-site",
-                    settings=dict(distribution="volto", extension_ids="plone.volto:default"),
+                    settings=dict(
+                        distribution="volto", extension_ids="plone.volto:default"
+                    ),
                 )
                 mxmake_templates.append(template)
         return dict(mxmake_templates=mxmake_templates, mxmake_env=mxmake_env)
