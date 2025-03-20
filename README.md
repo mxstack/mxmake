@@ -1,4 +1,4 @@
-<img src="docs/source/_static/mxmake-logo.svg?raw=true"
+<img src="https://mxstack.github.io/mxmake/_images/mxmake-logo.svg"
      alt="mxmake logo"
      align="right"
      style="float: right; margin-left: 10px; margin-bottom: 10px; width: 25%" /> *mxmake* [mɪks meɪk] generates a project-specific Makefile by using an extensible library of configurable Makefile snippets.
