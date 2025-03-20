@@ -19,24 +19,26 @@ If the dependencies are up-to-date, "make" will skip the build process for the t
 
 This way, "make" can handle the complex and interdependent steps to form processes of a project, automatically handling the correct order of steps and avoiding unnecessary execution of steps.
 
-## The "phony" target
+## The "PHONY" target
 
-In "make", a "phony" target is a special type of target that is used to define a target that is not a file or directory. Phony targets are used to describe actions that need to be performed but do not result in a file that can be used as a target in another rule.
+In "make", a "PHONY" target is a special type of target that is used to define a target that is not a file or directory.
+Phony targets are used to describe actions that need to be performed but do not result in a file that can be used as a target in another rule.
 
-For example, a common use case for a phony target is to define a "clean" target that removes all generated files.
-A makefile could have a rule like the following:
+For example, a common use case for a PHONY target is to define a "clean" target that removes all generated files.
+A Makefile could have a rule like the following:
 
-```makefile
+```Makefile
 .PHONY: clean
 
 clean:
     rm -rf build
 ```
 
-The ".PHONY" line indicates that the "clean" target is a phony target. When "make clean" is run, the command in the rule will be executed to remove the "build" directory.
+The ".PHONY" line indicates that the "clean" target is a PHONY target.
+When "make clean" is run, the command in the rule will be executed to remove the "build" directory.
 
-Phony targets are useful because they provide a way to define targets that don't correspond to files and can be used to perform arbitrary actions such as cleaning the build directory or running tests.
-Additionally, "make" considers phony targets to always be out-of-date, so the commands for a phony target will always be executed, even if its dependencies are up-to-date.
+PHONY targets are useful because they provide a way to define targets that don't correspond to files and can be used to perform arbitrary actions such as cleaning the build directory or running tests.
+Additionally, "make" considers PHONY targets to always be out-of-date, so the commands for a PHONY target will always be executed, even if its dependencies are up-to-date.
 This can be useful when you want to guarantee that an action is performed, such as cleaning the build directory before a build.
 
 (make-sentinel-files)=
@@ -52,20 +54,20 @@ To overcome this challenge, other methods, such as using sentinel files, can be 
 Sentinel files are used to indicate whether a target has been built, or if a process has been completed.
 ```
 
-For example, a makefile could use a sentinel file to track the state of a build process.
-The makefile could contain a rule like the following:
+For example, a Makefile could use a sentinel file to track the state of a build process.
+The Makefile could contain a rule like the following:
 
-```makefile
+```Makefile
 
 build: sentinel
     # build commands go here
 
 sentinel:
-    # build commands go here
     touch sentinel
 ```
 
-In this example, the "sentinel" file is used to track the state of the build. If the "sentinel" file exists, it means that the build has been completed and the build commands will be skipped.
+In this example, the "sentinel" file is used to track the state of the build.
+If the "sentinel" file exists, it means that the build has been completed and the build commands will be skipped.
 If the "sentinel" file does not exist, the build commands will be executed and the "sentinel" file will be created to indicate that the build has been completed.
 
 Sentinel files are useful in "make" because they provide a way to track the state of a build or process, allowing "make" to determine if a target needs to be rebuilt.
@@ -73,11 +75,11 @@ This helps to avoid unnecessary rebuilds, which can save time and resources.
 
 ## Variables
 
-In "make", variables are used to store values that can be referenced in multiple places throughout the makefile. Variables are defined by assigning a value to a name and can be used in rules, dependencies, and commands.
+In "make", variables are used to store values that can be referenced in multiple places throughout the Makefile. Variables are defined by assigning a value to a name and can be used in rules, dependencies, and commands.
 
-For example, the following makefile uses a variable to store the name of the compiler:
+For example, the following Makefile uses a variable to store the name of the compiler:
 
-```makefile
+```Makefile
 
 CC = gcc
 
@@ -86,11 +88,11 @@ main: main.c
 ```
 
 In this example, the "CC" variable is defined with the value "gcc", which is then used in the command to compile the "main.c" file.
-This allows for easy modification of the compiler if needed, as the change only needs to be made in one place, instead of throughout the entire makefile.
+This allows for easy modification of the compiler if needed, as the change only needs to be made in one place, instead of throughout the entire Makefile.
 
 Variables can also be used to store values that are generated dynamically, such as the result of a shell command. For example:
 
-```makefile
+```Makefile
 
 OBJECTS = $(shell ls *.c | sed s/.c/.o/g)
 
@@ -102,13 +104,13 @@ In this example, the "OBJECTS" variable is defined as the result of a shell comm
 The "OBJECTS" variable can then be used in the dependencies and command of the "main" target.
 
 Variables in "make" can also be overridden on the command line, allowing for easy customization of the build process.
-For example, the following command would use a different compiler than the one defined in the makefile:
+For example, the following command would use a different compiler than the one defined in the Makefile further above:
 
 ```shell
 make CC=clang
 ```
 
-This way, "make" variables provide a flexible and convenient way to manage build configurations and reuse values throughout the makefile.
+This way, "make" variables provide a flexible and convenient way to manage build configurations and reuse values throughout the Makefile.
 
 There are many more details about variables in the GNU Make Manual.
 

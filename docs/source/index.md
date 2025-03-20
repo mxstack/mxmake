@@ -29,5 +29,4 @@ extending
 dependencies
 make
 contributing
-usage-old
 ```
