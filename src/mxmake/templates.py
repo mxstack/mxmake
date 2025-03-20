@@ -514,15 +514,17 @@ class PloneSitePy(MxIniBoundTemplate):
         site.setdefault("setup_content", False)
         site.setdefault("default_language", "en")
         site.setdefault("portal_timezone", "UTC")
-        site.setdefault("extension_ids", "")
         site.update(**self.settings)
         if "distribution" in site:
             vars["distribution"] = site.pop("distribution")
 
         # handle extension ids
-        site["extension_ids"] = [
-            eid.strip() for eid in site["extension_ids"].split("\n") if eid.strip()
-        ]
+        if site.get("extension_ids", None) is not None:
+            site["extension_ids"] = [
+                eid.strip() for eid in site["extension_ids"].split("\n") if eid.strip()
+            ]
+        else:
+            site["extension_ids"] = []
         return vars
 
 

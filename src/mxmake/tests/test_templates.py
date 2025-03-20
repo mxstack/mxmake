@@ -820,7 +820,8 @@ class TestTemplates(testing.RenderTestCase):
                 # VAR = value
 
                 [mxmake-plone-site]
-                distribution = default
+                distribution = volto
+                extension_ids = plone.volto:default
 
                 [mxmake-run-coverage]
                 environment = env
@@ -850,7 +851,7 @@ class TestTemplates(testing.RenderTestCase):
             {
                 "site": {
                     "default_language": "en",
-                    "extension_ids": ["plone.volto:default"],
+                    'extension_ids': [],
                     "portal_timezone": "UTC",
                     "setup_content": False,
                     "site_id": "Plone",
@@ -902,9 +903,6 @@ class TestTemplates(testing.RenderTestCase):
                     "setup_content": "False",
                     "default_language": "en",
                     "portal_timezone": "UTC",
-                    "extension_ids": [
-                        "plone.volto:default",
-                    ],
                     "profile_id": _DEFAULT_PROFILE,
                 }
                 config["setup_content"] = asbool(config["setup_content"])
