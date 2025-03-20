@@ -29,6 +29,18 @@ dependencies = [
 ]
 dynamic = ["readme"]
 
+[tool.hatch.metadata.hooks.fancy-pypi-readme]
+content-type = "text/markdown"
+
+[[tool.hatch.metadata.hooks.fancy-pypi-readme.fragments]]
+path = "README.md"
+
+[[tool.hatch.metadata.hooks.fancy-pypi-readme.fragments]]
+path = "CHANGES.md"
+
+[[tool.hatch.metadata.hooks.fancy-pypi-readme.fragments]]
+path = "LICENSE.md"
+
 [project.optional-dependencies]
 docs = [
     "myst-parser",
@@ -61,14 +73,8 @@ applications = "mxmake.topics:applications"
 i18n = "mxmake.topics:i18n"
 
 [build-system]
-requires = ["hatchling"]
+requires = ["hatchling", "hatch-fancy-pypi-readme"]
 build-backend = "hatchling.build"
-
-[tool.distutils.bdist_wheel]
-universal = true
-
-[tool.setuptools.dynamic]
-readme = {file = ["README.md", "CHANGES.md", "LICENSE.md"], content-type = "text/markdown"}
 
 [tool.pytest.ini_options]
 minversion = "6.0"
