@@ -1,6 +1,8 @@
 # Changelog
 
-## 1.1.0 (unreleased)
+## 1.1.0 (2025-03-20)
+
+- Feature: Add help system (make help).
 
 - Feature: Add target `zope-adduser` to create an emergency user.
 
