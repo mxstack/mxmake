@@ -2,6 +2,8 @@
 
 ## 1.1.0 (unreleased)
 
+- Fix install failing if test domain used but no `TEST_REQUIREMENTS` defined.
+
 - Feature: Add target `zope-adduser` to create an emergency user.
 
 ## 1.0 (2025-02-11)
