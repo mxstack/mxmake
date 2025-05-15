@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.2.0 (unreleased)
+
+- add pyrefly type checker support
+
 ## 1.1.0 (2025-03-20)
 
 - Chore: Build-system update and minor cleanups.
