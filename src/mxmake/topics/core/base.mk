@@ -10,8 +10,16 @@
 #:description = Deploy project. Supposed to setup a production version of
 #:  the project.
 #:
+#:[setting.DEPLOY_TARGETS]
+#:description = `deploy` target dependencies.
+#:default =
+#:
 #:[target.run]
 #:description = Run project. Depending on target defined in `RUN_TARGET`
+#:
+#:[setting.RUN_TARGET]
+#:description = target to be executed when calling `make run`
+#:default =
 #:
 #:[target.dirty]
 #:description = Force make to rebuild targets on next make run.
@@ -27,21 +35,21 @@
 #:[target.runtime-clean]
 #:description = Remove runtime artifacts, like byte-code and caches.
 #:
-#:[target.check]
-#:description = Run all QA related targets, e.g. code style or type checks.
-#:  Only gets included if any qa topic related domain is used.
-#:
-#:[setting.DEPLOY_TARGETS]
-#:description = `deploy` target dependencies.
-#:default =
-#:
-#:[setting.RUN_TARGET]
-#:description = target to be executed when calling `make run`
-#:default =
-#:
 #:[setting.CLEAN_FS]
 #:description = Additional files and folders to remove when running clean target
 #:default =
+#:
+#:[target.check]
+#:description = Run all QA checkers related targets, e.g. code style
+#:  Only gets included if any qa topic related domain is used.
+#:
+#:[target.type-check]
+#:description = Run all QA type-checkers related targets, e.g. type checks.
+#:  Only gets included if any qa topic related domain is used.
+#:
+#:[target.format]
+#:description = Run all QA code formatters related targets, e.g. code style
+#:  Only gets included if any qa topic related domain is used.
 #:
 #:[setting.INCLUDE_MAKEFILE]
 #:description = Optional makefile to include before default targets. This can

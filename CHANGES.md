@@ -1,6 +1,14 @@
 # Changelog
 
-## 1.1.0 (unreleased)
+## 1.2.0 (unreleased)
+
+- add pyrefly type checker support
+
+## 1.1.0 (2025-03-20)
+
+- Chore: Build-system update and minor cleanups.
+
+- Feature: Add help system (make help).
 
 - Feature: Add target `zope-adduser` to create an emergency user.
 

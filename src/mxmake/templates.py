@@ -352,7 +352,10 @@ class MxIni(Template):
                 mxmake_templates.append(template)
             if domain.fqn == "applications.plone":
                 template = dict(
-                    name="plone-site", settings=dict(distribution="default")
+                    name="plone-site",
+                    settings=dict(
+                        distribution="volto", extension_ids="plone.volto:default"
+                    ),
                 )
                 mxmake_templates.append(template)
         return dict(mxmake_templates=mxmake_templates, mxmake_env=mxmake_env)
@@ -513,17 +516,17 @@ class PloneSitePy(MxIniBoundTemplate):
         site.setdefault("setup_content", False)
         site.setdefault("default_language", "en")
         site.setdefault("portal_timezone", "UTC")
-        site.setdefault("extension_ids", "")
         site.update(**self.settings)
         if "distribution" in site:
             vars["distribution"] = site.pop("distribution")
 
         # handle extension ids
-        site["extension_ids"] = [
-            eid.strip() for eid in site["extension_ids"].split("\n") if eid.strip()
-        ]
-        if not site["extension_ids"]:
-            site["extension_ids"] = ["plone.volto:default"]
+        if site.get("extension_ids", None) is not None:
+            site["extension_ids"] = [
+                eid.strip() for eid in site["extension_ids"].split("\n") if eid.strip()
+            ]
+        else:
+            site["extension_ids"] = []
         return vars
 
 
@@ -546,21 +549,18 @@ class ProxyMk(MxIniBoundTemplate):
     def template_variables(self):
         targets = []
         for folder, proxy in self.settings.items():
-            for item in [item.strip() for item in proxy.split('\n') if item.strip()]:
-                topic_name, domain_names = item.split(':')
+            for item in [item.strip() for item in proxy.split("\n") if item.strip()]:
+                topic_name, domain_names = item.split(":")
                 topic = get_topic(topic_name.strip())
-                domain_names = domain_names.split(',')
+                domain_names = domain_names.split(",")
                 domains = []
                 for domain_name in domain_names:
-                    if domain_name == '*':
+                    if domain_name == "*":
                         domains = topic.domains
                         break
                     else:
                         domains.append(topic.domain(domain_name.strip()))
                 for domain in domains:
                     for target in domain.targets:
-                        targets.append(dict(
-                            name=target.name,
-                            folder=folder
-                        ))
+                        targets.append(dict(name=target.name, folder=folder))
         return dict(targets=targets)

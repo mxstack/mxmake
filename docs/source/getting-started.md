@@ -65,12 +65,14 @@ They will be lost on next `mxmake init` respective `mxmake update` run.
 
 ## How to use on the Windows operating system
 
-mxmake on Windows needs a bash shell.
-Fortunatly the GIT VCS comes with the git-bash.
+mxmake works excellent on Windows!
+
+On Windows it needs a Bash shell.
+Fortunately the GIT VCS comes with the a fully function Bash, the git-bash.
 Please follow  [GIT's official installation instructions](https://git-scm.com/download/win).
 
 Install [make as described here](https://gist.github.com/evanwill/0207876c3243bbb6863e65ec5dc3f058#make)
 
 Further you need a [Python >=3.9 installation.](https://www.python.org/downloads/windows/).
 
-Dependent on the topics and domains you use, you might need to install additional software.
+Dependent on the topics and domains you use, you may need to install additional software, but this is no different from Linux/OSX.

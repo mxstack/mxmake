@@ -1,14 +1,15 @@
-from mxmake.parser import MakefileParser
-from mxmake.templates import ci_template
-from mxmake.templates import get_template_environment
-from mxmake.templates import template
-from mxmake.topics import collect_missing_dependencies
-from mxmake.topics import Domain
-from mxmake.topics import get_domain
-from mxmake.topics import get_topic
-from mxmake.topics import load_topics
-from mxmake.topics import resolve_domain_dependencies
-from mxmake.topics import set_domain_runtime_depends
+from .helpgen import print_help
+from .parser import MakefileParser
+from .templates import ci_template
+from .templates import get_template_environment
+from .templates import template
+from .topics import collect_missing_dependencies
+from .topics import Domain
+from .topics import get_domain
+from .topics import get_topic
+from .topics import load_topics
+from .topics import resolve_domain_dependencies
+from .topics import set_domain_runtime_depends
 from operator import attrgetter
 from pathlib import Path
 from textwrap import indent
@@ -301,15 +302,30 @@ def update_command(args: argparse.Namespace):
     sys.stdout.write("###############\n\n")
 
     if not Path("Makefile").exists():
-        sys.stdout.write("Makefile not exists, abort\n")
+        sys.stdout.write("Makefile does not exist, abort\n")
         sys.exit(1)
 
     create_config(prompt=False, preseeds=None)
 
 
-update_parser = command_parsers.add_parser("update", help="Update makefile")
+update_parser = command_parsers.add_parser("update", help="Update Makefile")
 update_parser.set_defaults(func=update_command)
 
+
+def help_generator_command(args: argparse.Namespace):
+    sys.stdout.write("Help for Makefile\n")
+    makefile = Path("Makefile")
+    if not makefile.exists():
+        sys.stdout.write("Makefile does not exist, abort\n")
+        sys.exit(1)
+
+    print_help(makefile)
+
+
+help_generator_parser = command_parsers.add_parser(
+    "help-generator", help="Help for Makefile"
+)
+help_generator_parser.set_defaults(func=help_generator_command)
 
 ##############################################################################
 # main

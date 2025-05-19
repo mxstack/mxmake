@@ -4,6 +4,7 @@
 # DOMAINS:
 #: applications.zest-releaser
 #: core.base
+#: core.help
 #: core.mxenv
 #: core.mxfiles
 #: core.packages
@@ -165,6 +166,12 @@ MYPY_SRC?=src
 # Mypy Python requirements to be installed (via pip).
 # Default: types-setuptools
 MYPY_REQUIREMENTS?=types-setuptools types-docutils types-PyYAML
+
+## core.help
+
+# Request to show all targets, descriptions and arguments for a given domain.
+# No default value.
+HELP_DOMAIN?=
 
 ## applications.zest-releaser
 
@@ -593,6 +600,14 @@ INSTALL_TARGETS+=$(MYPY_TARGET)
 TYPECHECK_TARGETS+=mypy
 CLEAN_TARGETS+=mypy-clean
 DIRTY_TARGETS+=mypy-dirty
+
+##############################################################################
+# help
+##############################################################################
+
+.PHONY: help
+help: $(MXENV_TARGET)
+	@mxmake help-generator
 
 ##############################################################################
 # zest-releaser

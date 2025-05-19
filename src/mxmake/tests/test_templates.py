@@ -665,7 +665,7 @@ class TestTemplates(testing.RenderTestCase):
                 # mxenv
                 ##############################################################################
 
-                export OS:=$(OS)
+                OS?=
 
                 # Determine the executable path
                 ifeq ("$(VENV_ENABLED)", "true")
@@ -820,7 +820,8 @@ class TestTemplates(testing.RenderTestCase):
                 # VAR = value
 
                 [mxmake-plone-site]
-                distribution = default
+                distribution = volto
+                extension_ids = plone.volto:default
 
                 [mxmake-run-coverage]
                 environment = env
@@ -850,7 +851,7 @@ class TestTemplates(testing.RenderTestCase):
             {
                 "site": {
                     "default_language": "en",
-                    "extension_ids": ["plone.volto:default"],
+                    "extension_ids": [],
                     "portal_timezone": "UTC",
                     "setup_content": False,
                     "site_id": "Plone",
@@ -902,9 +903,6 @@ class TestTemplates(testing.RenderTestCase):
                     "setup_content": "False",
                     "default_language": "en",
                     "portal_timezone": "UTC",
-                    "extension_ids": [
-                        "plone.volto:default",
-                    ],
                     "profile_id": _DEFAULT_PROFILE,
                 }
                 config["setup_content"] = asbool(config["setup_content"])
@@ -965,28 +963,33 @@ class TestTemplates(testing.RenderTestCase):
         factory = templates.template.lookup("proxy")
         template = factory(configuration, templates.get_template_environment())
 
-        self.assertEqual(template.description, "Contains proxy targets for Makefiles of source folders")
+        self.assertEqual(
+            template.description,
+            "Contains proxy targets for Makefiles of source folders",
+        )
         self.assertEqual(template.target_folder, utils.mxmake_files())
         self.assertEqual(template.target_name, "proxy.mk")
         self.assertEqual(template.template_name, "proxy.mk")
         self.assertEqual(
             template.template_variables,
-            {'targets': [
-                {'name': 'plone-site-create', 'folder': 'folder'},
-                {'name': 'plone-site-purge', 'folder': 'folder'},
-                {'name': 'plone-site-recreate', 'folder': 'folder'},
-                {'name': 'gettext-create', 'folder': 'folder'},
-                {'name': 'gettext-update', 'folder': 'folder'},
-                {'name': 'gettext-compile', 'folder': 'folder'},
-                {'name': 'lingua-extract', 'folder': 'folder'},
-                {'name': 'lingua', 'folder': 'folder'}
-            ]}
+            {
+                "targets": [
+                    {"name": "plone-site-create", "folder": "folder"},
+                    {"name": "plone-site-purge", "folder": "folder"},
+                    {"name": "plone-site-recreate", "folder": "folder"},
+                    {"name": "gettext-create", "folder": "folder"},
+                    {"name": "gettext-update", "folder": "folder"},
+                    {"name": "gettext-compile", "folder": "folder"},
+                    {"name": "lingua-extract", "folder": "folder"},
+                    {"name": "lingua", "folder": "folder"},
+                ]
+            },
         )
 
         template.write()
         with (tempdir / "proxy.mk").open() as f:
             self.checkOutput(
-                '''
+                """
                 ##############################################################################
                 # proxy targets
                 ##############################################################################
@@ -1023,6 +1026,6 @@ class TestTemplates(testing.RenderTestCase):
                 folder-lingua:
                 	$(MAKE) -C "./folder/" lingua
 
-                ''',
+                """,
                 f.read(),
             )
