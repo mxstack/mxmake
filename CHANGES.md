@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.2.1 (unreleased)
+
+- nothing yet
+
 ## 1.2.0 (2025-06-04)
 
 - add pyrefly type checker support
