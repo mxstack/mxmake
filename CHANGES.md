@@ -2,7 +2,7 @@
 
 ## 1.2.1 (unreleased)
 
-- nothing yet
+- Fix test-script to not end with backslash if there is no `testpaths` (which is valid).
 
 ## 1.2.0 (2025-06-04)
 

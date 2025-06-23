@@ -26,7 +26,7 @@ coverage run \
 {% if omitpaths %}
     --omit=$omits \
 {% endif %}
-    -m pytest \
+    -m pytest {% if testpaths %}\{% endif %}
 {% for path in testpaths %}
     {{ path }}{% if not loop.last %} \{% endif %}
 
