@@ -3,6 +3,9 @@
 ## 1.2.1 (2025-06-23)
 
 - Fix test-script to not end with backslash if there is no `testpaths` (which is valid).
+  Improve tests to cover more edge cases, i.e. above and multi-line.
+- Fix Python check for global UV and use PRIMARY_PYTHON for UV as version definition.
+- Improve test to read large amount of output from file (Makefile template check).
 
 ## 1.2.0 (2025-06-04)
 

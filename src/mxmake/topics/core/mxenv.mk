@@ -24,6 +24,9 @@
 #:[setting.PRIMARY_PYTHON]
 #:description = Primary Python interpreter to use. It is used to create the
 #:  virtual environment if `VENV_ENABLED` and `VENV_CREATE` are set to `true`.
+#:  If global `uv` is used, this value is passed as `--python VALUE` to the venv creation.
+#:  uv then downloads the Python interpreter if it is not available.
+#:  for more on this feature read the [uv python documentation](https://docs.astral.sh/uv/concepts/python-versions/)
 #:default = python3
 #:
 #:[setting.PYTHON_MIN_VERSION]
