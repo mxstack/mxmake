@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.2.1 (unreleased)
+## 1.2.1 (2025-06-23)
 
 - Fix test-script to not end with backslash if there is no `testpaths` (which is valid).
 
