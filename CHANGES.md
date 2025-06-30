@@ -1,16 +1,23 @@
 # Changelog
 
+## 1.2.2 (2025-06-30)
+
+- Fix `pyrefly` domain.
+
+- Fix pytest related test and coverage script generation bugs introduced in 1.2.1.
+
 ## 1.2.1 (2025-06-23)
 
 - Fix test-script to not end with backslash if there is no `testpaths` (which is valid).
   Improve tests to cover more edge cases, i.e. above and multi-line.
+
 - Fix Python check for global UV and use PRIMARY_PYTHON for UV as version definition.
+
 - Improve test to read large amount of output from file (Makefile template check).
 
 ## 1.2.0 (2025-06-04)
 
-- add pyrefly type checker support
-
+- add `pyrefly` type checker support.
 
 ## 1.1.0 (2025-03-20)
 
@@ -27,12 +34,9 @@
 - Fix `zope.mk`, wrong config file was passed to zconsole.
   Now zope-debug and zope-runscript are functional.
 
-
 ## 1.0a8 (2024-10-24)
 
-
 - Fix preseed value reading.
-
 
 ## 1.0a7 (2024-10-24)
 

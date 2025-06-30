@@ -8,7 +8,7 @@
 #:
 #:[setting.PYREFLY_SRC]
 #:description = Source folder for code analysis. Left empty to use value from pyproject.toml
-#:default = src/**
+#:default = src
 #:
 #:[setting.PYREFLY_REQUIREMENTS]
 #:description = Python requirements to be installed (via pip).
@@ -33,7 +33,7 @@ $(PYREFLY_TARGET): $(MXENV_TARGET)
 .PHONY: pyrefly
 pyrefly: $(PACKAGES_TARGET) $(PYREFLY_TARGET)
 	@echo "Run pyrefly"
-	@pyrefly $(PYREFLY_SRC)
+	@pyrefly check $(PYREFLY_SRC)
 
 .PHONY: pyrefly-dirty
 pyrefly-dirty:
@@ -44,6 +44,6 @@ pyrefly-clean: pyrefly-dirty
 	@test -e $(MXENV_PYTHON) && $(MXENV_PYTHON) -m pip uninstall -y pyrefly || :
 
 INSTALL_TARGETS+=$(PYREFLY_TARGET)
-CHECK_TARGETS+=pyrefly-check
+CHECK_TARGETS+=pyrefly
 CLEAN_TARGETS+=pyrefly-clean
 DIRTY_TARGETS+=pyrefly-dirty
