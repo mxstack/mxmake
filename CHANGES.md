@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.2.3 (unreleased)
+
+- No changes yet.
+
 ## 1.2.2 (2025-06-30)
 
 - Fix `pyrefly` domain.
