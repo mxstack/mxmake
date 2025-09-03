@@ -155,6 +155,7 @@ class TestTemplates(testing.RenderTestCase):
                 "description": "Run tests",
                 "env": {"ENV_PARAM": "env_value"},
                 "testpaths": ["sources/package/src", "src", "tests"],
+                "testargs": "",
             },
         )
         self.assertEqual(template.package_paths("inexistent"), [])
@@ -328,6 +329,7 @@ class TestTemplates(testing.RenderTestCase):
                 "description": "Run coverage",
                 "env": {"ENV_PARAM": "env_value"},
                 "testpaths": ["sources/package/src", "src"],
+                "testargs": "",
                 "sourcepaths": ["sources/package/src/package", "src/local"],
                 "omitpaths": [
                     "sources/package/src/package/file1.py",
