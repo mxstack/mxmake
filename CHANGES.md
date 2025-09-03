@@ -1,8 +1,8 @@
 # Changelog
 
-## 1.2.3 (unreleased)
+## 1.3.0 (unreleased)
 
-- No changes yet.
+- Introduce testargs for pytest to have more control over the test and pass it args.
 
 ## 1.2.2 (2025-06-30)
 
@@ -14,10 +14,8 @@
 
 - Fix test-script to not end with backslash if there is no `testpaths` (which is valid).
   Improve tests to cover more edge cases, i.e. above and multi-line.
-
-- Fix Python check for global UV and use PRIMARY_PYTHON for UV as version definition.
-
 - Improve test to read large amount of output from file (Makefile template check).
+- Fix Python check for global UV and use PRIMARY_PYTHON for UV as version definition.
 
 ## 1.2.0 (2025-06-04)
 

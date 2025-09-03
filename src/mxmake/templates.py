@@ -160,6 +160,7 @@ class TestScript(EnvironmentTemplate, ShellScriptTemplate):
             description=self.description,
             env=self.env,
             testpaths=self.package_paths(ns_name("test-path")),
+            testargs=self.config.settings.get("mxmake-test-runner-args", ""),
         )
 
     def package_paths(self, attr: str) -> typing.List[str]:
