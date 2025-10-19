@@ -51,7 +51,7 @@ EXTRA_PATH?=
 # uv then downloads the Python interpreter if it is not available.
 # for more on this feature read the [uv python documentation](https://docs.astral.sh/uv/concepts/python-versions/)
 # Default: python3
-PRIMARY_PYTHON?=3.13
+PRIMARY_PYTHON?=3.14
 
 # Minimum required Python version.
 # Default: 3.9
