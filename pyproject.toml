@@ -44,8 +44,8 @@ path = "LICENSE.md"
 [project.optional-dependencies]
 docs = [
     "myst-parser",
-    "sphinx-conestack-theme==1.0.1",
-    "Sphinx",
+    "shibuya",
+    "Sphinx>=7.2",
     "sphinxcontrib-mermaid",
 ]
 test = ["zope.testrunner"]
