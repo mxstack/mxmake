@@ -27,11 +27,13 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v5
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v6
+    - name: Set up uv
+      uses: astral-sh/setup-uv@v5
       with:
-        python-version: ${{ matrix.python-version }}
-        cache: "pip"
+        enable-cache: true
+        cache-dependency-glob: "pyproject.toml"
+    - name: Set up Python ${{ matrix.python-version }}
+      run: uv python install ${{ matrix.python-version }}
     - name: Install Project (Windows)
       if: runner.os == 'Windows'
       run: make MAKESHELL='C:/Program Files/Git/usr/bin/bash' install
