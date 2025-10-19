@@ -32,7 +32,7 @@ jobs:
         make clean
     - name: VENV to be created with uv to be installed
       run: |
-        make VENV_ENABLED=true VENV_CREATE=true PYTHON_PACKAGE_INSTALLER=uv PRIMARY_PYTHON=${{ matrix.python-version }} MXENV_UV_GLOBAL=false test
+        make VENV_ENABLED=true VENV_CREATE=true PYTHON_PACKAGE_INSTALLER=uv PRIMARY_PYTHON=python3 MXENV_UV_GLOBAL=false test
         make clean
     - name: VENV to be created with uv globally pre-installed
       run: |
