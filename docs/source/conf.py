@@ -62,6 +62,7 @@ html_theme = "shibuya"
 
 html_theme_options = {
     "github_url": "https://github.com/mxstack/mxmake",
+    "accent_color": "blue",
 }
 
 # Add any paths that contain custom static files (such as style sheets) here,
