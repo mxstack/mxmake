@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.3.1 (unreleased)
+
+- Fix theme for newer Sphinx.
+
 ## 1.3.0 (2025-09-03)
 
 - Introduce testargs for pytest to have more control over the test and pass it args.
