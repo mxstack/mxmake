@@ -4,6 +4,7 @@
 
 - Fix theme for newer Sphinx 7.x.
 - Add support for Python 3.14.
+- Fix interactive uv venv, use --allow-existing instead.
 
 ## 1.3.0 (2025-09-03)
 

@@ -275,7 +275,7 @@ ifeq ("$(VENV_ENABLED)", "true")
 ifeq ("$(VENV_CREATE)", "true")
 ifeq ("$(PYTHON_PACKAGE_INSTALLER)$(MXENV_UV_GLOBAL)","uvtrue")
 	@echo "Setup Python Virtual Environment using package 'uv' at '$(VENV_FOLDER)'"
-	@uv venv -p $(PRIMARY_PYTHON) --seed $(VENV_FOLDER)
+	@uv venv -p $(PRIMARY_PYTHON) --seed $(VENV_FOLDER) --allow-existing
 else
 	@echo "Setup Python Virtual Environment using module 'venv' at '$(VENV_FOLDER)'"
 	@$(PRIMARY_PYTHON) -m venv $(VENV_FOLDER)
