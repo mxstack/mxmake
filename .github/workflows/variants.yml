@@ -28,7 +28,7 @@ jobs:
         cache: "pip"
     - name: VENV to be created with pip
       run: |
-        make VENV_ENABLED=true VENV_CREATE=true PRIMARY_PYTHON=python${{ matrix.python-version }} PYTHON_PACKAGE_INSTALLER=pip test
+        make VENV_ENABLED=true VENV_CREATE=true PRIMARY_PYTHON=python3 PYTHON_PACKAGE_INSTALLER=pip test
         make clean
     - name: VENV to be created with uv to be installed
       run: |
@@ -56,7 +56,7 @@ jobs:
       run: |
         python -m venv existingvenv
         pip install uv
-        make VENV_ENABLED=true VENV_CREATE=false VENV_FOLDER=existingvenv PYTHON_PACKAGE_INSTALLER=uv PRIMARY_PYTHON=${{ matrix.python-version }} MXENV_UV_GLOBAL=true test
+        make VENV_ENABLED=true VENV_CREATE=false VENV_FOLDER=existingvenv PYTHON_PACKAGE_INSTALLER=uv PRIMARY_PYTHON=python3 MXENV_UV_GLOBAL=true test
         make clean
         pip uninstall -y uv
         rm -r existingvenv
