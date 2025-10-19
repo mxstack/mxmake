@@ -77,3 +77,16 @@ html_css_files = ["custom.css"]
 
 # Logo configuration
 html_logo = "_static/mxmake-logo.svg"
+
+# -- Options for linkcheck builder -------------------------------------------
+
+# Ignore localhost URLs (they're examples, not real links to check)
+# Also ignore links that linkcheck has issues with but are actually valid
+linkcheck_ignore = [
+    r"http://localhost:\d+",
+    r"https://gist\.github\.com/.*#.*",  # GitHub gist anchors cause false positives
+    r"https://www\.gnu\.org/.*",  # gnu.org frequently times out but links are valid
+]
+
+# Increase timeout for slow sites
+linkcheck_timeout = 60
