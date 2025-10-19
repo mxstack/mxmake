@@ -2,7 +2,8 @@
 
 ## 1.3.1 (unreleased)
 
-- Fix theme for newer Sphinx.
+- Fix theme for newer Sphinx 7.x.
+- Add support for Python 3.14.
 
 ## 1.3.0 (2025-09-03)
 
