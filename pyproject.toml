@@ -43,10 +43,12 @@ path = "LICENSE.md"
 
 [project.optional-dependencies]
 docs = [
+    "mxmake.sphinxext",
     "myst-parser",
     "shibuya",
     "Sphinx>=7.2",
     "sphinxcontrib-mermaid",
+    "sphinx.ext.todo",
 ]
 test = ["zope.testrunner"]
 

@@ -51,7 +51,7 @@ EXTRA_PATH?=
 # uv then downloads the Python interpreter if it is not available.
 # for more on this feature read the [uv python documentation](https://docs.astral.sh/uv/concepts/python-versions/)
 # Default: python3
-PRIMARY_PYTHON?=python3
+PRIMARY_PYTHON?=3.13
 
 # Minimum required Python version.
 # Default: 3.9
@@ -69,7 +69,7 @@ PYTHON_PACKAGE_INSTALLER?=uv
 # Flag whether to use a global installed 'uv' or install
 # it in the virtual environment.
 # Default: false
-MXENV_UV_GLOBAL?=false
+MXENV_UV_GLOBAL?=true
 
 # Flag whether to use virtual environment. If `false`, the
 # interpreter according to `PRIMARY_PYTHON` found in `PATH` is used.
@@ -120,9 +120,13 @@ DOCS_SOURCE_FOLDER?=docs/source
 # Default: docs/html
 DOCS_TARGET_FOLDER?=docs/html
 
+# Documentation linkcheck output folder.
+# Default: docs/linkcheck
+DOCS_LINKCHECK_FOLDER?=docs/linkcheck
+
 # Documentation Python requirements to be installed (via pip).
 # No default value.
-DOCS_REQUIREMENTS?=
+DOCS_REQUIREMENTS?=-e .[docs]
 
 ## core.mxfiles
 
@@ -406,6 +410,11 @@ docs: $(DOCS_TARGET) $(DOCS_TARGETS)
 docs-live: $(DOCS_TARGET) $(DOCS_TARGETS)
 	@echo "Rebuild Sphinx documentation on changes, with live-reload in the browser"
 	@$(SPHINX_AUTOBUILD_BIN) $(DOCS_SOURCE_FOLDER) $(DOCS_TARGET_FOLDER)
+
+.PHONY: docs-linkcheck
+docs-linkcheck: $(DOCS_TARGET) $(DOCS_TARGETS)
+	@echo "Run Sphinx linkcheck"
+	@$(SPHINX_BIN) -b linkcheck $(DOCS_SOURCE_FOLDER) $(DOCS_LINKCHECK_FOLDER)
 
 .PHONY: docs-dirty
 docs-dirty:
