@@ -11,6 +11,9 @@
 #:description = Rebuild Sphinx documentation on changes, with live-reload in
 #:  the browser using `sphinx-autobuild`.
 #:
+#:[target.docs-linkcheck]
+#:description = Run Sphinx linkcheck to verify external links in documentation.
+#:
 #:[target.docs-clean]
 #:description = Removes generated docs.
 #:
@@ -21,6 +24,10 @@
 #:[setting.DOCS_TARGET_FOLDER]
 #:description = Documentation generation target folder.
 #:default = docs/html
+#:
+#:[setting.DOCS_LINKCHECK_FOLDER]
+#:description = Documentation linkcheck output folder.
+#:default = docs/linkcheck
 #:
 #:[setting.DOCS_REQUIREMENTS]
 #:description = Documentation Python requirements to be installed (via pip).
@@ -51,6 +58,11 @@ docs: $(DOCS_TARGET) $(DOCS_TARGETS)
 docs-live: $(DOCS_TARGET) $(DOCS_TARGETS)
 	@echo "Rebuild Sphinx documentation on changes, with live-reload in the browser"
 	@$(SPHINX_AUTOBUILD_BIN) $(DOCS_SOURCE_FOLDER) $(DOCS_TARGET_FOLDER)
+
+.PHONY: docs-linkcheck
+docs-linkcheck: $(DOCS_TARGET) $(DOCS_TARGETS)
+	@echo "Run Sphinx linkcheck"
+	@$(SPHINX_BIN) -b linkcheck $(DOCS_SOURCE_FOLDER) $(DOCS_LINKCHECK_FOLDER)
 
 .PHONY: docs-dirty
 docs-dirty:
