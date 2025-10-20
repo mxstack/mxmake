@@ -18,7 +18,7 @@ The detailed `mxmake` documentation is available [mxstack.github.io/mxmake](http
 
 # Copyright
 
-- Copyright (c) 2022-2024 mxstack Contributors
+- Copyright (c) 2022-2025 mxstack Contributors
 - BSD 2-clause license (see below)
 
 Contributors
