@@ -2,9 +2,10 @@
 
 ## 1.3.1 (unreleased)
 
-- Fix theme for newer Sphinx 7.x.
-- Add support for Python 3.14.
-- Fix interactive uv venv, use --allow-existing instead.
+- Fix: theme for newer Sphinx 7.x.
+- Fix: interactive uv venv, use --allow-existing instead.
+- Feature: Add support for Python 3.14.
+- Feature: Add `docs-linkcheck` to check for broken links in the sphinx documentation.
 
 ## 1.3.0 (2025-09-03)
 

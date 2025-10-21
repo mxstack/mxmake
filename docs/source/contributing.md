@@ -2,7 +2,7 @@
 
 ## Source Code
 
-The sources are in a GIT DVCS with its main branches at [Github](http://github.com/mxstack/mxmake).
+The sources are in a GIT DVCS with its main branches at [Github](https://github.com/mxstack/mxmake).
 
 ## Copyright & Licence
 
