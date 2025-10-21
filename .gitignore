@@ -13,3 +13,4 @@ __pycache__
 /dist/
 /docs/html/
 /requirements-mxdev.txt
+src/mxmake/_version.py

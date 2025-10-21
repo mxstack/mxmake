@@ -1,7 +1,8 @@
 # Changelog
 
-## 1.3.1 (unreleased)
+## 1.4.0 (unreleased)
 
+- Chore: Migrate to hatch-vcs for automated versioning from git tags.
 - Fix: theme for newer Sphinx 7.x.
 - Fix: interactive uv venv, use --allow-existing instead.
 - Feature: Add support for Python 3.14.
