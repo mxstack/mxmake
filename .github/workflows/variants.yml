@@ -30,14 +30,14 @@ jobs:
       run: |
         make VENV_ENABLED=true VENV_CREATE=true PRIMARY_PYTHON=python3 PYTHON_PACKAGE_INSTALLER=pip test
         make clean
-    - name: VENV to be created with uv to be installed
+    - name: VENV to be created with uv (local install, no global UV)
       run: |
-        make VENV_ENABLED=true VENV_CREATE=true PYTHON_PACKAGE_INSTALLER=uv PRIMARY_PYTHON=python3 MXENV_UV_GLOBAL=false test
+        make VENV_ENABLED=true VENV_CREATE=true PYTHON_PACKAGE_INSTALLER=uv PRIMARY_PYTHON=python3 test
         make clean
-    - name: VENV to be created with uv globally pre-installed
+    - name: VENV to be created with uv (global UV auto-detected)
       run: |
         pip install uv
-        make VENV_ENABLED=true VENV_CREATE=true PYTHON_PACKAGE_INSTALLER=uv PRIMARY_PYTHON=${{ matrix.python-version }} MXENV_UV_GLOBAL=true test
+        make VENV_ENABLED=true VENV_CREATE=true PYTHON_PACKAGE_INSTALLER=uv PRIMARY_PYTHON=${{ matrix.python-version }} test
         make clean
         pip uninstall -y uv
     - name: VENV pre-installed with pip
@@ -46,20 +46,26 @@ jobs:
         make VENV_ENABLED=true VENV_CREATE=false VENV_FOLDER=existingvenv PRIMARY_PYTHON=python3 PYTHON_PACKAGE_INSTALLER=pip test
         make clean
         rm -r existingvenv
-    - name: VENV pre-installed with uv to be installed
+    - name: VENV pre-installed with uv (local install, no global UV)
       run: |
         python -m venv existingvenv
-        make VENV_ENABLED=true VENV_CREATE=false VENV_FOLDER=existingvenv PRIMARY_PYTHON=python3 PYTHON_PACKAGE_INSTALLER=uv MXENV_UV_GLOBAL=false test
+        make VENV_ENABLED=true VENV_CREATE=false VENV_FOLDER=existingvenv PRIMARY_PYTHON=python3 PYTHON_PACKAGE_INSTALLER=uv test
         make clean
         rm -r existingvenv
-    - name: VENV pre-installed with uv globally pre-installed
+    - name: VENV pre-installed with uv (global UV auto-detected)
       run: |
         python -m venv existingvenv
         pip install uv
-        make VENV_ENABLED=true VENV_CREATE=false VENV_FOLDER=existingvenv PYTHON_PACKAGE_INSTALLER=uv PRIMARY_PYTHON=python3 MXENV_UV_GLOBAL=true test
+        make VENV_ENABLED=true VENV_CREATE=false VENV_FOLDER=existingvenv PYTHON_PACKAGE_INSTALLER=uv PRIMARY_PYTHON=python3 test
         make clean
         pip uninstall -y uv
         rm -r existingvenv
+    - name: VENV with global UV using different UV_PYTHON
+      run: |
+        pip install uv
+        make VENV_ENABLED=true VENV_CREATE=true PYTHON_PACKAGE_INSTALLER=uv PRIMARY_PYTHON=python3 UV_PYTHON=${{ matrix.python-version }} test
+        make clean
+        pip uninstall -y uv
     - name: Global Python with pip
       run: |
         make VENV_ENABLED=false VENV_CREATE=false PRIMARY_PYTHON=python3 PYTHON_PACKAGE_INSTALLER=pip test
