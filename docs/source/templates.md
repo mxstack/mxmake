@@ -39,12 +39,73 @@ Custom templates can be defined through the use of either pure Jinja2 templates 
 
 ### Templates defined via mx.ini with Jinja2
 
-```{todo}
-Contribute to this documentation!
+Some templates are configured and triggered via the `mx.ini` file. The most common example is test and coverage scripts.
+
+**Configuration in mx.ini**:
+
+```ini
+[settings]
+mxmake-templates =
+    run-tests
+    run-coverage
+
+# Optional: Configure template-specific settings
+mxmake-test-path = src
+mxmake-source-path = src/mypackage
 ```
+
+**Available built-in templates**:
+- `run-tests` - Generate test runner script
+- `run-coverage` - Generate coverage script
+- `pip-conf` - Generate pip configuration
+- `plone-site` - Generate Plone site creation script
+
+These templates are generated automatically when you run `make install` or `make mxfiles`.
 
 ### Templates based on Python code
 
-```{todo}
-Contribute to this documentation!
+For advanced use cases, you can create templates using Python code. This provides full control over template generation and allows integration with the mxmake/mxdev environment.
+
+**Basic template class structure**:
+
+```python
+from mxmake.templates import template, Template
+
+@template("my-template")
+class MyTemplate(Template):
+    description: str = "My custom template"
+    target_name: str = "output.txt"
+    template_name: str = "my-template.j2"
+    target_folder = Path("custom")
+
+    @property
+    def template_variables(self) -> dict:
+        return {
+            "project_name": "myproject",
+            "custom_value": "example"
+        }
 ```
+
+**Key components**:
+- `@template("name")` - Register the template with a unique name
+- `target_name` - Filename of the generated file
+- `template_name` - Name of the Jinja2 template file in `src/mxmake/templates/`
+- `template_variables` - Dictionary of variables available in the template
+- `target_folder` - Directory where the file will be generated
+
+**Using MxIniBoundTemplate** for mx.ini integration:
+
+```python
+from mxmake.templates import template, MxIniBoundTemplate
+
+@template("custom-conf")
+class CustomConf(MxIniBoundTemplate):
+    # Access mx.ini settings via self.settings
+    @property
+    def template_variables(self) -> dict:
+        return {
+            "packages": self.settings.get("main-package", "")
+        }
+```
+
+For complete examples, see the [templates.py source code](https://github.com/mxstack/mxmake/blob/main/src/mxmake/templates.py).
