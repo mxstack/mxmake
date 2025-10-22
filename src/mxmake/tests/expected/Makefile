@@ -59,8 +59,8 @@ PYTHON_PACKAGE_INSTALLER?=pip
 # environments with global UV. Passed to `uv venv -p VALUE`. Supports version
 # specs like `3.11`, `3.14`, `cpython@3.14`. Defaults to PRIMARY_PYTHON value
 # for backward compatibility.
-# No default value.
-UV_PYTHON?=
+# Default: $(PRIMARY_PYTHON)
+UV_PYTHON?=$(PRIMARY_PYTHON)
 
 # Flag whether to use virtual environment. If `false`, the
 # interpreter according to `PRIMARY_PYTHON` found in `PATH` is used.
@@ -157,9 +157,6 @@ endif
 # Determine installation strategy
 USE_GLOBAL_UV:=$(shell [[ "$(PYTHON_PACKAGE_INSTALLER)" == "uv" && "$(UV_AVAILABLE)" == "true" ]] && echo "true" || echo "false")
 USE_LOCAL_UV:=$(shell [[ "$(PYTHON_PACKAGE_INSTALLER)" == "uv" && "$(UV_AVAILABLE)" == "false" ]] && echo "true" || echo "false")
-
-# UV Python version (defaults to PRIMARY_PYTHON for backward compatibility)
-UV_PYTHON?=$(PRIMARY_PYTHON)
 
 # Check if global UV is outdated (non-blocking warning)
 ifeq ("$(USE_GLOBAL_UV)","true")
