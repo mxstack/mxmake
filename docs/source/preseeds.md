@@ -15,9 +15,10 @@ topics:
   core:
     # include domain mxenv
     mxenv:
-      # set PYTHON_MIN_VERSION and PYTHON_PACKAGE_INSTALLER
-      PYTHON_MIN_VERSION: 3.10
+      # set PYTHON_MIN_VERSION, PYTHON_PACKAGE_INSTALLER and UV_PYTHON
+      PYTHON_MIN_VERSION: 3.14
       PYTHON_PACKAGE_INSTALLER: uv
+      UV_PYTHON: "3.14"
   qa:
     # include domains from qa topic but do not override default settings
     ruff:
@@ -34,6 +35,26 @@ Now initialize the project with the preseeds:
 
 ```shell
 $ mxmake init -p preseeds.yaml
+```
+
+## UV Package Installer
+
+When `PYTHON_PACKAGE_INSTALLER` is set to `uv`, mxmake automatically detects whether UV is installed globally on your system.
+
+```{important}
+When using UV, you should explicitly set `UV_PYTHON` to specify which Python version UV should use. While `UV_PYTHON` currently defaults to `PRIMARY_PYTHON` for backward compatibility, relying on this default is not recommended and may change in future versions.
+```
+
+The `UV_PYTHON` setting accepts version specs like `3.13`, `3.14`, or `cpython@3.14`:
+
+```yaml
+topics:
+  core:
+    mxenv:
+      PYTHON_MIN_VERSION: "3.14"
+      PRIMARY_PYTHON: python3
+      PYTHON_PACKAGE_INSTALLER: uv
+      UV_PYTHON: "3.14"  # Explicitly specify Python version for UV
 ```
 
 ## Examples
@@ -56,8 +77,9 @@ Enter the `hello-world-` directory and create a file `preseed.yaml`:
 topics:
   core:
     mxenv:
-      PYTHON_MIN_VERSION: "3.10"
+      PYTHON_MIN_VERSION: "3.14"
       PYTHON_PACKAGE_INSTALLER: uv
+      UV_PYTHON: "3.14"
     sources:
   qa:
     ruff
@@ -102,8 +124,9 @@ topics:
     base:
       RUN_TARGET: zope-start
     mxenv:
-      PYTHON_MIN_VERSION: "3.10"
+      PYTHON_MIN_VERSION: "3.13"
       PYTHON_PACKAGE_INSTALLER: uv
+      UV_PYTHON: "3.13"
   applications:
     zope:
     plone:

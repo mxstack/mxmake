@@ -63,6 +63,23 @@ For details read the chapter [on topics and it's domains](topics-and-domains).
 Do not add custom settings to settings section.
 They will be lost on next `mxmake init` respective `mxmake update` run.
 
+### Python Package Installer
+
+By default, mxmake uses `pip` as the package installer. You can switch to [UV](https://docs.astral.sh/uv/) by setting `PYTHON_PACKAGE_INSTALLER=uv` in the settings section.
+
+When using UV, mxmake automatically detects if UV is installed globally or installs it locally in the virtual environment.
+
+```{note}
+When using UV, you should explicitly set `UV_PYTHON` to specify which Python version UV should use. While `UV_PYTHON` currently defaults to `PRIMARY_PYTHON` for backward compatibility, this default may change in future versions. Set `UV_PYTHON` explicitly to avoid surprises.
+```
+
+Example:
+```makefile
+PRIMARY_PYTHON?=python3
+PYTHON_PACKAGE_INSTALLER?=uv
+UV_PYTHON?=3.14
+```
+
 ## How to use on the Windows operating system
 
 mxmake works excellent on Windows!
