@@ -58,7 +58,6 @@ topics:
     mxenv:
       PYTHON_MIN_VERSION: "3.10"
       PYTHON_PACKAGE_INSTALLER: uv
-      MXENV_UV_GLOBAL: true
     sources:
   qa:
     ruff
@@ -105,7 +104,6 @@ topics:
     mxenv:
       PYTHON_MIN_VERSION: "3.10"
       PYTHON_PACKAGE_INSTALLER: uv
-      MXENV_UV_GLOBAL: true
   applications:
     zope:
     plone:
