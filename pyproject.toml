@@ -53,7 +53,7 @@ docs = [
     "Sphinx>=7.2",
     "sphinxcontrib-mermaid",
 ]
-test = ["zope.testrunner"]
+test = ["pytest", "coverage[toml]"]
 
 [project.urls]
 Homepage = "https://github.com/mxstack/mxmake"

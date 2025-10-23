@@ -10,6 +10,7 @@
   To update your makefile use `mxmake update` in the folder with your `Makefile`.
 - Fix: theme for newer Sphinx 7.x.
 - Fix: interactive uv venv, use --allow-existing instead.
+- Fix: The project was using pytest as the test runner all along (as configured in the Makefile and generated test scripts), but zope.testrunner was incorrectly listed as the dependency.
 - Feature: Add support for Python 3.14.
 - Breaking: Removed `MXENV_UV_GLOBAL` setting in favor of automatic UV detection.
   When `PYTHON_PACKAGE_INSTALLER=uv`, mxmake now automatically detects and uses
