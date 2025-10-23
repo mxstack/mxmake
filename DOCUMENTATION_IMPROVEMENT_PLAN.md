@@ -45,7 +45,7 @@
 - **Action**: Remove `usage-old.rst` from TOC if present
 - **Status**: DONE - No references found, already clean
 
-### Priority 2: High-Value Additions ✅ COMPLETED (except Task 2.2)
+### Priority 2: High-Value Additions ✅ COMPLETED
 
 #### Task 2.1: Create migration guide ✅
 - **New file**: `docs/source/migration.md`
@@ -59,17 +59,17 @@
   - v1.0a1: Terminology changes, _SENTINEL → _TARGET
 - **Added to index.md TOC**: Yes, after preseeds
 
-#### Task 2.2: Add FAQ/Troubleshooting ⏸️ DEFERRED
+#### Task 2.2: Add FAQ/Troubleshooting ✅
 - **File**: `docs/source/getting-started.md` (append as new section)
-- **Status**: DEFERRED to Phase 2 (after UV refactoring PR merges)
-- **Reason**: Conflicts with UV documentation changes on refactor branch
-- **Content planned**:
-  - 5-7 common issues with solutions
-  - "UV not found" → install instructions
-  - "Python version mismatch" → UV_PYTHON setting
-  - "Tests not running" → check run-tests.sh generation
-  - Keep each Q&A to 2-3 lines
-- **Target**: +30-40 lines to getting-started.md
+- **Status**: DONE - Added after UV refactoring PR merged
+- **Lines added**: +67 lines
+- **Content includes**:
+  - UV not found → install instructions with link to official guide
+  - Python version mismatch → UV_PYTHON setting
+  - Tests not running → check run-tests.sh generation
+  - Make command not found → platform-specific instructions
+  - Settings not taking effect → environment variable overrides
+  - Regenerating the Makefile → update command and upgrade info
 
 ### Priority 3: Fill Documentation Gaps ✅ COMPLETED
 
@@ -137,19 +137,19 @@
 ### Line Count Projection (Updated with Actuals)
 - **Original total**: 756 lines
 - **Removed**: -112 lines (usage-old.rst)
-- **Added**: +280 lines (migration guide + templates + contributing)
-- **New total**: 924 lines
-- **Net change**: +168 lines (+22% increase)
+- **Added**: +347 lines (migration + templates + contributing + FAQ)
+- **New total**: 991 lines
+- **Net change**: +235 lines (+31% increase)
 
-**Note**: Added more content than originally planned due to comprehensive examples.
+**Note**: Added more content than originally planned due to comprehensive examples and FAQ.
 
 ### Success Criteria
 1. ✅ No outdated files (usage-old.rst removed)
 2. ✅ No TODOs in templates.md (both sections completed)
 3. ✅ Migration guide helps users upgrade (128 lines, 6 versions covered)
 4. ✅ Contributing guide helps new contributors (103 lines with workflow)
-5. ⏸️ FAQ deferred to Phase 2 (to avoid conflicts with refactor branch)
-6. ✅ Total documentation stays under 1,000 lines (924 lines)
+5. ✅ FAQ/Troubleshooting added (67 lines, 6 common issues)
+6. ✅ Total documentation stays under 1,000 lines (991 lines)
 
 ## Additional Improvements to Consider
 
@@ -341,33 +341,35 @@
 | Phase | Status | Files Changed/Added | Lines Added | Total Lines |
 |-------|--------|---------------------|-------------|-------------|
 | Baseline | ✅ | 9 files | - | 756 |
-| **Phase 1** | **✅ COMPLETED** | **+1 file, edited 3** | **+280** | **~924** |
-| Phase 2 | 🔜 Pending | +2 files, edit several | +120 | ~1,044 |
+| **Phase 1** | **✅ COMPLETED** | **+1 file, edited 4** | **+347** | **~991** |
+| Phase 2 | 🔜 Pending | +2 files, edit several | +120 | ~1,111 |
 | Phase 3 | 📋 Planned | +4 files | +300 | ~1,344 |
 | Phase 4 | 📋 Planned | Varies | +40 each | Variable |
 
 ### Phase 1 Completion Summary
 
-**Completed: 2025-10-22**
+**Completed: 2025-10-22, Updated: 2025-10-23**
 
 **Commits**:
 1. `5dfd8ca` - Remove obsolete usage-old.rst documentation
 2. `74b8bd8` - Add migration guide documenting breaking changes
 3. `eeb3d48` - Complete templates.md documentation
 4. `220a684` - Enhance contributing.md with development workflow
+5. (pending) - Add FAQ/Troubleshooting section to getting-started.md
 
 **Files Changed**:
 - ❌ Deleted: `docs/source/usage-old.rst` (-112 lines)
 - ✅ Created: `docs/source/migration.md` (+128 lines)
 - ✏️ Updated: `docs/source/templates.md` (+65 lines)
 - ✏️ Updated: `docs/source/contributing.md` (+87 lines)
+- ✏️ Updated: `docs/source/getting-started.md` (+67 lines)
 - ✏️ Updated: `docs/source/index.md` (+1 line for TOC)
 
-**Total Impact**: +280 lines (after removing 112), net +168 lines
+**Total Impact**: +347 lines (after removing 112), net +235 lines
 
 **Recommendation**:
-- Phase 1: ✅ Complete - ready for review
-- Phase 2: Execute after UV refactoring PR (#56) merges
+- Phase 1: ✅ Fully complete - ready for review (UV PR #56 merged, FAQ added)
+- Phase 2: Can start immediately (glossary, concepts, diagrams)
 - Phase 3-4: Based on user feedback and priorities
 
 ## Notes
