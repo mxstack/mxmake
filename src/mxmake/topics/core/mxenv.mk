@@ -97,7 +97,7 @@ endif
 
 # Determine the package installer with non-interactive flags
 ifeq ("$(PYTHON_PACKAGE_INSTALLER)","uv")
-PYTHON_PACKAGE_COMMAND=uv pip --quiet --no-progress
+PYTHON_PACKAGE_COMMAND=uv pip --no-progress
 else
 PYTHON_PACKAGE_COMMAND=$(MXENV_PYTHON) -m pip
 endif
@@ -110,6 +110,10 @@ UV_AVAILABLE:=false
 endif
 
 # Determine installation strategy
+# depending on the PYTHON_PACKAGE_INSTALLER and UV_AVAILABLE
+# - both vars can be false or
+# - one of them can be true,
+# - but never boths.
 USE_GLOBAL_UV:=$(shell [[ "$(PYTHON_PACKAGE_INSTALLER)" == "uv" && "$(UV_AVAILABLE)" == "true" ]] && echo "true" || echo "false")
 USE_LOCAL_UV:=$(shell [[ "$(PYTHON_PACKAGE_INSTALLER)" == "uv" && "$(UV_AVAILABLE)" == "false" ]] && echo "true" || echo "false")
 
@@ -145,7 +149,7 @@ ifeq ("$(VENV_ENABLED)", "true")
 ifeq ("$(VENV_CREATE)", "true")
 ifeq ("$(USE_GLOBAL_UV)","true")
 	@echo "Setup Python Virtual Environment using global uv at '$(VENV_FOLDER)'"
-	@uv venv --allow-existing --quiet --no-progress -p $(UV_PYTHON) --seed $(VENV_FOLDER)
+	@uv venv --allow-existing --no-progress -p $(UV_PYTHON) --seed $(VENV_FOLDER)
 else
 	@echo "Setup Python Virtual Environment using module 'venv' at '$(VENV_FOLDER)'"
 	@$(PRIMARY_PYTHON) -m venv $(VENV_FOLDER)
