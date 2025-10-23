@@ -15,8 +15,7 @@ topics:
   core:
     # include domain mxenv
     mxenv:
-      # set PYTHON_MIN_VERSION, PYTHON_PACKAGE_INSTALLER and UV_PYTHON
-      PYTHON_MIN_VERSION: 3.14
+      # Minimal UV configuration - UV downloads Python automatically!
       PYTHON_PACKAGE_INSTALLER: uv
       UV_PYTHON: "3.14"
   qa:
@@ -48,13 +47,26 @@ When using UV, you should explicitly set `UV_PYTHON` to specify which Python ver
 The `UV_PYTHON` setting accepts version specs like `3.13`, `3.14`, or `cpython@3.14`:
 
 ```yaml
+# Minimal UV configuration (recommended)
 topics:
   core:
     mxenv:
-      PYTHON_MIN_VERSION: "3.14"
-      PRIMARY_PYTHON: python3
       PYTHON_PACKAGE_INSTALLER: uv
-      UV_PYTHON: "3.14"  # Explicitly specify Python version for UV
+      UV_PYTHON: "3.14"  # UV downloads this Python version
+```
+
+**Note**: When using UV with `UV_PYTHON` explicitly set:
+- `PYTHON_MIN_VERSION` is **not needed** (validation skipped with global UV)
+- `PRIMARY_PYTHON` is **not needed** (only used if UV_PYTHON is not set)
+
+For traditional pip-based workflows, you would set:
+```yaml
+# Traditional pip configuration (requires Python pre-installed)
+topics:
+  core:
+    mxenv:
+      PRIMARY_PYTHON: python3.12
+      PYTHON_PACKAGE_INSTALLER: pip  # default
 ```
 
 ## Examples
@@ -77,14 +89,13 @@ Enter the `hello-world-` directory and create a file `preseed.yaml`:
 topics:
   core:
     mxenv:
-      PYTHON_MIN_VERSION: "3.14"
       PYTHON_PACKAGE_INSTALLER: uv
-      UV_PYTHON: "3.14"
+      UV_PYTHON: "3.14"  # UV downloads Python 3.14
     sources:
   qa:
-    ruff
-    mypy
-    test
+    ruff:
+    mypy:
+    test:
 
 mx-ini: true
 ```
