@@ -1,7 +1,6 @@
 [project]
 name = "mxmake"
 description = "Generates a Python project-specific Makefile by using an extensible library of configurable Makefile snippets."
-version = "1.4.0"
 keywords = ["development", "deployment", "make"]
 authors = [
   {name = "MX Stack Developers", email = "dev@bluedynamics.com" }
@@ -27,7 +26,13 @@ dependencies = [
     "mxdev>=4.0.2",
     "pyyaml"
 ]
-dynamic = ["readme"]
+dynamic = ["readme", "version"]
+
+[tool.hatch.version]
+source = "vcs"
+
+[tool.hatch.build.hooks.vcs]
+version-file = "src/mxmake/_version.py"
 
 [tool.hatch.metadata.hooks.fancy-pypi-readme]
 content-type = "text/markdown"
@@ -73,7 +78,7 @@ applications = "mxmake.topics:applications"
 i18n = "mxmake.topics:i18n"
 
 [build-system]
-requires = ["hatchling", "hatch-fancy-pypi-readme"]
+requires = ["hatchling", "hatch-vcs", "hatch-fancy-pypi-readme"]
 build-backend = "hatchling.build"
 
 [tool.pytest.ini_options]
@@ -96,7 +101,7 @@ python_version = "3.10"
 [tool.ruff]
 target-version = "py310"
 # Exclude a variety of commonly ignored directories.
-exclude = []
+exclude = ["src/mxmake/_version.py"]
 
 [tool.ruff.lint]
 select = ["UP"]  # Enable pyupgrade rules for Python 3.10+ modernization

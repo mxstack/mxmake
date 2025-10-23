@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.3.1 (unreleased)
+## 2.0.0 (unreleased)
 
 - **Breaking**: Drop Python 3.9 support. Minimum Python version is now 3.10.
 - Feature: Modernize codebase to use Python 3.10+ features (PEP 604 union types, built-in generic types).
@@ -11,7 +11,6 @@
 - Fix: theme for newer Sphinx 7.x.
 - Fix: interactive uv venv, use --allow-existing instead.
 - Feature: Add support for Python 3.14.
-- Feature: Add `docs-linkcheck` to check for broken links in the sphinx documentation.
 - Breaking: Removed `MXENV_UV_GLOBAL` setting in favor of automatic UV detection.
   When `PYTHON_PACKAGE_INSTALLER=uv`, mxmake now automatically detects and uses
   a globally installed `uv` if available. To force local installation of uv,
@@ -31,6 +30,7 @@
 - Improvement: Simplified mxenv.mk logic from 3+ nesting levels to 1-2 levels
   using computed intermediate variables (`USE_GLOBAL_UV`, `USE_LOCAL_UV`).
   Code is now more maintainable and easier to extend.
+- Chore: Migrate to hatch-vcs for automated versioning from git tags.
 
 ## 1.3.0 (2025-09-03)
 
