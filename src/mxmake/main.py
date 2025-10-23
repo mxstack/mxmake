@@ -97,9 +97,7 @@ list_parser.add_argument("-d", "--domain", help="Domain name")
 ##############################################################################
 
 
-def create_config(
-    prompt: bool, preseeds: dict[str, typing.Any] | None
-):
+def create_config(prompt: bool, preseeds: dict[str, typing.Any] | None):
     if prompt and preseeds:
         sys.stdout.write("Either use prompt or preseeds, not both\n")
         sys.exit(1)
