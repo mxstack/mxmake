@@ -49,15 +49,15 @@ topics:
 
 ## Version 1.0a6
 
-### Dropped: Python 3.8 support
+### Dropped: Python 3.8 and 3.9 support
 
-**Breaking Change**: Minimum Python version changed from 3.7/3.8 to 3.9.
+**Breaking Change**: Minimum Python version changed from 3.8 to 3.10.
 
 **Migration**:
-- Ensure your project uses Python 3.9 or later
+- Ensure your project uses Python 3.10 or later
 - Update `PYTHON_MIN_VERSION` setting if needed:
   ```makefile
-  PYTHON_MIN_VERSION?=3.9
+  PYTHON_MIN_VERSION?=3.10
   ```
 
 ## Version 1.0a4
