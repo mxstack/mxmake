@@ -144,6 +144,14 @@ PYTHON_PACKAGE_INSTALLER?=pip  # Default
 When using UV, **always set `UV_PYTHON` explicitly**. While it currently defaults to `PRIMARY_PYTHON` for backward compatibility, relying on this default is not recommended and may change in future versions.
 ```
 
+```{note}
+With UV + `UV_PYTHON` explicitly set:
+- `PRIMARY_PYTHON` is **not needed** (only used as UV_PYTHON default)
+- `PYTHON_MIN_VERSION` is **not needed** (validation skipped with global UV)
+
+These settings are **only required** for pip-based workflows.
+```
+
 ## How to use on the Windows operating system
 
 mxmake works excellent on Windows!
