@@ -2,11 +2,15 @@
 
 ## 1.4.0 (unreleased)
 
-- Chore: Migrate to hatch-vcs for automated versioning from git tags.
+- Critical fix: `SOURCES_TARGET` used mxdev wrongly with `-o` (offline) option.
+  The offline option had a bug and was fixed in mxdev [#34](https://github.com/mxstack/mxdev/issues/34) and released with mxdev>=5.
+  This fix switches from `-o` to the correct `-f` (no fetch from vcs).
+  To update your makefile use `mxmake update` in the folder with your `Makefile`.
 - Fix: theme for newer Sphinx 7.x.
 - Fix: interactive uv venv, use --allow-existing instead.
 - Feature: Add support for Python 3.14.
 - Feature: Add `docs-linkcheck` to check for broken links in the sphinx documentation.
+- Chore: Migrate to hatch-vcs for automated versioning from git tags.
 
 ## 1.3.0 (2025-09-03)
 
