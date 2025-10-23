@@ -25,12 +25,12 @@ def get_template_environment() -> Environment:
 class template:
     """Template decorator and registry."""
 
-    _registry: typing.Dict = dict()
+    _registry: dict = dict()
 
     def __init__(self, name: str) -> None:
         self.name = name
 
-    def __call__(self, ob: typing.Type["Template"]) -> typing.Type["Template"]:
+    def __call__(self, ob: type["Template"]) -> type["Template"]:
         ob.name = self.name
         self._registry[self.name] = ob
         return ob
@@ -53,7 +53,7 @@ class Template(abc.ABC):
 
     def __init__(
         self,
-        environment: typing.Union[Environment, None] = None,
+        environment: Environment | None = None,
     ) -> None:
         # XXX: if environment is None, default to ``get_template_environment``?
         self.environment = environment
@@ -71,7 +71,7 @@ class Template(abc.ABC):
         """Template name to use."""
 
     @abc.abstractproperty
-    def template_variables(self) -> typing.Dict[str, typing.Any]:
+    def template_variables(self) -> dict[str, typing.Any]:
         """Variables for template rendering."""
 
     def write(self) -> None:
@@ -106,13 +106,13 @@ class MxIniBoundTemplate(Template):
     def __init__(
         self,
         config: mxdev.Configuration,
-        environment: typing.Union[Environment, None] = None,
+        environment: Environment | None = None,
     ) -> None:
         super().__init__(environment)
         self.config = config
 
     @property
-    def settings(self) -> typing.Dict[str, str]:
+    def settings(self) -> dict[str, str]:
         return self.config.hooks.get(ns_name(self.name), {})
 
 
@@ -123,7 +123,7 @@ class ShellScriptTemplate(Template):
 
 class EnvironmentTemplate(MxIniBoundTemplate):
     @property
-    def env(self) -> typing.Dict[str, str]:
+    def env(self) -> dict[str, str]:
         """Dict containing environment variables."""
         env_name = self.settings.get("environment")
         return self.config.hooks.get(ns_name(env_name), {}) if env_name else {}
@@ -155,7 +155,7 @@ class TestScript(EnvironmentTemplate, ShellScriptTemplate):
         return f"{self.test_runner}-{self.target_name}"
 
     @property
-    def template_variables(self) -> typing.Dict[str, typing.Any]:
+    def template_variables(self) -> dict[str, typing.Any]:
         return dict(
             description=self.description,
             env=self.env,
@@ -163,7 +163,7 @@ class TestScript(EnvironmentTemplate, ShellScriptTemplate):
             testargs=self.config.settings.get("mxmake-test-runner-args", ""),
         )
 
-    def package_paths(self, attr: str) -> typing.List[str]:
+    def package_paths(self, attr: str) -> list[str]:
         paths = list()
         for name, package in self.config.packages.items():
             if attr not in package:
@@ -192,7 +192,7 @@ class CoverageScript(TestScript):
     description: str = "Run coverage"
 
     @property
-    def template_variables(self) -> typing.Dict[str, typing.Any]:
+    def template_variables(self) -> dict[str, typing.Any]:
         variables = super().template_variables
         variables["sourcepaths"] = self.package_paths(ns_name("source-path"))
         variables["omitpaths"] = self.package_paths(ns_name("omit-path"))
@@ -215,7 +215,7 @@ class PipConf(MxIniBoundTemplate):
         return mxmake_files()
 
     @property
-    def template_variables(self) -> typing.Dict[str, typing.Any]:
+    def template_variables(self) -> dict[str, typing.Any]:
         return dict(
             find_links=[
                 link.strip()
@@ -240,9 +240,9 @@ class Makefile(Template):
     def __init__(
         self,
         target_folder: Path,
-        domains: typing.List[Domain],
-        domain_settings: typing.Dict[str, str],
-        environment: typing.Union[Environment, None] = None,
+        domains: list[Domain],
+        domain_settings: dict[str, str],
+        environment: Environment | None = None,
     ) -> None:
         super().__init__(environment)
         self.target_folder = target_folder
@@ -250,7 +250,7 @@ class Makefile(Template):
         self.domain_settings = domain_settings
 
     @property
-    def template_variables(self) -> typing.Dict[str, typing.Any]:
+    def template_variables(self) -> dict[str, typing.Any]:
         # collect domain settings
         settings = []
         for domain in self.domains:
@@ -301,8 +301,8 @@ class AdditionalSourcesTargets(Template):
 
     def __init__(
         self,
-        additional_sources_targets: typing.List[str],
-        environment: typing.Union[Environment, None] = None,
+        additional_sources_targets: list[str],
+        environment: Environment | None = None,
     ) -> None:
         super().__init__(environment)
         self.additional_sources_targets = additional_sources_targets
@@ -312,7 +312,7 @@ class AdditionalSourcesTargets(Template):
         return mxmake_files()
 
     @property
-    def template_variables(self) -> typing.Dict[str, typing.Any]:
+    def template_variables(self) -> dict[str, typing.Any]:
         return dict(additional_sources_targets=self.additional_sources_targets)
 
 
@@ -331,15 +331,15 @@ class MxIni(Template):
     def __init__(
         self,
         target_folder: Path,
-        domains: typing.List[Domain],
-        environment: typing.Union[Environment, None] = None,
+        domains: list[Domain],
+        environment: Environment | None = None,
     ) -> None:
         super().__init__(environment)
         self.target_folder = target_folder
         self.domains = domains
 
     @property
-    def template_variables(self) -> typing.Dict[str, typing.Any]:
+    def template_variables(self) -> dict[str, typing.Any]:
         mxmake_templates = []
         mxmake_env = False
         for domain in self.domains:
@@ -375,7 +375,7 @@ class Topics(Template):
     target_folder = Path()
 
     @property
-    def template_variables(self) -> typing.Dict[str, typing.Any]:
+    def template_variables(self) -> dict[str, typing.Any]:
         topics = load_topics()
         return {"topics": topics}
 
@@ -404,7 +404,7 @@ class Dependencies(Template):
     target_folder = Path()
 
     @property
-    def template_variables(self) -> typing.Dict[str, typing.Any]:
+    def template_variables(self) -> dict[str, typing.Any]:
         topics = load_topics()
         return {"topics": topics}
 
@@ -426,12 +426,12 @@ class Dependencies(Template):
 
 
 class ci_template:
-    templates: typing.List = list()
+    templates: list = list()
 
     def __init__(self, name: str) -> None:
         self.name = name
 
-    def __call__(self, ob: typing.Type["Template"]) -> typing.Type["Template"]:
+    def __call__(self, ob: type["Template"]) -> type["Template"]:
         template(self.name)(ob)
         self.templates.append(self.name)
         return ob

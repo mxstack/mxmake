@@ -36,14 +36,14 @@ class Domain:
         # They are computed by `set_domain_runtime_depends` and consist of
         # The hard dependencies and all soft dependencies included in domain
         # list.
-        self.runtime_depends: typing.List[str] = []
+        self.runtime_depends: list[str] = []
 
     @property
     def fqn(self):
         return f"{self.topic}.{self.name}"
 
     @property
-    def file_data(self) -> typing.List[str]:
+    def file_data(self) -> list[str]:
         if (_file_data := getattr(self, "_file_data", None)) is not None:
             return _file_data
         with self.file.open() as f:
@@ -51,7 +51,7 @@ class Domain:
         return self._file_data
 
     @file_data.setter
-    def file_data(self, value: typing.List[str]):
+    def file_data(self, value: list[str]):
         self._file_data = value
 
     @property
@@ -81,7 +81,7 @@ class Domain:
         return self.config[self.name].get("description", "No Description")
 
     @property
-    def depends(self) -> typing.List[str]:
+    def depends(self) -> list[str]:
         return [
             dep.strip()
             for dep in self.config[self.name].get("depends", "").split("\n")
@@ -89,7 +89,7 @@ class Domain:
         ]
 
     @property
-    def soft_depends(self) -> typing.List[str]:
+    def soft_depends(self) -> list[str]:
         return [
             dep.strip()
             for dep in self.config[self.name].get("soft-depends", "").split("\n")
@@ -97,7 +97,7 @@ class Domain:
         ]
 
     @property
-    def settings(self) -> typing.List[Setting]:
+    def settings(self) -> list[Setting]:
         config = self.config
         return [
             Setting(
@@ -110,7 +110,7 @@ class Domain:
         ]
 
     @property
-    def targets(self) -> typing.List[Target]:
+    def targets(self) -> list[Target]:
         config = self.config
         return [
             Target(
@@ -145,7 +145,7 @@ class Topic:
         self.description = config.get("metadata", "description")
 
     @property
-    def domains(self) -> typing.List[Domain]:
+    def domains(self) -> list[Domain]:
         return [
             Domain(
                 topic=self.name,
@@ -156,7 +156,7 @@ class Topic:
             if name.suffix == ".mk"
         ]
 
-    def domain(self, name: str) -> typing.Optional[Domain]:
+    def domain(self, name: str) -> Domain | None:
         for domain in self.domains:
             if domain.name == name:
                 return domain
@@ -164,7 +164,7 @@ class Topic:
 
 
 @functools.lru_cache(maxsize=4096)
-def load_topics() -> typing.List[Topic]:
+def load_topics() -> list[Topic]:
     return [ep.load() for ep in load_eps_by_group("mxmake.topics")]  # type: ignore
 
 
@@ -190,25 +190,25 @@ class DomainConflictError(Exception):
         for name, count in counter.items():
             if count > 1:
                 conflicting.append(name)
-        msg = "Conflicting domain names: {}".format(sorted(conflicting))
-        super(DomainConflictError, self).__init__(msg)
+        msg = f"Conflicting domain names: {sorted(conflicting)}"
+        super().__init__(msg)
 
 
 class CircularDependencyDomainError(Exception):
-    def __init__(self, domains: typing.List[Domain]):
-        msg = "Domains define circular dependencies: {}".format(domains)
-        super(CircularDependencyDomainError, self).__init__(msg)
+    def __init__(self, domains: list[Domain]):
+        msg = f"Domains define circular dependencies: {domains}"
+        super().__init__(msg)
 
 
 class MissingDependencyDomainError(Exception):
     def __init__(self, domain: Domain):
-        msg = "Domain define missing dependency: {}".format(domain)
-        super(MissingDependencyDomainError, self).__init__(msg)
+        msg = f"Domain define missing dependency: {domain}"
+        super().__init__(msg)
 
 
 def resolve_domain_dependencies(
-    domains: typing.List[Domain],
-) -> typing.List[Domain]:
+    domains: list[Domain],
+) -> list[Domain]:
     """Return given domains ordered by dependencies.
 
     :raise DomainConflictError: Domain list contains conflicting names.
@@ -256,8 +256,8 @@ def resolve_domain_dependencies(
 
 
 def collect_missing_dependencies(
-    domains: typing.List[Domain],
-) -> typing.List[Domain]:
+    domains: list[Domain],
+) -> list[Domain]:
     """Expect a list of domain instances, and add all missing depencecy
     domains.
     """
@@ -275,7 +275,7 @@ def collect_missing_dependencies(
     )
 
 
-def set_domain_runtime_depends(domains: typing.List[Domain]) -> None:
+def set_domain_runtime_depends(domains: list[Domain]) -> None:
     """Expect a list of domain instances, and set runtime_depends on each
     domain, which consists of the hard dependencies and the soft dependencies
     which are contained in domains.
