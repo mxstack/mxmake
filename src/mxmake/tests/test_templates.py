@@ -562,7 +562,7 @@ class TestTemplates(testing.RenderTestCase):
             "core.base.INCLUDE_MAKEFILE": "include.mk",
             "core.base.EXTRA_PATH": "",
             "core.mxenv.PRIMARY_PYTHON": "python3",
-            "core.mxenv.PYTHON_MIN_VERSION": "3.9",
+            "core.mxenv.PYTHON_MIN_VERSION": "3.10",
             "core.mxenv.PYTHON_PACKAGE_INSTALLER": "pip",
             "core.mxenv.UV_PYTHON": "$(PRIMARY_PYTHON)",
             "core.mxenv.VENV_ENABLED": "true",
