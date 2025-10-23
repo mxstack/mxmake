@@ -59,11 +59,11 @@ class template_directory:
 class TestConfiguration(mxdev.Configuration):
     def __init__(
         self,
-        settings: typing.Dict[str, str] = {},
-        overrides: typing.Dict[str, str] = {},
-        ignore_keys: typing.List[str] = [],
-        packages: typing.Dict[str, typing.Dict[str, str]] = {},
-        hooks: typing.Dict[str, typing.Dict[str, str]] = {},
+        settings: dict[str, str] = {},
+        overrides: dict[str, str] = {},
+        ignore_keys: list[str] = [],
+        packages: dict[str, dict[str, str]] = {},
+        hooks: dict[str, dict[str, str]] = {},
     ):
         self.settings = settings
         self.overrides = overrides
@@ -73,7 +73,7 @@ class TestConfiguration(mxdev.Configuration):
 
 
 class RenderTestCase(unittest.TestCase):
-    class Example(object):
+    class Example:
         def __init__(self, want):
             self.want = want + "\n"
 

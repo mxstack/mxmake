@@ -27,7 +27,7 @@ def ns_name(name: str) -> str:
     return f"{NAMESPACE}{name}"
 
 
-def list_value(value: str) -> typing.List[str]:
+def list_value(value: str) -> list[str]:
     """Convert string value from config file to list of strings. Separator is
     space. Supports newline.
     """

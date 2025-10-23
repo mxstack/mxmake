@@ -13,12 +13,12 @@ class SettingMissing(Exception):
 class MakefileParser:
     def __init__(self, path: Path):
         self.path = path
-        self.fqns: typing.List = []
-        self.topics: typing.Dict = {}
-        self.settings: typing.Dict = {}
+        self.fqns: list = []
+        self.topics: dict = {}
+        self.settings: dict = {}
         self.parse()
 
-    def parse_fqns(self, lines: typing.List[str]):
+    def parse_fqns(self, lines: list[str]):
         for line in lines:
             if line.startswith("#:"):
                 fqn = line[2:].strip()
@@ -27,7 +27,7 @@ class MakefileParser:
                 self.topics.setdefault(topic, [])
                 self.topics[topic].append(name)
 
-    def parse_settings(self, lines: typing.List[str]):
+    def parse_settings(self, lines: list[str]):
         for fqn in self.fqns:
             domain = get_domain(fqn)
             for setting in domain.settings:
@@ -37,7 +37,7 @@ class MakefileParser:
                 except SettingMissing:
                     continue
 
-    def parse_setting(self, lines: typing.List[str], name: str) -> str:
+    def parse_setting(self, lines: list[str], name: str) -> str:
         setting_missing = True
         setting_scope = False
         value = ""

@@ -98,7 +98,7 @@ list_parser.add_argument("-d", "--domain", help="Domain name")
 
 
 def create_config(
-    prompt: bool, preseeds: typing.Union[typing.Dict[str, typing.Any], None]
+    prompt: bool, preseeds: dict[str, typing.Any] | None
 ):
     if prompt and preseeds:
         sys.stdout.write("Either use prompt or preseeds, not both\n")
@@ -134,7 +134,7 @@ def create_config(
         sys.exit(1)
 
     # obtain domains to include
-    domains: typing.List[Domain] = []
+    domains: list[Domain] = []
     for topic_name in topic_choice["topic"]:
         topic = get_topic(topic_name)
         all_fqns = [domain.fqn for domain in topic.domains]
@@ -154,14 +154,14 @@ def create_config(
                 for domain_name in preseeds["topics"][topic_name]
             ]
             sys.stdout.write(f"Collect domains for topic {topic_name} from preseeds.\n")
-            domains.extend((get_domain(fqn) for fqn in selected_fqns))
+            domains.extend(get_domain(fqn) for fqn in selected_fqns)
             continue
         if not prompt:
             sys.stdout.write(
                 f"- update topic {topic_name} with domains "
                 f"{', '.join([fqdn.split('.')[1] for fqdn in selected_fqns])}.\n"
             )
-            domains.extend((get_domain(fqn) for fqn in selected_fqns))
+            domains.extend(get_domain(fqn) for fqn in selected_fqns)
             continue
         domains_choice = inquirer.prompt(
             [
@@ -191,7 +191,7 @@ def create_config(
         settings_question = []
         for setting in settings:
             sfqn = f"{domain.fqn}.{setting.name}"
-            setting_default: typing.Union[typing.Any, object] = setting.default
+            setting_default: typing.Any | object = setting.default
             # use default setting from preseeds
             if preseeds:
                 unset = object()

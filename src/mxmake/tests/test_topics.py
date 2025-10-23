@@ -57,18 +57,18 @@ example-clean:
 
 @dataclass
 class _TestDomain(topics.Domain):
-    depends_: typing.List[str] = field(default_factory=list)
-    soft_depends_: typing.List[str] = field(default_factory=list)
+    depends_: list[str] = field(default_factory=list)
+    soft_depends_: list[str] = field(default_factory=list)
 
     def __post_init__(self) -> None:
         self.runtime_depends = self.depends + self.soft_depends
 
     @property
-    def depends(self) -> typing.List[str]:
+    def depends(self) -> list[str]:
         return self.depends_
 
     @property
-    def soft_depends(self) -> typing.List[str]:
+    def soft_depends(self) -> list[str]:
         return self.soft_depends_
 
 
