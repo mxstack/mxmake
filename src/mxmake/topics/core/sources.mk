@@ -20,7 +20,7 @@
 SOURCES_TARGET:=$(SENTINEL_FOLDER)/sources.sentinel
 $(SOURCES_TARGET): $(PROJECT_CONFIG) $(MXENV_TARGET)
 	@echo "Checkout project sources"
-	@mxdev -o -c $(PROJECT_CONFIG)
+	@mxdev -f -c $(PROJECT_CONFIG)
 	@touch $(SOURCES_TARGET)
 
 .PHONY: sources
