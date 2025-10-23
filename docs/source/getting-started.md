@@ -93,3 +93,71 @@ Install [make as described here](https://gist.github.com/evanwill/0207876c3243bb
 Further you need a [Python >=3.10 installation.](https://www.python.org/downloads/windows/).
 
 Dependent on the topics and domains you use, you may need to install additional software, but this is no different from Linux/OSX.
+
+## Troubleshooting
+
+### UV not found error
+
+If you get an error that UV is not found, install it. See the [official UV installation guide](https://docs.astral.sh/uv/getting-started/installation/) for detailed instructions.
+
+```shell
+# Global installation (recommended)
+pip install uv
+
+# Or use the official installer
+curl -LsSf https://astral.sh/uv/install.sh | sh
+```
+
+After installation, run `mxmake update` to regenerate the Makefile.
+
+### Python version mismatch
+
+If UV uses a different Python version than expected, explicitly set `UV_PYTHON` in your Makefile settings:
+
+```makefile
+UV_PYTHON?=3.14
+```
+
+Then run `make install` again.
+
+### Tests not running
+
+If `make test` fails with "command not found", ensure the test runner script was generated:
+
+```shell
+ls .mxmake/files/run-tests.sh
+```
+
+If missing, check that your `mx.ini` includes `mxmake-templates = run-tests` and run `make install` to regenerate files.
+
+### Make command not found
+
+On Ubuntu/Debian: `sudo apt install make`
+On macOS: Install Xcode Command Line Tools: `xcode-select --install`
+On Windows: See [installation instructions](https://gist.github.com/evanwill/0207876c3243bbb6863e65ec5dc3f058#make)
+
+### Settings not taking effect
+
+Settings are only applied when you explicitly set them. If a setting has `?=`, it uses the default unless overridden.
+
+Example: Change `PRIMARY_PYTHON?=python3.12` to `PRIMARY_PYTHON=python3.14` (remove the `?`) to force that value.
+
+Note that environment variables always override Makefile settings. Check if a setting is defined in your shell environment:
+
+```shell
+echo $PRIMARY_PYTHON
+```
+
+After changing settings, run `make install` to apply them.
+
+### Regenerating the Makefile
+
+To add or remove domains without interactive prompts, use:
+
+```shell
+mxmake update
+```
+
+This preserves your current settings and updates the Makefile logic. To start fresh interactively, use `mxmake init`.
+
+After upgrading mxmake to a newer version, run `mxmake update` to apply new features and improvements from the upgraded version.

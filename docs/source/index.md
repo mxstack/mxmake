@@ -24,6 +24,7 @@ maxdepth: 2
 getting-started
 topics
 preseeds
+migration
 templates
 extending
 dependencies
