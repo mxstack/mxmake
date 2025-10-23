@@ -12,6 +12,25 @@
 - Fix: interactive uv venv, use --allow-existing instead.
 - Feature: Add support for Python 3.14.
 - Feature: Add `docs-linkcheck` to check for broken links in the sphinx documentation.
+- Breaking: Removed `MXENV_UV_GLOBAL` setting in favor of automatic UV detection.
+  When `PYTHON_PACKAGE_INSTALLER=uv`, mxmake now automatically detects and uses
+  a globally installed `uv` if available. To force local installation of uv,
+  simply don't install it globally or remove it from PATH.
+- Feature: Add `UV_PYTHON` setting to specify Python version for UV-managed virtual
+  environments. Defaults to `PRIMARY_PYTHON` for backward compatibility. This
+  provides semantic clarity: `PRIMARY_PYTHON` is the system interpreter path
+  (e.g., `python3.11`), while `UV_PYTHON` is the version spec for UV
+  (e.g., `3.14`, `cpython@3.14`).
+- Feature: Automatic detection of global UV installation using simple shell check.
+  No manual configuration required.
+- Feature: All UV commands now run with `--quiet --no-progress` flags for better
+  CI/CD compatibility and cleaner log output.
+- Feature: When using global UV, mxmake checks if updates are available using
+  `uv self update --dry-run` and displays a helpful non-blocking warning if a
+  newer version is available.
+- Improvement: Simplified mxenv.mk logic from 3+ nesting levels to 1-2 levels
+  using computed intermediate variables (`USE_GLOBAL_UV`, `USE_LOCAL_UV`).
+  Code is now more maintainable and easier to extend.
 
 ## 1.3.0 (2025-09-03)
 

@@ -564,7 +564,7 @@ class TestTemplates(testing.RenderTestCase):
             "core.mxenv.PRIMARY_PYTHON": "python3",
             "core.mxenv.PYTHON_MIN_VERSION": "3.9",
             "core.mxenv.PYTHON_PACKAGE_INSTALLER": "pip",
-            "core.mxenv.MXENV_UV_GLOBAL": "false",
+            "core.mxenv.UV_PYTHON": "$(PRIMARY_PYTHON)",
             "core.mxenv.VENV_ENABLED": "true",
             "core.mxenv.VENV_CREATE": "true",
             "core.mxenv.VENV_FOLDER": ".venv",
