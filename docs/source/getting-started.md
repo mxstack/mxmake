@@ -90,6 +90,6 @@ Please follow  [GIT's official installation instructions](https://git-scm.com/do
 
 Install [make as described here](https://gist.github.com/evanwill/0207876c3243bbb6863e65ec5dc3f058#make)
 
-Further you need a [Python >=3.9 installation.](https://www.python.org/downloads/windows/).
+Further you need a [Python >=3.10 installation.](https://www.python.org/downloads/windows/).
 
 Dependent on the topics and domains you use, you may need to install additional software, but this is no different from Linux/OSX.

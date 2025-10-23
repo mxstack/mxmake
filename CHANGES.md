@@ -2,6 +2,8 @@
 
 ## 1.3.1 (unreleased)
 
+- **Breaking**: Drop Python 3.9 support. Minimum Python version is now 3.10.
+- Feature: Modernize codebase to use Python 3.10+ features (PEP 604 union types, built-in generic types).
 - Critical fix: `SOURCES_TARGET` used mxdev wrongly with `-o` (offline) option.
   The offline option had a bug and was fixed in mxdev [#34](https://github.com/mxstack/mxdev/issues/34) and released with mxdev>=5.
   This fix switches from `-o` to the correct `-f` (no fetch from vcs).

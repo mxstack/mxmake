@@ -18,8 +18,8 @@ jobs:
           enable-cache: true
           cache-dependency-glob: "pyproject.toml"
 
-      - name: Set up Python 3.9
-        run: uv python install 3.9
+      - name: Set up Python 3.10
+        run: uv python install 3.10
 
       - name: Install Project
         run: make install

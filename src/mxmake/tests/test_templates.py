@@ -97,7 +97,7 @@ class TestTemplates(testing.RenderTestCase):
             template_variables = {}
 
         # template settings
-        hooks: typing.Dict[str, typing.Dict] = {}
+        hooks: dict[str, dict] = {}
         template = Template(testing.TestConfiguration(hooks=hooks))
         self.assertEqual(template.settings, dict())
         hooks["mxmake-template"] = dict(key="val")
@@ -579,7 +579,7 @@ class TestTemplates(testing.RenderTestCase):
         template.write()
         print("Makefile written to", tempdir / "Makefile")
         with (tempdir / "Makefile").open() as result:
-            with open(EXPECTED_DIRECTORY / "Makefile", "r") as expected:
+            with open(EXPECTED_DIRECTORY / "Makefile") as expected:
                 self.checkOutput(
                     expected.read(), result.read(), optionflags=doctest.REPORT_UDIFF
                 )

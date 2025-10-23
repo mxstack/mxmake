@@ -145,7 +145,7 @@ ifeq ("$(VENV_ENABLED)", "true")
 ifeq ("$(VENV_CREATE)", "true")
 ifeq ("$(USE_GLOBAL_UV)","true")
 	@echo "Setup Python Virtual Environment using global uv at '$(VENV_FOLDER)'"
-	@uv venv --quiet --no-progress -p $(UV_PYTHON) --seed $(VENV_FOLDER)
+	@uv venv --allow-existing --quiet --no-progress -p $(UV_PYTHON) --seed $(VENV_FOLDER)
 else
 	@echo "Setup Python Virtual Environment using module 'venv' at '$(VENV_FOLDER)'"
 	@$(PRIMARY_PYTHON) -m venv $(VENV_FOLDER)
