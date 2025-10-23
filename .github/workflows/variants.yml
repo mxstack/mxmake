@@ -70,3 +70,38 @@ jobs:
       run: |
         make VENV_ENABLED=false VENV_CREATE=false PRIMARY_PYTHON=python3 PYTHON_PACKAGE_INSTALLER=pip test
         make clean
+
+  uv-only:
+    name: UV-only (no Python) - Python ${{ matrix.uv-python }}
+    runs-on: ubuntu-latest
+    container:
+      image: ubuntu:22.04
+    strategy:
+      fail-fast: false
+      matrix:
+        uv-python: ["3.10", "3.14"]
+    steps:
+    - name: Install system dependencies (NOT Python)
+      run: |
+        apt-get update
+        apt-get install -y make curl ca-certificates git
+
+    - uses: actions/checkout@v5
+
+    - name: Install UV globally
+      run: |
+        curl -LsSf https://astral.sh/uv/install.sh | sh
+        echo "$HOME/.local/bin" >> $GITHUB_PATH
+
+    - name: Verify NO Python installed
+      run: |
+        ! which python3 || (echo "ERROR: Python found!" && exit 1)
+        ! which python || (echo "ERROR: Python found!" && exit 1)
+
+    - name: Run make install with UV only
+      run: make UV_PYTHON=${{ matrix.uv-python }} install
+
+    - name: Verify venv created with correct Python version
+      run: |
+        .venv/bin/python --version
+        .venv/bin/python --version | grep "${{ matrix.uv-python }}"
