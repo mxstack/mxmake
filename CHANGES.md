@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.0.1 (unreleased)
+
+- nothing yet
+
 ## 2.0.0 (2025-10-24)
 
 - **Breaking**: Drop Python 3.9 support. Minimum Python version is now 3.10.
