@@ -1,0 +1,8 @@
+/* Show the project title next to the logo */
+.sy-head-brand {
+    font-size: 1.5rem;
+}
+.sy-head-brand strong {
+    display: inline !important;
+    margin-left: 1rem;
+}

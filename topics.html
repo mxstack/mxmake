@@ -1,0 +1,1718 @@
+<!DOCTYPE html>
+<html lang="en" data-accent-color="blue" data-content_root="./">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Topics and Domains - mxmake</title><link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Preseeds" href="preseeds.html" /><link rel="prev" title="Getting started" href="getting-started.html" /><script>
+    function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
+    setColorMode(localStorage._theme||"auto");
+  </script><link rel="stylesheet" type="text/css" href="_static/pygments.css?v=e1a1ceaf" />
+    <link rel="stylesheet" type="text/css" href="_static/shibuya.css?v=d140fbf8" />
+    <link media="print" rel="stylesheet" type="text/css" href="_static/print.css?v=20ff2c19" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=6fa5204e" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --sy-f-text: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+  --sy-f-heading: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+}
+</style>
+    <meta property="og:type" content="website"/><meta property="og:title" content="Topics and Domains"/>
+<meta name="twitter:card" content="summary"/>
+  </head>
+<body><div class="sy-head">
+  <div class="sy-head-blur"></div>
+  <div class="sy-head-inner sy-container mx-auto">
+    <a class="sy-head-brand" href="index.html">
+      <img class="light-logo" src="_static/mxmake-logo.svg" alt="mxmake" height="28" loading="lazy" />
+      <img class="dark-logo" src="_static/mxmake-logo.svg" alt="mxmake" height="28" loading="lazy" />
+      <strong>mxmake</strong>
+    </a>
+    <div class="sy-head-nav" id="head-nav">
+      <nav class="sy-head-links"></nav>
+      <div class="sy-head-extra flex items-center print:hidden"><form class="searchbox flex items-center" action="search.html" method="get">
+  <input type="text" name="q" placeholder="Search" />
+  <kbd>/</kbd>
+</form><div class="sy-head-socials">
+  <a href="https://github.com/mxstack/mxmake" aria-label="GitHub">
+    <iconify-icon icon="simple-icons:github"></iconify-icon>
+  </a><a href="https://pypi.org/project/mxmake" aria-label="PyPI">
+    <iconify-icon icon="simple-icons:pypi"></iconify-icon>
+  </a>
+</div></div>
+    </div>
+    <div class="sy-head-actions flex items-center shrink-0 print:hidden"><button class="js-theme theme-switch flex items-center"
+data-aria-auto="Switch to light color mode"
+data-aria-light="Switch to dark color mode"
+data-aria-dark="Switch to auto color mode">
+<i class="i-lucide theme-icon"></i>
+</button><button class="md:hidden flex items-center js-menu" aria-label="Menu" type="button" aria-controls="head-nav" aria-expanded="false">
+        <div class="hamburger">
+          <span class="hamburger_1"></span>
+          <span class="hamburger_2"></span>
+          <span class="hamburger_3"></span>
+        </div>
+      </button>
+    </div>
+  </div>
+</div>
+<div class="sy-page sy-container flex mx-auto">
+  <aside id="lside" class="sy-lside md:w-72 md:shrink-0 print:hidden">
+    <div class="sy-lside-inner md:sticky">
+      <div class="sy-scrollbar p-6">
+        <div class="globaltoc" data-expand-depth="0"><ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="getting-started.html">Getting started</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Topics and Domains</a></li>
+<li class="toctree-l1"><a class="reference internal" href="preseeds.html">Preseeds</a></li>
+<li class="toctree-l1"><a class="reference internal" href="migration.html">Migration Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="templates.html">Generate files using templates</a></li>
+<li class="toctree-l1"><a class="reference internal" href="extending.html">Extending mxmake</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dependencies.html">Domain dependencies</a></li>
+<li class="toctree-l1"><a class="reference internal" href="make.html">A short primer on make</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
+</ul>
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="lside-overlay js-menu" role="button" aria-label="Close left sidebar" aria-controls="lside" aria-expanded="false"></div>
+  <aside id="rside" class="sy-rside pb-3 w-64 shrink-0 order-last">
+    <button class="rside-close js-menu xl:hidden" aria-label="Close Table of Contents" type="button" aria-controls="rside" aria-expanded="false">
+      <i class="i-lucide close"></i>
+    </button>
+    <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4"><div class="localtoc"><h3>On this page</h3><ul>
+<li><a class="reference internal" href="#ldap">LDAP</a><ul>
+<li><a class="reference internal" href="#openldap">OpenLDAP</a></li>
+<li><a class="reference internal" href="#python-ldap">Python LDAP</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#qa">QA</a><ul>
+<li><a class="reference internal" href="#black">black</a></li>
+<li><a class="reference internal" href="#coverage">Coverage</a></li>
+<li><a class="reference internal" href="#isort">isort</a></li>
+<li><a class="reference internal" href="#mypy">mypy</a></li>
+<li><a class="reference internal" href="#pyrefly">pyrefly</a></li>
+<li><a class="reference internal" href="#pyupgrade">pyupgrade</a></li>
+<li><a class="reference internal" href="#ruff">ruff</a></li>
+<li><a class="reference internal" href="#test">Test</a></li>
+<li><a class="reference internal" href="#zpretty">zpretty</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#applications">Applications</a><ul>
+<li><a class="reference internal" href="#cookiecutter">cookiecutter</a></li>
+<li><a class="reference internal" href="#plone">plone</a></li>
+<li><a class="reference internal" href="#twisted-server">Twisted Server</a></li>
+<li><a class="reference internal" href="#zest-releaser">zest.releaser</a></li>
+<li><a class="reference internal" href="#zope">zope</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#i18n">i18n</a><ul>
+<li><a class="reference internal" href="#gettext">Gettext</a></li>
+<li><a class="reference internal" href="#lingua">Lingua</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#system">System</a><ul>
+<li><a class="reference internal" href="#system-dependencies">System dependencies</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#javascript">Javascript</a><ul>
+<li><a class="reference internal" href="#karma-tests">Karma tests</a></li>
+<li><a class="reference internal" href="#node-js">Node.js</a></li>
+<li><a class="reference internal" href="#rollup-javascript-module-bundler">Rollup JavaScript module bundler</a></li>
+<li><a class="reference internal" href="#scss-compiler">SCSS Compiler</a></li>
+<li><a class="reference internal" href="#web-test-runner">Web test runner</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#core">Core</a><ul>
+<li><a class="reference internal" href="#base">Base</a></li>
+<li><a class="reference internal" href="#help-system">Help System</a></li>
+<li><a class="reference internal" href="#mx-environment">MX Environment</a></li>
+<li><a class="reference internal" href="#mx-files">MX Files</a></li>
+<li><a class="reference internal" href="#packages">Packages</a></li>
+<li><a class="reference internal" href="#proxy-targets">Proxy targets</a></li>
+<li><a class="reference internal" href="#sources">Sources</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#docs">Docs</a><ul>
+<li><a class="reference internal" href="#jsdoc-documentation">JSDoc Documentation</a></li>
+<li><a class="reference internal" href="#sphinx-documentation">Sphinx Documentation</a></li>
+</ul>
+</li>
+</ul>
+</div><div id="ethical-ad-placement" data-ea-publisher="readthedocs"></div></div>
+  </aside>
+  <div class="rside-overlay js-menu" role="button" aria-label="Close Table of Contents" aria-controls="rside" aria-expanded="false"></div>
+  <main class="sy-main w-full max-sm:max-w-full print:pt-6">
+<div class="sy-breadcrumbs" role="navigation">
+  <div class="sy-breadcrumbs-inner flex items-center">
+    <div class="md:hidden mr-3">
+      <button class="js-menu" aria-label="Menu" type="button" aria-controls="lside" aria-expanded="false">
+        <i class="i-lucide menu"></i>
+      </button>
+    </div>
+    <ol class="flex-1" itemscope itemtype="https://schema.org/BreadcrumbList"><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="index.html"><span itemprop="name">mxmake</span></a>
+        <span>/</span>
+        <meta itemprop="position" content="1" />
+      </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <strong itemprop="name">Topics and Domains</strong>
+        <meta itemprop="position" content="2" />
+      </li></ol>
+    <div class="xl:hidden ml-1">
+      <button class="js-menu" aria-label="Show table of contents" type="button" aria-controls="rside"
+        aria-expanded="false">
+        <i class="i-lucide outdent"></i>
+      </button>
+    </div>
+  </div>
+</div><div class="flex flex-col break-words justify-between">
+      <div class="min-w-0 max-w-6xl px-6 pb-6 pt-8 xl:px-12">
+        <article class="yue" role="main">
+          <section id="topics-and-domains">
+<span id="id1"></span><h1>Topics and Domains<a class="headerlink" href="#topics-and-domains" title="Link to this heading">¶</a></h1>
+<p>Topics are collections of domains.</p>
+<p>A domain is a snippet of a Makefile defining a set of <em>make</em> targets.</p>
+<hr class="docutils" />
+<section id="ldap">
+<h2>LDAP<a class="headerlink" href="#ldap" title="Link to this heading">¶</a></h2>
+<p>LDAP related domains.</p>
+<hr class="docutils" />
+<section id="openldap">
+<h3>OpenLDAP<a class="headerlink" href="#openldap" title="Link to this heading">¶</a></h3>
+<p>Builds OpenLDAP from source</p>
+<dl class="simple myst">
+<dt>FQN</dt><dd><p><code class="docutils literal notranslate"><span class="pre">ldap.openldap</span></code></p>
+</dd>
+<dt>Depends on</dt><dd><p><code class="docutils literal notranslate"><span class="pre">core.base</span></code></p>
+</dd>
+<dt>Targets</dt><dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">openldap</span></code></dt><dd><p>Download and build OpenLDAP from source.</p>
+</dd>
+</dl>
+</dd>
+<dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">openldap-dirty</span></code></dt><dd><p>Rebuild OpenLDAP on next make run.</p>
+</dd>
+</dl>
+</dd>
+<dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">openldap-clean</span></code></dt><dd><p>Remove local OpenLDAP build.</p>
+</dd>
+</dl>
+</dd>
+<dt>Settings</dt><dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">OPENLDAP_VERSION</span></code></dt><dd><p>OpenLDAP version to download</p>
+</dd>
+<dd><p>Default: <code class="docutils literal notranslate"><span class="pre">2.4.59</span></code></p>
+</dd>
+</dl>
+</dd>
+<dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">OPENLDAP_URL</span></code></dt><dd><p>OpenLDAP base download URL</p>
+</dd>
+<dd><p>Default: <code class="docutils literal notranslate"><span class="pre">https://www.openldap.org/software/download/OpenLDAP/openldap-release/</span></code></p>
+</dd>
+</dl>
+</dd>
+<dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">OPENLDAP_DIR</span></code></dt><dd><p>Build directory for OpenLDAP</p>
+</dd>
+<dd><p>Default: <code class="docutils literal notranslate"><span class="pre">$(shell</span> <span class="pre">echo</span> <span class="pre">$(realpath</span> <span class="pre">.))/openldap</span></code></p>
+</dd>
+</dl>
+</dd>
+<dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">OPENLDAP_ENV</span></code></dt><dd><p>Build environment for OpenLDAP</p>
+</dd>
+<dd><p>Default: <code class="docutils literal notranslate"><span class="pre">PATH=/usr/local/bin:/usr/bin:/bin</span></code></p>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+<hr class="docutils" />
+<section id="python-ldap">
+<h3>Python LDAP<a class="headerlink" href="#python-ldap" title="Link to this heading">¶</a></h3>
+<p>Builds and installs python-ldap against local OpenLDAP</p>
+<dl class="simple myst">
+<dt>FQN</dt><dd><p><code class="docutils literal notranslate"><span class="pre">ldap.python-ldap</span></code></p>
+</dd>
+<dt>Depends on</dt><dd><p><code class="docutils literal notranslate"><span class="pre">core.mxenv</span></code></p>
+</dd>
+<dd><p><code class="docutils literal notranslate"><span class="pre">ldap.openldap</span></code></p>
+</dd>
+<dt>Targets</dt><dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">python-ldap</span></code></dt><dd><p>Builds and installs python-ldap against local OpenLDAP</p>
+</dd>
+</dl>
+</dd>
+<dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">python-ldap-dirty</span></code></dt><dd><p>Builds and installs python-ldap against local OpenLDAP</p>
+</dd>
+</dl>
+</dd>
+<dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">python-ldap-clean</span></code></dt><dd><p>Builds and installs python-ldap against local OpenLDAP</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</section>
+<hr class="docutils" />
+<section id="qa">
+<h2>QA<a class="headerlink" href="#qa" title="Link to this heading">¶</a></h2>
+<p>Quality Assurance related domains</p>
+<hr class="docutils" />
+<section id="black">
+<h3>black<a class="headerlink" href="#black" title="Link to this heading">¶</a></h3>
+<p>Code formatting with black.</p>
+<dl class="simple myst">
+<dt>FQN</dt><dd><p><code class="docutils literal notranslate"><span class="pre">qa.black</span></code></p>
+</dd>
+<dt>Depends on</dt><dd><p><code class="docutils literal notranslate"><span class="pre">core.mxenv</span></code></p>
+</dd>
+<dt>Targets</dt><dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">black</span></code></dt><dd><p>Run black.</p>
+</dd>
+</dl>
+</dd>
+<dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">black-dirty</span></code></dt><dd><p>Marks black dirty</p>
+</dd>
+</dl>
+</dd>
+<dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">black-clean</span></code></dt><dd><p>Uninstall black.</p>
+</dd>
+</dl>
+</dd>
+<dt>Settings</dt><dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">BLACK_SRC</span></code></dt><dd><p>Source folder to scan for Python files to run black on.</p>
+</dd>
+<dd><p>Default: <code class="docutils literal notranslate"><span class="pre">src</span></code></p>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+<hr class="docutils" />
+<section id="coverage">
+<h3>Coverage<a class="headerlink" href="#coverage" title="Link to this heading">¶</a></h3>
+<p>Project coverage testing.</p>
+<dl class="simple myst">
+<dt>FQN</dt><dd><p><code class="docutils literal notranslate"><span class="pre">qa.coverage</span></code></p>
+</dd>
+<dt>Depends on</dt><dd><p><code class="docutils literal notranslate"><span class="pre">qa.test</span></code></p>
+</dd>
+<dt>Targets</dt><dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">coverage</span></code></dt><dd><p>Run project coverage. :ref:<code class="docutils literal notranslate"><span class="pre">run-coverage</span></code> template can be
+used for automatic coverage script creation.</p>
+</dd>
+</dl>
+</dd>
+<dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">coverage-clean</span></code></dt><dd><p>Remove coverage related files and directories.</p>
+</dd>
+</dl>
+</dd>
+<dt>Settings</dt><dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">COVERAGE_COMMAND</span></code></dt><dd><p>The command which gets executed. Defaults to the location the
+:ref:<code class="docutils literal notranslate"><span class="pre">run-coverage</span></code> template gets rendered to if configured.</p>
+</dd>
+<dd><p>Default: <code class="docutils literal notranslate"><span class="pre">.mxmake/files/run-coverage.sh</span></code></p>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+<hr class="docutils" />
+<section id="isort">
+<h3>isort<a class="headerlink" href="#isort" title="Link to this heading">¶</a></h3>
+<p>Import sorting with isort.</p>
+<dl class="simple myst">
+<dt>FQN</dt><dd><p><code class="docutils literal notranslate"><span class="pre">qa.isort</span></code></p>
+</dd>
+<dt>Depends on</dt><dd><p><code class="docutils literal notranslate"><span class="pre">core.mxenv</span></code></p>
+</dd>
+<dt>Targets</dt><dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">isort</span></code></dt><dd><p>Run isort.</p>
+</dd>
+</dl>
+</dd>
+<dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">isort-dirty</span></code></dt><dd><p>Marks isort dirty</p>
+</dd>
+</dl>
+</dd>
+<dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">isort-clean</span></code></dt><dd><p>Uninstall isort.</p>
+</dd>
+</dl>
+</dd>
+<dt>Settings</dt><dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">ISORT_SRC</span></code></dt><dd><p>Source folder to scan for Python files to run isort on.</p>
+</dd>
+<dd><p>Default: <code class="docutils literal notranslate"><span class="pre">src</span></code></p>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+<hr class="docutils" />
+<section id="mypy">
+<h3>mypy<a class="headerlink" href="#mypy" title="Link to this heading">¶</a></h3>
+<p>Static code analysis with mypy.</p>
+<dl class="simple myst">
+<dt>FQN</dt><dd><p><code class="docutils literal notranslate"><span class="pre">qa.mypy</span></code></p>
+</dd>
+<dt>Depends on</dt><dd><p><code class="docutils literal notranslate"><span class="pre">core.packages</span></code></p>
+</dd>
+<dt>Targets</dt><dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">mypy</span></code></dt><dd><p>Run mypy.</p>
+</dd>
+</dl>
+</dd>
+<dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">mypy-dirty</span></code></dt><dd><p>Marks mypy dirty</p>
+</dd>
+</dl>
+</dd>
+<dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">mypy-clean</span></code></dt><dd><p>Uninstall mypy and removes cached data.</p>
+</dd>
+</dl>
+</dd>
+<dt>Settings</dt><dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">MYPY_SRC</span></code></dt><dd><p>Source folder for code analysis.</p>
+</dd>
+<dd><p>Default: <code class="docutils literal notranslate"><span class="pre">src</span></code></p>
+</dd>
+</dl>
+</dd>
+<dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">MYPY_REQUIREMENTS</span></code></dt><dd><p>Mypy Python requirements to be installed (via pip).</p>
+</dd>
+<dd><p>Default: <code class="docutils literal notranslate"><span class="pre">types-setuptools</span></code></p>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+<hr class="docutils" />
+<section id="pyrefly">
+<h3>pyrefly<a class="headerlink" href="#pyrefly" title="Link to this heading">¶</a></h3>
+<p>Static code analysis with pyrefly https://pyrefly.org/</p>
+<dl class="simple myst">
+<dt>FQN</dt><dd><p><code class="docutils literal notranslate"><span class="pre">qa.pyrefly</span></code></p>
+</dd>
+<dt>Depends on</dt><dd><p><code class="docutils literal notranslate"><span class="pre">core.packages</span></code></p>
+</dd>
+<dt>Targets</dt><dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">pyrefly</span></code></dt><dd><p>Run pyrefly.</p>
+</dd>
+</dl>
+</dd>
+<dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">pyrefly-dirty</span></code></dt><dd><p>Marks pyrefly dirty</p>
+</dd>
+</dl>
+</dd>
+<dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">pyrefly-clean</span></code></dt><dd><p>Uninstall pyrefly and removes cached data.</p>
+</dd>
+</dl>
+</dd>
+<dt>Settings</dt><dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">PYREFLY_SRC</span></code></dt><dd><p>Source folder for code analysis. Left empty to use value from pyproject.toml</p>
+</dd>
+<dd><p>Default: <code class="docutils literal notranslate"><span class="pre">src</span></code></p>
+</dd>
+</dl>
+</dd>
+<dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">PYREFLY_REQUIREMENTS</span></code></dt><dd><p>Python requirements to be installed (via pip).</p>
+</dd>
+<dd><p>Default: ``</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+<hr class="docutils" />
+<section id="pyupgrade">
+<h3>pyupgrade<a class="headerlink" href="#pyupgrade" title="Link to this heading">¶</a></h3>
+<p>Automatically upgrade syntax for newer versions of the language.</p>
+<dl class="simple myst">
+<dt>FQN</dt><dd><p><code class="docutils literal notranslate"><span class="pre">qa.pyupgrade</span></code></p>
+</dd>
+<dt>Depends on</dt><dd><p><code class="docutils literal notranslate"><span class="pre">core.mxenv</span></code></p>
+</dd>
+<dt>Targets</dt><dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">pyupgrade</span></code></dt><dd><p>Run pyupgrade.</p>
+</dd>
+</dl>
+</dd>
+<dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">pyupgrade-dirty</span></code></dt><dd><p>Marks pyupgrade dirty</p>
+</dd>
+</dl>
+</dd>
+<dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">pyupgrade-clean</span></code></dt><dd><p>Uninstall pyupgrade.</p>
+</dd>
+</dl>
+</dd>
+<dt>Settings</dt><dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">PYUPGRADE_SRC</span></code></dt><dd><p>Source folder to scan for XML and ZCML files.</p>
+</dd>
+<dd><p>Default: <code class="docutils literal notranslate"><span class="pre">src</span></code></p>
+</dd>
+</dl>
+</dd>
+<dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">PYUPGRADE_PARAMETERS</span></code></dt><dd><p>Additional parameters for pyupgrade, see https://github.com/asottile/pyupgrade for details.</p>
+</dd>
+<dd><p>Default: <code class="docutils literal notranslate"><span class="pre">--py38-plus</span></code></p>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+<hr class="docutils" />
+<section id="ruff">
+<h3>ruff<a class="headerlink" href="#ruff" title="Link to this heading">¶</a></h3>
+<p>Code formatting with ruff.</p>
+<dl class="simple myst">
+<dt>FQN</dt><dd><p><code class="docutils literal notranslate"><span class="pre">qa.ruff</span></code></p>
+</dd>
+<dt>Depends on</dt><dd><p><code class="docutils literal notranslate"><span class="pre">core.mxenv</span></code></p>
+</dd>
+<dt>Targets</dt><dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">ruff</span></code></dt><dd><p>Run ruff.</p>
+</dd>
+</dl>
+</dd>
+<dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">ruff-dirty</span></code></dt><dd><p>Marks ruff dirty</p>
+</dd>
+</dl>
+</dd>
+<dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">ruff-clean</span></code></dt><dd><p>Uninstall ruff.</p>
+</dd>
+</dl>
+</dd>
+<dt>Settings</dt><dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">RUFF_SRC</span></code></dt><dd><p>Source folder to scan for Python files to run ruff on.</p>
+</dd>
+<dd><p>Default: <code class="docutils literal notranslate"><span class="pre">src</span></code></p>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+<hr class="docutils" />
+<section id="test">
+<h3>Test<a class="headerlink" href="#test" title="Link to this heading">¶</a></h3>
+<p>Project testing.</p>
+<dl class="simple myst">
+<dt>FQN</dt><dd><p><code class="docutils literal notranslate"><span class="pre">qa.test</span></code></p>
+</dd>
+<dt>Depends on</dt><dd><p><code class="docutils literal notranslate"><span class="pre">core.packages</span></code></p>
+</dd>
+<dt>Targets</dt><dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">test</span></code></dt><dd><p>Run project tests. The :ref:<code class="docutils literal notranslate"><span class="pre">run-tests</span></code> template can be used
+for automatic test script creation.</p>
+</dd>
+</dl>
+</dd>
+<dt>Settings</dt><dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">TEST_COMMAND</span></code></dt><dd><p>The command which gets executed. Defaults to the location the
+:ref:<code class="docutils literal notranslate"><span class="pre">run-tests</span></code> template gets rendered to if configured.</p>
+</dd>
+<dd><p>Default: <code class="docutils literal notranslate"><span class="pre">.mxmake/files/run-tests.sh</span></code></p>
+</dd>
+</dl>
+</dd>
+<dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">TEST_REQUIREMENTS</span></code></dt><dd><p>Additional Python requirements for running tests to be
+installed (via pip).</p>
+</dd>
+<dd><p>Default: <code class="docutils literal notranslate"><span class="pre">pytest</span></code></p>
+</dd>
+</dl>
+</dd>
+<dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">TEST_DEPENDENCY_TARGETS</span></code></dt><dd><p>Additional make targets the test target depends on.</p>
+</dd>
+<dd><p>Default: ``</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+<hr class="docutils" />
+<section id="zpretty">
+<h3>zpretty<a class="headerlink" href="#zpretty" title="Link to this heading">¶</a></h3>
+<p>Format XML and ZCML with zpretty.</p>
+<dl class="simple myst">
+<dt>FQN</dt><dd><p><code class="docutils literal notranslate"><span class="pre">qa.zpretty</span></code></p>
+</dd>
+<dt>Depends on</dt><dd><p><code class="docutils literal notranslate"><span class="pre">core.mxenv</span></code></p>
+</dd>
+<dt>Targets</dt><dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">zpretty</span></code></dt><dd><p>Run zpretty.</p>
+</dd>
+</dl>
+</dd>
+<dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">zpretty-dirty</span></code></dt><dd><p>Marks zpretty dirty</p>
+</dd>
+</dl>
+</dd>
+<dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">zpretty-clean</span></code></dt><dd><p>Uninstall zpretty.</p>
+</dd>
+</dl>
+</dd>
+<dt>Settings</dt><dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">ZPRETTY_SRC</span></code></dt><dd><p>Source folder to scan for XML and ZCML files.</p>
+</dd>
+<dd><p>Default: <code class="docutils literal notranslate"><span class="pre">src</span></code></p>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</section>
+<hr class="docutils" />
+<section id="applications">
+<h2>Applications<a class="headerlink" href="#applications" title="Link to this heading">¶</a></h2>
+<p>Application specific domains.</p>
+<hr class="docutils" />
+<section id="cookiecutter">
+<h3>cookiecutter<a class="headerlink" href="#cookiecutter" title="Link to this heading">¶</a></h3>
+<p>Tool to generate skeletons and configuration from cookiecutter templates.</p>
+<dl class="simple myst">
+<dt>FQN</dt><dd><p><code class="docutils literal notranslate"><span class="pre">applications.cookiecutter</span></code></p>
+</dd>
+<dt>Depends on</dt><dd><p><code class="docutils literal notranslate"><span class="pre">core.packages</span></code></p>
+</dd>
+<dt>Targets</dt><dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">cookiecutter</span></code></dt><dd><p>Install cookiecutter.</p>
+</dd>
+</dl>
+</dd>
+<dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">cookiecutter-dirty</span></code></dt><dd><p>Marks cookiecutter dirty.</p>
+</dd>
+</dl>
+</dd>
+<dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">cookiecutter-clean</span></code></dt><dd><p>Uninstall cookiecutter.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+<hr class="docutils" />
+<section id="plone">
+<h3>plone<a class="headerlink" href="#plone" title="Link to this heading">¶</a></h3>
+<p>Plone application related</p>
+<dl class="simple myst">
+<dt>FQN</dt><dd><p><code class="docutils literal notranslate"><span class="pre">applications.plone</span></code></p>
+</dd>
+<dt>Depends on</dt><dd><p><code class="docutils literal notranslate"><span class="pre">applications.zope</span></code></p>
+</dd>
+<dt>Targets</dt><dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">plone-site-create</span></code></dt><dd><p>Creates a Plone site using the script provided in
+<code class="docutils literal notranslate"><span class="pre">PLONE_SITE_SCRIPT</span></code> configuration.</p>
+</dd>
+</dl>
+</dd>
+<dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">plone-site-purge</span></code></dt><dd><p>Removes the Plone instance from the database, but the database
+itself is kept.</p>
+</dd>
+</dl>
+</dd>
+<dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">plone-site-recreate</span></code></dt><dd><p>Removes the Plone instance from the database like in plone-site-purge,
+then creates a new one like in plone-site-create.</p>
+</dd>
+</dl>
+</dd>
+<dt>Settings</dt><dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">PLONE_SITE_SCRIPT</span></code></dt><dd><p>Path to the script to create or purge a Plone site</p>
+</dd>
+<dd><p>Default: <code class="docutils literal notranslate"><span class="pre">.mxmake/files/plone-site.py</span></code></p>
+</dd>
+</dl>
+</dd>
+<dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">PLONE_SITE_CREATE_FAIL_IF_EXISTS</span></code></dt><dd><p>Exit with an error if the Plone site already exists</p>
+</dd>
+<dd><p>Default: <code class="docutils literal notranslate"><span class="pre">True</span></code></p>
+</dd>
+</dl>
+</dd>
+<dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">PLONE_SITE_PURGE_FAIL_IF_NOT_EXISTS</span></code></dt><dd><p>Exit with an error if the Plone site does not exists</p>
+</dd>
+<dd><p>Default: <code class="docutils literal notranslate"><span class="pre">True</span></code></p>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+<hr class="docutils" />
+<section id="twisted-server">
+<h3>Twisted Server<a class="headerlink" href="#twisted-server" title="Link to this heading">¶</a></h3>
+<p>Install and start Twisted Server.</p>
+<dl class="simple myst">
+<dt>FQN</dt><dd><p><code class="docutils literal notranslate"><span class="pre">applications.twisted</span></code></p>
+</dd>
+<dt>Depends on</dt><dd><p><code class="docutils literal notranslate"><span class="pre">core.packages</span></code></p>
+</dd>
+<dt>Targets</dt><dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">twisted-start</span></code></dt><dd><p>Run Twisted Server</p>
+</dd>
+</dl>
+</dd>
+<dt>Settings</dt><dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">TWISTED_TWISTD_OPTIONS</span></code></dt><dd><p>The Twisted Application Configuration file.</p>
+</dd>
+<dd><p>Default: <code class="docutils literal notranslate"><span class="pre">-ny</span></code></p>
+</dd>
+</dl>
+</dd>
+<dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">TWISTED_TAC_FILE</span></code></dt><dd><p>The Twisted Application Configuration file.</p>
+</dd>
+<dd><p>Default: <code class="docutils literal notranslate"><span class="pre">twisted.tac</span></code></p>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+<hr class="docutils" />
+<section id="zest-releaser">
+<h3>zest.releaser<a class="headerlink" href="#zest-releaser" title="Link to this heading">¶</a></h3>
+<p>A collection of command-line programs to help automate the
+task of releasing a Python project.</p>
+<dl class="simple myst">
+<dt>FQN</dt><dd><p><code class="docutils literal notranslate"><span class="pre">applications.zest-releaser</span></code></p>
+</dd>
+<dt>Depends on</dt><dd><p><code class="docutils literal notranslate"><span class="pre">core.mxenv</span></code></p>
+</dd>
+<dt>Targets</dt><dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">zest-releaser-prerelease</span></code></dt><dd><p>Run prerelease command of zest.releaser</p>
+</dd>
+</dl>
+</dd>
+<dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">zest-releaser-release</span></code></dt><dd><p>Run release command of zest.releaser</p>
+</dd>
+</dl>
+</dd>
+<dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">zest-releaser-postrelease</span></code></dt><dd><p>Run postrelease command of zest.releaser</p>
+</dd>
+</dl>
+</dd>
+<dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">zest-releaser-fullrelease</span></code></dt><dd><p>Run fullrelease command of zest.releaser</p>
+</dd>
+</dl>
+</dd>
+<dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">zest-releaser-dirty</span></code></dt><dd><p>Marks zest.releaser dirty</p>
+</dd>
+</dl>
+</dd>
+<dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">zest-releaser-clean</span></code></dt><dd><p>Uninstall zest.releaser.</p>
+</dd>
+</dl>
+</dd>
+<dt>Settings</dt><dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">ZEST_RELEASER_PRERELEASE_OPTIONS</span></code></dt><dd><p>Options to pass to zest.releaser prerelease command.</p>
+</dd>
+<dd><p>Default: ``</p>
+</dd>
+</dl>
+</dd>
+<dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">ZEST_RELEASER_RELEASE_OPTIONS</span></code></dt><dd><p>Options to pass to zest.releaser release command.</p>
+</dd>
+<dd><p>Default: ``</p>
+</dd>
+</dl>
+</dd>
+<dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">ZEST_RELEASER_POSTRELEASE_OPTIONS</span></code></dt><dd><p>Options to pass to zest.releaser postrelease command.</p>
+</dd>
+<dd><p>Default: ``</p>
+</dd>
+</dl>
+</dd>
+<dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">ZEST_RELEASER_FULLRELEASE_OPTIONS</span></code></dt><dd><p>Options to pass to zest.releaser fullrelease command.</p>
+</dd>
+<dd><p>Default: ``</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+<hr class="docutils" />
+<section id="zope">
+<h3>zope<a class="headerlink" href="#zope" title="Link to this heading">¶</a></h3>
+<p>Zope and Plone application related</p>
+<dl class="simple myst">
+<dt>FQN</dt><dd><p><code class="docutils literal notranslate"><span class="pre">applications.zope</span></code></p>
+</dd>
+<dt>Depends on</dt><dd><p><code class="docutils literal notranslate"><span class="pre">applications.cookiecutter</span></code></p>
+</dd>
+<dt>Targets</dt><dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">zope-instance</span></code></dt><dd><p>Use cookiecutter-zope-instance to create Zope- and its WSGI-configuration from values of the cookiecutter configuration file.</p>
+</dd>
+</dl>
+</dd>
+<dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">zope-start</span></code></dt><dd><p>Start Zope/Plone WSGI server.</p>
+</dd>
+</dl>
+</dd>
+<dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">zope-debug</span></code></dt><dd><p>Start Zope/Plone debug console.</p>
+</dd>
+</dl>
+</dd>
+<dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">zope-runscript</span></code></dt><dd><p>Run a script within Zope/plone context.
+ZOPE_SCRIPTNAME must be set to the script to run.
+This can be done by setting the environment variable or by setting the make variable in the header.
+Example: <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">ZOPE_SCRIPTNAME=./my-script.py</span> <span class="pre">zope-runscript</span></code></p>
+</dd>
+</dl>
+</dd>
+<dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">zope-adduser</span></code></dt><dd><p>Adds an <a class="reference external" href="https://zope.readthedocs.io/en/latest/zopebook/Security.html#zope-emergency-user">emergency user</a> to Zope.
+This is an user with the Manager role created in the Zope application roots user folder!
+This is not meant to do user management, but to get access to a Zope site if all other passwords are gone.
+The user name must not exist already in the application roots user folder.
+ZOPE_USER_NAME and ZOPE_USER_PASSWORD should not be set in the Makefile, but passed in as environment variables.
+Example: <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">ZOPE_USER_NAME=emergency</span> <span class="pre">ZOPE_USER_PASSWORD=verysecret</span> <span class="pre">adduser</span></code></p>
+</dd>
+</dl>
+</dd>
+<dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">zope-dirty</span></code></dt><dd><p>Touches the configuration file to force a rebuild of the Zope instance.</p>
+</dd>
+</dl>
+</dd>
+<dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">zope-clean</span></code></dt><dd><p>Removes generated configuration files but keeps Zope database.</p>
+</dd>
+</dl>
+</dd>
+<dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">zope-purge</span></code></dt><dd><p>Removes the whole Zope instance folder including database.</p>
+</dd>
+</dl>
+</dd>
+<dt>Settings</dt><dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">ZOPE_CONFIGURATION_FILE</span></code></dt><dd><p>cookiecutter configuration file to use</p>
+</dd>
+<dd><p>Default: <code class="docutils literal notranslate"><span class="pre">instance.yaml</span></code></p>
+</dd>
+</dl>
+</dd>
+<dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">ZOPE_TEMPLATE</span></code></dt><dd><p>cookiecutter configuration file to use</p>
+</dd>
+<dd><p>Default: <code class="docutils literal notranslate"><span class="pre">https://github.com/plone/cookiecutter-zope-instance</span></code></p>
+</dd>
+</dl>
+</dd>
+<dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">ZOPE_TEMPLATE_CHECKOUT</span></code></dt><dd><p>cookiecutter branch, tag or commit to checkout from the ZOPE_TEMPLATE. If empty, <code class="docutils literal notranslate"><span class="pre">--checkout</span></code> is not passed to cookiecutter.</p>
+</dd>
+<dd><p>Default: <code class="docutils literal notranslate"><span class="pre">main</span></code></p>
+</dd>
+</dl>
+</dd>
+<dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">ZOPE_BASE_FOLDER</span></code></dt><dd><p>The Zope folder “instance” will be generated relative to this existing folder.</p>
+</dd>
+<dd><p>Default: <code class="docutils literal notranslate"><span class="pre">.</span></code></p>
+</dd>
+</dl>
+</dd>
+<dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">ZOPE_SCRIPTNAME</span></code></dt><dd><p>script to run</p>
+</dd>
+<dd><p>Default: <code class="docutils literal notranslate"><span class="pre">No</span> <span class="pre">Default</span></code></p>
+</dd>
+</dl>
+</dd>
+<dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">ZOPE_USER_NAME</span></code></dt><dd><p>user name to create</p>
+</dd>
+<dd><p>Default: <code class="docutils literal notranslate"><span class="pre">No</span> <span class="pre">Default</span></code></p>
+</dd>
+</dl>
+</dd>
+<dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">ZOPE_USER_PASSWORD</span></code></dt><dd><p>user name to create</p>
+</dd>
+<dd><p>Default: <code class="docutils literal notranslate"><span class="pre">No</span> <span class="pre">Default</span></code></p>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</section>
+<hr class="docutils" />
+<section id="i18n">
+<h2>i18n<a class="headerlink" href="#i18n" title="Link to this heading">¶</a></h2>
+<p>Contains domains for managing translations.</p>
+<hr class="docutils" />
+<section id="gettext">
+<h3>Gettext<a class="headerlink" href="#gettext" title="Link to this heading">¶</a></h3>
+<p>Provide targets for working with gettext</p>
+<dl class="simple myst">
+<dt>FQN</dt><dd><p><code class="docutils literal notranslate"><span class="pre">i18n.gettext</span></code></p>
+</dd>
+<dt>Targets</dt><dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">gettext-create</span></code></dt><dd><p>Create message catalogs for all defined languages if not exists.</p>
+</dd>
+</dl>
+</dd>
+<dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">gettext-update</span></code></dt><dd><p>Update translations.</p>
+</dd>
+</dl>
+</dd>
+<dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">gettext-compile</span></code></dt><dd><p>Compile message catalogs.</p>
+</dd>
+</dl>
+</dd>
+<dt>Settings</dt><dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">GETTEXT_LOCALES_PATH</span></code></dt><dd><p>Path of directory containing the message catalogs.</p>
+</dd>
+<dd><p>Default: <code class="docutils literal notranslate"><span class="pre">locale</span></code></p>
+</dd>
+</dl>
+</dd>
+<dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">GETTEXT_DOMAIN</span></code></dt><dd><p>Translation domain to use.</p>
+</dd>
+<dd><p>Default: ``</p>
+</dd>
+</dl>
+</dd>
+<dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">GETTEXT_LANGUAGES</span></code></dt><dd><p>Space separated list of language identifiers.</p>
+</dd>
+<dd><p>Default: ``</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+<hr class="docutils" />
+<section id="lingua">
+<h3>Lingua<a class="headerlink" href="#lingua" title="Link to this heading">¶</a></h3>
+<p>Extract translatable texts from your code.</p>
+<dl class="simple myst">
+<dt>FQN</dt><dd><p><code class="docutils literal notranslate"><span class="pre">i18n.lingua</span></code></p>
+</dd>
+<dt>Depends on</dt><dd><p><code class="docutils literal notranslate"><span class="pre">core.mxenv</span></code></p>
+</dd>
+<dd><p><code class="docutils literal notranslate"><span class="pre">i18n.gettext</span></code></p>
+</dd>
+<dt>Targets</dt><dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">lingua-extract</span></code></dt><dd><p>Extract translatable texts from your code.</p>
+</dd>
+</dl>
+</dd>
+<dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">lingua</span></code></dt><dd><p>Extract translatable texts from your code and create,
+update and compile message catalogs.</p>
+</dd>
+</dl>
+</dd>
+<dt>Settings</dt><dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">LINGUA_SEARCH_PATH</span></code></dt><dd><p>Path of directory to extract translatable texts from.</p>
+</dd>
+<dd><p>Default: <code class="docutils literal notranslate"><span class="pre">src</span></code></p>
+</dd>
+</dl>
+</dd>
+<dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">LINGUA_PLUGINS</span></code></dt><dd><p>Python packages containing lingua extensions.</p>
+</dd>
+<dd><p>Default: ``</p>
+</dd>
+</dl>
+</dd>
+<dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">LINGUA_OPTIONS</span></code></dt><dd><p>Command line options passed to <code class="docutils literal notranslate"><span class="pre">pot-create</span></code></p>
+</dd>
+<dd><p>Default: ``</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</section>
+<hr class="docutils" />
+<section id="system">
+<h2>System<a class="headerlink" href="#system" title="Link to this heading">¶</a></h2>
+<p>Operating System specific domains.</p>
+<hr class="docutils" />
+<section id="system-dependencies">
+<h3>System dependencies<a class="headerlink" href="#system-dependencies" title="Link to this heading">¶</a></h3>
+<p>System dependency management.</p>
+<dl class="simple myst">
+<dt>FQN</dt><dd><p><code class="docutils literal notranslate"><span class="pre">system.dependencies</span></code></p>
+</dd>
+<dt>Depends on</dt><dd><p><code class="docutils literal notranslate"><span class="pre">core.base</span></code></p>
+</dd>
+<dt>Targets</dt><dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">system-dependencies</span></code></dt><dd><p>Install system dependencies.</p>
+</dd>
+</dl>
+</dd>
+<dt>Settings</dt><dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">SYSTEM_DEPENDENCIES</span></code></dt><dd><p>Space separated system package names.</p>
+</dd>
+<dd><p>Default: ``</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</section>
+<hr class="docutils" />
+<section id="javascript">
+<h2>Javascript<a class="headerlink" href="#javascript" title="Link to this heading">¶</a></h2>
+<p>Javascript related domains.</p>
+<hr class="docutils" />
+<section id="karma-tests">
+<h3>Karma tests<a class="headerlink" href="#karma-tests" title="Link to this heading">¶</a></h3>
+<p>Run JavaScript tests using karma.</p>
+<dl class="simple myst">
+<dt>FQN</dt><dd><p><code class="docutils literal notranslate"><span class="pre">js.karma</span></code></p>
+</dd>
+<dt>Depends on</dt><dd><p><code class="docutils literal notranslate"><span class="pre">js.nodejs</span></code></p>
+</dd>
+<dt>Targets</dt><dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">karma</span></code></dt><dd><p>Run karma.</p>
+</dd>
+</dl>
+</dd>
+<dt>Settings</dt><dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">KARMA_CONFIG</span></code></dt><dd><p>Karma config file.</p>
+</dd>
+<dd><p>Default: <code class="docutils literal notranslate"><span class="pre">karma.conf.js</span></code></p>
+</dd>
+</dl>
+</dd>
+<dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">KARMA_OPTIONS</span></code></dt><dd><p>Karma additional command line options.</p>
+</dd>
+<dd><p>Default: <code class="docutils literal notranslate"><span class="pre">--single-run</span></code></p>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+<hr class="docutils" />
+<section id="node-js">
+<h3>Node.js<a class="headerlink" href="#node-js" title="Link to this heading">¶</a></h3>
+<p>Provide targets for working with Node.js. A working version of
+Node.js is expected to be installed. We suggest using <code class="docutils literal notranslate"><span class="pre">nvm</span></code> for managing
+Node.JS installations.</p>
+<dl class="simple myst">
+<dt>FQN</dt><dd><p><code class="docutils literal notranslate"><span class="pre">js.nodejs</span></code></p>
+</dd>
+<dt>Depends on</dt><dd><p><code class="docutils literal notranslate"><span class="pre">core.base</span></code></p>
+</dd>
+<dt>Targets</dt><dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">nodejs</span></code></dt><dd><p>Installs Javascript packages using the current active node
+version with the configured package manager.</p>
+</dd>
+</dl>
+</dd>
+<dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">nodejs-dirty</span></code></dt><dd><p>Build :ref:<code class="docutils literal notranslate"><span class="pre">nodejs</span></code> target on next make run.</p>
+</dd>
+</dl>
+</dd>
+<dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">nodejs-clean</span></code></dt><dd><p>Remove installed Javascript packages.</p>
+</dd>
+</dl>
+</dd>
+<dt>Settings</dt><dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">NODEJS_PACKAGE_MANAGER</span></code></dt><dd><p>The package manager to use. Defaults to <code class="docutils literal notranslate"><span class="pre">npm</span></code>. Possible values
+are <code class="docutils literal notranslate"><span class="pre">npm</span></code> and <code class="docutils literal notranslate"><span class="pre">pnpm</span></code></p>
+</dd>
+<dd><p>Default: <code class="docutils literal notranslate"><span class="pre">npm</span></code></p>
+</dd>
+</dl>
+</dd>
+<dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">NODEJS_PREFIX</span></code></dt><dd><p>Value for <code class="docutils literal notranslate"><span class="pre">--prefix</span></code> option when installing packages.</p>
+</dd>
+<dd><p>Default: <code class="docutils literal notranslate"><span class="pre">.</span></code></p>
+</dd>
+</dl>
+</dd>
+<dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">NODEJS_PACKAGES</span></code></dt><dd><p>Packages to install with <code class="docutils literal notranslate"><span class="pre">--no-save</span></code> option.</p>
+</dd>
+<dd><p>Default: ``</p>
+</dd>
+</dl>
+</dd>
+<dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">NODEJS_DEV_PACKAGES</span></code></dt><dd><p>Packages to install with <code class="docutils literal notranslate"><span class="pre">--save-dev</span></code> option.</p>
+</dd>
+<dd><p>Default: ``</p>
+</dd>
+</dl>
+</dd>
+<dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">NODEJS_PROD_PACKAGES</span></code></dt><dd><p>Packages to install with <code class="docutils literal notranslate"><span class="pre">--save-prod</span></code> option.</p>
+</dd>
+<dd><p>Default: ``</p>
+</dd>
+</dl>
+</dd>
+<dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">NODEJS_OPT_PACKAGES</span></code></dt><dd><p>Packages to install with <code class="docutils literal notranslate"><span class="pre">--save-optional</span></code> option.</p>
+</dd>
+<dd><p>Default: ``</p>
+</dd>
+</dl>
+</dd>
+<dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">NODEJS_INSTALL_OPTS</span></code></dt><dd><p>Additional install options. Possible values are <code class="docutils literal notranslate"><span class="pre">--save-exact</span></code>
+and <code class="docutils literal notranslate"><span class="pre">--save-bundle</span></code>.</p>
+</dd>
+<dd><p>Default: ``</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+<hr class="docutils" />
+<section id="rollup-javascript-module-bundler">
+<h3>Rollup JavaScript module bundler<a class="headerlink" href="#rollup-javascript-module-bundler" title="Link to this heading">¶</a></h3>
+<p>Create JavaScript bundles with rollup.</p>
+<dl class="simple myst">
+<dt>FQN</dt><dd><p><code class="docutils literal notranslate"><span class="pre">js.rollup</span></code></p>
+</dd>
+<dt>Depends on</dt><dd><p><code class="docutils literal notranslate"><span class="pre">js.nodejs</span></code></p>
+</dd>
+<dt>Targets</dt><dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">rollup</span></code></dt><dd><p>Run rollup JavaScript bundler.</p>
+</dd>
+</dl>
+</dd>
+<dt>Settings</dt><dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">ROLLUP_CONFIG</span></code></dt><dd><p>Rollup config file.</p>
+</dd>
+<dd><p>Default: <code class="docutils literal notranslate"><span class="pre">rollup.conf.js</span></code></p>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+<hr class="docutils" />
+<section id="scss-compiler">
+<h3>SCSS Compiler<a class="headerlink" href="#scss-compiler" title="Link to this heading">¶</a></h3>
+<p>Compile Stylesheets using SCSS.</p>
+<dl class="simple myst">
+<dt>FQN</dt><dd><p><code class="docutils literal notranslate"><span class="pre">js.scss</span></code></p>
+</dd>
+<dt>Depends on</dt><dd><p><code class="docutils literal notranslate"><span class="pre">js.nodejs</span></code></p>
+</dd>
+<dt>Targets</dt><dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">scss</span></code></dt><dd><p>Run SCSS Stylesheet Compiler.</p>
+</dd>
+</dl>
+</dd>
+<dt>Settings</dt><dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">SCSS_SOURCE</span></code></dt><dd><p>The SCSS root source file.</p>
+</dd>
+<dd><p>Default: <code class="docutils literal notranslate"><span class="pre">scss/styles.scss</span></code></p>
+</dd>
+</dl>
+</dd>
+<dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">SCSS_TARGET</span></code></dt><dd><p>The target file for the compiles Stylesheet.</p>
+</dd>
+<dd><p>Default: <code class="docutils literal notranslate"><span class="pre">scss/styles.css</span></code></p>
+</dd>
+</dl>
+</dd>
+<dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">SCSS_MIN_TARGET</span></code></dt><dd><p>The target file for the compressed Stylesheet.</p>
+</dd>
+<dd><p>Default: <code class="docutils literal notranslate"><span class="pre">scss/styles.min.css</span></code></p>
+</dd>
+</dl>
+</dd>
+<dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">SCSS_OPTIONS</span></code></dt><dd><p>Additional options to be passed to SCSS compiler.</p>
+</dd>
+<dd><p>Default: <code class="docutils literal notranslate"><span class="pre">--no-source-map=none</span></code></p>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+<hr class="docutils" />
+<section id="web-test-runner">
+<h3>Web test runner<a class="headerlink" href="#web-test-runner" title="Link to this heading">¶</a></h3>
+<p>Run JavaScript tests using web test runner.</p>
+<dl class="simple myst">
+<dt>FQN</dt><dd><p><code class="docutils literal notranslate"><span class="pre">js.wtr</span></code></p>
+</dd>
+<dt>Depends on</dt><dd><p><code class="docutils literal notranslate"><span class="pre">js.nodejs</span></code></p>
+</dd>
+<dt>Targets</dt><dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">wtr</span></code></dt><dd><p>Execute web test runner.</p>
+</dd>
+</dl>
+</dd>
+<dt>Settings</dt><dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">WTR_CONFIG</span></code></dt><dd><p>Web test runner config file.</p>
+</dd>
+<dd><p>Default: <code class="docutils literal notranslate"><span class="pre">wtr.config.mjs</span></code></p>
+</dd>
+</dl>
+</dd>
+<dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">WTR_OPTIONS</span></code></dt><dd><p>Web test runner additional command line options.</p>
+</dd>
+<dd><p>Default: <code class="docutils literal notranslate"><span class="pre">--coverage</span></code></p>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</section>
+<hr class="docutils" />
+<section id="core">
+<h2>Core<a class="headerlink" href="#core" title="Link to this heading">¶</a></h2>
+<p>In the core are domains covering setup of the Python environment, script generation, sources/VCS handling and more.</p>
+<hr class="docutils" />
+<section id="base">
+<h3>Base<a class="headerlink" href="#base" title="Link to this heading">¶</a></h3>
+<p>Defines common build targets and basic settings for project.</p>
+<dl class="simple myst">
+<dt>FQN</dt><dd><p><code class="docutils literal notranslate"><span class="pre">core.base</span></code></p>
+</dd>
+<dt>Targets</dt><dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">install</span></code></dt><dd><p>Install project. Installs the entire project supposed for
+development.</p>
+</dd>
+</dl>
+</dd>
+<dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">deploy</span></code></dt><dd><p>Deploy project. Supposed to setup a production version of
+the project.</p>
+</dd>
+</dl>
+</dd>
+<dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">run</span></code></dt><dd><p>Run project. Depending on target defined in <code class="docutils literal notranslate"><span class="pre">RUN_TARGET</span></code></p>
+</dd>
+</dl>
+</dd>
+<dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">dirty</span></code></dt><dd><p>Force make to rebuild targets on next make run.</p>
+</dd>
+</dl>
+</dd>
+<dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">clean</span></code></dt><dd><p>Clean project. Removes all installation related files.</p>
+</dd>
+</dl>
+</dd>
+<dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">purge</span></code></dt><dd><p>Purge project. Removes all installation related files and data.
+THIS IS AN OPERATION FOR POTENTIAL DATA LOSS! USE SPARINGLY AND AT YOUR
+OWN RISK!</p>
+</dd>
+</dl>
+</dd>
+<dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">runtime-clean</span></code></dt><dd><p>Remove runtime artifacts, like byte-code and caches.</p>
+</dd>
+</dl>
+</dd>
+<dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">check</span></code></dt><dd><p>Run all QA checkers related targets, e.g. code style
+Only gets included if any qa topic related domain is used.</p>
+</dd>
+</dl>
+</dd>
+<dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">type-check</span></code></dt><dd><p>Run all QA type-checkers related targets, e.g. type checks.
+Only gets included if any qa topic related domain is used.</p>
+</dd>
+</dl>
+</dd>
+<dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">format</span></code></dt><dd><p>Run all QA code formatters related targets, e.g. code style
+Only gets included if any qa topic related domain is used.</p>
+</dd>
+</dl>
+</dd>
+<dt>Settings</dt><dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">DEPLOY_TARGETS</span></code></dt><dd><p><code class="docutils literal notranslate"><span class="pre">deploy</span></code> target dependencies.</p>
+</dd>
+<dd><p>Default: ``</p>
+</dd>
+</dl>
+</dd>
+<dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">RUN_TARGET</span></code></dt><dd><p>target to be executed when calling <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">run</span></code></p>
+</dd>
+<dd><p>Default: ``</p>
+</dd>
+</dl>
+</dd>
+<dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">CLEAN_FS</span></code></dt><dd><p>Additional files and folders to remove when running clean target</p>
+</dd>
+<dd><p>Default: ``</p>
+</dd>
+</dl>
+</dd>
+<dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">INCLUDE_MAKEFILE</span></code></dt><dd><p>Optional makefile to include before default targets. This can
+be used to provide custom targets or hook up to existing targets.</p>
+</dd>
+<dd><p>Default: <code class="docutils literal notranslate"><span class="pre">include.mk</span></code></p>
+</dd>
+</dl>
+</dd>
+<dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">EXTRA_PATH</span></code></dt><dd><p>Optional additional directories to be added to PATH in format
+<code class="docutils literal notranslate"><span class="pre">/path/to/dir/:/path/to/other/dir</span></code>. Gets inserted first, thus gets searched
+first.</p>
+</dd>
+<dd><p>Default: ``</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+<hr class="docutils" />
+<section id="help-system">
+<h3>Help System<a class="headerlink" href="#help-system" title="Link to this heading">¶</a></h3>
+<p>A system to provide the user of the Makefile an overview of the targets
+and all environment variable based arguments.</p>
+<dl class="simple myst">
+<dt>FQN</dt><dd><p><code class="docutils literal notranslate"><span class="pre">core.help</span></code></p>
+</dd>
+<dt>Depends on</dt><dd><p><code class="docutils literal notranslate"><span class="pre">core.mxenv</span></code></p>
+</dd>
+<dt>Targets</dt><dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">help</span></code></dt><dd><p>Print help for the Makefile.</p>
+</dd>
+</dl>
+</dd>
+<dt>Settings</dt><dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">HELP_DOMAIN</span></code></dt><dd><p>Request to show all targets, descriptions and arguments for a given domain.</p>
+</dd>
+<dd><p>Default: ``</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+<hr class="docutils" />
+<section id="mx-environment">
+<h3>MX Environment<a class="headerlink" href="#mx-environment" title="Link to this heading">¶</a></h3>
+<p>Python environment management.</p>
+<dl class="simple myst">
+<dt>FQN</dt><dd><p><code class="docutils literal notranslate"><span class="pre">core.mxenv</span></code></p>
+</dd>
+<dt>Depends on</dt><dd><p><code class="docutils literal notranslate"><span class="pre">core.base</span></code></p>
+</dd>
+<dt>Targets</dt><dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">mxenv</span></code></dt><dd><p>Setup the Python environment.
+Creates a Python virtual environment using the built-in <code class="docutils literal notranslate"><span class="pre">venv</span></code> module if
+<code class="docutils literal notranslate"><span class="pre">VENV_CREATE</span></code> is <code class="docutils literal notranslate"><span class="pre">true</span></code>. The following Python packages are installed
+respective updated:</p>
+<ul class="simple">
+<li><p>pip</p></li>
+<li><p>setuptools</p></li>
+<li><p>wheel</p></li>
+<li><p>mxdev</p></li>
+<li><p>mxmake</p></li>
+</ul>
+</dd>
+</dl>
+</dd>
+<dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">mxenv-dirty</span></code></dt><dd><p>Build <code class="docutils literal notranslate"><span class="pre">mxenv</span></code> target on next make run.</p>
+</dd>
+</dl>
+</dd>
+<dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">mxenv-clean</span></code></dt><dd><p>Removes virtual environment if <code class="docutils literal notranslate"><span class="pre">VENV_CREATE</span></code> is <code class="docutils literal notranslate"><span class="pre">true</span></code>,
+otherwise uninstall environment related python packages.</p>
+</dd>
+</dl>
+</dd>
+<dt>Settings</dt><dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">PRIMARY_PYTHON</span></code></dt><dd><p>Primary Python interpreter to use. It is used to create the
+virtual environment if <code class="docutils literal notranslate"><span class="pre">VENV_ENABLED</span></code> and <code class="docutils literal notranslate"><span class="pre">VENV_CREATE</span></code> are set to <code class="docutils literal notranslate"><span class="pre">true</span></code>.
+If global <code class="docutils literal notranslate"><span class="pre">uv</span></code> is used, this value is passed as <code class="docutils literal notranslate"><span class="pre">--python</span> <span class="pre">VALUE</span></code> to the venv creation.
+uv then downloads the Python interpreter if it is not available.
+for more on this feature read the <a class="reference external" href="https://docs.astral.sh/uv/concepts/python-versions/">uv python documentation</a></p>
+</dd>
+<dd><p>Default: <code class="docutils literal notranslate"><span class="pre">python3</span></code></p>
+</dd>
+</dl>
+</dd>
+<dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">PYTHON_MIN_VERSION</span></code></dt><dd><p>Minimum required Python version.</p>
+</dd>
+<dd><p>Default: <code class="docutils literal notranslate"><span class="pre">3.10</span></code></p>
+</dd>
+</dl>
+</dd>
+<dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">PYTHON_PACKAGE_INSTALLER</span></code></dt><dd><p>Install packages using the given package installer method.
+Supported are <code class="docutils literal notranslate"><span class="pre">pip</span></code> and <code class="docutils literal notranslate"><span class="pre">uv</span></code>. When <code class="docutils literal notranslate"><span class="pre">uv</span></code> is selected, a global installation
+is auto-detected and used if available. Otherwise, uv is installed in the
+virtual environment or using <code class="docutils literal notranslate"><span class="pre">PRIMARY_PYTHON</span></code>, depending on the
+<code class="docutils literal notranslate"><span class="pre">VENV_ENABLED</span></code> setting.</p>
+</dd>
+<dd><p>Default: <code class="docutils literal notranslate"><span class="pre">pip</span></code></p>
+</dd>
+</dl>
+</dd>
+<dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">UV_PYTHON</span></code></dt><dd><p>Python version for UV to install/use when creating virtual
+environments with global UV. Passed to <code class="docutils literal notranslate"><span class="pre">uv</span> <span class="pre">venv</span> <span class="pre">-p</span> <span class="pre">VALUE</span></code>. Supports version
+specs like <code class="docutils literal notranslate"><span class="pre">3.11</span></code>, <code class="docutils literal notranslate"><span class="pre">3.14</span></code>, <code class="docutils literal notranslate"><span class="pre">cpython&#64;3.14</span></code>. Defaults to PRIMARY_PYTHON value
+for backward compatibility.</p>
+</dd>
+<dd><p>Default: <code class="docutils literal notranslate"><span class="pre">$(PRIMARY_PYTHON)</span></code></p>
+</dd>
+</dl>
+</dd>
+<dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">VENV_ENABLED</span></code></dt><dd><p>Flag whether to use virtual environment. If <code class="docutils literal notranslate"><span class="pre">false</span></code>, the
+interpreter according to <code class="docutils literal notranslate"><span class="pre">PRIMARY_PYTHON</span></code> found in <code class="docutils literal notranslate"><span class="pre">PATH</span></code> is used.</p>
+</dd>
+<dd><p>Default: <code class="docutils literal notranslate"><span class="pre">true</span></code></p>
+</dd>
+</dl>
+</dd>
+<dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">VENV_CREATE</span></code></dt><dd><p>Flag whether to create a virtual environment. If set to <code class="docutils literal notranslate"><span class="pre">false</span></code>
+and <code class="docutils literal notranslate"><span class="pre">VENV_ENABLED</span></code> is <code class="docutils literal notranslate"><span class="pre">true</span></code>, <code class="docutils literal notranslate"><span class="pre">VENV_FOLDER</span></code> is expected to point to an
+existing virtual environment.</p>
+</dd>
+<dd><p>Default: <code class="docutils literal notranslate"><span class="pre">true</span></code></p>
+</dd>
+</dl>
+</dd>
+<dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">VENV_FOLDER</span></code></dt><dd><p>The folder of the virtual environment.
+If <code class="docutils literal notranslate"><span class="pre">VENV_ENABLED</span></code> is <code class="docutils literal notranslate"><span class="pre">true</span></code> and <code class="docutils literal notranslate"><span class="pre">VENV_CREATE</span></code> is true it is used as the
+target folder for the virtual environment. If <code class="docutils literal notranslate"><span class="pre">VENV_ENABLED</span></code> is <code class="docutils literal notranslate"><span class="pre">true</span></code> and
+<code class="docutils literal notranslate"><span class="pre">VENV_CREATE</span></code> is false it is expected to point to an existing virtual
+environment. If <code class="docutils literal notranslate"><span class="pre">VENV_ENABLED</span></code> is <code class="docutils literal notranslate"><span class="pre">false</span></code> it is ignored.</p>
+</dd>
+<dd><p>Default: <code class="docutils literal notranslate"><span class="pre">.venv</span></code></p>
+</dd>
+</dl>
+</dd>
+<dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">MXDEV</span></code></dt><dd><p>mxdev to install in virtual environment.</p>
+</dd>
+<dd><p>Default: <code class="docutils literal notranslate"><span class="pre">mxdev</span></code></p>
+</dd>
+</dl>
+</dd>
+<dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">MXMAKE</span></code></dt><dd><p>mxmake to install in virtual environment.</p>
+</dd>
+<dd><p>Default: <code class="docutils literal notranslate"><span class="pre">mxmake</span></code></p>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+<hr class="docutils" />
+<section id="mx-files">
+<h3>MX Files<a class="headerlink" href="#mx-files" title="Link to this heading">¶</a></h3>
+<p>Project file generation.</p>
+<dl class="simple myst">
+<dt>FQN</dt><dd><p><code class="docutils literal notranslate"><span class="pre">core.mxfiles</span></code></p>
+</dd>
+<dt>Depends on</dt><dd><p><code class="docutils literal notranslate"><span class="pre">core.mxenv</span></code></p>
+</dd>
+<dt>Soft depends on</dt><dd><p><code class="docutils literal notranslate"><span class="pre">core.sources</span></code></p>
+</dd>
+<dt>Targets</dt><dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">mxfiles</span></code></dt><dd><p>Create all project files by running <code class="docutils literal notranslate"><span class="pre">mxdev</span></code>. It does not
+checkout sources.</p>
+</dd>
+</dl>
+</dd>
+<dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">mxfiles-dirty</span></code></dt><dd><p>Build :ref:<code class="docutils literal notranslate"><span class="pre">mxfiles</span></code> target on next make run.</p>
+</dd>
+</dl>
+</dd>
+<dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">mxfiles-clean</span></code></dt><dd><p>Remove generated project files.</p>
+</dd>
+</dl>
+</dd>
+<dt>Settings</dt><dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">PROJECT_CONFIG</span></code></dt><dd><p>The config file to use.</p>
+</dd>
+<dd><p>Default: <code class="docutils literal notranslate"><span class="pre">mx.ini</span></code></p>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+<hr class="docutils" />
+<section id="packages">
+<h3>Packages<a class="headerlink" href="#packages" title="Link to this heading">¶</a></h3>
+<p>Install python packages.</p>
+<dl class="simple myst">
+<dt>FQN</dt><dd><p><code class="docutils literal notranslate"><span class="pre">core.packages</span></code></p>
+</dd>
+<dt>Depends on</dt><dd><p><code class="docutils literal notranslate"><span class="pre">core.mxfiles</span></code></p>
+</dd>
+<dt>Targets</dt><dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">packages</span></code></dt><dd><p>Install packages with pip after creating files and checking
+out sources.</p>
+</dd>
+</dl>
+</dd>
+<dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">packages-dirty</span></code></dt><dd><p>Build packages target on next make run.</p>
+</dd>
+</dl>
+</dd>
+<dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">packages-clean</span></code></dt><dd><p>Remove prior installed packages</p>
+</dd>
+</dl>
+</dd>
+<dt>Settings</dt><dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">PACKAGES_ALLOW_PRERELEASES</span></code></dt><dd><p>Allow prerelease and development versions.
+By default, the package installer only finds stable versions.</p>
+</dd>
+<dd><p>Default: <code class="docutils literal notranslate"><span class="pre">false</span></code></p>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+<hr class="docutils" />
+<section id="proxy-targets">
+<h3>Proxy targets<a class="headerlink" href="#proxy-targets" title="Link to this heading">¶</a></h3>
+<p>This domain includes proxy targets which are configured in
+<code class="docutils literal notranslate"><span class="pre">mx.ini</span></code>. It is expected that defined folder(s) contains a Makefile which
+is generated by <code class="docutils literal notranslate"><span class="pre">mxmake</span></code> and this Makefile contains the domains for which
+proxy targets are created. The proxy configuration in the <code class="docutils literal notranslate"><span class="pre">mx.ini</span></code> file
+looks as follows:</p>
+<div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="na">mxmake-templates</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">proxy</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="k">[mxmake-proxy]</span>
+</span><span data-line="4"><span class="na">foldername</span><span class="w"> </span><span class="o">=</span>
+</span><span data-line="5"><span class="na">applications</span><span class="o">:</span><span class="s">plone,zest-releaser</span>
+</span><span data-line="6"><span class="na">i18n</span><span class="o">:</span><span class="s">*</span>
+</span></pre></div>
+</div>
+<p>Each setting in the <code class="docutils literal notranslate"><span class="pre">mxmake-proxy</span></code> section defines a child folder. The
+value contains the topic name and the desired domains as comma
+separated list. Wildcard <code class="docutils literal notranslate"><span class="pre">*</span></code> means to include all domains of this topic.
+Topic and domains are colon separated.</p>
+<dl class="simple myst">
+<dt>FQN</dt><dd><p><code class="docutils literal notranslate"><span class="pre">core.proxy</span></code></p>
+</dd>
+<dt>Depends on</dt><dd><p><code class="docutils literal notranslate"><span class="pre">core.mxfiles</span></code></p>
+</dd>
+</dl>
+</section>
+<hr class="docutils" />
+<section id="sources">
+<h3>Sources<a class="headerlink" href="#sources" title="Link to this heading">¶</a></h3>
+<p>Source package management.</p>
+<dl class="simple myst">
+<dt>FQN</dt><dd><p><code class="docutils literal notranslate"><span class="pre">core.sources</span></code></p>
+</dd>
+<dt>Depends on</dt><dd><p><code class="docutils literal notranslate"><span class="pre">core.mxenv</span></code></p>
+</dd>
+<dt>Targets</dt><dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">sources</span></code></dt><dd><p>Checkout sources by running <code class="docutils literal notranslate"><span class="pre">mxdev</span></code>. It does not generate
+project files.</p>
+</dd>
+</dl>
+</dd>
+<dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">sources-dirty</span></code></dt><dd><p>Build :ref:<code class="docutils literal notranslate"><span class="pre">sources</span></code> target on next make run.</p>
+</dd>
+</dl>
+</dd>
+<dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">sources-purge</span></code></dt><dd><p>Removes sources folder.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</section>
+<hr class="docutils" />
+<section id="docs">
+<h2>Docs<a class="headerlink" href="#docs" title="Link to this heading">¶</a></h2>
+<p>Documentation related domains</p>
+<hr class="docutils" />
+<section id="jsdoc-documentation">
+<h3>JSDoc Documentation<a class="headerlink" href="#jsdoc-documentation" title="Link to this heading">¶</a></h3>
+<p>JSDoc installation and integration into Sphinx.</p>
+<dl class="simple myst">
+<dt>FQN</dt><dd><p><code class="docutils literal notranslate"><span class="pre">docs.jsdoc</span></code></p>
+</dd>
+<dt>Depends on</dt><dd><p><code class="docutils literal notranslate"><span class="pre">js.nodejs</span></code></p>
+</dd>
+</dl>
+</section>
+<hr class="docutils" />
+<section id="sphinx-documentation">
+<h3>Sphinx Documentation<a class="headerlink" href="#sphinx-documentation" title="Link to this heading">¶</a></h3>
+<p>Documentation generation with Sphinx.</p>
+<dl class="simple myst">
+<dt>FQN</dt><dd><p><code class="docutils literal notranslate"><span class="pre">docs.sphinx</span></code></p>
+</dd>
+<dt>Depends on</dt><dd><p><code class="docutils literal notranslate"><span class="pre">core.mxenv</span></code></p>
+</dd>
+<dt>Soft depends on</dt><dd><p><code class="docutils literal notranslate"><span class="pre">docs.jsdoc</span></code></p>
+</dd>
+<dt>Targets</dt><dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">docs</span></code></dt><dd><p>Generate Sphinx docs.</p>
+</dd>
+</dl>
+</dd>
+<dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">docs-live</span></code></dt><dd><p>Rebuild Sphinx documentation on changes, with live-reload in
+the browser using <code class="docutils literal notranslate"><span class="pre">sphinx-autobuild</span></code>.</p>
+</dd>
+</dl>
+</dd>
+<dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">docs-linkcheck</span></code></dt><dd><p>Run Sphinx linkcheck to verify external links in documentation.</p>
+</dd>
+</dl>
+</dd>
+<dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">docs-clean</span></code></dt><dd><p>Removes generated docs.</p>
+</dd>
+</dl>
+</dd>
+<dt>Settings</dt><dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">DOCS_SOURCE_FOLDER</span></code></dt><dd><p>Documentation source folder.</p>
+</dd>
+<dd><p>Default: <code class="docutils literal notranslate"><span class="pre">docs/source</span></code></p>
+</dd>
+</dl>
+</dd>
+<dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">DOCS_TARGET_FOLDER</span></code></dt><dd><p>Documentation generation target folder.</p>
+</dd>
+<dd><p>Default: <code class="docutils literal notranslate"><span class="pre">docs/html</span></code></p>
+</dd>
+</dl>
+</dd>
+<dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">DOCS_LINKCHECK_FOLDER</span></code></dt><dd><p>Documentation linkcheck output folder.</p>
+</dd>
+<dd><p>Default: <code class="docutils literal notranslate"><span class="pre">docs/linkcheck</span></code></p>
+</dd>
+</dl>
+</dd>
+<dd><dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">DOCS_REQUIREMENTS</span></code></dt><dd><p>Documentation Python requirements to be installed (via pip).</p>
+</dd>
+<dd><p>Default: ``</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</section>
+</section>
+
+        </article><button class="back-to-top" type="button">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+  </svg>
+  <span>Back to top</span>
+</button><div class="navigation flex print:hidden"><div class="navigation-prev">
+    <a href="getting-started.html">
+      <i class="i-lucide chevron-left"></i>
+      <div class="page-info">
+        <span>Previous</span><div class="title">Getting started</div></div>
+    </a>
+  </div><div class="navigation-next">
+    <a href="preseeds.html">
+      <div class="page-info">
+        <span>Next</span>
+        <div class="title">Preseeds</div>
+      </div>
+      <i class="i-lucide chevron-right"></i>
+    </a>
+  </div></div></div>
+    </div>
+  </main>
+</div>
+<footer class="sy-foot">
+  <div class="sy-foot-inner sy-container mx-auto">
+    <div class="sy-foot-reserved md:flex justify-between items-center">
+      <div class="sy-foot-copyright"><p>2022-2024, mxstack Contributors</p>
+  
+  <p>
+    Made with
+    
+    <a href="https://www.sphinx-doc.org/">Sphinx</a> and
+    
+    <a href="https://shibuya.lepture.com">Shibuya theme</a>.
+  </p>
+</div>
+      <div class="sy-foot-socials">
+<a href="https://github.com/mxstack/mxmake" aria-label="GitHub">
+  <iconify-icon icon="simple-icons:github"></iconify-icon>
+</a></div>
+    </div>
+  </div>
+</footer>
+      <script src="_static/documentation_options.js?v=f2a433a1"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="_static/shibuya.js?v=9b0e4dde"></script></body>
+</html>
