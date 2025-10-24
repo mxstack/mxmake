@@ -1,16 +1,16 @@
 # Changelog
 
-## 2.0.0 (unreleased)
+## 2.0.0 (2025-10-24)
 
 - **Breaking**: Drop Python 3.9 support. Minimum Python version is now 3.10.
 - Feature: Modernize codebase to use Python 3.10+ features (PEP 604 union types, built-in generic types).
-- Critical fix: `SOURCES_TARGET` used mxdev wrongly with `-o` (offline) option.
+- **Critical fix**: `SOURCES_TARGET` used mxdev wrongly with `-o` (offline) option.
   The offline option had a bug and was fixed in mxdev [#34](https://github.com/mxstack/mxdev/issues/34) and released with mxdev>=5.
   This fix switches from `-o` to the correct `-f` (no fetch from vcs).
   To update your makefile use `mxmake update` in the folder with your `Makefile`.
 - Fix: theme for newer Sphinx 7.x.
-- Fix: interactive uv venv, use --allow-existing instead.
-- Fix: The project was using pytest as the test runner all along (as configured in the Makefile and generated test scripts), but zope.testrunner was incorrectly listed as the dependency.
+- Fix: interactive uv venv, use `--allow-existing` instead.
+- Fix: The project was using `pytest` as the test runner all along (as configured in the Makefile and generated test scripts), but `zope.testrunner `was incorrectly listed as the dependency.
 - Feature: Add support for Python 3.14.
 - Breaking: Removed `MXENV_UV_GLOBAL` setting in favor of automatic UV detection.
   When `PYTHON_PACKAGE_INSTALLER=uv`, mxmake now automatically detects and uses
@@ -31,6 +31,8 @@
 - Improvement: Simplified mxenv.mk logic from 3+ nesting levels to 1-2 levels
   using computed intermediate variables (`USE_GLOBAL_UV`, `USE_LOCAL_UV`).
   Code is now more maintainable and easier to extend.
+- Tests/CI: Increase coverage, test UV-only scenario.
+- Docs: Overhaul and improve. Focus on UV only.
 - Chore: Migrate to hatch-vcs for automated versioning from git tags.
 
 ## 1.3.0 (2025-09-03)
