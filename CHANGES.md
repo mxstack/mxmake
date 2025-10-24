@@ -35,8 +35,15 @@
 - Improvement: Simplified mxenv.mk logic from 3+ nesting levels to 1-2 levels
   using computed intermediate variables (`USE_GLOBAL_UV`, `USE_LOCAL_UV`).
   Code is now more maintainable and easier to extend.
-- Tests/CI: Increase coverage, test UV-only scenario.
-- Docs: Overhaul and improve. Focus on UV only.
+- Tests/CI: Add UV-only CI job testing workflow without Python pre-installation.
+  New `uv-only` job in variants workflow verifies that `make install` works
+  with only UV installed (no Python) on Python 3.10 and 3.14, proving the
+  UV-only team workflow documented in getting-started.md.
+- Docs: Complete overhaul of installation documentation. Document UV-only workflow
+  requiring no Python pre-installation. Simplify UV configuration examples to show
+  only required settings (PYTHON_PACKAGE_INSTALLER and UV_PYTHON). Add migration guide,
+  FAQ/troubleshooting section, and clarify when PYTHON_MIN_VERSION/PRIMARY_PYTHON
+  settings are needed vs. optional.
 - Chore: Migrate to hatch-vcs for automated versioning from git tags.
 
 ## 1.3.0 (2025-09-03)
