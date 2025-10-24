@@ -13,16 +13,17 @@ This guide documents breaking changes between mxmake versions and how to migrate
 **Breaking Change**: Minimum Python version increased from 3.9 to 3.10.
 
 **Migration**:
-- Ensure your system has Python 3.10 or later installed
-- If using UV, specify Python 3.10+ in `UV_PYTHON` setting:
-  ```makefile
-  UV_PYTHON?=3.10  # or 3.11, 3.12, 3.13, 3.14
-  ```
-- If using pip, ensure `PRIMARY_PYTHON` points to Python 3.10+:
-  ```makefile
-  PRIMARY_PYTHON?=python3.10
-  ```
-- Run `mxmake update` to regenerate Makefile with new `PYTHON_MIN_VERSION` default
+1. Ensure your system has Python 3.10 or later installed
+2. Run `mxmake update` to regenerate Makefile (automatically updates `PYTHON_MIN_VERSION` to 3.10)
+3. If needed, customize Python version settings:
+   - **Using UV**: Set `UV_PYTHON` to desired version:
+     ```makefile
+     UV_PYTHON?=3.10  # or 3.11, 3.12, 3.13, 3.14
+     ```
+   - **Using pip**: Ensure `PRIMARY_PYTHON` points to Python 3.10+:
+     ```makefile
+     PRIMARY_PYTHON?=python3.10
+     ```
 
 ### Removed: MXENV_UV_GLOBAL Setting
 
@@ -41,11 +42,13 @@ UV_PYTHON?=3.14  # Optional: specify Python version
 ```
 
 **Migration**:
-- Remove `MXENV_UV_GLOBAL` from your Makefile or preseed configurations
-- UV will be automatically detected if installed globally
-- To force local UV installation, ensure UV is not in your PATH
-- Add `UV_PYTHON` setting if you need a specific Python version
-- Run `mxmake update` to apply changes
+1. Run `mxmake update` (automatically removes `MXENV_UV_GLOBAL` setting)
+2. UV will be automatically detected if installed globally
+3. If needed, add `UV_PYTHON` setting to specify Python version:
+   ```makefile
+   UV_PYTHON?=3.14
+   ```
+4. To force local UV installation, ensure UV is not in your PATH before running `make install`
 
 ### Changed: SOURCES_TARGET Implementation
 
@@ -54,9 +57,8 @@ UV_PYTHON?=3.14  # Optional: specify Python version
 **Impact**: This affects projects using mxdev with source checkouts. The `-o` flag had a bug (fixed in mxdev 5.0).
 
 **Migration**:
-- Update mxdev to version 5.0 or later: `pip install -U mxdev>=5`
-- Run `mxmake update` in your project directory to regenerate the Makefile
-- The new Makefile will use the correct `-f` flag
+1. Update mxdev to version 5.0 or later: `pip install -U mxdev>=5`
+2. Run `mxmake update` (automatically regenerates Makefile with correct `-f` flag)
 
 ### Added: UV_PYTHON Setting
 
@@ -128,9 +130,9 @@ topics:
 ```
 
 **Migration**:
-- Update your preseed files to use `nodejs` instead of `npm`
-- Run `mxmake update` or `mxmake init` to regenerate Makefile
-- The domain now supports both npm and pnpm package managers
+1. Run `mxmake update` (automatically uses new `nodejs` domain name)
+2. If using preseed files, update them to use `nodejs` instead of `npm`
+3. The domain now supports both npm and pnpm package managers
 
 ## Version 1.0a6 (2024-08-02)
 
@@ -139,11 +141,8 @@ topics:
 **Breaking Change**: Minimum Python version increased from 3.8 to 3.9.
 
 **Migration**:
-- Ensure your project uses Python 3.9 or later
-- Update `PYTHON_MIN_VERSION` if you've customized it:
-  ```makefile
-  PYTHON_MIN_VERSION?=3.9
-  ```
+1. Ensure your project uses Python 3.9 or later
+2. Run `mxmake update` (automatically updates `PYTHON_MIN_VERSION` to 3.9)
 
 **Note**: This change was superseded by version 2.0.0 which requires Python 3.10+.
 
@@ -168,17 +167,18 @@ VENV_FOLDER?=.venv
 ```
 
 **Migration**:
-- **Option 1** (Use new default): Delete old `venv` folder, run `make install` to create `.venv`
-- **Option 2** (Keep old folder): Explicitly set `VENV_FOLDER=venv` in your Makefile
+1. Run `mxmake update` (automatically updates default to `.venv`)
+2. Choose one option:
+   - **Option A** (Use new default): Delete old `venv` folder, run `make install` to create `.venv`
+   - **Option B** (Keep old folder): Edit Makefile to set `VENV_FOLDER=venv`
+3. Update `.gitignore`:
+   ```gitignore
+   # Old
+   venv/
 
-**Update .gitignore**:
-```gitignore
-# Old
-venv/
-
-# New
-.venv/
-```
+   # New
+   .venv/
+   ```
 
 ### Renamed: PYTHON_BIN to PRIMARY_PYTHON
 
@@ -195,8 +195,8 @@ PRIMARY_PYTHON?=python3
 ```
 
 **Migration**:
-- Run `mxmake update` to regenerate Makefile with new setting name
-- If you have custom scripts referencing `PYTHON_BIN`, update them to use `PRIMARY_PYTHON`
+1. Run `mxmake update` (automatically renames `PYTHON_BIN` to `PRIMARY_PYTHON`)
+2. If you have custom scripts referencing `PYTHON_BIN`, update them to use `PRIMARY_PYTHON`
 
 ### Removed: MXENV_PATH
 
@@ -215,12 +215,11 @@ $(MXENV_PYTHON) -m pytest tests/
 ```
 
 **Migration**:
-- Search your custom Makefile targets for `MXENV_PATH`
-- Replace with `$(MXENV_PYTHON) -m <command>`
-- Common replacements:
-  - `$(MXENV_PATH)pip` → `$(MXENV_PYTHON) -m pip`
-  - `$(MXENV_PATH)pytest` → `$(MXENV_PYTHON) -m pytest`
-  - `$(MXENV_PATH)black` → `$(MXENV_PYTHON) -m black`
+1. Run `mxmake update` (automatically removes `MXENV_PATH`)
+2. If you have custom Makefile targets using `MXENV_PATH`, update them manually:
+   - `$(MXENV_PATH)pip` → `$(MXENV_PYTHON) -m pip`
+   - `$(MXENV_PATH)pytest` → `$(MXENV_PYTHON) -m pytest`
+   - `$(MXENV_PATH)black` → `$(MXENV_PYTHON) -m black`
 
 ## Version 1.0a3 (2024-02-06)
 
@@ -267,8 +266,8 @@ $(MXENV_PYTHON) -m pytest tests/
 | `docs` | `sphinx` |
 
 **Migration**:
-- Run `mxmake init` to regenerate Makefile with new domain names
-- Update preseed files if using old domain names
+1. Run `mxmake update` (automatically uses new domain names)
+2. If using preseed files with old domain names, update them to use new names
 
 ## Version 0.1 (2022-05-19)
 
