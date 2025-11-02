@@ -1,3 +1,4 @@
+from ._version import __version__
 from .helpgen import print_help
 from .parser import MakefileParser
 from .templates import ci_template
@@ -27,6 +28,12 @@ logger = logging.getLogger("mxmake")
 
 
 parser = argparse.ArgumentParser()
+parser.add_argument(
+    "-v",
+    "--version",
+    action="version",
+    version=f"%(prog)s {__version__}",
+)
 command_parsers = parser.add_subparsers(dest="command", required=True)
 
 

@@ -5,6 +5,9 @@
 - Enhancement: Use tables in the generated sphinx code for topic/domains.
   [jensens, 02-11-2025]
 
+- Feature: Add `--version` (`-v`) command line flag to display mxmake version.
+  [jensens, 02-11-2025]
+
 ## 2.0.0 (2025-10-24)
 
 - **Breaking**: Drop Python 3.9 support. Minimum Python version is now 3.10.
