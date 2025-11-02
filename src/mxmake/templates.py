@@ -377,6 +377,8 @@ class Topics(Template):
     @property
     def template_variables(self) -> dict[str, typing.Any]:
         topics = load_topics()
+        # Sort topics: core first, then alphabetically by name
+        topics = sorted(topics, key=lambda t: (t.name != "core", t.name))
         return {"topics": topics}
 
     def render(self):
@@ -406,6 +408,8 @@ class Dependencies(Template):
     @property
     def template_variables(self) -> dict[str, typing.Any]:
         topics = load_topics()
+        # Sort topics: core first, then alphabetically by name
+        topics = sorted(topics, key=lambda t: (t.name != "core", t.name))
         return {"topics": topics}
 
     def render(self):
