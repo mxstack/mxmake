@@ -42,6 +42,13 @@ INCLUDE_MAKEFILE?=include.mk
 # No default value.
 EXTRA_PATH?=
 
+# Path to Python project relative to Makefile (repository root).
+# Leave empty if Python project is in the same directory as Makefile.
+# For monorepo setups, set to subdirectory name (e.g., `backend`).
+# Future-proofed for multi-language monorepos (e.g., PROJECT_PATH_NODEJS).
+# No default value.
+PROJECT_PATH_PYTHON?=
+
 ## core.mxenv
 
 # Primary Python interpreter to use. It is used to create the
@@ -53,8 +60,8 @@ EXTRA_PATH?=
 PRIMARY_PYTHON?=3.14
 
 # Minimum required Python version.
-# Default: 3.9
-PYTHON_MIN_VERSION?=3.9
+# Default: 3.10
+PYTHON_MIN_VERSION?=3.10
 
 # Install packages using the given package installer method.
 # Supported are `pip` and `uv`. When `uv` is selected, a global installation
@@ -193,6 +200,9 @@ TYPECHECK_TARGETS?=
 FORMAT_TARGETS?=
 
 export PATH:=$(if $(EXTRA_PATH),$(EXTRA_PATH):,)$(PATH)
+
+# Helper variable: adds trailing slash to PROJECT_PATH_PYTHON only if non-empty
+PYTHON_PROJECT_PREFIX=$(if $(PROJECT_PATH_PYTHON),$(PROJECT_PATH_PYTHON)/,)
 
 # Defensive settings for make: https://tech.davis-hansson.com/p/make/
 SHELL:=bash
@@ -474,7 +484,7 @@ else
 	@echo "[settings]" > $(PROJECT_CONFIG)
 endif
 
-LOCAL_PACKAGE_FILES:=$(wildcard pyproject.toml setup.cfg setup.py requirements.txt constraints.txt)
+LOCAL_PACKAGE_FILES:=$(wildcard $(PYTHON_PROJECT_PREFIX)pyproject.toml $(PYTHON_PROJECT_PREFIX)setup.cfg $(PYTHON_PROJECT_PREFIX)setup.py $(PYTHON_PROJECT_PREFIX)requirements.txt $(PYTHON_PROJECT_PREFIX)constraints.txt)
 
 FILES_TARGET:=requirements-mxdev.txt
 $(FILES_TARGET): $(PROJECT_CONFIG) $(MXENV_TARGET) $(SOURCES_TARGET) $(LOCAL_PACKAGE_FILES)

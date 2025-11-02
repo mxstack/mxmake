@@ -234,7 +234,7 @@ def create_config(prompt: bool, preseeds: dict[str, typing.Any] | None):
         if yn not in ["n", "N"]:
             factory = template.lookup("mx.ini")
             mx_ini_template = factory(
-                target_folder, domains, get_template_environment()
+                target_folder, domains, get_template_environment(), domain_settings
             )
             mx_ini_template.write()
     elif not prompt and not preseeds and not (target_folder / "mx.ini").exists():
@@ -244,7 +244,7 @@ def create_config(prompt: bool, preseeds: dict[str, typing.Any] | None):
     elif preseeds and "mx-ini" in preseeds and not (target_folder / "mx.ini").exists():
         sys.stdout.write("Generate mx configuration file\n")
         factory = template.lookup("mx.ini")
-        mx_ini_template = factory(target_folder, domains, get_template_environment())
+        mx_ini_template = factory(target_folder, domains, get_template_environment(), domain_settings)
         mx_ini_template.write()
     else:
         sys.stdout.write(
@@ -266,12 +266,28 @@ def create_config(prompt: bool, preseeds: dict[str, typing.Any] | None):
             )
             for template_name in ci_choice["ci"]:
                 factory = template.lookup(template_name)
-                factory(get_template_environment()).write()
+                factory(get_template_environment(), domain_settings).write()
     elif preseeds and "ci-templates" in preseeds:
         for template_name in preseeds["ci-templates"]:
             sys.stdout.write(f"Generate CI file from {template_name} template\n")
             factory = template.lookup(template_name)
-            factory(get_template_environment()).write()
+            factory(get_template_environment(), domain_settings).write()
+
+
+def auto_detect_project_path_python() -> str | None:
+    """Auto-detect Python project in subdirectories if not in current directory."""
+    cwd = Path.cwd()
+
+    # Check if pyproject.toml exists in current directory
+    if (cwd / "pyproject.toml").exists():
+        return None  # Project is in same directory as Makefile
+
+    # Search immediate subdirectories for pyproject.toml
+    for subdir in cwd.iterdir():
+        if subdir.is_dir() and (subdir / "pyproject.toml").exists():
+            return subdir.name
+
+    return None  # No Python project detected
 
 
 def init_command(args: argparse.Namespace):
@@ -286,12 +302,48 @@ def init_command(args: argparse.Namespace):
         with open(args.preseeds) as fd:
             preseeds = yaml.load(fd.read(), yaml.SafeLoader)
 
+    # Handle project-path-python from CLI or auto-detection
+    project_path_python = args.project_path_python
+    if project_path_python is None and not args.preseeds:
+        # Try auto-detection only if not using preseeds
+        detected_path = auto_detect_project_path_python()
+        if detected_path:
+            sys.stdout.write(
+                f"Auto-detected Python project in subdirectory: {detected_path}\n"
+            )
+            if prompt:
+                yn = inquirer.text(
+                    message=f"Use '{detected_path}' as PROJECT_PATH_PYTHON? (Y/n)"
+                )
+                if yn not in ["n", "N"]:
+                    project_path_python = detected_path
+            else:
+                project_path_python = detected_path
+
+    # Inject project-path-python into preseeds if specified or detected
+    if project_path_python:
+        if preseeds is None:
+            preseeds = {}
+        if "topics" not in preseeds:
+            preseeds["topics"] = {}
+        if "core" not in preseeds["topics"]:
+            preseeds["topics"]["core"] = {}
+        if "base" not in preseeds["topics"]["core"]:
+            preseeds["topics"]["core"]["base"] = {}
+        preseeds["topics"]["core"]["base"]["PROJECT_PATH_PYTHON"] = project_path_python
+        sys.stdout.write(f"Setting PROJECT_PATH_PYTHON={project_path_python}\n\n")
+
     create_config(prompt=prompt, preseeds=preseeds)
 
 
 init_parser = command_parsers.add_parser("init", help="Initialize project")
 init_parser.set_defaults(func=init_command)
 init_parser.add_argument("-p", "--preseeds", help="Preseeds file")
+init_parser.add_argument(
+    "--project-path-python",
+    help="Path to Python project relative to Makefile (for monorepo setups)",
+    default=None,
+)
 
 
 def update_command(args: argparse.Namespace):
