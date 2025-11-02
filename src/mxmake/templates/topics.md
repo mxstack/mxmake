@@ -13,42 +13,32 @@
 
 {{ domain.description }}
 
-FQN
-: `{{ domain.fqn }}`
-
-{% if domain.depends %}
-Depends on
-{% for depend in domain.depends %}
-: `{{ depend }}`
-{% endfor %}
-{% endif %}
-
-{% if domain.soft_depends %}
-Soft depends on
-{% for soft_depends in domain.soft_depends %}
-: `{{ soft_depends }}`
-{% endfor %}
+| Property | Value |
+|----------|-------|
+| **FQN** | `{{ domain.fqn }}` |
+{% if domain.depends or domain.soft_depends %}
+| **Dependencies** | {% if domain.depends %}**Hard:** {% for depend in domain.depends %}`{{ depend }}`{% if not loop.last %}, {% endif %}{% endfor %}{% if domain.soft_depends %}<br>{% endif %}{% endif %}{% if domain.soft_depends %}**Soft:** {% for soft_depend in domain.soft_depends %}`{{ soft_depend }}`{% if not loop.last %}, {% endif %}{% endfor %}{% endif %} |
 {% endif %}
 
 {% if domain.targets %}
-Targets
+
+**Targets:**
+
+| Target | Description |
+|--------|-------------|
 {% for target in domain.targets %}
-: `{{ target.name }}`
-
-  : {{ target.description | indent(4) }}
-
+| `{{ target.name }}` | {{ target.description | replace('\n', '<br>') }} |
 {% endfor %}
 {% endif %}
 
 {% if domain.settings %}
-Settings
+
+**Settings:**
+
+| Setting | Description | Default |
+|---------|-------------|---------|
 {% for setting in domain.settings %}
-: `{{ setting.name }}`
-
-  : {{ setting.description | indent(4) }}
-
-  : Default: `{{ setting.default | indent(4) }}`
-
+| `{{ setting.name }}` | {{ setting.description | replace('\n', '<br>') }} | `{{ setting.default }}` |
 {% endfor %}
 {% endif %}
 

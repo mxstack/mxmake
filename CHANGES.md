@@ -1,8 +1,9 @@
 # Changelog
 
-## 2.0.1 (unreleased)
+## 2.0.1
 
-- nothing yet
+- Enhancement: Use tables in the generated sphinx code for topic/domains.
+  [jensens, 02-11-2025]
 
 ## 2.0.0 (2025-10-24)
 
