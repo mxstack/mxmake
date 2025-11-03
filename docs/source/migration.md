@@ -4,7 +4,56 @@ This guide documents breaking changes between mxmake versions and how to migrate
 
 ## Version 2.0.1 (unreleased)
 
-**No breaking changes**
+### Added: Monorepo Support
+
+**New Feature**: Python projects can now be located in a subdirectory relative to the Makefile.
+
+**Purpose**: Support monorepo setups with multiple applications (e.g., frontend + backend) in one repository.
+
+**New Setting**: `PROJECT_PATH_PYTHON` in the `core.base` domain.
+
+**Example Configuration**:
+```makefile
+# In your Makefile
+PROJECT_PATH_PYTHON?=backend
+```
+
+```ini
+# In your mx.ini (specify full paths from repo root)
+[settings]
+mxmake-test-path = backend/tests
+mxmake-source-path = backend/src
+```
+
+**Setup Methods**:
+
+1. **Auto-detection** (recommended):
+   ```shell
+   uvx mxmake init
+   # Prompts if pyproject.toml found in subdirectory
+   ```
+
+2. **CLI flag**:
+   ```shell
+   uvx mxmake init --project-path-python backend
+   ```
+
+3. **Preseed file**:
+   ```yaml
+   topics:
+     core:
+       base:
+         PROJECT_PATH_PYTHON: backend
+   ```
+
+**What Changes**:
+- Makefile references: `backend/pyproject.toml` instead of `./pyproject.toml`
+- mx.ini paths: Specify full paths from repository root (e.g., `mxmake-test-path = backend/tests`)
+- GitHub Actions: Cache uses `backend/pyproject.toml` for dependency tracking
+
+**Migration**: None required. This is an opt-in feature with no impact on existing projects.
+
+**See Also**: [Monorepo Support](getting-started.html#monorepo-support) in Getting Started guide.
 
 ## Version 2.0.0 (2025-10-24)
 

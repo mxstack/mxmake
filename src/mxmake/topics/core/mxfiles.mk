@@ -45,7 +45,7 @@ else
 	@echo "[settings]" > $(PROJECT_CONFIG)
 endif
 
-LOCAL_PACKAGE_FILES:=$(wildcard pyproject.toml setup.cfg setup.py requirements.txt constraints.txt)
+LOCAL_PACKAGE_FILES:=$(wildcard $(PYTHON_PROJECT_PREFIX)pyproject.toml $(PYTHON_PROJECT_PREFIX)setup.cfg $(PYTHON_PROJECT_PREFIX)setup.py $(PYTHON_PROJECT_PREFIX)requirements.txt $(PYTHON_PROJECT_PREFIX)constraints.txt)
 
 FILES_TARGET:=requirements-mxdev.txt
 $(FILES_TARGET): $(PROJECT_CONFIG) $(MXENV_TARGET) $(SOURCES_TARGET) $(LOCAL_PACKAGE_FILES)

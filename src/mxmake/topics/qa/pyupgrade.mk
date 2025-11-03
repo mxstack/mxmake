@@ -24,6 +24,11 @@
 # pyupgrade
 ##############################################################################
 
+# Adjust PYUPGRADE_SRC to respect PROJECT_PATH_PYTHON if still at default
+ifeq ($(PYUPGRADE_SRC),src)
+PYUPGRADE_SRC:=$(PYTHON_PROJECT_PREFIX)src
+endif
+
 PYUPGRADE_TARGET:=$(SENTINEL_FOLDER)/pyupgrade.sentinel
 $(PYUPGRADE_TARGET): $(MXENV_TARGET)
 	@echo "Install pyupgrade"

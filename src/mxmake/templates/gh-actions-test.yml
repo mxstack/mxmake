@@ -23,7 +23,7 @@ jobs:
       uses: astral-sh/setup-uv@v5
       with:
         enable-cache: true
-        cache-dependency-glob: "pyproject.toml"
+        cache-dependency-glob: "{% if project_path_python %}{{ project_path_python }}/{% endif %}pyproject.toml"
 
     - name: Set up Python {{ "${{ matrix.python }}" }}
       run: uv python install {{ "${{ matrix.python }}" }}

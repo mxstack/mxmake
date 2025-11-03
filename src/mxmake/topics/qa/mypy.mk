@@ -24,6 +24,11 @@
 # mypy
 ##############################################################################
 
+# Adjust MYPY_SRC to respect PROJECT_PATH_PYTHON if still at default
+ifeq ($(MYPY_SRC),src)
+MYPY_SRC:=$(PYTHON_PROJECT_PREFIX)src
+endif
+
 MYPY_TARGET:=$(SENTINEL_FOLDER)/mypy.sentinel
 $(MYPY_TARGET): $(MXENV_TARGET)
 	@echo "Install mypy"

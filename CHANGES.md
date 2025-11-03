@@ -1,12 +1,19 @@
 # Changelog
 
-## 2.0.1
+## 2.1.0
 
 - Enhancement: Use tables in the generated sphinx code for topic/domains.
   [jensens, 02-11-2025]
-
+- Feature: Add monorepo support with `PROJECT_PATH_PYTHON` setting.
+  Python projects can now be located in subdirectories while keeping the Makefile at the repository root. Includes auto-detection of `pyproject.toml` in subdirectories on init, `--project-path-python` CLI flag and preseed file support.
+  Useful for monorepos with multiple applications (e.g., frontend + backend).
+  See the "Monorepo Support" section in getting-started.md for details.
 - Feature: Add `--version` (`-v`) command line flag to display mxmake version.
   [jensens, 02-11-2025]
+
+- Fix: All QA tool domains (ruff, isort, mypy, black, zpretty, pyupgrade, pyrefly) now respect the `PROJECT_PATH_PYTHON` setting when using default source paths.
+  When `PROJECT_PATH_PYTHON` is set (e.g., to `backend`), the tools automatically look for source code in the correct subdirectory (e.g., `backend/src`) instead of just `src`.
+  [jensens, 03-11-2025]
 
 ## 2.0.0 (2025-10-24)
 

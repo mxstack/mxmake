@@ -20,6 +20,11 @@
 # black
 ##############################################################################
 
+# Adjust BLACK_SRC to respect PROJECT_PATH_PYTHON if still at default
+ifeq ($(BLACK_SRC),src)
+BLACK_SRC:=$(PYTHON_PROJECT_PREFIX)src
+endif
+
 BLACK_TARGET:=$(SENTINEL_FOLDER)/black.sentinel
 $(BLACK_TARGET): $(MXENV_TARGET)
 	@echo "Install Black"

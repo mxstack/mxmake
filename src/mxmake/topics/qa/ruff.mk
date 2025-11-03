@@ -20,6 +20,11 @@
 # ruff
 ##############################################################################
 
+# Adjust RUFF_SRC to respect PROJECT_PATH_PYTHON if still at default
+ifeq ($(RUFF_SRC),src)
+RUFF_SRC:=$(PYTHON_PROJECT_PREFIX)src
+endif
+
 RUFF_TARGET:=$(SENTINEL_FOLDER)/ruff.sentinel
 $(RUFF_TARGET): $(MXENV_TARGET)
 	@echo "Install Ruff"
