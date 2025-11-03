@@ -20,6 +20,11 @@
 # isort
 ##############################################################################
 
+# Adjust ISORT_SRC to respect PROJECT_PATH_PYTHON if still at default
+ifeq ($(ISORT_SRC),src)
+ISORT_SRC:=$(PYTHON_PROJECT_PREFIX)src
+endif
+
 ISORT_TARGET:=$(SENTINEL_FOLDER)/isort.sentinel
 $(ISORT_TARGET): $(MXENV_TARGET)
 	@echo "Install isort"

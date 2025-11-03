@@ -24,6 +24,11 @@
 # pyrefly
 ##############################################################################
 
+# Adjust PYREFLY_SRC to respect PROJECT_PATH_PYTHON if still at default
+ifeq ($(PYREFLY_SRC),src)
+PYREFLY_SRC:=$(PYTHON_PROJECT_PREFIX)src
+endif
+
 PYREFLY_TARGET:=$(SENTINEL_FOLDER)/pyrefly.sentinel
 $(PYREFLY_TARGET): $(MXENV_TARGET)
 	@echo "Install pyrefly"

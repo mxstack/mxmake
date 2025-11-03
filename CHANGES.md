@@ -11,6 +11,10 @@
 - Feature: Add `--version` (`-v`) command line flag to display mxmake version.
   [jensens, 02-11-2025]
 
+- Fix: All QA tool domains (ruff, isort, mypy, black, zpretty, pyupgrade, pyrefly) now respect the `PROJECT_PATH_PYTHON` setting when using default source paths.
+  When `PROJECT_PATH_PYTHON` is set (e.g., to `backend`), the tools automatically look for source code in the correct subdirectory (e.g., `backend/src`) instead of just `src`.
+  [jensens, 03-11-2025]
+
 ## 2.0.0 (2025-10-24)
 
 - **Breaking**: Drop Python 3.9 support. Minimum Python version is now 3.10.
