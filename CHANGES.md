@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.2.0
+
+- Feature: Add optional `ruff check --fix` support to ruff-format target
+  [jensens, 2025-11-11]
+
 ## 2.1.0
 
 - Enhancement: Use tables in the generated sphinx code for topic/domains.
