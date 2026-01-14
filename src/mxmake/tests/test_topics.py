@@ -86,6 +86,28 @@ class TestTopics(unittest.TestCase):
         domain = topics.get_domain("core.mxenv")
         self.assertEqual(domain.fqn, "core.mxenv")
 
+    def test_ruff_domain_settings(self):
+        """Test ruff domain has correct settings for check --fix feature."""
+        domain = topics.get_domain("qa.ruff")
+        self.assertEqual(domain.fqn, "qa.ruff")
+
+        settings = {s.name: s for s in domain.settings}
+
+        # Verify RUFF_FIXES setting
+        self.assertIn("RUFF_FIXES", settings)
+        ruff_fixes = settings["RUFF_FIXES"]
+        self.assertEqual(ruff_fixes.default, "false")
+        self.assertIn("ruff check --fix", ruff_fixes.description)
+
+        # Verify RUFF_UNSAFE_FIXES setting
+        self.assertIn("RUFF_UNSAFE_FIXES", settings)
+        ruff_unsafe = settings["RUFF_UNSAFE_FIXES"]
+        self.assertEqual(ruff_unsafe.default, "false")
+        self.assertIn("unsafe fixes", ruff_unsafe.description)
+
+        # Verify RUFF_SRC setting still exists
+        self.assertIn("RUFF_SRC", settings)
+
     @testing.temp_directory
     def test_Domain(self, tmpdir):
         domain_path = tmpdir / "domain.mk"
