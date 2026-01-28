@@ -17,8 +17,6 @@
         uses: "./.github/workflows/lint.yml"
       variants:
         uses: "./.github/workflows/variants.yml"
-      typecheck:
-        uses: "./.github/workflows/typecheck.yml"
 
       # Always build & lint package.
       build-package:
@@ -27,7 +25,6 @@
           - lint
           - tests
           - variants
-          - typecheck
         runs-on: ubuntu-latest
         permissions:
           attestations: write

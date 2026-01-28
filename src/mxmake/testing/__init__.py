@@ -73,10 +73,6 @@ class TestConfiguration(mxdev.Configuration):
 
 
 class RenderTestCase(unittest.TestCase):
-    class Example:
-        def __init__(self, want):
-            self.want = want + "\n"
-
     class Failure(Exception):
         pass
 
@@ -96,6 +92,8 @@ class RenderTestCase(unittest.TestCase):
         if not success:
             raise RenderTestCase.Failure(
                 self._checker.output_difference(
-                    RenderTestCase.Example(want), got, optionflags
+                    doctest.Example(source="", want=want + "\n"),
+                    got,
+                    optionflags,
                 )
             )

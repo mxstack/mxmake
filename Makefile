@@ -8,11 +8,9 @@
 #: core.mxfiles
 #: core.packages
 #: docs.sphinx
-#: qa.coverage
-#: qa.isort
-#: qa.mypy
 #: qa.ruff
 #: qa.test
+#: qa.ty
 #
 # SETTINGS (ALL CHANGES MADE BELOW SETTINGS WILL BE LOST)
 ##############################################################################
@@ -158,6 +156,17 @@ PROJECT_CONFIG?=mx.ini
 # Default: false
 PACKAGES_ALLOW_PRERELEASES?=false
 
+## qa.ty
+
+# Source folder for type checking.
+# Default: src
+TY_SRC?=src
+
+# Target Python version for type checking (e.g., 3.12).
+# Leave empty to use default detection.
+# No default value.
+TY_PYTHON_VERSION?=
+
 ## qa.test
 
 # The command which gets executed. Defaults to the location the
@@ -173,23 +182,6 @@ TEST_REQUIREMENTS?=pytest
 # Additional make targets the test target depends on.
 # No default value.
 TEST_DEPENDENCY_TARGETS?=
-
-## qa.coverage
-
-# The command which gets executed. Defaults to the location the
-# :ref:`run-coverage` template gets rendered to if configured.
-# Default: .mxmake/files/run-coverage.sh
-COVERAGE_COMMAND?=.mxmake/files/run-coverage.sh
-
-## qa.mypy
-
-# Source folder for code analysis.
-# Default: src
-MYPY_SRC?=src
-
-# Mypy Python requirements to be installed (via pip).
-# Default: types-setuptools
-MYPY_REQUIREMENTS?=types-setuptools types-docutils types-PyYAML
 
 ## core.help
 
@@ -407,45 +399,6 @@ DIRTY_TARGETS+=ruff-dirty
 CLEAN_TARGETS+=ruff-clean
 
 ##############################################################################
-# isort
-##############################################################################
-
-# Adjust ISORT_SRC to respect PROJECT_PATH_PYTHON if still at default
-ifeq ($(ISORT_SRC),src)
-ISORT_SRC:=$(PYTHON_PROJECT_PREFIX)src
-endif
-
-ISORT_TARGET:=$(SENTINEL_FOLDER)/isort.sentinel
-$(ISORT_TARGET): $(MXENV_TARGET)
-	@echo "Install isort"
-	@$(PYTHON_PACKAGE_COMMAND) install isort
-	@touch $(ISORT_TARGET)
-
-.PHONY: isort-check
-isort-check: $(ISORT_TARGET)
-	@echo "Run isort check"
-	@isort --check $(ISORT_SRC)
-
-.PHONY: isort-format
-isort-format: $(ISORT_TARGET)
-	@echo "Run isort format"
-	@isort $(ISORT_SRC)
-
-.PHONY: isort-dirty
-isort-dirty:
-	@rm -f $(ISORT_TARGET)
-
-.PHONY: isort-clean
-isort-clean: isort-dirty
-	@test -e $(MXENV_PYTHON) && $(MXENV_PYTHON) -m pip uninstall -y isort || :
-
-INSTALL_TARGETS+=$(ISORT_TARGET)
-CHECK_TARGETS+=isort-check
-FORMAT_TARGETS+=isort-format
-DIRTY_TARGETS+=isort-dirty
-CLEAN_TARGETS+=isort-clean
-
-##############################################################################
 # sphinx
 ##############################################################################
 
@@ -591,6 +544,47 @@ DIRTY_TARGETS+=packages-dirty
 CLEAN_TARGETS+=packages-clean
 
 ##############################################################################
+# ty
+##############################################################################
+
+# Adjust TY_SRC to respect PROJECT_PATH_PYTHON if still at default
+ifeq ($(TY_SRC),src)
+TY_SRC:=$(PYTHON_PROJECT_PREFIX)src
+endif
+
+# Build ty flags
+TY_FLAGS:=
+ifneq ($(TY_PYTHON_VERSION),)
+TY_FLAGS+=--python-version $(TY_PYTHON_VERSION)
+endif
+
+TY_TARGET:=$(SENTINEL_FOLDER)/ty.sentinel
+$(TY_TARGET): $(MXENV_TARGET)
+	@echo "Install ty"
+	@$(PYTHON_PACKAGE_COMMAND) install ty
+	@touch $(TY_TARGET)
+
+.PHONY: ty
+ty: $(PACKAGES_TARGET) $(TY_TARGET)
+	@echo "Run ty"
+	@ty check $(TY_FLAGS) $(TY_SRC)
+
+.PHONY: ty-dirty
+ty-dirty:
+	@rm -f $(TY_TARGET)
+
+.PHONY: ty-clean
+ty-clean: ty-dirty
+	@test -e $(MXENV_PYTHON) && $(MXENV_PYTHON) -m pip uninstall -y ty || :
+	@rm -rf .ty
+
+INSTALL_TARGETS+=$(TY_TARGET)
+CHECK_TARGETS+=ty
+TYPECHECK_TARGETS+=ty
+CLEAN_TARGETS+=ty-clean
+DIRTY_TARGETS+=ty-dirty
+
+##############################################################################
 # test
 ##############################################################################
 
@@ -618,69 +612,6 @@ test-clean: test-dirty
 INSTALL_TARGETS+=$(TEST_TARGET)
 CLEAN_TARGETS+=test-clean
 DIRTY_TARGETS+=test-dirty
-
-##############################################################################
-# coverage
-##############################################################################
-
-COVERAGE_TARGET:=$(SENTINEL_FOLDER)/coverage.sentinel
-$(COVERAGE_TARGET): $(TEST_TARGET)
-	@echo "Install Coverage"
-	@$(PYTHON_PACKAGE_COMMAND) install -U coverage
-	@touch $(COVERAGE_TARGET)
-
-.PHONY: coverage
-coverage: $(FILES_TARGET) $(SOURCES_TARGET) $(PACKAGES_TARGET) $(COVERAGE_TARGET)
-	@test -z "$(COVERAGE_COMMAND)" && echo "No coverage command defined" && exit 1 || :
-	@echo "Run coverage using $(COVERAGE_COMMAND)"
-	@/usr/bin/env bash -c "$(COVERAGE_COMMAND)"
-
-.PHONY: coverage-dirty
-coverage-dirty:
-	@rm -f $(COVERAGE_TARGET)
-
-.PHONY: coverage-clean
-coverage-clean: coverage-dirty
-	@test -e $(MXENV_PYTHON) && $(MXENV_PYTHON) -m pip uninstall -y coverage || :
-	@rm -rf .coverage htmlcov
-
-INSTALL_TARGETS+=$(COVERAGE_TARGET)
-DIRTY_TARGETS+=coverage-dirty
-CLEAN_TARGETS+=coverage-clean
-
-##############################################################################
-# mypy
-##############################################################################
-
-# Adjust MYPY_SRC to respect PROJECT_PATH_PYTHON if still at default
-ifeq ($(MYPY_SRC),src)
-MYPY_SRC:=$(PYTHON_PROJECT_PREFIX)src
-endif
-
-MYPY_TARGET:=$(SENTINEL_FOLDER)/mypy.sentinel
-$(MYPY_TARGET): $(MXENV_TARGET)
-	@echo "Install mypy"
-	@$(PYTHON_PACKAGE_COMMAND) install mypy $(MYPY_REQUIREMENTS)
-	@touch $(MYPY_TARGET)
-
-.PHONY: mypy
-mypy: $(PACKAGES_TARGET) $(MYPY_TARGET)
-	@echo "Run mypy"
-	@mypy $(MYPY_SRC)
-
-.PHONY: mypy-dirty
-mypy-dirty:
-	@rm -f $(MYPY_TARGET)
-
-.PHONY: mypy-clean
-mypy-clean: mypy-dirty
-	@test -e $(MXENV_PYTHON) && $(MXENV_PYTHON) -m pip uninstall -y mypy || :
-	@rm -rf .mypy_cache
-
-INSTALL_TARGETS+=$(MYPY_TARGET)
-TYPECHECK_TARGETS+=mypy
-CLEAN_TARGETS+=mypy-clean
-DIRTY_TARGETS+=mypy-dirty
 
 ##############################################################################
 # help
