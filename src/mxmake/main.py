@@ -253,7 +253,9 @@ def create_config(prompt: bool, preseeds: dict[str, typing.Any] | None):
     elif preseeds and "mx-ini" in preseeds and not (target_folder / "mx.ini").exists():
         sys.stdout.write("Generate mx configuration file\n")
         factory = template.lookup("mx.ini")
-        mx_ini_template = factory(target_folder, domains, get_template_environment(), domain_settings)
+        mx_ini_template = factory(
+            target_folder, domains, get_template_environment(), domain_settings
+        )
         mx_ini_template.write()
     else:
         sys.stdout.write(

@@ -361,7 +361,8 @@ class MxIni(Template):
                 template = {
                     "name": "plone-site",
                     "settings": {
-                        "distribution": "volto", "extension_ids": "plone.volto:default"
+                        "distribution": "volto",
+                        "extension_ids": "plone.volto:default",
                     },
                 }
                 mxmake_templates.append(template)
