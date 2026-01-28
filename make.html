@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en" data-accent-color="blue" data-content_root="./">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>A short primer on make - mxmake</title><link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Contributing" href="contributing.html" /><link rel="prev" title="Domain dependencies" href="dependencies.html" /><script>
+    function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
+    setColorMode(localStorage._theme||"auto");
+  </script><link rel="stylesheet" type="text/css" href="_static/pygments.css?v=e1a1ceaf" />
+    <link rel="stylesheet" type="text/css" href="_static/shibuya.css?v=44020203" />
+    <link media="print" rel="stylesheet" type="text/css" href="_static/print.css?v=20ff2c19" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=6fa5204e" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --sy-f-text: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+  --sy-f-heading: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+}
+</style>
+    <meta property="og:type" content="website"/><meta property="og:title" content="A short primer on make"/>
+    <meta name="twitter:card" content="summary"/>
+  </head>
+<body><div class="sy-head">
+  <div class="sy-head-blur"></div>
+  <div class="sy-head-inner sy-container mx-auto">
+    <a class="sy-head-brand" href="index.html">
+      <img class="light-logo" src="_static/mxmake-logo.svg" alt="mxmake" height="28" loading="lazy" />
+      <img class="dark-logo" src="_static/mxmake-logo.svg" alt="mxmake" height="28" loading="lazy" />
+      <strong>mxmake</strong>
+    </a>
+    <div class="sy-head-nav" id="head-nav">
+      <nav class="sy-head-links"></nav>
+      <div class="sy-head-extra flex items-center print:hidden"><form class="searchbox flex items-center" action="search.html" method="get">
+  <input type="text" name="q" placeholder="Search" />
+  <kbd>/</kbd>
+</form><div class="sy-head-socials">
+  <a href="https://github.com/mxstack/mxmake" aria-label="GitHub">
+    <iconify-icon icon="simple-icons:github"></iconify-icon>
+  </a><a href="https://pypi.org/project/mxmake" aria-label="PyPI">
+    <iconify-icon icon="simple-icons:pypi"></iconify-icon>
+  </a>
+</div></div>
+    </div>
+    <div class="sy-head-actions flex items-center shrink-0 print:hidden"><button class="js-theme theme-switch flex items-center"
+data-aria-auto="Switch to light color mode"
+data-aria-light="Switch to dark color mode"
+data-aria-dark="Switch to auto color mode">
+<i class="i-lucide theme-icon"></i>
+</button><button class="md:hidden flex items-center js-menu" aria-label="Menu" type="button" aria-controls="head-nav" aria-expanded="false">
+        <div class="hamburger">
+          <span class="hamburger_1"></span>
+          <span class="hamburger_2"></span>
+          <span class="hamburger_3"></span>
+        </div>
+      </button>
+    </div>
+  </div>
+</div>
+<div class="sy-page sy-container flex mx-auto">
+  <aside id="lside" class="sy-lside md:w-72 md:shrink-0 print:hidden">
+    <div class="sy-lside-inner md:sticky">
+      <div class="sy-scrollbar p-6">
+        <div class="globaltoc" data-expand-depth="0"><ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="getting-started.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="topics.html">Topics and Domains</a></li>
+<li class="toctree-l1"><a class="reference internal" href="preseeds.html">Preseeds</a></li>
+<li class="toctree-l1"><a class="reference internal" href="migration.html">Migration Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="templates.html">Generate files using templates</a></li>
+<li class="toctree-l1"><a class="reference internal" href="extending.html">Extending mxmake</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dependencies.html">Domain dependencies</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">A short primer on make</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
+</ul>
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="lside-overlay js-menu" role="button" aria-label="Close left sidebar" aria-controls="lside" aria-expanded="false"></div>
+  <aside id="rside" class="sy-rside pb-3 w-64 shrink-0 order-last">
+    <button class="rside-close js-menu xl:hidden" aria-label="Close Table of Contents" type="button" aria-controls="rside" aria-expanded="false">
+      <i class="i-lucide close"></i>
+    </button>
+    <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4"><div class="localtoc"><h3>On this page</h3><ul>
+<li><a class="reference internal" href="#dependency-management">Dependency management</a></li>
+<li><a class="reference internal" href="#the-phony-target">The &#8220;PHONY&#8221; target</a></li>
+<li><a class="reference internal" href="#sentinel-files">Sentinel files</a></li>
+<li><a class="reference internal" href="#variables">Variables</a></li>
+<li><a class="reference internal" href="#further-reading">Further Reading</a></li>
+</ul>
+</div><div id="ethical-ad-placement" data-ea-publisher="readthedocs"></div></div>
+  </aside>
+  <div class="rside-overlay js-menu" role="button" aria-label="Close Table of Contents" aria-controls="rside" aria-expanded="false"></div>
+  <main class="sy-main w-full max-sm:max-w-full print:pt-6">
+<div class="sy-breadcrumbs" role="navigation">
+  <div class="sy-breadcrumbs-inner flex items-center">
+    <div class="md:hidden mr-3">
+      <button class="js-menu" aria-label="Menu" type="button" aria-controls="lside" aria-expanded="false">
+        <i class="i-lucide menu"></i>
+      </button>
+    </div>
+    <ol class="flex-1" itemscope itemtype="https://schema.org/BreadcrumbList"><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="index.html"><span itemprop="name">mxmake</span></a>
+        <span>/</span>
+        <meta itemprop="position" content="1" />
+      </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <strong itemprop="name">A short primer on make</strong>
+        <meta itemprop="position" content="2" />
+      </li></ol>
+    <div class="xl:hidden ml-1">
+      <button class="js-menu" aria-label="Show table of contents" type="button" aria-controls="rside"
+        aria-expanded="false">
+        <i class="i-lucide outdent"></i>
+      </button>
+    </div>
+  </div>
+</div><div class="flex flex-col break-words justify-between">
+      <div class="relative min-w-0 max-w-6xl px-6 pb-6 pt-8 xl:px-12">
+  <article class="yue" role="main">
+          <section id="a-short-primer-on-make">
+<h1>A short primer on make<a class="headerlink" href="#a-short-primer-on-make" title="Link to this heading">¶</a></h1>
+<p>“make” is a build automation tool that is commonly used in software development projects to automate repetitive tasks.
+This is historically such as compiling source code, linking object files, and building executables - and more recently managing complex (development) environments with different tools and languages mixed.</p>
+<p>Using “make” in Python projects makes sense because it provides a way to manage dependencies and build processes in a consistent and repeatable way.
+This can be particularly useful in large projects with multiple contributors, as it ensures that everyone is building and testing the project in the same way.
+Additionally, “make” provides a simple and concise way to describe build processes, which makes it easier for developers to understand and maintain the build system over time.</p>
+<section id="dependency-management">
+<h2>Dependency management<a class="headerlink" href="#dependency-management" title="Link to this heading">¶</a></h2>
+<p>In “make”, dependency management is achieved through the use of rules and dependencies.
+A rule defines a target, its dependencies, and the commands necessary to create the target.
+The dependencies for a target specify the other files that it relies on and must be built before the target can be built.</p>
+<p>When “make” is run, it checks the timestamps of the target and its dependencies.
+If the target is older than its dependencies, “make” will run the commands in the rule to rebuild the target.
+If the dependencies are up-to-date, “make” will skip the build process for the target, saving time and resources.</p>
+<p>This way, “make” can handle the complex and interdependent steps to form processes of a project, automatically handling the correct order of steps and avoiding unnecessary execution of steps.</p>
+</section>
+<section id="the-phony-target">
+<h2>The “PHONY” target<a class="headerlink" href="#the-phony-target" title="Link to this heading">¶</a></h2>
+<p>In “make”, a “PHONY” target is a special type of target that is used to define a target that is not a file or directory.
+Phony targets are used to describe actions that need to be performed but do not result in a file that can be used as a target in another rule.</p>
+<p>For example, a common use case for a PHONY target is to define a “clean” target that removes all generated files.
+A Makefile could have a rule like the following:</p>
+<div class="highlight-Makefile notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="nf">.PHONY</span><span class="o">:</span><span class="w"> </span><span class="n">clean</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="nf">clean</span><span class="o">:</span>
+</span><span data-line="4"><span class="w">    </span>rm<span class="w"> </span>-rf<span class="w"> </span>build
+</span></pre></div>
+</div>
+<p>The “.PHONY” line indicates that the “clean” target is a PHONY target.
+When “make clean” is run, the command in the rule will be executed to remove the “build” directory.</p>
+<p>PHONY targets are useful because they provide a way to define targets that don’t correspond to files and can be used to perform arbitrary actions such as cleaning the build directory or running tests.
+Additionally, “make” considers PHONY targets to always be out-of-date, so the commands for a PHONY target will always be executed, even if its dependencies are up-to-date.
+This can be useful when you want to guarantee that an action is performed, such as cleaning the build directory before a build.</p>
+</section>
+<section id="sentinel-files">
+<span id="make-sentinel-files"></span><h2>Sentinel files<a class="headerlink" href="#sentinel-files" title="Link to this heading">¶</a></h2>
+<p>Tracking the state of a target in “make” is typically done by checking the timestamp of a file that is the output of a particular step.
+However, there are instances where the steps in the build process do not create files, or the files they do create are not easily trackable.
+In such cases, it becomes difficult to determine if a target needs to be rebuilt.
+To overcome this challenge, other methods, such as using sentinel files, can be employed to keep track of the state of the build process.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Sentinel files are used to indicate whether a target has been built, or if a process has been completed.</p>
+</div>
+<p>For example, a Makefile could use a sentinel file to track the state of a build process.
+The Makefile could contain a rule like the following:</p>
+<div class="highlight-Makefile notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="nf">build</span><span class="o">:</span><span class="w"> </span><span class="n">sentinel</span>
+</span><span data-line="2"><span class="c">    # build commands go here</span>
+</span><span data-line="3">
+</span><span data-line="4"><span class="nf">sentinel</span><span class="o">:</span>
+</span><span data-line="5"><span class="w">    </span>touch<span class="w"> </span>sentinel
+</span></pre></div>
+</div>
+<p>In this example, the “sentinel” file is used to track the state of the build.
+If the “sentinel” file exists, it means that the build has been completed and the build commands will be skipped.
+If the “sentinel” file does not exist, the build commands will be executed and the “sentinel” file will be created to indicate that the build has been completed.</p>
+<p>Sentinel files are useful in “make” because they provide a way to track the state of a build or process, allowing “make” to determine if a target needs to be rebuilt.
+This helps to avoid unnecessary rebuilds, which can save time and resources.</p>
+</section>
+<section id="variables">
+<h2>Variables<a class="headerlink" href="#variables" title="Link to this heading">¶</a></h2>
+<p>In “make”, variables are used to store values that can be referenced in multiple places throughout the Makefile. Variables are defined by assigning a value to a name and can be used in rules, dependencies, and commands.</p>
+<p>For example, the following Makefile uses a variable to store the name of the compiler:</p>
+<div class="highlight-Makefile notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="nv">CC</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>gcc
+</span><span data-line="2">
+</span><span data-line="3"><span class="nf">main</span><span class="o">:</span><span class="w"> </span><span class="n">main</span>.<span class="n">c</span>
+</span><span data-line="4"><span class="w">    </span><span class="k">$(</span>CC<span class="k">)</span><span class="w"> </span>-o<span class="w"> </span>main<span class="w"> </span>main.c
+</span></pre></div>
+</div>
+<p>In this example, the “CC” variable is defined with the value “gcc”, which is then used in the command to compile the “main.c” file.
+This allows for easy modification of the compiler if needed, as the change only needs to be made in one place, instead of throughout the entire Makefile.</p>
+<p>Variables can also be used to store values that are generated dynamically, such as the result of a shell command. For example:</p>
+<div class="highlight-Makefile notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="nv">OBJECTS</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">$(</span>shell<span class="w"> </span>ls<span class="w"> </span>*.c<span class="w"> </span><span class="p">|</span><span class="w"> </span>sed<span class="w"> </span>s/.c/.o/g<span class="k">)</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="nf">main</span><span class="o">:</span><span class="w"> </span><span class="k">$(</span><span class="nv">OBJECTS</span><span class="k">)</span>
+</span><span data-line="4"><span class="w">    </span>gcc<span class="w"> </span>-o<span class="w"> </span>main<span class="w"> </span><span class="k">$(</span>OBJECTS<span class="k">)</span>
+</span></pre></div>
+</div>
+<p>In this example, the “OBJECTS” variable is defined as the result of a shell command that lists all “*.c” files and replaces the “.c” extension with “.o”.
+The “OBJECTS” variable can then be used in the dependencies and command of the “main” target.</p>
+<p>Variables in “make” can also be overridden on the command line, allowing for easy customization of the build process.
+For example, the following command would use a different compiler than the one defined in the Makefile further above:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">make<span class="w"> </span><span class="nv">CC</span><span class="o">=</span>clang
+</span></pre></div>
+</div>
+<p>This way, “make” variables provide a flexible and convenient way to manage build configurations and reuse values throughout the Makefile.</p>
+<p>There are many more details about variables in the GNU Make Manual.</p>
+</section>
+<section id="further-reading">
+<h2>Further Reading<a class="headerlink" href="#further-reading" title="Link to this heading">¶</a></h2>
+<p>For more information, read the <a class="reference external" href="https://www.gnu.org/software/make/manual/make.html">GNU Make Manual</a>.</p>
+</section>
+</section>
+
+        </article><button class="back-to-top" type="button">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+  </svg>
+  <span>Back to top</span>
+</button><div class="navigation flex print:hidden"><div class="navigation-prev">
+    <a href="dependencies.html">
+      <i class="i-lucide chevron-left"></i>
+      <div class="page-info">
+        <span>Previous</span><div class="title">Domain dependencies</div></div>
+    </a>
+  </div><div class="navigation-next">
+    <a href="contributing.html">
+      <div class="page-info">
+        <span>Next</span>
+        <div class="title">Contributing</div>
+      </div>
+      <i class="i-lucide chevron-right"></i>
+    </a>
+  </div></div></div>
+    </div>
+  </main>
+</div>
+<footer class="sy-foot">
+  <div class="sy-foot-inner sy-container mx-auto">
+    <div class="sy-foot-reserved md:flex justify-between items-center">
+      <div class="sy-foot-copyright"><p>2022-2024, mxstack Contributors</p>
+  
+  <p>
+    Made with
+    
+    <a href="https://www.sphinx-doc.org/">Sphinx</a> and
+    
+    <a href="https://shibuya.lepture.com">Shibuya theme</a>.
+  </p>
+</div>
+      <div class="sy-foot-socials">
+<a href="https://github.com/mxstack/mxmake" aria-label="GitHub">
+  <iconify-icon icon="simple-icons:github"></iconify-icon>
+</a></div>
+    </div>
+  </div>
+</footer>
+      <script src="_static/documentation_options.js?v=f2a433a1"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="_static/shibuya.js?v=cac61aee"></script></body>
+</html>

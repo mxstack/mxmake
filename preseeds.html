@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en" data-accent-color="blue" data-content_root="./">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Preseeds - mxmake</title><link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Migration Guide" href="migration.html" /><link rel="prev" title="Topics and Domains" href="topics.html" /><script>
+    function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
+    setColorMode(localStorage._theme||"auto");
+  </script><link rel="stylesheet" type="text/css" href="_static/pygments.css?v=e1a1ceaf" />
+    <link rel="stylesheet" type="text/css" href="_static/shibuya.css?v=44020203" />
+    <link media="print" rel="stylesheet" type="text/css" href="_static/print.css?v=20ff2c19" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=6fa5204e" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --sy-f-text: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+  --sy-f-heading: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+}
+</style>
+    <meta property="og:type" content="website"/><meta property="og:title" content="Preseeds"/>
+    <meta name="twitter:card" content="summary"/>
+  </head>
+<body><div class="sy-head">
+  <div class="sy-head-blur"></div>
+  <div class="sy-head-inner sy-container mx-auto">
+    <a class="sy-head-brand" href="index.html">
+      <img class="light-logo" src="_static/mxmake-logo.svg" alt="mxmake" height="28" loading="lazy" />
+      <img class="dark-logo" src="_static/mxmake-logo.svg" alt="mxmake" height="28" loading="lazy" />
+      <strong>mxmake</strong>
+    </a>
+    <div class="sy-head-nav" id="head-nav">
+      <nav class="sy-head-links"></nav>
+      <div class="sy-head-extra flex items-center print:hidden"><form class="searchbox flex items-center" action="search.html" method="get">
+  <input type="text" name="q" placeholder="Search" />
+  <kbd>/</kbd>
+</form><div class="sy-head-socials">
+  <a href="https://github.com/mxstack/mxmake" aria-label="GitHub">
+    <iconify-icon icon="simple-icons:github"></iconify-icon>
+  </a><a href="https://pypi.org/project/mxmake" aria-label="PyPI">
+    <iconify-icon icon="simple-icons:pypi"></iconify-icon>
+  </a>
+</div></div>
+    </div>
+    <div class="sy-head-actions flex items-center shrink-0 print:hidden"><button class="js-theme theme-switch flex items-center"
+data-aria-auto="Switch to light color mode"
+data-aria-light="Switch to dark color mode"
+data-aria-dark="Switch to auto color mode">
+<i class="i-lucide theme-icon"></i>
+</button><button class="md:hidden flex items-center js-menu" aria-label="Menu" type="button" aria-controls="head-nav" aria-expanded="false">
+        <div class="hamburger">
+          <span class="hamburger_1"></span>
+          <span class="hamburger_2"></span>
+          <span class="hamburger_3"></span>
+        </div>
+      </button>
+    </div>
+  </div>
+</div>
+<div class="sy-page sy-container flex mx-auto">
+  <aside id="lside" class="sy-lside md:w-72 md:shrink-0 print:hidden">
+    <div class="sy-lside-inner md:sticky">
+      <div class="sy-scrollbar p-6">
+        <div class="globaltoc" data-expand-depth="0"><ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="getting-started.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="topics.html">Topics and Domains</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Preseeds</a></li>
+<li class="toctree-l1"><a class="reference internal" href="migration.html">Migration Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="templates.html">Generate files using templates</a></li>
+<li class="toctree-l1"><a class="reference internal" href="extending.html">Extending mxmake</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dependencies.html">Domain dependencies</a></li>
+<li class="toctree-l1"><a class="reference internal" href="make.html">A short primer on make</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
+</ul>
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="lside-overlay js-menu" role="button" aria-label="Close left sidebar" aria-controls="lside" aria-expanded="false"></div>
+  <aside id="rside" class="sy-rside pb-3 w-64 shrink-0 order-last">
+    <button class="rside-close js-menu xl:hidden" aria-label="Close Table of Contents" type="button" aria-controls="rside" aria-expanded="false">
+      <i class="i-lucide close"></i>
+    </button>
+    <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4"><div class="localtoc"><h3>On this page</h3><ul>
+<li><a class="reference internal" href="#introduction">Introduction</a></li>
+<li><a class="reference internal" href="#uv-package-installer">UV Package Installer</a></li>
+<li><a class="reference internal" href="#examples">Examples</a><ul>
+<li><a class="reference internal" href="#create-a-simple-python-project">Create a simple Python project</a></li>
+<li><a class="reference internal" href="#create-a-makefile-for-a-simple-plone-backend">Create a Makefile for a simple Plone backend</a></li>
+</ul>
+</li>
+</ul>
+</div><div id="ethical-ad-placement" data-ea-publisher="readthedocs"></div></div>
+  </aside>
+  <div class="rside-overlay js-menu" role="button" aria-label="Close Table of Contents" aria-controls="rside" aria-expanded="false"></div>
+  <main class="sy-main w-full max-sm:max-w-full print:pt-6">
+<div class="sy-breadcrumbs" role="navigation">
+  <div class="sy-breadcrumbs-inner flex items-center">
+    <div class="md:hidden mr-3">
+      <button class="js-menu" aria-label="Menu" type="button" aria-controls="lside" aria-expanded="false">
+        <i class="i-lucide menu"></i>
+      </button>
+    </div>
+    <ol class="flex-1" itemscope itemtype="https://schema.org/BreadcrumbList"><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="index.html"><span itemprop="name">mxmake</span></a>
+        <span>/</span>
+        <meta itemprop="position" content="1" />
+      </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <strong itemprop="name">Preseeds</strong>
+        <meta itemprop="position" content="2" />
+      </li></ol>
+    <div class="xl:hidden ml-1">
+      <button class="js-menu" aria-label="Show table of contents" type="button" aria-controls="rside"
+        aria-expanded="false">
+        <i class="i-lucide outdent"></i>
+      </button>
+    </div>
+  </div>
+</div><div class="flex flex-col break-words justify-between">
+      <div class="relative min-w-0 max-w-6xl px-6 pb-6 pt-8 xl:px-12">
+  <article class="yue" role="main">
+          <section id="preseeds">
+<h1>Preseeds<a class="headerlink" href="#preseeds" title="Link to this heading">¶</a></h1>
+<section id="introduction">
+<h2>Introduction<a class="headerlink" href="#introduction" title="Link to this heading">¶</a></h2>
+<p>It is possible to pass configuration preseeds when creating a new project
+with <code class="docutils literal notranslate"><span class="pre">mxmake</span> <span class="pre">init</span></code>. This is useful if you have recurring default settings
+when creating projects with <code class="docutils literal notranslate"><span class="pre">mxmake</span></code>.</p>
+<p>Preseeds are contained in yaml files and have the following format:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="c1"># topics to include</span>
+</span><span data-line="2"><span class="nt">topics</span><span class="p">:</span>
+</span><span data-line="3"><span class="w">  </span><span class="c1"># include topic core</span>
+</span><span data-line="4"><span class="w">  </span><span class="nt">core</span><span class="p">:</span>
+</span><span data-line="5"><span class="w">    </span><span class="c1"># include domain mxenv</span>
+</span><span data-line="6"><span class="w">    </span><span class="nt">mxenv</span><span class="p">:</span>
+</span><span data-line="7"><span class="w">      </span><span class="c1"># Minimal UV configuration - UV downloads Python automatically!</span>
+</span><span data-line="8"><span class="w">      </span><span class="nt">PYTHON_PACKAGE_INSTALLER</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">uv</span>
+</span><span data-line="9"><span class="w">      </span><span class="nt">UV_PYTHON</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;3.14&quot;</span>
+</span><span data-line="10"><span class="w">  </span><span class="nt">qa</span><span class="p">:</span>
+</span><span data-line="11"><span class="w">    </span><span class="c1"># include domains from qa topic but do not override default settings</span>
+</span><span data-line="12"><span class="w">    </span><span class="nt">ruff</span><span class="p">:</span>
+</span><span data-line="13"><span class="w">    </span><span class="nt">test</span><span class="p">:</span>
+</span><span data-line="14"><span class="w">    </span><span class="nt">coverage</span><span class="p">:</span>
+</span><span data-line="15"><span class="c1"># generate mx ini if not exists</span>
+</span><span data-line="16"><span class="nt">mx-ini</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</span><span data-line="17"><span class="c1"># generate CI files from templates</span>
+</span><span data-line="18"><span class="nt">ci-templates</span><span class="p">:</span>
+</span><span data-line="19"><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">gh-actions-test</span>
+</span></pre></div>
+</div>
+<p>Now initialize the project with the preseeds:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">$<span class="w"> </span>mxmake<span class="w"> </span>init<span class="w"> </span>-p<span class="w"> </span>preseeds.yaml
+</span></pre></div>
+</div>
+</section>
+<section id="uv-package-installer">
+<h2>UV Package Installer<a class="headerlink" href="#uv-package-installer" title="Link to this heading">¶</a></h2>
+<p>When <code class="docutils literal notranslate"><span class="pre">PYTHON_PACKAGE_INSTALLER</span></code> is set to <code class="docutils literal notranslate"><span class="pre">uv</span></code>, mxmake automatically detects whether UV is installed globally on your system.</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>When using UV, you should explicitly set <code class="docutils literal notranslate"><span class="pre">UV_PYTHON</span></code> to specify which Python version UV should use. While <code class="docutils literal notranslate"><span class="pre">UV_PYTHON</span></code> currently defaults to <code class="docutils literal notranslate"><span class="pre">PRIMARY_PYTHON</span></code> for backward compatibility, relying on this default is not recommended and may change in future versions.</p>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">UV_PYTHON</span></code> setting accepts version specs like <code class="docutils literal notranslate"><span class="pre">3.13</span></code>, <code class="docutils literal notranslate"><span class="pre">3.14</span></code>, or <code class="docutils literal notranslate"><span class="pre">cpython&#64;3.14</span></code>:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="c1"># Minimal UV configuration (recommended)</span>
+</span><span data-line="2"><span class="nt">topics</span><span class="p">:</span>
+</span><span data-line="3"><span class="w">  </span><span class="nt">core</span><span class="p">:</span>
+</span><span data-line="4"><span class="w">    </span><span class="nt">mxenv</span><span class="p">:</span>
+</span><span data-line="5"><span class="w">      </span><span class="nt">PYTHON_PACKAGE_INSTALLER</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">uv</span>
+</span><span data-line="6"><span class="w">      </span><span class="nt">UV_PYTHON</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;3.14&quot;</span><span class="w">  </span><span class="c1"># UV downloads this Python version</span>
+</span></pre></div>
+</div>
+<p><strong>Note</strong>: When using UV with <code class="docutils literal notranslate"><span class="pre">UV_PYTHON</span></code> explicitly set:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">PYTHON_MIN_VERSION</span></code> is <strong>not needed</strong> (validation skipped with global UV)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">PRIMARY_PYTHON</span></code> is <strong>not needed</strong> (only used if UV_PYTHON is not set)</p></li>
+</ul>
+<p>For traditional pip-based workflows, you would set:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="c1"># Traditional pip configuration (requires Python pre-installed)</span>
+</span><span data-line="2"><span class="nt">topics</span><span class="p">:</span>
+</span><span data-line="3"><span class="w">  </span><span class="nt">core</span><span class="p">:</span>
+</span><span data-line="4"><span class="w">    </span><span class="nt">mxenv</span><span class="p">:</span>
+</span><span data-line="5"><span class="w">      </span><span class="nt">PRIMARY_PYTHON</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">python3.12</span>
+</span><span data-line="6"><span class="w">      </span><span class="nt">PYTHON_PACKAGE_INSTALLER</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pip</span><span class="w">  </span><span class="c1"># default</span>
+</span></pre></div>
+</div>
+</section>
+<section id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Link to this heading">¶</a></h2>
+<section id="create-a-simple-python-project">
+<h3>Create a simple Python project<a class="headerlink" href="#create-a-simple-python-project" title="Link to this heading">¶</a></h3>
+<p>mxmake was made for the easy management of Python projects.</p>
+<p>This example shows how to create a very minimal project structure to build on.
+[mxdev][https://pypi.org/project/mxdev/] is integrated to manage versions, sources and more.</p>
+<p>Preconditions for this example:
+<a class="reference external" href="https://docs.astral.sh/uv/">uv</a> is installed in the <code class="docutils literal notranslate"><span class="pre">PATH</span></code>.</p>
+<p>Use <code class="docutils literal notranslate"><span class="pre">uv</span> <span class="pre">init</span> <span class="pre">hello-world</span></code> to generate a minimal skeleton package.</p>
+<p>Enter the <code class="docutils literal notranslate"><span class="pre">hello-world-</span></code> directory and create a file <code class="docutils literal notranslate"><span class="pre">preseed.yaml</span></code>:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="nt">topics</span><span class="p">:</span>
+</span><span data-line="2"><span class="w">  </span><span class="nt">core</span><span class="p">:</span>
+</span><span data-line="3"><span class="w">    </span><span class="nt">mxenv</span><span class="p">:</span>
+</span><span data-line="4"><span class="w">      </span><span class="nt">PYTHON_PACKAGE_INSTALLER</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">uv</span>
+</span><span data-line="5"><span class="w">      </span><span class="nt">UV_PYTHON</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;3.14&quot;</span><span class="w">  </span><span class="c1"># UV downloads Python 3.14</span>
+</span><span data-line="6"><span class="w">    </span><span class="nt">sources</span><span class="p">:</span>
+</span><span data-line="7"><span class="w">  </span><span class="nt">qa</span><span class="p">:</span>
+</span><span data-line="8"><span class="w">    </span><span class="nt">ruff</span><span class="p">:</span>
+</span><span data-line="9"><span class="w">    </span><span class="nt">mypy</span><span class="p">:</span>
+</span><span data-line="10"><span class="w">    </span><span class="nt">test</span><span class="p">:</span>
+</span><span data-line="11">
+</span><span data-line="12"><span class="nt">mx-ini</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</span></pre></div>
+</div>
+<p>Then run:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">uv<span class="w"> </span>mxmake<span class="w"> </span>init<span class="w"> </span>-p<span class="w"> </span>preseed.yaml
+</span></pre></div>
+</div>
+<p>Edit the <code class="docutils literal notranslate"><span class="pre">mx.ini</span></code> and insert after the first line a new line: <code class="docutils literal notranslate"><span class="pre">main-package</span> <span class="pre">=</span> <span class="pre">-e</span> <span class="pre">.</span></code>.</p>
+<p>Now run:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">make<span class="w"> </span>install
+</span></pre></div>
+</div>
+<p>Now you have a basic environment to build on.
+<code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">format</span></code> wont work, because it looks in the <code class="docutils literal notranslate"><span class="pre">./src</span></code> directory, but this can be fixed by restrcuturing the code.
+You may want to use a different skeleton generator than “uv” here.</p>
+</section>
+<section id="create-a-makefile-for-a-simple-plone-backend">
+<h3>Create a Makefile for a simple Plone backend<a class="headerlink" href="#create-a-makefile-for-a-simple-plone-backend" title="Link to this heading">¶</a></h3>
+<p><a class="reference external" href="https://plone.org">Plone</a> is an enterprise CMS written in Python (backend) and Javascript (frontend).
+mxmake helps to create the backend.
+It helps to develop and manage code for integrations and distributions, Plone-add-ons and the Plone-core-development itself.</p>
+<p>Preconditions for this example:
+<a class="reference external" href="https://docs.astral.sh/uv/">uv</a> is installed in the <code class="docutils literal notranslate"><span class="pre">PATH</span></code>.</p>
+<p>Go in a fresh directory and create a file <code class="docutils literal notranslate"><span class="pre">plone-preseed.yaml</span></code>:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="nt">topics</span><span class="p">:</span>
+</span><span data-line="2"><span class="w">  </span><span class="nt">core</span><span class="p">:</span>
+</span><span data-line="3"><span class="w">    </span><span class="nt">base</span><span class="p">:</span>
+</span><span data-line="4"><span class="w">      </span><span class="nt">RUN_TARGET</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">zope-start</span>
+</span><span data-line="5"><span class="w">    </span><span class="nt">mxenv</span><span class="p">:</span>
+</span><span data-line="6"><span class="w">      </span><span class="nt">PYTHON_MIN_VERSION</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;3.13&quot;</span>
+</span><span data-line="7"><span class="w">      </span><span class="nt">PYTHON_PACKAGE_INSTALLER</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">uv</span>
+</span><span data-line="8"><span class="w">      </span><span class="nt">UV_PYTHON</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;3.13&quot;</span>
+</span><span data-line="9"><span class="w">  </span><span class="nt">applications</span><span class="p">:</span>
+</span><span data-line="10"><span class="w">    </span><span class="nt">zope</span><span class="p">:</span>
+</span><span data-line="11"><span class="w">    </span><span class="nt">plone</span><span class="p">:</span>
+</span><span data-line="12"><span class="nt">mx-ini</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</span></pre></div>
+</div>
+<p>Run:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">mxmake<span class="w"> </span>init<span class="w"> </span>-p<span class="w"> </span>plone-preseed.yaml
+</span><span data-line="2"><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;-c https://dist.plone.org/release/6.1-latest/constraints.txt&quot;</span><span class="w"> </span>&gt;requirements.txt
+</span><span data-line="3"><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Plone&quot;</span><span class="w"> </span>&gt;&gt;requirements.txt
+</span></pre></div>
+</div>
+<p>In the</p>
+<ul class="simple">
+<li><p>1st line the <code class="docutils literal notranslate"><span class="pre">Makefile</span></code> and the <code class="docutils literal notranslate"><span class="pre">mx.ini</span></code> configuration is generated,</p></li>
+<li><p>2nd line a Python requirements is created with a reference to a Plone release file, pinning the versions,</p></li>
+<li><p>3rd line the Plone package is declared as the main package.</p></li>
+</ul>
+<p>Now “make” is now ready to run.</p>
+<p>After the first command watch out for a line with the generated password.
+It looks like so:</p>
+<blockquote>
+<div><p>Generated password for initial user ‘admin’ is: SOME-CRYPTIC-PASSWORD</p>
+</div></blockquote>
+<p>Execute:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">make<span class="w"> </span>plone-site-create
+</span><span data-line="2">make<span class="w"> </span>run
+</span></pre></div>
+</div>
+<p>In your browser go to <a class="reference external" href="http://localhost:8080">localhost:8080</a>.
+There runs a Plone with a backend ready for Volto (the frontend application for Plone) installed.</p>
+<p>This can be combined with the above example for a Python package to create self-contained reproducible environments for development and deployment.</p>
+</section>
+</section>
+</section>
+
+        </article><button class="back-to-top" type="button">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+  </svg>
+  <span>Back to top</span>
+</button><div class="navigation flex print:hidden"><div class="navigation-prev">
+    <a href="topics.html">
+      <i class="i-lucide chevron-left"></i>
+      <div class="page-info">
+        <span>Previous</span><div class="title">Topics and Domains</div></div>
+    </a>
+  </div><div class="navigation-next">
+    <a href="migration.html">
+      <div class="page-info">
+        <span>Next</span>
+        <div class="title">Migration Guide</div>
+      </div>
+      <i class="i-lucide chevron-right"></i>
+    </a>
+  </div></div></div>
+    </div>
+  </main>
+</div>
+<footer class="sy-foot">
+  <div class="sy-foot-inner sy-container mx-auto">
+    <div class="sy-foot-reserved md:flex justify-between items-center">
+      <div class="sy-foot-copyright"><p>2022-2024, mxstack Contributors</p>
+  
+  <p>
+    Made with
+    
+    <a href="https://www.sphinx-doc.org/">Sphinx</a> and
+    
+    <a href="https://shibuya.lepture.com">Shibuya theme</a>.
+  </p>
+</div>
+      <div class="sy-foot-socials">
+<a href="https://github.com/mxstack/mxmake" aria-label="GitHub">
+  <iconify-icon icon="simple-icons:github"></iconify-icon>
+</a></div>
+    </div>
+  </div>
+</footer>
+      <script src="_static/documentation_options.js?v=f2a433a1"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="_static/shibuya.js?v=cac61aee"></script></body>
+</html>

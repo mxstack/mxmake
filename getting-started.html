@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en" data-accent-color="blue" data-content_root="./">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Getting started - mxmake</title><link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Topics and Domains" href="topics.html" /><link rel="prev" title="mxmake" href="index.html" /><script>
+    function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
+    setColorMode(localStorage._theme||"auto");
+  </script><link rel="stylesheet" type="text/css" href="_static/pygments.css?v=e1a1ceaf" />
+    <link rel="stylesheet" type="text/css" href="_static/shibuya.css?v=44020203" />
+    <link media="print" rel="stylesheet" type="text/css" href="_static/print.css?v=20ff2c19" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=6fa5204e" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --sy-f-text: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+  --sy-f-heading: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+}
+</style>
+    <meta property="og:type" content="website"/><meta property="og:title" content="Getting started"/>
+    <meta name="twitter:card" content="summary"/>
+  </head>
+<body><div class="sy-head">
+  <div class="sy-head-blur"></div>
+  <div class="sy-head-inner sy-container mx-auto">
+    <a class="sy-head-brand" href="index.html">
+      <img class="light-logo" src="_static/mxmake-logo.svg" alt="mxmake" height="28" loading="lazy" />
+      <img class="dark-logo" src="_static/mxmake-logo.svg" alt="mxmake" height="28" loading="lazy" />
+      <strong>mxmake</strong>
+    </a>
+    <div class="sy-head-nav" id="head-nav">
+      <nav class="sy-head-links"></nav>
+      <div class="sy-head-extra flex items-center print:hidden"><form class="searchbox flex items-center" action="search.html" method="get">
+  <input type="text" name="q" placeholder="Search" />
+  <kbd>/</kbd>
+</form><div class="sy-head-socials">
+  <a href="https://github.com/mxstack/mxmake" aria-label="GitHub">
+    <iconify-icon icon="simple-icons:github"></iconify-icon>
+  </a><a href="https://pypi.org/project/mxmake" aria-label="PyPI">
+    <iconify-icon icon="simple-icons:pypi"></iconify-icon>
+  </a>
+</div></div>
+    </div>
+    <div class="sy-head-actions flex items-center shrink-0 print:hidden"><button class="js-theme theme-switch flex items-center"
+data-aria-auto="Switch to light color mode"
+data-aria-light="Switch to dark color mode"
+data-aria-dark="Switch to auto color mode">
+<i class="i-lucide theme-icon"></i>
+</button><button class="md:hidden flex items-center js-menu" aria-label="Menu" type="button" aria-controls="head-nav" aria-expanded="false">
+        <div class="hamburger">
+          <span class="hamburger_1"></span>
+          <span class="hamburger_2"></span>
+          <span class="hamburger_3"></span>
+        </div>
+      </button>
+    </div>
+  </div>
+</div>
+<div class="sy-page sy-container flex mx-auto">
+  <aside id="lside" class="sy-lside md:w-72 md:shrink-0 print:hidden">
+    <div class="sy-lside-inner md:sticky">
+      <div class="sy-scrollbar p-6">
+        <div class="globaltoc" data-expand-depth="0"><ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="topics.html">Topics and Domains</a></li>
+<li class="toctree-l1"><a class="reference internal" href="preseeds.html">Preseeds</a></li>
+<li class="toctree-l1"><a class="reference internal" href="migration.html">Migration Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="templates.html">Generate files using templates</a></li>
+<li class="toctree-l1"><a class="reference internal" href="extending.html">Extending mxmake</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dependencies.html">Domain dependencies</a></li>
+<li class="toctree-l1"><a class="reference internal" href="make.html">A short primer on make</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
+</ul>
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="lside-overlay js-menu" role="button" aria-label="Close left sidebar" aria-controls="lside" aria-expanded="false"></div>
+  <aside id="rside" class="sy-rside pb-3 w-64 shrink-0 order-last">
+    <button class="rside-close js-menu xl:hidden" aria-label="Close Table of Contents" type="button" aria-controls="rside" aria-expanded="false">
+      <i class="i-lucide close"></i>
+    </button>
+    <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4"><div class="localtoc"><h3>On this page</h3><ul>
+<li><a class="reference internal" href="#how-to-bootstrap-a-project-with-mxmake">How to bootstrap a project with mxmake</a><ul>
+<li><a class="reference internal" href="#essential-requirements">Essential Requirements</a></li>
+<li><a class="reference internal" href="#choose-your-installation-method">Choose Your Installation Method</a><ul>
+<li><a class="reference internal" href="#option-1-uv-only-modern-recommended">Option 1: UV-only (Modern, Recommended)</a></li>
+<li><a class="reference internal" href="#option-2-traditional-pip-based">Option 2: Traditional pip-based</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#after-initialization">After Initialization</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#monorepo-support">Monorepo Support</a><ul>
+<li><a class="reference internal" href="#example-directory-structure">Example Directory Structure</a></li>
+<li><a class="reference internal" href="#setup-methods">Setup Methods</a><ul>
+<li><a class="reference internal" href="#method-1-auto-detection-recommended">Method 1: Auto-detection (Recommended)</a></li>
+<li><a class="reference internal" href="#method-2-cli-flag">Method 2: CLI Flag</a></li>
+<li><a class="reference internal" href="#method-3-preseed-file">Method 3: Preseed File</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#what-happens">What Happens</a></li>
+<li><a class="reference internal" href="#configuration">Configuration</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#how-to-change-the-settings">How to change the settings</a><ul>
+<li><a class="reference internal" href="#python-package-installer">Python Package Installer</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#how-to-use-on-the-windows-operating-system">How to use on the Windows operating system</a></li>
+<li><a class="reference internal" href="#troubleshooting">Troubleshooting</a><ul>
+<li><a class="reference internal" href="#uv-not-found-error">UV not found error</a></li>
+<li><a class="reference internal" href="#python-version-mismatch">Python version mismatch</a></li>
+<li><a class="reference internal" href="#tests-not-running">Tests not running</a></li>
+<li><a class="reference internal" href="#make-command-not-found">Make command not found</a></li>
+<li><a class="reference internal" href="#settings-not-taking-effect">Settings not taking effect</a></li>
+<li><a class="reference internal" href="#regenerating-the-makefile">Regenerating the Makefile</a></li>
+</ul>
+</li>
+</ul>
+</div><div id="ethical-ad-placement" data-ea-publisher="readthedocs"></div></div>
+  </aside>
+  <div class="rside-overlay js-menu" role="button" aria-label="Close Table of Contents" aria-controls="rside" aria-expanded="false"></div>
+  <main class="sy-main w-full max-sm:max-w-full print:pt-6">
+<div class="sy-breadcrumbs" role="navigation">
+  <div class="sy-breadcrumbs-inner flex items-center">
+    <div class="md:hidden mr-3">
+      <button class="js-menu" aria-label="Menu" type="button" aria-controls="lside" aria-expanded="false">
+        <i class="i-lucide menu"></i>
+      </button>
+    </div>
+    <ol class="flex-1" itemscope itemtype="https://schema.org/BreadcrumbList"><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="index.html"><span itemprop="name">mxmake</span></a>
+        <span>/</span>
+        <meta itemprop="position" content="1" />
+      </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <strong itemprop="name">Getting started</strong>
+        <meta itemprop="position" content="2" />
+      </li></ol>
+    <div class="xl:hidden ml-1">
+      <button class="js-menu" aria-label="Show table of contents" type="button" aria-controls="rside"
+        aria-expanded="false">
+        <i class="i-lucide outdent"></i>
+      </button>
+    </div>
+  </div>
+</div><div class="flex flex-col break-words justify-between">
+      <div class="relative min-w-0 max-w-6xl px-6 pb-6 pt-8 xl:px-12">
+  <article class="yue" role="main">
+          <section id="getting-started">
+<h1>Getting started<a class="headerlink" href="#getting-started" title="Link to this heading">¶</a></h1>
+<section id="how-to-bootstrap-a-project-with-mxmake">
+<h2>How to bootstrap a project with mxmake<a class="headerlink" href="#how-to-bootstrap-a-project-with-mxmake" title="Link to this heading">¶</a></h2>
+<section id="essential-requirements">
+<h3>Essential Requirements<a class="headerlink" href="#essential-requirements" title="Link to this heading">¶</a></h3>
+<p>All installation methods require:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://www.gnu.org/software/make/"><code class="docutils literal notranslate"><span class="pre">make</span></code></a> command-line tool</p>
+<ul>
+<li><p>Ubuntu/Debian: <code class="docutils literal notranslate"><span class="pre">sudo</span> <span class="pre">apt</span> <span class="pre">install</span> <span class="pre">make</span></code></p></li>
+<li><p>macOS: <code class="docutils literal notranslate"><span class="pre">xcode-select</span> <span class="pre">--install</span></code></p></li>
+<li><p>Windows: <a class="reference external" href="https://gist.github.com/evanwill/0207876c3243bbb6863e65ec5dc3f058#make">See installation guide</a></p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="choose-your-installation-method">
+<h3>Choose Your Installation Method<a class="headerlink" href="#choose-your-installation-method" title="Link to this heading">¶</a></h3>
+<p>mxmake supports two installation approaches:</p>
+<section id="option-1-uv-only-modern-recommended">
+<h4>Option 1: UV-only (Modern, Recommended)<a class="headerlink" href="#option-1-uv-only-modern-recommended" title="Link to this heading">¶</a></h4>
+<p><strong>Requirements</strong>: Only <a class="reference external" href="https://docs.astral.sh/uv/">UV</a> - <strong>NO Python installation needed!</strong></p>
+<p>UV automatically downloads Python when creating virtual environments, making it the simplest option for new projects.</p>
+<p><strong>Install UV</strong>:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="c1"># Official installer (Linux/macOS)</span>
+</span><span data-line="2">curl<span class="w"> </span>-LsSf<span class="w"> </span>https://astral.sh/uv/install.sh<span class="w"> </span><span class="p">|</span><span class="w"> </span>sh
+</span><span data-line="3">
+</span><span data-line="4"><span class="c1"># Or via pip (if you already have Python)</span>
+</span><span data-line="5">pip<span class="w"> </span>install<span class="w"> </span>uv
+</span></pre></div>
+</div>
+<p><strong>Bootstrap your project</strong>:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">mkdir<span class="w"> </span>myproject<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">cd</span><span class="w"> </span>myproject
+</span><span data-line="2">
+</span><span data-line="3"><span class="c1"># Run mxmake init (UV downloads Python automatically)</span>
+</span><span data-line="4">uvx<span class="w"> </span>mxmake<span class="w"> </span>init
+</span><span data-line="5">
+</span><span data-line="6"><span class="c1"># Answer prompts interactively or use --preseeds for automation</span>
+</span><span data-line="7"><span class="c1"># Select topics and configure settings</span>
+</span><span data-line="8">
+</span><span data-line="9"><span class="c1"># Run make install (UV creates venv with downloaded Python)</span>
+</span><span data-line="10">make<span class="w"> </span>install
+</span></pre></div>
+</div>
+<p><strong>Key advantages</strong>:</p>
+<ul class="simple">
+<li><p>No Python pre-installation required</p></li>
+<li><p>UV downloads the exact Python version you specify</p></li>
+<li><p>Faster package installation</p></li>
+<li><p>Ideal for CI/CD environments</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>When using UV, set <code class="docutils literal notranslate"><span class="pre">PYTHON_PACKAGE_INSTALLER=uv</span></code> and <code class="docutils literal notranslate"><span class="pre">UV_PYTHON=3.14</span></code> (or your preferred version) in the Makefile settings section. UV will automatically download and use that Python version.</p>
+</div>
+</section>
+<section id="option-2-traditional-pip-based">
+<h4>Option 2: Traditional pip-based<a class="headerlink" href="#option-2-traditional-pip-based" title="Link to this heading">¶</a></h4>
+<p><strong>Requirements</strong>: Python 3.10+ with venv module</p>
+<ul class="simple">
+<li><p>Ubuntu/Debian: <code class="docutils literal notranslate"><span class="pre">sudo</span> <span class="pre">apt</span> <span class="pre">install</span> <span class="pre">python3</span> <span class="pre">python3-venv</span></code></p></li>
+<li><p>macOS: Python 3.10+ from <a class="reference external" href="https://www.python.org/downloads/">python.org</a></p></li>
+<li><p>Windows: Python 3.10+ from <a class="reference external" href="https://www.python.org/downloads/windows/">python.org</a></p></li>
+</ul>
+<p><strong>Install mxmake</strong>:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">mkdir<span class="w"> </span>myproject<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">cd</span><span class="w"> </span>myproject
+</span><span data-line="2">
+</span><span data-line="3"><span class="c1"># Option A: Global installation</span>
+</span><span data-line="4">pip<span class="w"> </span>install<span class="w"> </span>mxmake
+</span><span data-line="5">
+</span><span data-line="6"><span class="c1"># Option B: In a virtual environment</span>
+</span><span data-line="7">python3<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>venv
+</span><span data-line="8">.<span class="w"> </span>venv/bin/activate<span class="w">  </span><span class="c1"># On Windows: venv\Scripts\activate</span>
+</span><span data-line="9">pip<span class="w"> </span>install<span class="w"> </span>mxmake
+</span></pre></div>
+</div>
+<p><strong>Bootstrap your project</strong>:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">mxmake<span class="w"> </span>init
+</span><span data-line="2">
+</span><span data-line="3"><span class="c1"># Answer prompts interactively</span>
+</span><span data-line="4"><span class="c1"># This creates mx.ini and Makefile</span>
+</span><span data-line="5">
+</span><span data-line="6">make<span class="w"> </span>install
+</span></pre></div>
+</div>
+</section>
+</section>
+<section id="after-initialization">
+<h3>After Initialization<a class="headerlink" href="#after-initialization" title="Link to this heading">¶</a></h3>
+<p>Both methods create:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Makefile</span></code> - Generated by mxmake with your selected topics/domains</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">mx.ini</span></code> - Configuration for mxdev (if you selected that option)</p></li>
+</ul>
+<p>To update an existing Makefile without interactive prompts, run <code class="docutils literal notranslate"><span class="pre">mxmake</span> <span class="pre">update</span></code>.</p>
+</section>
+</section>
+<section id="monorepo-support">
+<h2>Monorepo Support<a class="headerlink" href="#monorepo-support" title="Link to this heading">¶</a></h2>
+<p>mxmake supports monorepo setups where your Python project lives in a subdirectory while the Makefile stays at the repository root.
+This is useful when you have multiple applications (e.g., frontend + backend) in one repository.
+You may need to edit <code class="docutils literal notranslate"><span class="pre">mx.ini</span></code> and set <code class="docutils literal notranslate"><span class="pre">requirements-in</span></code> or <code class="docutils literal notranslate"><span class="pre">main-package</span></code> to the subfolder.</p>
+<section id="example-directory-structure">
+<h3>Example Directory Structure<a class="headerlink" href="#example-directory-structure" title="Link to this heading">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span data-line="1">myrepo/                    # Repository root
+</span><span data-line="2">├── Makefile               # Generated by mxmake (at root)
+</span><span data-line="3">├── mx.ini                 # mxdev config (at root)
+</span><span data-line="4">├── .venv/                 # Virtual environment (at root)
+</span><span data-line="5">├── .mxmake/               # Generated files (at root)
+</span><span data-line="6">├── sources/               # mxdev packages (at root)
+</span><span data-line="7">├── frontend/              # Frontend application
+</span><span data-line="8">│   └── package.json
+</span><span data-line="9">└── backend/               # Python project in subdirectory
+</span><span data-line="10">    ├── pyproject.toml
+</span><span data-line="11">    ├── src/
+</span><span data-line="12">    │   └── myapp/
+</span><span data-line="13">    └── tests/
+</span></pre></div>
+</div>
+</section>
+<section id="setup-methods">
+<h3>Setup Methods<a class="headerlink" href="#setup-methods" title="Link to this heading">¶</a></h3>
+<section id="method-1-auto-detection-recommended">
+<h4>Method 1: Auto-detection (Recommended)<a class="headerlink" href="#method-1-auto-detection-recommended" title="Link to this heading">¶</a></h4>
+<p>If <code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code> is in a subdirectory, mxmake will detect it automatically:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="nb">cd</span><span class="w"> </span>myrepo
+</span><span data-line="2">uvx<span class="w"> </span>mxmake<span class="w"> </span>init
+</span><span data-line="3"><span class="c1"># mxmake will prompt: &quot;Use &#39;backend&#39; as PROJECT_PATH_PYTHON? (Y/n)&quot;</span>
+</span></pre></div>
+</div>
+</section>
+<section id="method-2-cli-flag">
+<h4>Method 2: CLI Flag<a class="headerlink" href="#method-2-cli-flag" title="Link to this heading">¶</a></h4>
+<p>Specify the project path explicitly:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">uvx<span class="w"> </span>mxmake<span class="w"> </span>init<span class="w"> </span>--project-path-python<span class="w"> </span>backend
+</span></pre></div>
+</div>
+</section>
+<section id="method-3-preseed-file">
+<h4>Method 3: Preseed File<a class="headerlink" href="#method-3-preseed-file" title="Link to this heading">¶</a></h4>
+<p>Include in your preseed YAML:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="nt">topics</span><span class="p">:</span>
+</span><span data-line="2"><span class="w">  </span><span class="nt">core</span><span class="p">:</span>
+</span><span data-line="3"><span class="w">    </span><span class="nt">base</span><span class="p">:</span>
+</span><span data-line="4"><span class="w">      </span><span class="nt">PROJECT_PATH_PYTHON</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">backend</span>
+</span></pre></div>
+</div>
+<p>Then run:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">uvx<span class="w"> </span>mxmake<span class="w"> </span>init<span class="w"> </span>--preseeds<span class="w"> </span>preseed.yaml
+</span></pre></div>
+</div>
+</section>
+</section>
+<section id="what-happens">
+<h3>What Happens<a class="headerlink" href="#what-happens" title="Link to this heading">¶</a></h3>
+<p>When <code class="docutils literal notranslate"><span class="pre">PROJECT_PATH_PYTHON</span></code> is set:</p>
+<ol class="arabic simple">
+<li><p><strong>Makefile</strong>: References Python package files with the correct path</p>
+<ul class="simple">
+<li><p>Looks for <code class="docutils literal notranslate"><span class="pre">backend/pyproject.toml</span></code> instead of <code class="docutils literal notranslate"><span class="pre">./pyproject.toml</span></code></p></li>
+</ul>
+</li>
+<li><p><strong>mx.ini</strong>: Configure test/coverage paths relative to repository root</p>
+<ul class="simple">
+<li><p>Set <code class="docutils literal notranslate"><span class="pre">mxmake-test-path</span> <span class="pre">=</span> <span class="pre">backend/tests</span></code> and <code class="docutils literal notranslate"><span class="pre">mxmake-source-path</span> <span class="pre">=</span> <span class="pre">backend/src</span></code></p></li>
+</ul>
+</li>
+<li><p><strong>GitHub Actions</strong>: Cache uses correct path</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">cache-dependency-glob:</span> <span class="pre">&quot;backend/pyproject.toml&quot;</span></code></p></li>
+</ul>
+</li>
+</ol>
+</section>
+<section id="configuration">
+<h3>Configuration<a class="headerlink" href="#configuration" title="Link to this heading">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">PROJECT_PATH_PYTHON</span></code> setting appears in your Makefile:</p>
+<div class="highlight-makefile notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="c"># Path to Python project relative to Makefile (repository root)</span>
+</span><span data-line="2"><span class="nv">PROJECT_PATH_PYTHON</span><span class="o">?=</span>backend
+</span></pre></div>
+</div>
+<p>In your <code class="docutils literal notranslate"><span class="pre">mx.ini</span></code>, specify paths relative to the repository root (including the project path):</p>
+<div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">[settings]</span>
+</span><span data-line="2"><span class="na">mxmake-test-path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">backend/tests</span>
+</span><span data-line="3"><span class="na">mxmake-source-path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">backend/src</span>
+</span></pre></div>
+</div>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>Future-proofing: This setting is named <code class="docutils literal notranslate"><span class="pre">PROJECT_PATH_PYTHON</span></code> to allow for future <code class="docutils literal notranslate"><span class="pre">PROJECT_PATH_NODEJS</span></code> support in multi-language monorepos.</p>
+</div>
+</section>
+</section>
+<section id="how-to-change-the-settings">
+<h2>How to change the settings<a class="headerlink" href="#how-to-change-the-settings" title="Link to this heading">¶</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">Makefile</span></code> consists of three sections:</p>
+<ol class="arabic simple">
+<li><p>Header with configured topics/domains</p></li>
+<li><p>Settings (for customization)</p></li>
+<li><p>Makefile logic (do not edit)</p></li>
+</ol>
+<p>The header is not intended for editing, thus it does not cause any harm by adding or removing domains here.
+It is considered during the execution of <code class="docutils literal notranslate"><span class="pre">mxmake</span> <span class="pre">init</span></code> respective <code class="docutils literal notranslate"><span class="pre">mxmake</span> <span class="pre">update</span></code>.
+Added or removed topics are checked or unchecked accordingly on the next run.</p>
+<p>The settings section is where customization is happening.
+Domains can provide configurable settings.
+Setting names must be unique among all domains.
+Thus they are usually prefixed.</p>
+<p>Each setting provides a description and an optional default value.</p>
+<p>For details read the chapter <a class="reference internal" href="topics.html#topics-and-domains"><span class="std std-ref">on topics and it’s domains</span></a>.</p>
+<p>Do not add custom settings to settings section.
+They will be lost on next <code class="docutils literal notranslate"><span class="pre">mxmake</span> <span class="pre">init</span></code> respective <code class="docutils literal notranslate"><span class="pre">mxmake</span> <span class="pre">update</span></code> run.</p>
+<section id="python-package-installer">
+<h3>Python Package Installer<a class="headerlink" href="#python-package-installer" title="Link to this heading">¶</a></h3>
+<p>mxmake supports two package installers:</p>
+<p><strong>UV (Recommended)</strong>: Modern, fast package installer that can automatically download Python.</p>
+<ul class="simple">
+<li><p>Set <code class="docutils literal notranslate"><span class="pre">PYTHON_PACKAGE_INSTALLER=uv</span></code> in the Makefile</p></li>
+<li><p>UV is auto-detected if installed globally, or installed locally in the venv</p></li>
+<li><p><strong>Specify <code class="docutils literal notranslate"><span class="pre">UV_PYTHON</span></code> explicitly</strong> (e.g., <code class="docutils literal notranslate"><span class="pre">3.14</span></code>) to control which Python version UV downloads</p></li>
+</ul>
+<p><strong>pip (Default)</strong>: Traditional package installer, requires Python pre-installed.</p>
+<ul class="simple">
+<li><p>Works with any Python 3.10+ installation</p></li>
+<li><p>Uses the Python specified in <code class="docutils literal notranslate"><span class="pre">PRIMARY_PYTHON</span></code> setting</p></li>
+</ul>
+<p>Example UV configuration:</p>
+<div class="highlight-makefile notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="nv">PYTHON_PACKAGE_INSTALLER</span><span class="o">?=</span>uv
+</span><span data-line="2"><span class="nv">UV_PYTHON</span><span class="o">?=</span><span class="m">3</span>.14<span class="w">  </span><span class="c1"># UV downloads Python 3.14 automatically</span>
+</span></pre></div>
+</div>
+<p>Example pip configuration:</p>
+<div class="highlight-makefile notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="nv">PRIMARY_PYTHON</span><span class="o">?=</span>python3.12
+</span><span data-line="2"><span class="nv">PYTHON_PACKAGE_INSTALLER</span><span class="o">?=</span>pip<span class="w">  </span><span class="c1"># Default</span>
+</span></pre></div>
+</div>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>When using UV, <strong>always set <code class="docutils literal notranslate"><span class="pre">UV_PYTHON</span></code> explicitly</strong>. While it currently defaults to <code class="docutils literal notranslate"><span class="pre">PRIMARY_PYTHON</span></code> for backward compatibility, relying on this default is not recommended and may change in future versions.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>With UV + <code class="docutils literal notranslate"><span class="pre">UV_PYTHON</span></code> explicitly set:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">PRIMARY_PYTHON</span></code> is <strong>not needed</strong> (only used as UV_PYTHON default)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">PYTHON_MIN_VERSION</span></code> is <strong>not needed</strong> (validation skipped with global UV)</p></li>
+</ul>
+<p>These settings are <strong>only required</strong> for pip-based workflows.</p>
+</div>
+</section>
+</section>
+<section id="how-to-use-on-the-windows-operating-system">
+<h2>How to use on the Windows operating system<a class="headerlink" href="#how-to-use-on-the-windows-operating-system" title="Link to this heading">¶</a></h2>
+<p>mxmake works excellent on Windows!</p>
+<p>On Windows it needs a Bash shell.
+Fortunately the GIT VCS comes with the a fully function Bash, the git-bash.
+Please follow  <a class="reference external" href="https://git-scm.com/download/win">GIT’s official installation instructions</a>.</p>
+<p>Install <a class="reference external" href="https://gist.github.com/evanwill/0207876c3243bbb6863e65ec5dc3f058#make">make as described here</a></p>
+<p>Further you need a <a class="reference external" href="https://www.python.org/downloads/windows/">Python &gt;=3.10 installation.</a>.</p>
+<p>Dependent on the topics and domains you use, you may need to install additional software, but this is no different from Linux/OSX.</p>
+</section>
+<section id="troubleshooting">
+<h2>Troubleshooting<a class="headerlink" href="#troubleshooting" title="Link to this heading">¶</a></h2>
+<section id="uv-not-found-error">
+<h3>UV not found error<a class="headerlink" href="#uv-not-found-error" title="Link to this heading">¶</a></h3>
+<p>If you get an error that UV is not found, install it. See the <a class="reference external" href="https://docs.astral.sh/uv/getting-started/installation/">official UV installation guide</a> for detailed instructions.</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="c1"># Global installation (recommended)</span>
+</span><span data-line="2">pip<span class="w"> </span>install<span class="w"> </span>uv
+</span><span data-line="3">
+</span><span data-line="4"><span class="c1"># Or use the official installer</span>
+</span><span data-line="5">curl<span class="w"> </span>-LsSf<span class="w"> </span>https://astral.sh/uv/install.sh<span class="w"> </span><span class="p">|</span><span class="w"> </span>sh
+</span></pre></div>
+</div>
+<p>After installation, run <code class="docutils literal notranslate"><span class="pre">mxmake</span> <span class="pre">update</span></code> to regenerate the Makefile.</p>
+</section>
+<section id="python-version-mismatch">
+<h3>Python version mismatch<a class="headerlink" href="#python-version-mismatch" title="Link to this heading">¶</a></h3>
+<p>If UV uses a different Python version than expected, explicitly set <code class="docutils literal notranslate"><span class="pre">UV_PYTHON</span></code> in your Makefile settings:</p>
+<div class="highlight-makefile notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="nv">UV_PYTHON</span><span class="o">?=</span><span class="m">3</span>.14
+</span></pre></div>
+</div>
+<p>Then run <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">install</span></code> again.</p>
+</section>
+<section id="tests-not-running">
+<h3>Tests not running<a class="headerlink" href="#tests-not-running" title="Link to this heading">¶</a></h3>
+<p>If <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">test</span></code> fails with “command not found”, ensure the test runner script was generated:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">ls<span class="w"> </span>.mxmake/files/run-tests.sh
+</span></pre></div>
+</div>
+<p>If missing, check that your <code class="docutils literal notranslate"><span class="pre">mx.ini</span></code> includes <code class="docutils literal notranslate"><span class="pre">mxmake-templates</span> <span class="pre">=</span> <span class="pre">run-tests</span></code> and run <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">install</span></code> to regenerate files.</p>
+</section>
+<section id="make-command-not-found">
+<h3>Make command not found<a class="headerlink" href="#make-command-not-found" title="Link to this heading">¶</a></h3>
+<p>On Ubuntu/Debian: <code class="docutils literal notranslate"><span class="pre">sudo</span> <span class="pre">apt</span> <span class="pre">install</span> <span class="pre">make</span></code>
+On macOS: Install Xcode Command Line Tools: <code class="docutils literal notranslate"><span class="pre">xcode-select</span> <span class="pre">--install</span></code>
+On Windows: See <a class="reference external" href="https://gist.github.com/evanwill/0207876c3243bbb6863e65ec5dc3f058#make">installation instructions</a></p>
+</section>
+<section id="settings-not-taking-effect">
+<h3>Settings not taking effect<a class="headerlink" href="#settings-not-taking-effect" title="Link to this heading">¶</a></h3>
+<p>Settings are only applied when you explicitly set them. If a setting has <code class="docutils literal notranslate"><span class="pre">?=</span></code>, it uses the default unless overridden.</p>
+<p>Example: Change <code class="docutils literal notranslate"><span class="pre">PRIMARY_PYTHON?=python3.12</span></code> to <code class="docutils literal notranslate"><span class="pre">PRIMARY_PYTHON=python3.14</span></code> (remove the <code class="docutils literal notranslate"><span class="pre">?</span></code>) to force that value.</p>
+<p>Note that environment variables always override Makefile settings. Check if a setting is defined in your shell environment:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="nb">echo</span><span class="w"> </span><span class="nv">$PRIMARY_PYTHON</span>
+</span></pre></div>
+</div>
+<p>After changing settings, run <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">install</span></code> to apply them.</p>
+</section>
+<section id="regenerating-the-makefile">
+<h3>Regenerating the Makefile<a class="headerlink" href="#regenerating-the-makefile" title="Link to this heading">¶</a></h3>
+<p>To add or remove domains without interactive prompts, use:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">mxmake<span class="w"> </span>update
+</span></pre></div>
+</div>
+<p>This preserves your current settings and updates the Makefile logic. To start fresh interactively, use <code class="docutils literal notranslate"><span class="pre">mxmake</span> <span class="pre">init</span></code>.</p>
+<p>After upgrading mxmake to a newer version, run <code class="docutils literal notranslate"><span class="pre">mxmake</span> <span class="pre">update</span></code> to apply new features and improvements from the upgraded version.</p>
+</section>
+</section>
+</section>
+
+        </article><button class="back-to-top" type="button">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+  </svg>
+  <span>Back to top</span>
+</button><div class="navigation flex print:hidden"><div class="navigation-prev">
+    <a href="index.html">
+      <i class="i-lucide chevron-left"></i>
+      <div class="page-info">
+        <span>Previous</span><div class="title">Home</div></div>
+    </a>
+  </div><div class="navigation-next">
+    <a href="topics.html">
+      <div class="page-info">
+        <span>Next</span>
+        <div class="title">Topics and Domains</div>
+      </div>
+      <i class="i-lucide chevron-right"></i>
+    </a>
+  </div></div></div>
+    </div>
+  </main>
+</div>
+<footer class="sy-foot">
+  <div class="sy-foot-inner sy-container mx-auto">
+    <div class="sy-foot-reserved md:flex justify-between items-center">
+      <div class="sy-foot-copyright"><p>2022-2024, mxstack Contributors</p>
+  
+  <p>
+    Made with
+    
+    <a href="https://www.sphinx-doc.org/">Sphinx</a> and
+    
+    <a href="https://shibuya.lepture.com">Shibuya theme</a>.
+  </p>
+</div>
+      <div class="sy-foot-socials">
+<a href="https://github.com/mxstack/mxmake" aria-label="GitHub">
+  <iconify-icon icon="simple-icons:github"></iconify-icon>
+</a></div>
+    </div>
+  </div>
+</footer>
+      <script src="_static/documentation_options.js?v=f2a433a1"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="_static/shibuya.js?v=cac61aee"></script></body>
+</html>
