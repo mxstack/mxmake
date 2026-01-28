@@ -6,7 +6,6 @@ from mxmake import topics
 from pathlib import Path
 
 import configparser
-import typing
 import unittest
 
 

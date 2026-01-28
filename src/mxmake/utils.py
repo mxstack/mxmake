@@ -31,5 +31,5 @@ def list_value(value: str | None) -> list[str]:
     space. Supports newline.
     """
     if not value:
-        return list()
+        return []
     return [v.strip() for v in value.replace("\n", " ").strip().split(" ")]

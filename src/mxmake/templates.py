@@ -25,7 +25,7 @@ def get_template_environment() -> Environment:
 class template:
     """Template decorator and registry."""
 
-    _registry: dict = dict()
+    _registry: typing.ClassVar[dict] = {}
 
     def __init__(self, name: str) -> None:
         self.name = name
@@ -160,15 +160,15 @@ class TestScript(EnvironmentTemplate, ShellScriptTemplate):
 
     @property
     def template_variables(self) -> dict[str, typing.Any]:
-        return dict(
-            description=self.description,
-            env=self.env,
-            testpaths=self.package_paths(ns_name("test-path")),
-            testargs=self.config.settings.get("mxmake-test-runner-args", ""),
-        )
+        return {
+            "description": self.description,
+            "env": self.env,
+            "testpaths": self.package_paths(ns_name("test-path")),
+            "testargs": self.config.settings.get("mxmake-test-runner-args", ""),
+        }
 
     def package_paths(self, attr: str) -> list[str]:
-        paths = list()
+        paths = []
         for name, package in self.config.packages.items():
             if attr not in package:
                 continue
@@ -220,13 +220,13 @@ class PipConf(MxIniBoundTemplate):
 
     @property
     def template_variables(self) -> dict[str, typing.Any]:
-        return dict(
-            find_links=[
+        return {
+            "find_links": [
                 link.strip()
                 for link in self.settings.get("find-links", "").split("\n")
                 if link.strip()
             ]
-        )
+        }
 
 
 ##############################################################################
@@ -260,17 +260,17 @@ class Makefile(Template):
         for domain in self.domains:
             if not domain.settings:
                 continue
-            domain_setting = dict(fqn=domain.fqn, settings=[])
+            domain_setting = {"fqn": domain.fqn, "settings": []}
             settings.append(domain_setting)
             for setting in domain.settings:
                 sfqn = f"{domain.fqn}.{setting.name}"
                 domain_setting["settings"].append(
-                    dict(
-                        name=setting.name,
-                        description=setting.description.split("\n"),
-                        default=setting.default,
-                        value=self.domain_settings.get(sfqn, setting.default),
-                    )
+                    {
+                        "name": setting.name,
+                        "description": setting.description.split("\n"),
+                        "default": setting.default,
+                        "value": self.domain_settings.get(sfqn, setting.default),
+                    }
                 )
         # render domain sections
         sections = io.StringIO()
@@ -284,12 +284,12 @@ class Makefile(Template):
         topics = {domain.topic for domain in self.domains}
         additional_targets["qa"] = "qa" in topics
         # return template variables
-        return dict(
-            settings=settings,
-            sections=sections,
-            fqns=fqns,
-            additional_targets=additional_targets,
-        )
+        return {
+            "settings": settings,
+            "sections": sections,
+            "fqns": fqns,
+            "additional_targets": additional_targets,
+        }
 
 
 ##############################################################################
@@ -317,7 +317,7 @@ class AdditionalSourcesTargets(Template):
 
     @property
     def template_variables(self) -> dict[str, typing.Any]:
-        return dict(additional_sources_targets=self.additional_sources_targets)
+        return {"additional_sources_targets": self.additional_sources_targets}
 
 
 ##############################################################################
@@ -351,24 +351,24 @@ class MxIni(Template):
         for domain in self.domains:
             if domain.fqn == "qa.test":
                 mxmake_env = True
-                template = dict(name="run-tests", settings=dict(environment="env"))
+                template = {"name": "run-tests", "settings": {"environment": "env"}}
                 mxmake_templates.append(template)
             if domain.fqn == "qa.coverage":
                 mxmake_env = True
-                template = dict(name="run-coverage", settings=dict(environment="env"))
+                template = {"name": "run-coverage", "settings": {"environment": "env"}}
                 mxmake_templates.append(template)
             if domain.fqn == "applications.plone":
-                template = dict(
-                    name="plone-site",
-                    settings=dict(
-                        distribution="volto", extension_ids="plone.volto:default"
-                    ),
-                )
+                template = {
+                    "name": "plone-site",
+                    "settings": {
+                        "distribution": "volto", "extension_ids": "plone.volto:default"
+                    },
+                }
                 mxmake_templates.append(template)
-        return dict(
-            mxmake_templates=mxmake_templates,
-            mxmake_env=mxmake_env,
-        )
+        return {
+            "mxmake_templates": mxmake_templates,
+            "mxmake_env": mxmake_env,
+        }
 
 
 ##############################################################################
@@ -439,7 +439,7 @@ class Dependencies(Template):
 
 
 class ci_template:
-    templates: list = list()
+    templates: typing.ClassVar[list] = []
 
     def __init__(self, name: str) -> None:
         self.name = name
@@ -461,9 +461,9 @@ class GHActionsTemplate(Template):
 
     @property
     def template_variables(self) -> dict[str, typing.Any]:
-        return dict(
-            project_path_python=self.settings.get("PROJECT_PATH_PYTHON", ""),
-        )
+        return {
+            "project_path_python": self.settings.get("PROJECT_PATH_PYTHON", ""),
+        }
 
     @property
     def target_folder(self) -> Path:
@@ -547,7 +547,7 @@ class PloneSitePy(MxIniBoundTemplate):
             vars["distribution"] = site.pop("distribution")
 
         # handle extension ids
-        if site.get("extension_ids", None) is not None:
+        if site.get("extension_ids") is not None:
             site["extension_ids"] = [
                 eid.strip() for eid in site["extension_ids"].split("\n") if eid.strip()
             ]
@@ -588,5 +588,5 @@ class ProxyMk(MxIniBoundTemplate):
                         domains.append(topic.domain(domain_name.strip()))
                 for domain in domains:
                     for target in domain.targets:
-                        targets.append(dict(name=target.name, folder=folder))
-        return dict(targets=targets)
+                        targets.append({"name": target.name, "folder": folder})
+        return {"targets": targets}

@@ -7,7 +7,9 @@
 - Feature: Add `qa.ty` domain for Astral's ty type checker.
   ty is an extremely fast Python type checker (10-100x faster than mypy).
   Registers with both CHECK_TARGETS and TYPECHECK_TARGETS for fast feedback.
-  [jensens]
+  [jensens, 2026-01-28]
+- Use ty and extended ruff for check, drop isort and mypy from `pyproject.toml`.
+  [jensens, 2026-01-28]
 
 ## 2.1.0
 

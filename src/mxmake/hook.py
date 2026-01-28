@@ -38,7 +38,7 @@ class Hook(mxdev.Hook):
             try:
                 factory = template.lookup(name, bound=True)
             except RuntimeError as e:
-                msg = f"mxmake: {str(e)}"
+                msg = f"mxmake: {e!s}"
                 logger.warning(msg)
                 continue
             factory(config, environment).write()

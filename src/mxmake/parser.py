@@ -1,8 +1,6 @@
 from mxmake.topics import get_domain
 from pathlib import Path
 
-import typing
-
 
 class SettingMissing(Exception):
     """Exception used in parser to indicate a missing setting in an existing

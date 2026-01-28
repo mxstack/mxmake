@@ -9,7 +9,6 @@ from pathlib import Path
 
 import doctest
 import mxdev
-import typing
 
 
 EXPECTED_DIRECTORY = Path(__file__).parent / "expected"
@@ -23,7 +22,7 @@ class TestTemplates(testing.RenderTestCase):
             class Template(templates.Template):
                 pass
 
-            self.assertEqual(templates.template._registry, dict(template=Template))
+            self.assertEqual(templates.template._registry, {"template": Template})
             self.assertEqual(templates.template.lookup("template"), Template)
             with self.assertRaises(RuntimeError):
                 templates.template.lookup("inexistent")
@@ -60,7 +59,7 @@ class TestTemplates(testing.RenderTestCase):
             target_folder = tempdir
             target_name = "target.out"
             template_name = "target.in"
-            template_variables = dict(param="value")
+            template_variables = {"param": "value"}
 
         # cannot write template without template environment
         template = Template()
@@ -99,9 +98,9 @@ class TestTemplates(testing.RenderTestCase):
         # template settings
         hooks: dict[str, dict] = {}
         template = Template(testing.TestConfiguration(hooks=hooks))
-        self.assertEqual(template.settings, dict())
-        hooks["mxmake-template"] = dict(key="val")
-        self.assertEqual(template.settings, dict(key="val"))
+        self.assertEqual(template.settings, {})
+        hooks["mxmake-template"] = {"key": "val"}
+        self.assertEqual(template.settings, {"key": "val"})
 
     def test_ShellScriptTemplate(self):
         self.assertEqual(templates.ShellScriptTemplate.description, "")
@@ -579,11 +578,13 @@ class TestTemplates(testing.RenderTestCase):
 
         template.write()
         print("Makefile written to", tempdir / "Makefile")
-        with (tempdir / "Makefile").open() as result:
-            with open(EXPECTED_DIRECTORY / "Makefile") as expected:
-                self.checkOutput(
-                    expected.read(), result.read(), optionflags=doctest.REPORT_UDIFF
-                )
+        with (
+            (tempdir / "Makefile").open() as result,
+            (EXPECTED_DIRECTORY / "Makefile").open() as expected,
+        ):
+            self.checkOutput(
+                expected.read(), result.read(), optionflags=doctest.REPORT_UDIFF
+            )
 
     @testing.temp_directory
     def test_MxIni(self, tempdir):

@@ -26,7 +26,7 @@ def temp_directory(fn):
 @contextmanager
 def reset_template_registry():
     registry_orgin = templates.template._registry
-    templates.template._registry = dict()
+    templates.template._registry = {}
     try:
         yield
     finally:
@@ -59,17 +59,17 @@ class template_directory:
 class TestConfiguration(mxdev.Configuration):
     def __init__(
         self,
-        settings: dict[str, str] = {},
-        overrides: dict[str, str] = {},
-        ignore_keys: list[str] = [],
-        packages: dict[str, dict[str, str]] = {},
-        hooks: dict[str, dict[str, str]] = {},
+        settings: dict[str, str] | None = None,
+        overrides: dict[str, str] | None = None,
+        ignore_keys: list[str] | None = None,
+        packages: dict[str, dict[str, str]] | None = None,
+        hooks: dict[str, dict[str, str]] | None = None,
     ):
-        self.settings = settings
-        self.overrides = overrides
-        self.ignore_keys = ignore_keys
-        self.packages = packages
-        self.hooks = hooks
+        self.settings = settings if settings is not None else {}
+        self.overrides = overrides if overrides is not None else {}
+        self.ignore_keys = ignore_keys if ignore_keys is not None else []
+        self.packages = packages if packages is not None else {}
+        self.hooks = hooks if hooks is not None else {}
 
 
 class RenderTestCase(unittest.TestCase):

@@ -186,7 +186,7 @@ def get_domain(fqn: str) -> Domain:
 
 class DomainConflictError(Exception):
     def __init__(self, counter: Counter):
-        conflicting = list()
+        conflicting = []
         for name, count in counter.items():
             if count > 1:
                 conflicting.append(name)
