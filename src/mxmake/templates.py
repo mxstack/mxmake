@@ -536,7 +536,7 @@ class PloneSitePy(MxIniBoundTemplate):
     @property
     def template_variables(self):
         site = {}
-        vars = {"site": site}
+        tpl_vars = {"site": site}
         site.setdefault("site_id", "Plone")
         site.setdefault("title", "Plone Site")
         site.setdefault("setup_content", False)
@@ -544,7 +544,7 @@ class PloneSitePy(MxIniBoundTemplate):
         site.setdefault("portal_timezone", "UTC")
         site.update(**self.settings)
         if "distribution" in site:
-            vars["distribution"] = site.pop("distribution")
+            tpl_vars["distribution"] = site.pop("distribution")
 
         # handle extension ids
         if site.get("extension_ids") is not None:
@@ -553,7 +553,7 @@ class PloneSitePy(MxIniBoundTemplate):
             ]
         else:
             site["extension_ids"] = []
-        return vars
+        return tpl_vars
 
 
 ##############################################################################

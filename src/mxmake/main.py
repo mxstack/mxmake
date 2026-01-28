@@ -308,7 +308,7 @@ def init_command(args: argparse.Namespace):
     preseeds = None
     if args.preseeds:
         prompt = False
-        with open(args.preseeds) as fd:
+        with Path(args.preseeds).open() as fd:
             preseeds = yaml.load(fd.read(), yaml.SafeLoader)
 
     # Handle project-path-python from CLI or auto-detection
