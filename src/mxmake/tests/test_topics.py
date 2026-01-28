@@ -188,7 +188,7 @@ class TestTopics(unittest.TestCase):
             str(err),
             (
                 "Domains define circular dependencies: [_TestDomain("
-                "topic='t1', name='f1', file='f1.mk', depends_=['f2'], soft_depends_=[])]"
+                f"topic='t1', name='f1', file={Path('f1.mk')!r}, depends_=['f2'], soft_depends_=[])]"
             ),
         )
 
@@ -199,7 +199,7 @@ class TestTopics(unittest.TestCase):
             str(err),
             (
                 "Domain define missing dependency: _TestDomain("
-                "topic='t', name='t', file='t.mk', depends_=['missing'], soft_depends_=[])"
+                f"topic='t', name='t', file={Path('t.mk')!r}, depends_=['missing'], soft_depends_=[])"
             ),
         )
 
