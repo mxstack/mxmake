@@ -265,7 +265,7 @@ class Makefile(Template):
                         name=setting.name,
                         description=setting.description.split("\n"),
                         default=setting.default,
-                        value=self.domain_settings[sfqn],
+                        value=self.domain_settings.get(sfqn, setting.default),
                     )
                 )
         # render domain sections
@@ -333,10 +333,12 @@ class MxIni(Template):
         target_folder: Path,
         domains: list[Domain],
         environment: Environment | None = None,
+        settings: dict[str, str] | None = None,
     ) -> None:
         super().__init__(environment)
         self.target_folder = target_folder
         self.domains = domains
+        self.settings = settings or {}
 
     @property
     def template_variables(self) -> dict[str, typing.Any]:
@@ -359,7 +361,10 @@ class MxIni(Template):
                     ),
                 )
                 mxmake_templates.append(template)
-        return dict(mxmake_templates=mxmake_templates, mxmake_env=mxmake_env)
+        return dict(
+            mxmake_templates=mxmake_templates,
+            mxmake_env=mxmake_env,
+        )
 
 
 ##############################################################################
@@ -442,7 +447,19 @@ class ci_template:
 
 
 class GHActionsTemplate(Template):
-    template_variables = dict()
+    def __init__(
+        self,
+        environment: Environment | None = None,
+        settings: dict[str, str] | None = None,
+    ) -> None:
+        super().__init__(environment)
+        self.settings = settings or {}
+
+    @property
+    def template_variables(self) -> dict[str, typing.Any]:
+        return dict(
+            project_path_python=self.settings.get("PROJECT_PATH_PYTHON", ""),
+        )
 
     @property
     def target_folder(self) -> Path:

@@ -1,6 +1,6 @@
 # License
 
-Copyright (c) 2022-2024, mxstack Contributors
+Copyright (c) 2022-2025, mxstack Contributors
 
 All rights reserved.
 

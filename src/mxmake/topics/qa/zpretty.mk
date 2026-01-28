@@ -20,6 +20,11 @@
 # zpretty
 ##############################################################################
 
+# Adjust ZPRETTY_SRC to respect PROJECT_PATH_PYTHON if still at default
+ifeq ($(ZPRETTY_SRC),src)
+ZPRETTY_SRC:=$(PYTHON_PROJECT_PREFIX)src
+endif
+
 ZPRETTY_TARGET:=$(SENTINEL_FOLDER)/zpretty.sentinel
 $(ZPRETTY_TARGET): $(MXENV_TARGET)
 	@echo "Install zpretty"

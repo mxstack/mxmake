@@ -64,6 +64,7 @@ class TestParser(unittest.TestCase):
                 "core.base.CLEAN_FS": "",
                 "core.base.INCLUDE_MAKEFILE": "include.mk",
                 "core.base.EXTRA_PATH": "",
+                "core.base.PROJECT_PATH_PYTHON": "",
                 "core.mxenv.PRIMARY_PYTHON": "python3",
                 "core.mxenv.PYTHON_MIN_VERSION": "3.7",
                 "core.mxenv.PYTHON_PACKAGE_INSTALLER": "pip",
