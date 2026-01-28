@@ -2,6 +2,8 @@
 
 ## 2.2.0
 
+- Feature: Add optional `ruff check --fix` support to ruff-format target
+  [jensens, 2025-11-11]
 - Feature: Add `qa.ty` domain for Astral's ty type checker.
   ty is an extremely fast Python type checker (10-100x faster than mypy).
   Registers with both CHECK_TARGETS and TYPECHECK_TARGETS for fast feedback.
