@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.0.2
+
+- Feature: Add `qa.ty` domain for Astral's ty type checker.
+  ty is an extremely fast Python type checker (10-100x faster than mypy).
+  Registers with both CHECK_TARGETS and TYPECHECK_TARGETS for fast feedback.
+  [jensens]
+
 ## 2.0.1
 
 - Enhancement: Use tables in the generated sphinx code for topic/domains.
