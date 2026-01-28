@@ -165,7 +165,7 @@ class Topic:
 
 @functools.lru_cache(maxsize=4096)
 def load_topics() -> list[Topic]:
-    return [ep.load() for ep in load_eps_by_group("mxmake.topics")]  # type: ignore
+    return [ep.load() for ep in load_eps_by_group("mxmake.topics")]
 
 
 def get_topic(name: str) -> Topic:
