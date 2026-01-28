@@ -3,6 +3,7 @@ from dataclasses import dataclass
 from dataclasses import field
 from mxmake import testing
 from mxmake import topics
+from pathlib import Path
 
 import configparser
 import typing
@@ -57,10 +58,13 @@ example-clean:
 
 @dataclass
 class _TestDomain(topics.Domain):
+    file: str | Path = field(default=Path())
     depends_: list[str] = field(default_factory=list)
     soft_depends_: list[str] = field(default_factory=list)
 
     def __post_init__(self) -> None:
+        if isinstance(self.file, str):
+            self.file = Path(self.file)
         self.runtime_depends = self.depends + self.soft_depends
 
     @property
@@ -167,7 +171,9 @@ class TestTopics(unittest.TestCase):
         self.assertEqual(topic_domains[1].name, "domain-b")
         self.assertEqual(topic_domains[1].topic, "topic")
 
-        self.assertEqual(topic.domain("domain-a").name, "domain-a")
+        domain_a = topic.domain("domain-a")
+        assert domain_a is not None
+        self.assertEqual(domain_a.name, "domain-a")
         self.assertEqual(topic.domain("inexistent"), None)
 
     def test_DomainConflictError(self):

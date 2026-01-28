@@ -52,7 +52,7 @@ class TestTemplates(testing.RenderTestCase):
     def test_Template(self, tempdir: Path):
         # cannot instantiate abstract template
         with self.assertRaises(TypeError):
-            templates.Template()  # type: ignore
+            templates.Template()
 
         # create test template
         class Template(templates.Template):

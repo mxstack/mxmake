@@ -67,6 +67,8 @@ def list_command(args: argparse.Namespace):
         sys.stdout.write(f"Requested domain not found: {args.domain}\n")
         sys.exit(1)
 
+    assert domain is not None  # type narrowing for ty
+
     sys.stdout.write(f"Domain {topic.name}.{domain.name}:\n")
     depends = ", ".join(domain.depends) if domain.depends else "No dependencies"
     sys.stdout.write(f"  Depends: {depends}\n")

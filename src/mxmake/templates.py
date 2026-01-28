@@ -58,19 +58,23 @@ class Template(abc.ABC):
         # XXX: if environment is None, default to ``get_template_environment``?
         self.environment = environment
 
-    @abc.abstractproperty
+    @property
+    @abc.abstractmethod
     def target_folder(self) -> Path:
         """Target folder for rendered template."""
 
-    @abc.abstractproperty
+    @property
+    @abc.abstractmethod
     def target_name(self) -> str:
         """Target file name for rendered template."""
 
-    @abc.abstractproperty
+    @property
+    @abc.abstractmethod
     def template_name(self) -> str:
         """Template name to use."""
 
-    @abc.abstractproperty
+    @property
+    @abc.abstractmethod
     def template_variables(self) -> dict[str, typing.Any]:
         """Variables for template rendering."""
 
