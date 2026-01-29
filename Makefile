@@ -103,6 +103,12 @@ MXDEV?=mxdev@git+https://github.com/mxstack/mxdev.git
 # Default: mxmake
 MXMAKE?=-e .
 
+# How to invoke QA tools. 'uvx' (default) runs tools via uvx
+# without installing them into the venv. 'venv' installs tools into the
+# virtual environment (legacy behavior).
+# Default: uvx
+TOOL_RUNNER?=uvx
+
 ## qa.ruff
 
 # Source folder to scan for Python files to run ruff on.
@@ -119,11 +125,10 @@ RUFF_FIXES?=false
 # Default: false
 RUFF_UNSAFE_FIXES?=false
 
-## qa.isort
-
-# Source folder to scan for Python files to run isort on.
-# Default: src
-ISORT_SRC?=src
+# Ruff version to use with uvx (e.g., 0.6.8).
+# Leave empty for latest. Only used when TOOL_RUNNER=uvx.
+# No default value.
+RUFF_VERSION?=
 
 ## docs.sphinx
 
@@ -166,6 +171,11 @@ TY_SRC?=src
 # Leave empty to use default detection.
 # No default value.
 TY_PYTHON_VERSION?=
+
+# ty version to use with uvx (e.g., 0.0.1a1).
+# Leave empty for latest. Only used when TOOL_RUNNER=uvx.
+# No default value.
+TY_VERSION?=
 
 ## qa.test
 
@@ -275,6 +285,31 @@ else
 UV_OUTDATED:=false
 endif
 
+##############################################################################
+# Tool Runner Configuration
+
+ifeq ("$(TOOL_RUNNER)","uvx")
+# uvx mode: tools run via uvx, no installation into venv needed
+SKIP_TOOL_INSTALL:=true
+# RUN_TOOL(tool_name, version, args)
+# Example: $(call RUN_TOOL,ruff,0.6.8,check src)
+# If version is empty: uvx ruff check src
+# If version is set: uvx ruff==0.6.8 check src
+define RUN_TOOL
+uvx $(1)$(if $(strip $(2)),==$(strip $(2)),) $(3)
+endef
+else
+# venv mode: tools installed in venv, direct invocation
+SKIP_TOOL_INSTALL:=false
+# RUN_TOOL(tool_name, version, args) - version ignored in venv mode
+define RUN_TOOL
+$(1) $(3)
+endef
+endif
+
+##############################################################################
+# venv/uv
+
 MXENV_TARGET:=$(SENTINEL_FOLDER)/mxenv.sentinel
 $(MXENV_TARGET): $(SENTINEL)
 	# Validation: Check Python version if not using global uv
@@ -363,24 +398,31 @@ RUFF_FIX_FLAGS=--fix
 endif
 endif
 
+# Installation target (only in venv mode)
+ifneq ("$(SKIP_TOOL_INSTALL)","true")
 RUFF_TARGET:=$(SENTINEL_FOLDER)/ruff.sentinel
 $(RUFF_TARGET): $(MXENV_TARGET)
 	@echo "Install Ruff"
 	@$(PYTHON_PACKAGE_COMMAND) install ruff
 	@touch $(RUFF_TARGET)
+INSTALL_TARGETS+=$(RUFF_TARGET)
+endif
+
+# Conditional dependency
+RUFF_DEPENDENCY:=$(if $(filter true,$(SKIP_TOOL_INSTALL)),,$(RUFF_TARGET))
 
 .PHONY: ruff-check
-ruff-check: $(RUFF_TARGET)
+ruff-check: $(RUFF_DEPENDENCY)
 	@echo "Run ruff check"
-	@ruff check $(RUFF_SRC)
+	@$(call RUN_TOOL,ruff,$(RUFF_VERSION),check $(RUFF_SRC))
 
 .PHONY: ruff-format
-ruff-format: $(RUFF_TARGET)
+ruff-format: $(RUFF_DEPENDENCY)
 	@echo "Run ruff format"
-	@ruff format $(RUFF_SRC)
+	@$(call RUN_TOOL,ruff,$(RUFF_VERSION),format $(RUFF_SRC))
 ifeq ("$(RUFF_FIXES)","true")
 	@echo "Run ruff check $(RUFF_FIX_FLAGS)"
-	@ruff check $(RUFF_FIX_FLAGS) $(RUFF_SRC)
+	@$(call RUN_TOOL,ruff,$(RUFF_VERSION),check $(RUFF_FIX_FLAGS) $(RUFF_SRC))
 endif
 
 .PHONY: ruff-dirty
@@ -389,10 +431,10 @@ ruff-dirty:
 
 .PHONY: ruff-clean
 ruff-clean: ruff-dirty
+ifneq ("$(SKIP_TOOL_INSTALL)","true")
 	@test -e $(MXENV_PYTHON) && $(MXENV_PYTHON) -m pip uninstall -y ruff || :
+endif
 	@rm -rf .ruff_cache
-
-INSTALL_TARGETS+=$(RUFF_TARGET)
 CHECK_TARGETS+=ruff-check
 FORMAT_TARGETS+=ruff-format
 DIRTY_TARGETS+=ruff-dirty
@@ -558,16 +600,23 @@ ifneq ($(TY_PYTHON_VERSION),)
 TY_FLAGS+=--python-version $(TY_PYTHON_VERSION)
 endif
 
+# Installation target (only in venv mode)
+ifneq ("$(SKIP_TOOL_INSTALL)","true")
 TY_TARGET:=$(SENTINEL_FOLDER)/ty.sentinel
 $(TY_TARGET): $(MXENV_TARGET)
 	@echo "Install ty"
 	@$(PYTHON_PACKAGE_COMMAND) install ty
 	@touch $(TY_TARGET)
+INSTALL_TARGETS+=$(TY_TARGET)
+endif
+
+# Conditional dependency
+TY_DEPENDENCY:=$(if $(filter true,$(SKIP_TOOL_INSTALL)),,$(TY_TARGET))
 
 .PHONY: ty
-ty: $(PACKAGES_TARGET) $(TY_TARGET)
+ty: $(PACKAGES_TARGET) $(TY_DEPENDENCY)
 	@echo "Run ty"
-	@ty check $(TY_FLAGS) $(TY_SRC)
+	@$(call RUN_TOOL,ty,$(TY_VERSION),check $(TY_FLAGS) $(TY_SRC))
 
 .PHONY: ty-dirty
 ty-dirty:
@@ -575,10 +624,10 @@ ty-dirty:
 
 .PHONY: ty-clean
 ty-clean: ty-dirty
+ifneq ("$(SKIP_TOOL_INSTALL)","true")
 	@test -e $(MXENV_PYTHON) && $(MXENV_PYTHON) -m pip uninstall -y ty || :
+endif
 	@rm -rf .ty
-
-INSTALL_TARGETS+=$(TY_TARGET)
 CHECK_TARGETS+=ty
 TYPECHECK_TARGETS+=ty
 CLEAN_TARGETS+=ty-clean

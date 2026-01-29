@@ -23,6 +23,11 @@
 #:  Set to `true` to enable unsafe fixes.
 #:default = false
 #:
+#:[setting.RUFF_VERSION]
+#:description = Ruff version to use with uvx (e.g., 0.6.8).
+#:  Leave empty for latest. Only used when TOOL_RUNNER=uvx.
+#:default =
+#:
 #:[target.ruff-dirty]
 #:description = Marks ruff dirty
 #:
@@ -47,24 +52,31 @@ RUFF_FIX_FLAGS=--fix
 endif
 endif
 
+# Installation target (only in venv mode)
+ifneq ("$(SKIP_TOOL_INSTALL)","true")
 RUFF_TARGET:=$(SENTINEL_FOLDER)/ruff.sentinel
 $(RUFF_TARGET): $(MXENV_TARGET)
 	@echo "Install Ruff"
 	@$(PYTHON_PACKAGE_COMMAND) install ruff
 	@touch $(RUFF_TARGET)
+INSTALL_TARGETS+=$(RUFF_TARGET)
+endif
+
+# Conditional dependency
+RUFF_DEPENDENCY:=$(if $(filter true,$(SKIP_TOOL_INSTALL)),,$(RUFF_TARGET))
 
 .PHONY: ruff-check
-ruff-check: $(RUFF_TARGET)
+ruff-check: $(RUFF_DEPENDENCY)
 	@echo "Run ruff check"
-	@ruff check $(RUFF_SRC)
+	@$(call RUN_TOOL,ruff,$(RUFF_VERSION),check $(RUFF_SRC))
 
 .PHONY: ruff-format
-ruff-format: $(RUFF_TARGET)
+ruff-format: $(RUFF_DEPENDENCY)
 	@echo "Run ruff format"
-	@ruff format $(RUFF_SRC)
+	@$(call RUN_TOOL,ruff,$(RUFF_VERSION),format $(RUFF_SRC))
 ifeq ("$(RUFF_FIXES)","true")
 	@echo "Run ruff check $(RUFF_FIX_FLAGS)"
-	@ruff check $(RUFF_FIX_FLAGS) $(RUFF_SRC)
+	@$(call RUN_TOOL,ruff,$(RUFF_VERSION),check $(RUFF_FIX_FLAGS) $(RUFF_SRC))
 endif
 
 .PHONY: ruff-dirty
@@ -73,10 +85,10 @@ ruff-dirty:
 
 .PHONY: ruff-clean
 ruff-clean: ruff-dirty
+ifneq ("$(SKIP_TOOL_INSTALL)","true")
 	@test -e $(MXENV_PYTHON) && $(MXENV_PYTHON) -m pip uninstall -y ruff || :
+endif
 	@rm -rf .ruff_cache
-
-INSTALL_TARGETS+=$(RUFF_TARGET)
 CHECK_TARGETS+=ruff-check
 FORMAT_TARGETS+=ruff-format
 DIRTY_TARGETS+=ruff-dirty
