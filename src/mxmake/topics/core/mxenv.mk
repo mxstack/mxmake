@@ -74,6 +74,12 @@
 #:[setting.MXMAKE]
 #:description = mxmake to install in virtual environment.
 #:default = mxmake
+#:
+#:[setting.TOOL_RUNNER]
+#:description = How to invoke QA tools. 'uvx' (default) runs tools via uvx
+#:  without installing them into the venv. 'venv' installs tools into the
+#:  virtual environment (legacy behavior).
+#:default = uvx
 
 ##############################################################################
 # mxenv
@@ -122,6 +128,29 @@ ifeq ("$(USE_GLOBAL_UV)","true")
 UV_OUTDATED:=$(shell uv self update --dry-run 2>&1 | grep -q "Would update" && echo "true" || echo "false")
 else
 UV_OUTDATED:=false
+endif
+
+##############################################################################
+# Tool Runner Configuration
+##############################################################################
+
+ifeq ("$(TOOL_RUNNER)","uvx")
+# uvx mode: tools run via uvx, no installation into venv needed
+SKIP_TOOL_INSTALL:=true
+# RUN_TOOL(tool_name, version, args)
+# Example: $(call RUN_TOOL,ruff,0.6.8,check src)
+# If version is empty: uvx ruff check src
+# If version is set: uvx ruff==0.6.8 check src
+define RUN_TOOL
+uvx $(1)$(if $(strip $(2)),==$(strip $(2)),) $(3)
+endef
+else
+# venv mode: tools installed in venv, direct invocation
+SKIP_TOOL_INSTALL:=false
+# RUN_TOOL(tool_name, version, args) - version ignored in venv mode
+define RUN_TOOL
+$(1) $(3)
+endef
 endif
 
 MXENV_TARGET:=$(SENTINEL_FOLDER)/mxenv.sentinel

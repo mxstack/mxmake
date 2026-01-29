@@ -27,6 +27,7 @@ class TestParser(unittest.TestCase):
             "core.mxenv.VENV_FOLDER": "venv",
             "core.mxenv.MXDEV": "mxdev",
             "core.mxenv.MXMAKE": "mxmake",
+            "core.mxenv.TOOL_RUNNER": "uvx",
         }
 
         factory = templates.template.lookup("makefile")
@@ -74,6 +75,7 @@ class TestParser(unittest.TestCase):
                 "core.mxenv.VENV_FOLDER": "venv",
                 "core.mxenv.MXDEV": "mxdev",
                 "core.mxenv.MXMAKE": "mxmake",
+                "core.mxenv.TOOL_RUNNER": "uvx",
             },
         )
         self.assertEqual(makefile_parser.topics, {"core": ["base", "mxenv"]})
