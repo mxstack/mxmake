@@ -187,7 +187,6 @@ endif
 
 ##############################################################################
 # Tool Runner Configuration
-##############################################################################
 
 ifeq ("$(TOOL_RUNNER)","uvx")
 # uvx mode: tools run via uvx, no installation into venv needed
@@ -207,6 +206,9 @@ define RUN_TOOL
 $(1) $(3)
 endef
 endif
+
+##############################################################################
+# venv/uv
 
 MXENV_TARGET:=$(SENTINEL_FOLDER)/mxenv.sentinel
 $(MXENV_TARGET): $(SENTINEL)
