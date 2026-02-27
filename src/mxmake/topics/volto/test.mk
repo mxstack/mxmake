@@ -30,3 +30,6 @@ volto-ci-test: $(VOLTO_TARGET)
 		pnpm --filter @plone/volto i18n
 	@CI=1 RAZZLE_JEST_CONFIG=$(CURRENT_DIR)/jest-addon.config.js \
 		pnpm run --filter @plone/volto test --passWithNoTests
+
+.PHONY: test
+test: volto-test

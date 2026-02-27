@@ -23,3 +23,6 @@ volto-ci-i18n: $(VOLTO_TARGET)
 	@echo "Check Volto i18n sync"
 	@pnpm --filter $(VOLTO_ADDON_NAME) i18n && \
 		git diff -G'^[^"POT]' --exit-code
+
+.PHONY: i18n
+i18n: volto-i18n
