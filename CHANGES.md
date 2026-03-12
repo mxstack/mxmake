@@ -1,7 +1,8 @@
 # Changelog
 
 ## 2.2.0
-
+- Enable running QA tools (ruff, ty, black, isort, etc.) via uvx instead of installing them into the venv, with fallback to venv-install for non-UV environments.
+  [jensens, 2026-01-29]
 - Feature: Add optional `ruff check --fix` support to ruff-format target
   [jensens, 2025-11-11]
 - Feature: Add `qa.ty` domain for Astral's ty type checker.

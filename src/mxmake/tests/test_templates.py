@@ -570,6 +570,7 @@ class TestTemplates(testing.RenderTestCase):
             "core.mxenv.VENV_FOLDER": ".venv",
             "core.mxenv.MXDEV": "mxdev",
             "core.mxenv.MXMAKE": "mxmake",
+            "core.mxenv.TOOL_RUNNER": "uvx",
         }
         factory = templates.template.lookup("makefile")
         template = factory(
