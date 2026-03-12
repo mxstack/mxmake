@@ -282,7 +282,7 @@ class Makefile(Template):
         fqns = sorted([domain.fqn for domain in self.domains])
         additional_targets = {}
         topics = {domain.topic for domain in self.domains}
-        additional_targets["qa"] = "qa" in topics
+        additional_targets["qa"] = bool(topics & {"qa", "volto"})
         # return template variables
         return {
             "settings": settings,

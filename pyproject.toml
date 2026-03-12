@@ -76,6 +76,7 @@ qa = "mxmake.topics:qa"
 system = "mxmake.topics:system"
 applications = "mxmake.topics:applications"
 i18n = "mxmake.topics:i18n"
+volto = "mxmake.topics:volto"
 
 [build-system]
 requires = ["hatchling", "hatch-vcs", "hatch-fancy-pypi-readme"]
