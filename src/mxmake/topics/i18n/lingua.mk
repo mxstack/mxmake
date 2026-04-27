@@ -31,7 +31,7 @@
 LINGUA_TARGET:=$(SENTINEL_FOLDER)/lingua.sentinel
 $(LINGUA_TARGET): $(MXENV_TARGET)
 	@echo "Install Lingua"
-	@$(PYTHON_PACKAGE_COMMAND) install chameleon lingua $(LINGUA_PLUGINS)
+	@$(PYTHON_PACKAGE_COMMAND) install $(PIP_CONSTRAINTS_FLAG) chameleon lingua $(LINGUA_PLUGINS)
 	@touch $(LINGUA_TARGET)
 
 PHONY: lingua-extract

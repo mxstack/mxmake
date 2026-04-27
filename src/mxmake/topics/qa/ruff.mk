@@ -50,7 +50,7 @@ endif
 RUFF_TARGET:=$(SENTINEL_FOLDER)/ruff.sentinel
 $(RUFF_TARGET): $(MXENV_TARGET)
 	@echo "Install Ruff"
-	@$(PYTHON_PACKAGE_COMMAND) install ruff
+	@$(PYTHON_PACKAGE_COMMAND) install $(PIP_CONSTRAINTS_FLAG) ruff
 	@touch $(RUFF_TARGET)
 
 .PHONY: ruff-check

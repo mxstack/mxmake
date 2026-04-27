@@ -28,7 +28,7 @@ endif
 ZPRETTY_TARGET:=$(SENTINEL_FOLDER)/zpretty.sentinel
 $(ZPRETTY_TARGET): $(MXENV_TARGET)
 	@echo "Install zpretty"
-	@$(PYTHON_PACKAGE_COMMAND) install zpretty
+	@$(PYTHON_PACKAGE_COMMAND) install $(PIP_CONSTRAINTS_FLAG) zpretty
 	@touch $(ZPRETTY_TARGET)
 
 .PHONY: zpretty-check

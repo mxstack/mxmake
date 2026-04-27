@@ -119,12 +119,6 @@ RUFF_FIXES?=false
 # Default: false
 RUFF_UNSAFE_FIXES?=false
 
-## qa.isort
-
-# Source folder to scan for Python files to run isort on.
-# Default: src
-ISORT_SRC?=src
-
 ## docs.sphinx
 
 # Documentation source folder.
@@ -253,6 +247,13 @@ else
 PYTHON_PACKAGE_COMMAND=$(MXENV_PYTHON) -m pip
 endif
 
+# Constraints file used by pip install recipes. Falls back to the project's
+# own constraints.txt during bootstrap (before mxdev generates the rewritten
+# constraints-mxdev.txt). Lazy assignment so $(wildcard) re-evaluates on use.
+MXDEV_CONSTRAINTS?=constraints-mxdev.txt
+PROJECT_CONSTRAINTS:=$(PYTHON_PROJECT_PREFIX)constraints.txt
+PIP_CONSTRAINTS_FLAG=$(if $(wildcard $(MXDEV_CONSTRAINTS)),-c $(MXDEV_CONSTRAINTS),$(if $(wildcard $(PROJECT_CONSTRAINTS)),-c $(PROJECT_CONSTRAINTS),))
+
 # Auto-detect global uv availability (simple existence check)
 ifeq ("$(PYTHON_PACKAGE_INSTALLER)","uv")
 UV_AVAILABLE:=$(shell command -v uv >/dev/null 2>&1 && echo "true" || echo "false")
@@ -318,9 +319,9 @@ ifeq ("$(USE_LOCAL_UV)","true")
 endif
 
 	# Install/upgrade core packages
-	@$(PYTHON_PACKAGE_COMMAND) install -U pip setuptools wheel
+	@$(PYTHON_PACKAGE_COMMAND) install $(PIP_CONSTRAINTS_FLAG) pip setuptools wheel
 	@echo "Install/Update MXStack Python packages"
-	@$(PYTHON_PACKAGE_COMMAND) install -U $(MXDEV) $(MXMAKE)
+	@$(PYTHON_PACKAGE_COMMAND) install $(PIP_CONSTRAINTS_FLAG) $(MXDEV) $(MXMAKE)
 	@touch $(MXENV_TARGET)
 
 .PHONY: mxenv
@@ -366,7 +367,7 @@ endif
 RUFF_TARGET:=$(SENTINEL_FOLDER)/ruff.sentinel
 $(RUFF_TARGET): $(MXENV_TARGET)
 	@echo "Install Ruff"
-	@$(PYTHON_PACKAGE_COMMAND) install ruff
+	@$(PYTHON_PACKAGE_COMMAND) install $(PIP_CONSTRAINTS_FLAG) ruff
 	@touch $(RUFF_TARGET)
 
 .PHONY: ruff-check
@@ -411,7 +412,7 @@ SPHINX_AUTOBUILD_BIN=sphinx-autobuild
 DOCS_TARGET:=$(SENTINEL_FOLDER)/sphinx.sentinel
 $(DOCS_TARGET): $(MXENV_TARGET)
 	@echo "Install Sphinx"
-	@$(PYTHON_PACKAGE_COMMAND) install -U sphinx sphinx-autobuild $(DOCS_REQUIREMENTS)
+	@$(PYTHON_PACKAGE_COMMAND) install $(PIP_CONSTRAINTS_FLAG) sphinx sphinx-autobuild $(DOCS_REQUIREMENTS)
 	@touch $(DOCS_TARGET)
 
 .PHONY: docs
@@ -520,6 +521,7 @@ endif
 PACKAGES_TARGET:=$(INSTALLED_PACKAGES)
 $(PACKAGES_TARGET): $(FILES_TARGET) $(ADDITIONAL_SOURCES_TARGETS)
 	@echo "Install python packages"
+	# constraints already embedded in $(FILES_TARGET) via mxdev's `-c` line
 	@$(PYTHON_PACKAGE_COMMAND) install $(PACKAGES_PRERELEASES) -r $(FILES_TARGET)
 	@$(PYTHON_PACKAGE_COMMAND) freeze > $(INSTALLED_PACKAGES)
 	@touch $(PACKAGES_TARGET)
@@ -561,7 +563,7 @@ endif
 TY_TARGET:=$(SENTINEL_FOLDER)/ty.sentinel
 $(TY_TARGET): $(MXENV_TARGET)
 	@echo "Install ty"
-	@$(PYTHON_PACKAGE_COMMAND) install ty
+	@$(PYTHON_PACKAGE_COMMAND) install $(PIP_CONSTRAINTS_FLAG) ty
 	@touch $(TY_TARGET)
 
 .PHONY: ty
@@ -591,7 +593,7 @@ DIRTY_TARGETS+=ty-dirty
 TEST_TARGET:=$(SENTINEL_FOLDER)/test.sentinel
 $(TEST_TARGET): $(MXENV_TARGET)
 	@echo "Install $(TEST_REQUIREMENTS)"
-	@$(PYTHON_PACKAGE_COMMAND) install $(TEST_REQUIREMENTS)
+	@$(PYTHON_PACKAGE_COMMAND) install $(PIP_CONSTRAINTS_FLAG) $(TEST_REQUIREMENTS)
 	@touch $(TEST_TARGET)
 
 .PHONY: test

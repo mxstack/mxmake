@@ -1,5 +1,14 @@
 # Changelog
 
+## 2.2.1 (unreleased)
+
+- Fix: `make install` now honors pinned versions from `constraints.txt` /
+  `constraints-mxdev.txt`. All `pip install` recipes in topic templates pass
+  `$(PIP_CONSTRAINTS_FLAG)` and no longer use `-U`, preventing transitive
+  dependencies from being silently upgraded past project pins.
+  Resolves [#70](https://github.com/mxstack/mxmake/issues/70).
+  [jensens, 2026-04-27]
+
 ## 2.2.0
 
 - Feature: Add optional `ruff check --fix` support to ruff-format target

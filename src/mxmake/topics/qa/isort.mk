@@ -28,7 +28,7 @@ endif
 ISORT_TARGET:=$(SENTINEL_FOLDER)/isort.sentinel
 $(ISORT_TARGET): $(MXENV_TARGET)
 	@echo "Install isort"
-	@$(PYTHON_PACKAGE_COMMAND) install isort
+	@$(PYTHON_PACKAGE_COMMAND) install $(PIP_CONSTRAINTS_FLAG) isort
 	@touch $(ISORT_TARGET)
 
 .PHONY: isort-check
