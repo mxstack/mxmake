@@ -2,6 +2,22 @@
 
 This guide documents breaking changes between mxmake versions and how to migrate your projects.
 
+## Version 2.2.1 (unreleased)
+
+### Behavior Change: `pip install` recipes now honor pinned constraints
+
+**What changed**: Topic templates no longer pass `-U` to `pip install` and now route through a new lazy-evaluated `PIP_CONSTRAINTS_FLAG` Makefile variable that resolves to `-c constraints-mxdev.txt` (or `-c constraints.txt` during bootstrap, if present). Previously, `make install` could silently upgrade transitive dependencies past pins because individual tool installs (sphinx, coverage, ruff, etc.) ignored constraint files.
+
+**Why**: Local venvs were diverging from CI builds, breaking reproducibility for projects that rely on pin discipline. See issue [#70](https://github.com/mxstack/mxmake/issues/70).
+
+**Migration**:
+
+- Run `mxmake update` to regenerate your `Makefile` with the new install recipes.
+- If you intentionally relied on the old "upgrade everything to latest on every install" behavior, run `make clean && make install` after bumping pins to force a refresh.
+- No other action required. Generated Makefiles continue to work without a `constraints.txt` — the new flag falls back to empty in that case.
+
+**No breaking changes**: All settings, targets, and CLI commands are unchanged.
+
 ## Version 2.0.1 (unreleased)
 
 ### Added: Monorepo Support
