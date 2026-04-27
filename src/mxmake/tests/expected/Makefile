@@ -157,6 +157,13 @@ else
 PYTHON_PACKAGE_COMMAND=$(MXENV_PYTHON) -m pip
 endif
 
+# Constraints file used by pip install recipes. Falls back to the project's
+# own constraints.txt during bootstrap (before mxdev generates the rewritten
+# constraints-mxdev.txt). Lazy assignment so $(wildcard) re-evaluates on use.
+MXDEV_CONSTRAINTS?=constraints-mxdev.txt
+PROJECT_CONSTRAINTS:=$(PYTHON_PROJECT_PREFIX)constraints.txt
+PIP_CONSTRAINTS_FLAG=$(if $(wildcard $(MXDEV_CONSTRAINTS)),-c $(MXDEV_CONSTRAINTS),$(if $(wildcard $(PROJECT_CONSTRAINTS)),-c $(PROJECT_CONSTRAINTS),))
+
 # Auto-detect global uv availability (simple existence check)
 ifeq ("$(PYTHON_PACKAGE_INSTALLER)","uv")
 UV_AVAILABLE:=$(shell command -v uv >/dev/null 2>&1 && echo "true" || echo "false")
@@ -222,9 +229,9 @@ ifeq ("$(USE_LOCAL_UV)","true")
 endif
 
 	# Install/upgrade core packages
-	@$(PYTHON_PACKAGE_COMMAND) install -U pip setuptools wheel
+	@$(PYTHON_PACKAGE_COMMAND) install $(PIP_CONSTRAINTS_FLAG) pip setuptools wheel
 	@echo "Install/Update MXStack Python packages"
-	@$(PYTHON_PACKAGE_COMMAND) install -U $(MXDEV) $(MXMAKE)
+	@$(PYTHON_PACKAGE_COMMAND) install $(PIP_CONSTRAINTS_FLAG) $(MXDEV) $(MXMAKE)
 	@touch $(MXENV_TARGET)
 
 .PHONY: mxenv
