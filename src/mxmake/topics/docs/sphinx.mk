@@ -46,7 +46,7 @@ SPHINX_AUTOBUILD_BIN=sphinx-autobuild
 DOCS_TARGET:=$(SENTINEL_FOLDER)/sphinx.sentinel
 $(DOCS_TARGET): $(MXENV_TARGET)
 	@echo "Install Sphinx"
-	@$(PYTHON_PACKAGE_COMMAND) install -U sphinx sphinx-autobuild $(DOCS_REQUIREMENTS)
+	@$(PYTHON_PACKAGE_COMMAND) install $(PIP_CONSTRAINTS_FLAG) sphinx sphinx-autobuild $(DOCS_REQUIREMENTS)
 	@touch $(DOCS_TARGET)
 
 .PHONY: docs
