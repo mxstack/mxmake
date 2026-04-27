@@ -41,6 +41,7 @@ endif
 PACKAGES_TARGET:=$(INSTALLED_PACKAGES)
 $(PACKAGES_TARGET): $(FILES_TARGET) $(ADDITIONAL_SOURCES_TARGETS)
 	@echo "Install python packages"
+	# constraints already embedded in $(FILES_TARGET) via mxdev's `-c` line
 	@$(PYTHON_PACKAGE_COMMAND) install $(PACKAGES_PRERELEASES) -r $(FILES_TARGET)
 	@$(PYTHON_PACKAGE_COMMAND) freeze > $(INSTALLED_PACKAGES)
 	@touch $(PACKAGES_TARGET)
