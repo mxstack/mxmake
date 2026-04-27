@@ -28,7 +28,7 @@ endif
 BLACK_TARGET:=$(SENTINEL_FOLDER)/black.sentinel
 $(BLACK_TARGET): $(MXENV_TARGET)
 	@echo "Install Black"
-	@$(PYTHON_PACKAGE_COMMAND) install black
+	@$(PYTHON_PACKAGE_COMMAND) install $(PIP_CONSTRAINTS_FLAG) black
 	@touch $(BLACK_TARGET)
 
 .PHONY: black-check

@@ -32,7 +32,7 @@ endif
 PYREFLY_TARGET:=$(SENTINEL_FOLDER)/pyrefly.sentinel
 $(PYREFLY_TARGET): $(MXENV_TARGET)
 	@echo "Install pyrefly"
-	@$(PYTHON_PACKAGE_COMMAND) install pyrefly $(PYREFLY_REQUIREMENTS)
+	@$(PYTHON_PACKAGE_COMMAND) install $(PIP_CONSTRAINTS_FLAG) pyrefly $(PYREFLY_REQUIREMENTS)
 	@touch $(PYREFLY_TARGET)
 
 .PHONY: pyrefly

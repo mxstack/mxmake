@@ -39,7 +39,7 @@ endif
 TY_TARGET:=$(SENTINEL_FOLDER)/ty.sentinel
 $(TY_TARGET): $(MXENV_TARGET)
 	@echo "Install ty"
-	@$(PYTHON_PACKAGE_COMMAND) install ty
+	@$(PYTHON_PACKAGE_COMMAND) install $(PIP_CONSTRAINTS_FLAG) ty
 	@touch $(TY_TARGET)
 
 .PHONY: ty
