@@ -303,7 +303,7 @@ def ensure_environment_variant(
     if len(selected) > 1:
         raise EnvironmentVariantError(selected)
     if not selected:
-        return domains + [get_domain(default_variant)]
+        return [*domains, get_domain(default_variant)]
     return domains
 
 
