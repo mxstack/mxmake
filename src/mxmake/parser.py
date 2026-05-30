@@ -14,6 +14,7 @@ class MakefileParser:
         self.fqns: list = []
         self.topics: dict = {}
         self.settings: dict = {}
+        self.lines: list = []
         self.parse()
 
     def parse_fqns(self, lines: list[str]):
@@ -63,5 +64,14 @@ class MakefileParser:
             return
         with self.path.open() as fd:
             lines = [line.rstrip() for line in fd.readlines() if line.strip()]
-            self.parse_fqns(lines)
-            self.parse_settings(lines)
+        self.lines = lines
+        self.parse_fqns(lines)
+        self.parse_settings(lines)
+
+    def legacy_setting(self, name: str) -> str | None:
+        """Read a raw ``NAME?=value`` from the existing Makefile regardless of
+        whether a currently-known domain declares it. Used for migration."""
+        try:
+            return self.parse_setting(self.lines, name).strip()
+        except SettingMissing:
+            return None

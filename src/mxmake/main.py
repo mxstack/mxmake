@@ -6,9 +6,12 @@ from .templates import get_template_environment
 from .templates import template
 from .topics import collect_missing_dependencies
 from .topics import Domain
+from .topics import ensure_environment_variant
+from .topics import ENVIRONMENT_DEFAULT_VARIANT
 from .topics import get_domain
 from .topics import get_topic
 from .topics import load_topics
+from .topics import order_environment_variant
 from .topics import resolve_domain_dependencies
 from .topics import set_domain_runtime_depends
 from operator import attrgetter
@@ -186,8 +189,13 @@ def create_config(prompt: bool, preseeds: dict[str, typing.Any] | None):
         for fqn in domains_choice["domains"]:
             domains.append(get_domain(fqn))
     domains = collect_missing_dependencies(domains)
+    default_variant = ENVIRONMENT_DEFAULT_VARIANT
+    if parser.legacy_setting("PYTHON_PACKAGE_INSTALLER") == "pip":
+        default_variant = "core.mxenv-pip"
+    domains = ensure_environment_variant(domains, default_variant=default_variant)
     set_domain_runtime_depends(domains)
     domains = resolve_domain_dependencies(domains)
+    domains = order_environment_variant(domains)
 
     # obtain settings
     domain_settings = {}

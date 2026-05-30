@@ -4,6 +4,7 @@
 # DOMAINS:
 #: core.base
 #: core.mxenv
+#: core.mxenv-pip
 #
 # SETTINGS (ALL CHANGES MADE BELOW SETTINGS WILL BE LOST)
 ##############################################################################
@@ -44,8 +45,7 @@ PROJECT_PATH_PYTHON?=
 
 # Primary Python interpreter to use. It is used to create the
 # virtual environment if `VENV_ENABLED` and `VENV_CREATE` are set to `true`.
-# If global `uv` is used, this value is passed as `--python VALUE` to the venv creation.
-# uv then downloads the Python interpreter if it is not available.
+# If the uv variant is used, this value is the default for `UV_PYTHON`.
 # for more on this feature read the [uv python documentation](https://docs.astral.sh/uv/concepts/python-versions/)
 # Default: python3
 PRIMARY_PYTHON?=python3
@@ -53,21 +53,6 @@ PRIMARY_PYTHON?=python3
 # Minimum required Python version.
 # Default: 3.10
 PYTHON_MIN_VERSION?=3.10
-
-# Install packages using the given package installer method.
-# Supported are `pip` and `uv`. When `uv` is selected, a global installation
-# is auto-detected and used if available. Otherwise, uv is installed in the
-# virtual environment or using `PRIMARY_PYTHON`, depending on the
-# `VENV_ENABLED` setting.
-# Default: pip
-PYTHON_PACKAGE_INSTALLER?=pip
-
-# Python version for UV to install/use when creating virtual
-# environments with global UV. Passed to `uv venv -p VALUE`. Supports version
-# specs like `3.11`, `3.14`, `cpython@3.14`. Defaults to PRIMARY_PYTHON value
-# for backward compatibility.
-# Default: $(PRIMARY_PYTHON)
-UV_PYTHON?=$(PRIMARY_PYTHON)
 
 # Flag whether to use virtual environment. If `false`, the
 # interpreter according to `PRIMARY_PYTHON` found in `PATH` is used.
@@ -150,96 +135,20 @@ else
 MXENV_PYTHON=$(PRIMARY_PYTHON)
 endif
 
-# Determine the package installer with non-interactive flags
-ifeq ("$(PYTHON_PACKAGE_INSTALLER)","uv")
-PYTHON_PACKAGE_COMMAND=uv pip --no-progress
-else
-PYTHON_PACKAGE_COMMAND=$(MXENV_PYTHON) -m pip
-endif
-
 ##############################################################################
-# Dev tool execution macros
+# Environment provisioning interface
 ##############################################################################
 
-# Control how QA dev tools (ruff, isort, ...) are installed and invoked.
-# Default behavior: install the tool into the environment, invoke it directly.
-# Environment variants may redefine these (e.g. to run via uvx).
-#   INSTALL_TOOL(name)            -> shell command to make the tool available
-#   RUN_TOOL(name,version,args)   -> shell command to invoke the tool
-#   UNINSTALL_TOOL(name)          -> shell command to remove the tool
-INSTALL_TOOL=$(PYTHON_PACKAGE_COMMAND) install $(1)
-RUN_TOOL=$(1) $(3)
-UNINSTALL_TOOL=test -e $(MXENV_PYTHON) && $(MXENV_PYTHON) -m pip uninstall -y $(1) || :
-
-# Auto-detect global uv availability (simple existence check)
-ifeq ("$(PYTHON_PACKAGE_INSTALLER)","uv")
-UV_AVAILABLE:=$(shell command -v uv >/dev/null 2>&1 && echo "true" || echo "false")
-else
-UV_AVAILABLE:=false
-endif
-
-# Determine installation strategy
-# depending on the PYTHON_PACKAGE_INSTALLER and UV_AVAILABLE
-# - both vars can be false or
-# - one of them can be true,
-# - but never boths.
-USE_GLOBAL_UV:=$(shell [[ "$(PYTHON_PACKAGE_INSTALLER)" == "uv" && "$(UV_AVAILABLE)" == "true" ]] && echo "true" || echo "false")
-USE_LOCAL_UV:=$(shell [[ "$(PYTHON_PACKAGE_INSTALLER)" == "uv" && "$(UV_AVAILABLE)" == "false" ]] && echo "true" || echo "false")
-
-# Check if global UV is outdated (non-blocking warning)
-ifeq ("$(USE_GLOBAL_UV)","true")
-UV_OUTDATED:=$(shell uv self update --dry-run 2>&1 | grep -q "Would update" && echo "true" || echo "false")
-else
-UV_OUTDATED:=false
-endif
-
+# The selected environment variant (core.mxenv-pip or core.mxenv-uv) provides:
+#   - PYTHON_PACKAGE_INSTALLER  (pip|uv)
+#   - PYTHON_PACKAGE_COMMAND    (installer command)
+#   - the $(MXENV_TARGET) rule  (creates the environment)
+#   - INSTALL_TOOL / RUN_TOOL / UNINSTALL_TOOL macro definitions controlling how
+#     QA dev tools (ruff, isort, ...) are installed and invoked:
+#       INSTALL_TOOL(name)            -> shell command to make the tool available
+#       RUN_TOOL(name,version,args)   -> shell command to invoke the tool
+#       UNINSTALL_TOOL(name)          -> shell command to remove the tool
 MXENV_TARGET:=$(SENTINEL_FOLDER)/mxenv.sentinel
-$(MXENV_TARGET): $(SENTINEL)
-	# Validation: Check Python version if not using global uv
-ifneq ("$(USE_GLOBAL_UV)","true")
-	@$(PRIMARY_PYTHON) -c "import sys; vi = sys.version_info; sys.exit(1 if (int(vi[0]), int(vi[1])) >= tuple(map(int, '$(PYTHON_MIN_VERSION)'.split('.'))) else 0)" \
-		&& echo "Need Python >= $(PYTHON_MIN_VERSION)" && exit 1 || :
-else
-	@echo "Using global uv for Python $(UV_PYTHON)"
-endif
-	# Validation: Check VENV_FOLDER is set if venv enabled
-	@[[ "$(VENV_ENABLED)" == "true" && "$(VENV_FOLDER)" == "" ]] \
-		&& echo "VENV_FOLDER must be configured if VENV_ENABLED is true" && exit 1 || :
-	# Validation: Check uv not used with system Python
-	@[[ "$(VENV_ENABLED)" == "false" && "$(PYTHON_PACKAGE_INSTALLER)" == "uv" ]] \
-		&& echo "Package installer uv does not work with a global Python interpreter." && exit 1 || :
-	# Warning: Notify if global UV is outdated
-ifeq ("$(UV_OUTDATED)","true")
-	@echo "WARNING: A newer version of uv is available. Run 'uv self update' to upgrade."
-endif
-
-	# Create virtual environment
-ifeq ("$(VENV_ENABLED)", "true")
-ifeq ("$(VENV_CREATE)", "true")
-ifeq ("$(USE_GLOBAL_UV)","true")
-	@echo "Setup Python Virtual Environment using global uv at '$(VENV_FOLDER)'"
-	@uv venv --allow-existing --no-progress -p $(UV_PYTHON) --seed $(VENV_FOLDER)
-else
-	@echo "Setup Python Virtual Environment using module 'venv' at '$(VENV_FOLDER)'"
-	@$(PRIMARY_PYTHON) -m venv $(VENV_FOLDER)
-	@$(MXENV_PYTHON) -m ensurepip -U
-endif
-endif
-else
-	@echo "Using system Python interpreter"
-endif
-
-	# Install uv locally if needed
-ifeq ("$(USE_LOCAL_UV)","true")
-	@echo "Install uv in virtual environment"
-	@$(MXENV_PYTHON) -m pip install uv
-endif
-
-	# Install/upgrade core packages
-	@$(PYTHON_PACKAGE_COMMAND) install -U pip setuptools wheel
-	@echo "Install/Update MXStack Python packages"
-	@$(PYTHON_PACKAGE_COMMAND) install -U $(MXDEV) $(MXMAKE)
-	@touch $(MXENV_TARGET)
 
 .PHONY: mxenv
 mxenv: $(MXENV_TARGET)
@@ -262,6 +171,40 @@ endif
 INSTALL_TARGETS+=mxenv
 DIRTY_TARGETS+=mxenv-dirty
 CLEAN_TARGETS+=mxenv-clean
+
+##############################################################################
+# mxenv-pip
+##############################################################################
+
+# Internal: identify the active installer for downstream domains.
+PYTHON_PACKAGE_INSTALLER:=pip
+PYTHON_PACKAGE_COMMAND=$(MXENV_PYTHON) -m pip
+
+# Tool execution: install into the environment, invoke directly.
+INSTALL_TOOL=$(PYTHON_PACKAGE_COMMAND) install $(1)
+RUN_TOOL=$(1) $(3)
+UNINSTALL_TOOL=test -e $(MXENV_PYTHON) && $(MXENV_PYTHON) -m pip uninstall -y $(1) || :
+
+$(MXENV_TARGET): $(SENTINEL)
+	# Validation: Python version
+	@$(PRIMARY_PYTHON) -c "import sys; vi = sys.version_info; sys.exit(1 if (int(vi[0]), int(vi[1])) >= tuple(map(int, '$(PYTHON_MIN_VERSION)'.split('.'))) else 0)" \
+		&& echo "Need Python >= $(PYTHON_MIN_VERSION)" && exit 1 || :
+	# Validation: VENV_FOLDER set when venv enabled
+	@[[ "$(VENV_ENABLED)" == "true" && "$(VENV_FOLDER)" == "" ]] \
+		&& echo "VENV_FOLDER must be configured if VENV_ENABLED is true" && exit 1 || :
+ifeq ("$(VENV_ENABLED)", "true")
+ifeq ("$(VENV_CREATE)", "true")
+	@echo "Setup Python Virtual Environment using module 'venv' at '$(VENV_FOLDER)'"
+	@$(PRIMARY_PYTHON) -m venv $(VENV_FOLDER)
+	@$(MXENV_PYTHON) -m ensurepip -U
+endif
+else
+	@echo "Using system Python interpreter"
+endif
+	@$(PYTHON_PACKAGE_COMMAND) install -U pip setuptools wheel
+	@echo "Install/Update MXStack Python packages"
+	@$(PYTHON_PACKAGE_COMMAND) install -U $(MXDEV) $(MXMAKE)
+	@touch $(MXENV_TARGET)
 
 ##############################################################################
 # Custom includes

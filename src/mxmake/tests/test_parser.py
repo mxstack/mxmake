@@ -8,10 +8,21 @@ import unittest
 
 class TestParser(unittest.TestCase):
     @testing.temp_directory
+    def test_legacy_setting(self, tempdir):
+        makefile = tempdir / "Makefile"
+        makefile.write_text("PYTHON_PACKAGE_INSTALLER?=pip\n")
+        p = parser.MakefileParser(makefile)
+        self.assertEqual(p.legacy_setting("PYTHON_PACKAGE_INSTALLER"), "pip")
+        self.assertIsNone(p.legacy_setting("DOES_NOT_EXIST"))
+
+    @testing.temp_directory
     def test_MakefileParser(self, tempdir):
-        domains = [topics.get_domain("core.mxenv")]
+        domains = [topics.get_domain("core.mxenv-pip")]
         domains = topics.collect_missing_dependencies(domains)
+        domains = topics.ensure_environment_variant(domains)
+        topics.set_domain_runtime_depends(domains)
         domains = topics.resolve_domain_dependencies(domains)
+        domains = topics.order_environment_variant(domains)
         domain_settings = {
             "core.base.DEPLOY_TARGETS": "",
             "core.base.RUN_TARGET": "",
@@ -20,8 +31,6 @@ class TestParser(unittest.TestCase):
             "core.base.EXTRA_PATH": "",
             "core.mxenv.PRIMARY_PYTHON": "python3",
             "core.mxenv.PYTHON_MIN_VERSION": "3.7",
-            "core.mxenv.PYTHON_PACKAGE_INSTALLER": "pip",
-            "core.mxenv.UV_PYTHON": "$(PRIMARY_PYTHON)",
             "core.mxenv.VENV_ENABLED": "true",
             "core.mxenv.VENV_CREATE": "true",
             "core.mxenv.VENV_FOLDER": "venv",
@@ -55,7 +64,9 @@ class TestParser(unittest.TestCase):
             "\\\n\tvalue\\\n\tvalue",
         )
 
-        self.assertEqual(makefile_parser.fqns, ["core.base", "core.mxenv"])
+        self.assertEqual(
+            makefile_parser.fqns, ["core.base", "core.mxenv", "core.mxenv-pip"]
+        )
         self.assertEqual(
             makefile_parser.settings,
             {
@@ -67,8 +78,6 @@ class TestParser(unittest.TestCase):
                 "core.base.PROJECT_PATH_PYTHON": "",
                 "core.mxenv.PRIMARY_PYTHON": "python3",
                 "core.mxenv.PYTHON_MIN_VERSION": "3.7",
-                "core.mxenv.PYTHON_PACKAGE_INSTALLER": "pip",
-                "core.mxenv.UV_PYTHON": "$(PRIMARY_PYTHON)",
                 "core.mxenv.VENV_ENABLED": "true",
                 "core.mxenv.VENV_CREATE": "true",
                 "core.mxenv.VENV_FOLDER": "venv",
@@ -76,4 +85,6 @@ class TestParser(unittest.TestCase):
                 "core.mxenv.MXMAKE": "mxmake",
             },
         )
-        self.assertEqual(makefile_parser.topics, {"core": ["base", "mxenv"]})
+        self.assertEqual(
+            makefile_parser.topics, {"core": ["base", "mxenv", "mxenv-pip"]}
+        )
