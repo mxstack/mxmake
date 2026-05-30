@@ -1,5 +1,15 @@
 # Changelog
 
+## 3.0.0
+
+- Split `core.mxenv` into a shared base plus `core.mxenv-pip` and `core.mxenv-uv`
+  environment variants. The package installer is now chosen by selecting a variant
+  instead of the removed `PYTHON_PACKAGE_INSTALLER` setting. QA dev-tool execution
+  runs through environment-provided macros; the uv variant runs style/format tools
+  (ruff, isort, black, zpretty, pyupgrade) via `uvx` by default. Type-checkers always
+  install into the environment. See the migration guide.
+  [jensens, 2026-05-30]
+
 ## 2.2.0
 
 - Feature: Add optional `ruff check --fix` support to ruff-format target

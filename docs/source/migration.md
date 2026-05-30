@@ -2,6 +2,42 @@
 
 This guide documents breaking changes between mxmake versions and how to migrate your projects.
 
+## Version 3.0.0 (unreleased)
+
+### Changed: mxenv split into pip and uv variants
+
+**Breaking Change**: The single `core.mxenv` domain is now a base that requires
+exactly one environment variant: `core.mxenv-pip` or `core.mxenv-uv`. The
+`PYTHON_PACKAGE_INSTALLER` and `UV_PYTHON` settings were removed from `core.mxenv`;
+the installer is now determined by the selected variant.
+
+**Before** (2.x):
+
+```makefile
+PYTHON_PACKAGE_INSTALLER?=uv
+UV_PYTHON?=3.14
+```
+
+**After** (3.0+): select the uv variant; `UV_PYTHON` lives under its settings.
+
+**Migration**:
+
+- Run `mxmake update`. `mxmake update` reads your previous `PYTHON_PACKAGE_INSTALLER`
+  value to pick the matching variant automatically: `pip` keeps you on the pip
+  variant, otherwise the uv variant is selected. Makefiles with no installer setting
+  get `core.mxenv-uv` injected (the common case).
+- To switch variants later, change the `#: core.mxenv-uv` / `#: core.mxenv-pip` line
+  in the Makefile header and run `mxmake update`.
+- Remove any manual `PYTHON_PACKAGE_INSTALLER` setting; it is now implied by the
+  variant. `UV_PYTHON` is regenerated under the uv variant settings.
+- Style/format tools (ruff, isort, black, zpretty, pyupgrade) run via `uvx` by
+  default under the uv variant. Set `TOOL_EXECUTION=venv` to install them into the
+  environment instead. Type-checkers (mypy, ty, pyrefly) always install into the
+  environment.
+- The uv variant now requires a globally available `uv`. It no longer installs uv
+  into the virtual environment as a fallback, and the "uv is outdated" warning was
+  removed. Install uv globally or use the pip variant.
+
 ## Version 2.0.1 (unreleased)
 
 ### Added: Monorepo Support
