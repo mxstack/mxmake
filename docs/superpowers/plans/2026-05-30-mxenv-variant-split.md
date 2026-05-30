@@ -869,10 +869,16 @@ UV_PYTHON?=3.14
 - Remove any manual `PYTHON_PACKAGE_INSTALLER` setting; it is now implied by the
   variant. Move `UV_PYTHON` to its position under the uv variant settings (update
   regenerates this for you).
+- `mxmake update` reads your previous `PYTHON_PACKAGE_INSTALLER` value to pick the
+  matching variant automatically: `pip` keeps you on the pip variant, otherwise the
+  uv variant is selected.
 - Style/format tools (ruff, isort, black, zpretty, pyupgrade) run via `uvx` by
   default under the uv variant. Set `TOOL_EXECUTION=venv` to install them into the
   environment instead. Type-checkers (mypy, ty, pyrefly) always install into the
   environment.
+- The uv variant now requires a globally available `uv`. It no longer installs uv
+  into the virtual environment as a fallback, and the "uv is outdated" warning was
+  removed. Install uv globally (see the getting-started guide) or use the pip variant.
 ```
 
 - [ ] **Step 2: Build docs link-check is not required; verify markdown renders by eye.**
@@ -886,8 +892,329 @@ git commit -m "Migration guide: mxenv variant split"
 
 ---
 
+### Task B8: Respect the existing installer choice on migration
+
+Without this, an existing pip user running `mxmake update` is silently switched to the
+uv default. Read the previous `PYTHON_PACKAGE_INSTALLER` value and pick the matching
+variant.
+
+**Files:**
+- Modify: `src/mxmake/parser.py` (retain raw lines; add `legacy_setting`)
+- Modify: `src/mxmake/topics.py` (`ensure_environment_variant` gains a `default_variant` arg)
+- Modify: `src/mxmake/main.py` (`create_config` computes the default from the legacy value)
+- Test: `src/mxmake/tests/test_parser.py`, `src/mxmake/tests/test_topics.py`
+
+- [ ] **Step 1: Write failing parser test**
+
+Add to `src/mxmake/tests/test_parser.py`:
+```python
+def test_legacy_setting(self, tempdir=None):
+    import tempfile, pathlib
+    from mxmake.parser import MakefileParser
+    d = pathlib.Path(tempfile.mkdtemp())
+    (d / "Makefile").write_text("PYTHON_PACKAGE_INSTALLER?=pip\n")
+    parser = MakefileParser(d / "Makefile")
+    assert parser.legacy_setting("PYTHON_PACKAGE_INSTALLER") == "pip"
+    assert parser.legacy_setting("DOES_NOT_EXIST") is None
+```
+
+- [ ] **Step 2: Run to verify failure**
+
+Run: `uv run pytest src/mxmake/tests/test_parser.py -k legacy -q`
+Expected: FAIL with `AttributeError: 'MakefileParser' object has no attribute 'legacy_setting'`
+
+- [ ] **Step 3: Implement parser changes**
+
+In `src/mxmake/parser.py`, store the raw lines and add the accessor. Change `parse`:
+```python
+    def parse(self) -> None:
+        if not self.path.exists():
+            return
+        with self.path.open() as fd:
+            lines = [line.rstrip() for line in fd.readlines() if line.strip()]
+        self.lines = lines
+        self.parse_fqns(lines)
+        self.parse_settings(lines)
+
+    def legacy_setting(self, name: str) -> str | None:
+        """Read a raw ``NAME?=value`` from the existing Makefile regardless of
+        whether a currently-known domain declares it. Used for migration."""
+        try:
+            return self.parse_setting(getattr(self, "lines", []), name).strip()
+        except SettingMissing:
+            return None
+```
+Also add `self.lines: list = []` to `__init__` (next to `self.settings = {}`).
+
+- [ ] **Step 4: Run parser test to verify pass**
+
+Run: `uv run pytest src/mxmake/tests/test_parser.py -k legacy -q`
+Expected: PASS
+
+- [ ] **Step 5: Add `default_variant` to `ensure_environment_variant` + test**
+
+In `src/mxmake/topics.py`, change the signature and body:
+```python
+def ensure_environment_variant(
+    domains: list[Domain], default_variant: str = ENVIRONMENT_DEFAULT_VARIANT
+) -> list[Domain]:
+    fqns = {domain.fqn for domain in domains}
+    if ENVIRONMENT_BASE not in fqns:
+        return domains
+    selected = [v for v in ENVIRONMENT_VARIANTS if v in fqns]
+    if len(selected) > 1:
+        raise EnvironmentVariantError(selected)
+    if not selected:
+        return domains + [get_domain(default_variant)]
+    return domains
+```
+Add to `src/mxmake/tests/test_topics.py`:
+```python
+def test_ensure_environment_variant_honours_default(self):
+    from mxmake import topics
+    domains = topics.collect_missing_dependencies([topics.get_domain("qa.ruff")])
+    result = topics.ensure_environment_variant(domains, default_variant="core.mxenv-pip")
+    fqns = {d.fqn for d in result}
+    assert "core.mxenv-pip" in fqns
+    assert "core.mxenv-uv" not in fqns
+```
+
+- [ ] **Step 6: Run topics test**
+
+Run: `uv run pytest src/mxmake/tests/test_topics.py -k environment -q`
+Expected: PASS
+
+- [ ] **Step 7: Wire detection into create_config**
+
+In `src/mxmake/main.py`, replace the `ensure_environment_variant(domains)` call added in Task B5 with:
+```python
+    default_variant = topics_module.ENVIRONMENT_DEFAULT_VARIANT
+    if parser.legacy_setting("PYTHON_PACKAGE_INSTALLER") == "pip":
+        default_variant = "core.mxenv-pip"
+    domains = ensure_environment_variant(domains, default_variant=default_variant)
+```
+Add the import `from . import topics as topics_module` (or reference the constant via an explicit import `from .topics import ENVIRONMENT_DEFAULT_VARIANT` and use that name). Keep it consistent with the existing import style in the file.
+
+- [ ] **Step 8: Functional check — pip Makefile without a variant stays pip on update**
+
+```bash
+tmp=$(mktemp -d); cd "$tmp"
+printf 'topics:\n  core:\n    base: {}\n    mxenv: {}\n  qa:\n    ruff: {}\n' > seeds.yaml
+uv run --project /home/jensens/ws/cdev/mxmake mxmake init --preseeds seeds.yaml
+# Simulate a legacy pip Makefile: no variant line, installer set to pip
+sed -i 's/^#: core.mxenv-uv//' Makefile
+printf '\nPYTHON_PACKAGE_INSTALLER?=pip\n' >> Makefile
+uv run --project /home/jensens/ws/cdev/mxmake mxmake update
+grep -n "PYTHON_PACKAGE_INSTALLER:=pip\|#: core.mxenv-pip" Makefile
+cd - >/dev/null
+```
+Expected: update selects `core.mxenv-pip`, not the uv default.
+
+- [ ] **Step 9: Run full suite and commit**
+
+Run: `uv run pytest src/mxmake/tests/ -q`
+Expected: PASS
+```bash
+git add src/mxmake/parser.py src/mxmake/topics.py src/mxmake/main.py src/mxmake/tests/
+git commit -m "Pick environment variant from existing installer on migration"
+```
+
+---
+
+## Phase C (expanded) — Documentation
+
+### Task C3: Rewrite getting-started installer guidance
+
+**Files:**
+- Modify: `docs/source/getting-started.md`
+
+- [ ] **Step 1: Replace the line-53 quick note**
+
+Find the sentence (around line 53):
+> When using UV, set `PYTHON_PACKAGE_INSTALLER=uv` and `UV_PYTHON=3.14` (or your preferred version) in the Makefile settings section.
+
+Replace with:
+> mxmake provides two environment variants. The uv variant (`core.mxenv-uv`, the
+> default) downloads and uses the Python set by `UV_PYTHON` (e.g. `3.14`). The pip
+> variant (`core.mxenv-pip`) uses a pre-installed Python. Pick one at `mxmake init`;
+> switch later by changing the `#: core.mxenv-*` line in the Makefile header and
+> running `mxmake update`.
+
+- [ ] **Step 2: Rewrite the "two package installers" section (around lines 215-245)**
+
+Replace the section that begins "mxmake supports two package installers" and its
+`PYTHON_PACKAGE_INSTALLER?=uv` / `?=pip` examples with variant-based guidance:
+```markdown
+mxmake supports two environment variants:
+
+**uv variant (`core.mxenv-uv`, recommended/default)**: Modern, fast. Requires a
+globally installed `uv`, which can automatically download Python.
+- Selected by default at `mxmake init`.
+- Set `UV_PYTHON` (e.g. `3.14`) to control which Python uv downloads.
+- Style/format tools run via `uvx` by default (`TOOL_EXECUTION=uvx`); set
+  `TOOL_EXECUTION=venv` to install them into the environment instead.
+
+**pip variant (`core.mxenv-pip`)**: Traditional, requires Python pre-installed.
+- Select it by choosing `core.mxenv-pip` at init, or by editing the
+  `#: core.mxenv-*` line and running `mxmake update`.
+
+Generated Makefile header records the active variant:
+```
+#: core.mxenv
+#: core.mxenv-uv
+```
+```
+
+- [ ] **Step 3: Update the UV_PYTHON troubleshooting passages (around lines 274-285)**
+
+Where the text says to set `UV_PYTHON` "in your Makefile settings", clarify it lives
+under the uv variant settings block. Remove references to `PYTHON_PACKAGE_INSTALLER`
+as a user setting (it is now internal/implied by the variant).
+
+- [ ] **Step 4: Verify no stale references remain**
+
+Run: `grep -n "PYTHON_PACKAGE_INSTALLER" docs/source/getting-started.md`
+Expected: no matches (or only a note explaining it was replaced by variants).
+
+- [ ] **Step 5: Commit**
+
+```bash
+git add docs/source/getting-started.md
+git commit -m "Docs: getting-started uses environment variants"
+```
+
+### Task C4: Update preseeds examples
+
+**Files:**
+- Modify: `docs/source/preseeds.md`
+
+- [ ] **Step 1: Convert every mxenv preseed example**
+
+Each example currently shaped like:
+```yaml
+    mxenv:
+      ...
+      PYTHON_PACKAGE_INSTALLER: uv
+      UV_PYTHON: "3.14"
+```
+must become a base + variant selection. uv example:
+```yaml
+    mxenv: {}
+    mxenv-uv:
+      UV_PYTHON: "3.14"
+```
+pip example (the one around line 67-69):
+```yaml
+    mxenv: {}
+    mxenv-pip: {}
+```
+Apply this to all five examples (lines ~16-20, ~53-55, ~67-69, ~91-93, ~137-140).
+Where an example pins a different version (e.g. `3.13` around line 140), keep that
+version under `mxenv-uv`.
+
+- [ ] **Step 2: Update the surrounding prose**
+
+Replace the note "When `PYTHON_PACKAGE_INSTALLER` is set to `uv`, mxmake automatically
+detects whether UV is installed globally" (around line 41) with: "Select the
+`mxenv-uv` domain to use uv. The uv variant requires a globally installed `uv`."
+Keep the `UV_PYTHON` guidance but anchor it to the `mxenv-uv` domain.
+
+- [ ] **Step 3: Verify**
+
+Run: `grep -n "PYTHON_PACKAGE_INSTALLER" docs/source/preseeds.md`
+Expected: no matches.
+
+- [ ] **Step 4: Functional check — a converted preseed actually generates**
+
+```bash
+tmp=$(mktemp -d); cd "$tmp"
+printf 'topics:\n  core:\n    base: {}\n    mxenv: {}\n    mxenv-uv:\n      UV_PYTHON: "3.14"\n' > seeds.yaml
+uv run --project /home/jensens/ws/cdev/mxmake mxmake init --preseeds seeds.yaml
+grep -n "UV_PYTHON?=3.14\|PYTHON_PACKAGE_INSTALLER:=uv" Makefile
+cd - >/dev/null
+```
+Expected: `UV_PYTHON?=3.14` rendered under the uv variant and `PYTHON_PACKAGE_INSTALLER:=uv` present.
+
+- [ ] **Step 5: Commit**
+
+```bash
+git add docs/source/preseeds.md
+git commit -m "Docs: preseed examples select environment variant"
+```
+
+### Task C5: Check contributing.md
+
+**Files:**
+- Modify (if needed): `docs/source/contributing.md`
+
+- [ ] **Step 1: Inspect references**
+
+Run: `grep -n "PYTHON_PACKAGE_INSTALLER\|UV_PYTHON\|mxenv" docs/source/contributing.md`
+
+- [ ] **Step 2: Update any installer-setting references**
+
+If the dev-workflow text instructs setting `PYTHON_PACKAGE_INSTALLER`, reword to
+"select the `core.mxenv-uv` variant". If there are no such references, no change.
+
+- [ ] **Step 3: Commit (only if changed)**
+
+```bash
+git add docs/source/contributing.md
+git commit -m "Docs: contributing references environment variants"
+```
+
+---
+
+## Phase D — Self-hosting (dogfood the change)
+
+### Task D1: Regenerate mxmake's own Makefile and verify the build
+
+mxmake generates its own `Makefile`. It currently records `#: core.mxenv` with no
+variant and sets `PYTHON_PACKAGE_INSTALLER?=uv`. Regenerate it onto the variant model.
+
+**Files:**
+- Modify: `Makefile` (regenerated), possibly `mx.ini` (unchanged expected)
+
+- [ ] **Step 1: Regenerate using the in-repo mxmake**
+
+Run from the repo root:
+```bash
+uv run --project . mxmake update
+```
+Expected output mentions updating the `core` topic; the regenerated `Makefile` header
+now lists `#: core.mxenv` and `#: core.mxenv-uv` (the migration detection picks uv
+because the old Makefile had `PYTHON_PACKAGE_INSTALLER?=uv`).
+
+- [ ] **Step 2: Inspect the diff**
+
+Run: `git diff -- Makefile | head -80`
+Expected: the `core.mxenv` block is now split into base + `core.mxenv-uv`;
+`PYTHON_PACKAGE_INSTALLER?=uv` is replaced by the variant's internal
+`PYTHON_PACKAGE_INSTALLER:=uv`; `UV_PYTHON` now sits under the uv variant settings.
+
+- [ ] **Step 3: Verify the self-hosted build still works**
+
+Run, in order:
+```bash
+make install
+make check
+make typecheck
+make test
+```
+Expected: all succeed. (`make check`/`format` now run ruff/isort via `uvx` by default;
+`make typecheck` runs ty/mypy installed into the environment.)
+
+- [ ] **Step 4: Commit the regenerated Makefile**
+
+```bash
+git add Makefile mx.ini
+git commit -m "Regenerate own Makefile onto environment variant model"
+```
+
+---
+
 ## Self-Review notes (for the implementer)
 
-- **Spec coverage:** base+variants (B1-B3), exactly-one enforcement (B4-B5), parse-order safety via ordering (B4-B5), swap+update (B7 step 3), macro-based uniform tool files (A2-A6), uv `pip`/`sync` provisioning (B3 `UV_PROVISION`), uvx default + venv opt-in (B3 `TOOL_EXECUTION`), migration default uv (B4 `ENVIRONMENT_DEFAULT_VARIANT`), docs (C1-C2). Type-checker-under-uvx is resolved by design (type-checkers never use the ephemeral macros).
+- **Spec coverage:** base+variants (B1-B3), exactly-one enforcement (B4-B5), parse-order safety via ordering (B4-B5), migration honours existing installer choice (B8), swap+update (B7 step 3), macro-based uniform tool files (A2-A6), uv `pip`/`sync` provisioning (B3 `UV_PROVISION`), uvx default + venv opt-in (B3 `TOOL_EXECUTION`), migration default uv (B4 `ENVIRONMENT_DEFAULT_VARIANT`), docs (C1-C5), self-hosting regeneration (D1). Type-checker-under-uvx is resolved by design (type-checkers never use the ephemeral macros).
 - **Regenerated fixtures:** `expected/Makefile` and `expected/Makefile-uv` are produced by running the generator and copying output, not hand-written — this avoids transcription errors in long Make output.
 - **No new per-tool VERSION settings** (deferred, YAGNI). The `RUN_TOOL` version parameter exists in the macro signature for future use and is currently called with an empty value.
