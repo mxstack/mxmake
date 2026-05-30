@@ -157,6 +157,20 @@ else
 PYTHON_PACKAGE_COMMAND=$(MXENV_PYTHON) -m pip
 endif
 
+##############################################################################
+# Dev tool execution macros
+##############################################################################
+
+# Control how QA dev tools (ruff, isort, ...) are installed and invoked.
+# Default behavior: install the tool into the environment, invoke it directly.
+# Environment variants may redefine these (e.g. to run via uvx).
+#   INSTALL_TOOL(name)            -> shell command to make the tool available
+#   RUN_TOOL(name,version,args)   -> shell command to invoke the tool
+#   UNINSTALL_TOOL(name)          -> shell command to remove the tool
+INSTALL_TOOL=$(PYTHON_PACKAGE_COMMAND) install $(1)
+RUN_TOOL=$(1) $(3)
+UNINSTALL_TOOL=test -e $(MXENV_PYTHON) && $(MXENV_PYTHON) -m pip uninstall -y $(1) || :
+
 # Auto-detect global uv availability (simple existence check)
 ifeq ("$(PYTHON_PACKAGE_INSTALLER)","uv")
 UV_AVAILABLE:=$(shell command -v uv >/dev/null 2>&1 && echo "true" || echo "false")
