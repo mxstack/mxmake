@@ -28,18 +28,18 @@ endif
 ISORT_TARGET:=$(SENTINEL_FOLDER)/isort.sentinel
 $(ISORT_TARGET): $(MXENV_TARGET)
 	@echo "Install isort"
-	@$(PYTHON_PACKAGE_COMMAND) install isort
+	@$(call INSTALL_TOOL,isort)
 	@touch $(ISORT_TARGET)
 
 .PHONY: isort-check
 isort-check: $(ISORT_TARGET)
 	@echo "Run isort check"
-	@isort --check $(ISORT_SRC)
+	@$(call RUN_TOOL,isort,,--check $(ISORT_SRC))
 
 .PHONY: isort-format
 isort-format: $(ISORT_TARGET)
 	@echo "Run isort format"
-	@isort $(ISORT_SRC)
+	@$(call RUN_TOOL,isort,,$(ISORT_SRC))
 
 .PHONY: isort-dirty
 isort-dirty:
@@ -47,7 +47,7 @@ isort-dirty:
 
 .PHONY: isort-clean
 isort-clean: isort-dirty
-	@test -e $(MXENV_PYTHON) && $(MXENV_PYTHON) -m pip uninstall -y isort || :
+	@$(call UNINSTALL_TOOL,isort)
 
 INSTALL_TARGETS+=$(ISORT_TARGET)
 CHECK_TARGETS+=isort-check

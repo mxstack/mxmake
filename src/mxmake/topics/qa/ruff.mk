@@ -50,21 +50,21 @@ endif
 RUFF_TARGET:=$(SENTINEL_FOLDER)/ruff.sentinel
 $(RUFF_TARGET): $(MXENV_TARGET)
 	@echo "Install Ruff"
-	@$(PYTHON_PACKAGE_COMMAND) install ruff
+	@$(call INSTALL_TOOL,ruff)
 	@touch $(RUFF_TARGET)
 
 .PHONY: ruff-check
 ruff-check: $(RUFF_TARGET)
 	@echo "Run ruff check"
-	@ruff check $(RUFF_SRC)
+	@$(call RUN_TOOL,ruff,,check $(RUFF_SRC))
 
 .PHONY: ruff-format
 ruff-format: $(RUFF_TARGET)
 	@echo "Run ruff format"
-	@ruff format $(RUFF_SRC)
+	@$(call RUN_TOOL,ruff,,format $(RUFF_SRC))
 ifeq ("$(RUFF_FIXES)","true")
 	@echo "Run ruff check $(RUFF_FIX_FLAGS)"
-	@ruff check $(RUFF_FIX_FLAGS) $(RUFF_SRC)
+	@$(call RUN_TOOL,ruff,,check $(RUFF_FIX_FLAGS) $(RUFF_SRC))
 endif
 
 .PHONY: ruff-dirty
@@ -73,7 +73,7 @@ ruff-dirty:
 
 .PHONY: ruff-clean
 ruff-clean: ruff-dirty
-	@test -e $(MXENV_PYTHON) && $(MXENV_PYTHON) -m pip uninstall -y ruff || :
+	@$(call UNINSTALL_TOOL,ruff)
 	@rm -rf .ruff_cache
 
 INSTALL_TARGETS+=$(RUFF_TARGET)
