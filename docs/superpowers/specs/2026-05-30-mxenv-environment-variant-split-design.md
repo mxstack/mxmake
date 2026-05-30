@@ -157,7 +157,11 @@ reintroducing global branching.
 
 ## Testing
 
-- Generated-Makefile fixtures for each variant (pip and uv).
+Use generated-Makefile fixtures where a full rendered comparison adds value (e.g. one
+per variant); otherwise prefer focused assertions over snapshot fixtures.
+
+- Per-variant rendered-Makefile fixtures (pip and uv) where a full comparison is
+  warranted.
 - Parser/template tests covering both variants' settings.
 - Verify the swap path: parser reads the new variant, drops old-variant settings, adds
   new-variant defaults.
