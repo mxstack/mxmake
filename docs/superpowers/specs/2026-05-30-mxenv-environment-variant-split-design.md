@@ -96,6 +96,12 @@ the environment is guaranteed present before any tool runs.
 Applications and runtime dependencies never use these macros; they install via
 `PYTHON_PACKAGE_COMMAND` from the active variant.
 
+Only the pure style/format tools (ruff, isort, black, zpretty, pyupgrade) use the
+ephemeral-capable macros. Type-checking tools (mypy, ty, pyrefly) always install into
+the environment via `PYTHON_PACKAGE_COMMAND` (which becomes `uv pip` in the uv
+variant); they are never executed via uvx, because they require the project's
+installed dependencies to resolve against.
+
 ## Variant selection and enforcement
 
 The base is abstract: selecting it (transitively, via any domain's
@@ -128,8 +134,9 @@ itself — only the enforcement logic above.
   provisioning.
 - New on the uv variant: a setting selecting `uvx` (default) vs venv install for QA
   tool execution.
-- Per-tool optional version settings (e.g. `RUFF_VERSION`) are retained; they are only
-  meaningful under uvx execution and are ignored by the direct-invocation macro.
+- Per-tool version-pinning settings are deferred (YAGNI). The `RUN_TOOL` macro keeps a
+  version parameter in its signature for future use; tool files currently call it with
+  an empty value.
 
 ## Migration (major release)
 
@@ -143,17 +150,15 @@ itself — only the enforcement logic above.
 - The previous single-toggle approach to running tools via uvx is superseded by this
   split and is removed.
 
-## Open correctness requirement: type checkers under uvx
+## Resolved: type checkers and project dependencies
 
-Type-checking tools (mypy, ty) must resolve against the project's installed
-dependencies. Under the default uvx execution, an ephemeral isolated environment does
-not contain the project deps, so naive `uvx mypy` would not see them. The
-implementation must ensure type checkers resolve against the project venv even in uvx
-mode — for example by passing the interpreter (`--python` / `--python-executable`
-pointing at `VIRTUAL_ENV`), or by forcing venv install for those specific tools. Pure
-style/format tools (ruff, black, isort) do not need project deps and run fine under
-uvx. The macro mechanism permits per-tool overrides, so this is expressible without
-reintroducing global branching.
+Type-checking tools (mypy, ty, pyrefly) must resolve against the project's installed
+dependencies, which an ephemeral uvx environment would not contain. This is resolved
+by design: type-checkers are excluded from the uvx path entirely. They always install
+into the environment via the active variant's `PYTHON_PACKAGE_COMMAND` (`uv pip` in the
+uv variant), so they run against the project venv. Only the pure style/format tools
+(ruff, isort, black, zpretty, pyupgrade), which do not need project deps, use the
+uvx-capable macros.
 
 ## Testing
 
@@ -169,7 +174,8 @@ per variant); otherwise prefer focused assertions over snapshot fixtures.
   enforcement rejects zero or two variants.
 - Verify QA tool files render identically regardless of variant (only the macro
   expansions differ).
-- Verify a type checker run resolves against the project venv under uvx.
+- Verify type-checkers (mypy, ty, pyrefly) install into the environment under the uv
+  variant (not executed via uvx).
 
 ## Out of scope / follow-ups
 
