@@ -22,6 +22,9 @@ def get_template_environment() -> Environment:
     )
 
 
+_TemplateT = typing.TypeVar("_TemplateT", bound="Template")
+
+
 class template:
     """Template decorator and registry."""
 
@@ -30,7 +33,7 @@ class template:
     def __init__(self, name: str) -> None:
         self.name = name
 
-    def __call__(self, ob: type["Template"]) -> type["Template"]:
+    def __call__(self, ob: type[_TemplateT]) -> type[_TemplateT]:
         ob.name = self.name
         self._registry[self.name] = ob
         return ob
@@ -586,7 +589,9 @@ class ProxyMk(MxIniBoundTemplate):
                         domains = topic.domains
                         break
                     else:
-                        domains.append(topic.domain(domain_name.strip()))
+                        domain = topic.domain(domain_name.strip())
+                        if domain is not None:
+                            domains.append(domain)
                 for domain in domains:
                     for target in domain.targets:
                         targets.append({"name": target.name, "folder": folder})
