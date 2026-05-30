@@ -314,6 +314,55 @@ class TestTopics(unittest.TestCase):
             ],
         )
 
+    def test_ensure_environment_variant_injects_default(self):
+        domains = topics.collect_missing_dependencies([topics.get_domain("qa.ruff")])
+        fqns_before = {d.fqn for d in domains}
+        self.assertIn("core.mxenv", fqns_before)
+        self.assertFalse(fqns_before & {"core.mxenv-pip", "core.mxenv-uv"})
+        result = topics.ensure_environment_variant(domains)
+        fqns = {d.fqn for d in result}
+        self.assertIn("core.mxenv-uv", fqns)
+        self.assertNotIn("core.mxenv-pip", fqns)
+
+    def test_ensure_environment_variant_preserves_existing(self):
+        domains = topics.collect_missing_dependencies(
+            [topics.get_domain("qa.ruff"), topics.get_domain("core.mxenv-pip")]
+        )
+        result = topics.ensure_environment_variant(domains)
+        fqns = {d.fqn for d in result}
+        self.assertIn("core.mxenv-pip", fqns)
+        self.assertNotIn("core.mxenv-uv", fqns)
+
+    def test_ensure_environment_variant_rejects_two(self):
+        domains = [
+            topics.get_domain("core.mxenv"),
+            topics.get_domain("core.mxenv-pip"),
+            topics.get_domain("core.mxenv-uv"),
+        ]
+        with self.assertRaises(topics.EnvironmentVariantError):
+            topics.ensure_environment_variant(domains)
+
+    def test_ensure_environment_variant_honours_default(self):
+        domains = topics.collect_missing_dependencies([topics.get_domain("qa.ruff")])
+        result = topics.ensure_environment_variant(
+            domains, default_variant="core.mxenv-pip"
+        )
+        fqns = {d.fqn for d in result}
+        self.assertIn("core.mxenv-pip", fqns)
+        self.assertNotIn("core.mxenv-uv", fqns)
+
+    def test_order_environment_variant_after_base(self):
+        domains = topics.collect_missing_dependencies(
+            [topics.get_domain("qa.ruff"), topics.get_domain("core.mxenv-uv")]
+        )
+        topics.set_domain_runtime_depends(domains)
+        ordered = topics.resolve_domain_dependencies(domains)
+        ordered = topics.order_environment_variant(ordered)
+        fqns = [d.fqn for d in ordered]
+        self.assertEqual(
+            fqns.index("core.mxenv-uv"), fqns.index("core.mxenv") + 1
+        )
+
     def test_set_domain_runtime_depends(self):
         f1 = _TestDomain(topic="t", name="f1", file="f1.ext")
         f2 = _TestDomain(
