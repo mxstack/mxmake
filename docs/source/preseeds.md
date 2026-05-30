@@ -13,10 +13,10 @@ Preseeds are contained in yaml files and have the following format:
 topics:
   # include topic core
   core:
-    # include domain mxenv
+    # environment base
     mxenv:
-      # Minimal UV configuration - UV downloads Python automatically!
-      PYTHON_PACKAGE_INSTALLER: uv
+    # uv variant - UV downloads Python automatically!
+    mxenv-uv:
       UV_PYTHON: "3.14"
   qa:
     # include domains from qa topic but do not override default settings
@@ -36,37 +36,41 @@ Now initialize the project with the preseeds:
 $ mxmake init -p preseeds.yaml
 ```
 
-## UV Package Installer
+## Environment variants
 
-When `PYTHON_PACKAGE_INSTALLER` is set to `uv`, mxmake automatically detects whether UV is installed globally on your system.
+Select the `mxenv-uv` domain to use uv. The uv variant requires a globally installed
+`uv`, which can automatically download Python. Select `mxenv-pip` for the
+pip-based variant instead. In both cases include the `mxenv` base.
 
 ```{important}
-When using UV, you should explicitly set `UV_PYTHON` to specify which Python version UV should use. While `UV_PYTHON` currently defaults to `PRIMARY_PYTHON` for backward compatibility, relying on this default is not recommended and may change in future versions.
+When using the uv variant, you should explicitly set `UV_PYTHON` to specify which
+Python version uv should use. While `UV_PYTHON` defaults to `PRIMARY_PYTHON`, relying
+on that default is not recommended.
 ```
 
 The `UV_PYTHON` setting accepts version specs like `3.13`, `3.14`, or `cpython@3.14`:
 
 ```yaml
-# Minimal UV configuration (recommended)
+# Minimal uv configuration (recommended)
 topics:
   core:
     mxenv:
-      PYTHON_PACKAGE_INSTALLER: uv
-      UV_PYTHON: "3.14"  # UV downloads this Python version
+    mxenv-uv:
+      UV_PYTHON: "3.14"  # uv downloads this Python version
 ```
 
-**Note**: When using UV with `UV_PYTHON` explicitly set:
-- `PYTHON_MIN_VERSION` is **not needed** (validation skipped with global UV)
-- `PRIMARY_PYTHON` is **not needed** (only used if UV_PYTHON is not set)
+**Note**: When using the uv variant with `UV_PYTHON` explicitly set:
+- `PYTHON_MIN_VERSION` is **not needed** (uv manages the interpreter)
+- `PRIMARY_PYTHON` is **not needed** (only used as the `UV_PYTHON` default)
 
-For traditional pip-based workflows, you would set:
+For the traditional pip variant, you would set:
 ```yaml
-# Traditional pip configuration (requires Python pre-installed)
+# pip variant (requires Python pre-installed)
 topics:
   core:
     mxenv:
       PRIMARY_PYTHON: python3.12
-      PYTHON_PACKAGE_INSTALLER: pip  # default
+    mxenv-pip:
 ```
 
 ## Examples
@@ -89,8 +93,8 @@ Enter the `hello-world-` directory and create a file `preseed.yaml`:
 topics:
   core:
     mxenv:
-      PYTHON_PACKAGE_INSTALLER: uv
-      UV_PYTHON: "3.14"  # UV downloads Python 3.14
+    mxenv-uv:
+      UV_PYTHON: "3.14"  # uv downloads Python 3.14
     sources:
   qa:
     ruff:
@@ -136,7 +140,7 @@ topics:
       RUN_TARGET: zope-start
     mxenv:
       PYTHON_MIN_VERSION: "3.13"
-      PYTHON_PACKAGE_INSTALLER: uv
+    mxenv-uv:
       UV_PYTHON: "3.13"
   applications:
     zope:
