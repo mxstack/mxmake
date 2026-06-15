@@ -32,13 +32,13 @@ endif
 PYUPGRADE_TARGET:=$(SENTINEL_FOLDER)/pyupgrade.sentinel
 $(PYUPGRADE_TARGET): $(MXENV_TARGET)
 	@echo "Install pyupgrade"
-	@$(PYTHON_PACKAGE_COMMAND) install pyupgrade
+	@$(call INSTALL_TOOL,pyupgrade)
 	@touch $(PYUPGRADE_TARGET)
 
 .PHONY: pyupgrade-format
 pyupgrade-format: $(PYUPGRADE_TARGET)
 	@echo "Run pyupgrade format in: $(PYUPGRADE_SRC)"
-	@find $(PYUPGRADE_SRC) -name '*.py' -exec pyupgrade $(PYUPGRADE_PARAMETERS) {} +
+	@find $(PYUPGRADE_SRC) -name '*.py' -exec $(call RUN_TOOL,pyupgrade,,$(PYUPGRADE_PARAMETERS) {}) +
 
 .PHONY: pyupgrade-dirty
 pyupgrade-dirty:
@@ -46,7 +46,7 @@ pyupgrade-dirty:
 
 .PHONY: pyupgrade-clean
 pyupgrade-clean: pyupgrade-dirty
-	@test -e $(MXENV_PYTHON) && $(MXENV_PYTHON) -m pip uninstall -y pyupgrade || :
+	@$(call UNINSTALL_TOOL,pyupgrade)
 
 INSTALL_TARGETS+=$(PYUPGRADE_TARGET)
 FORMAT_TARGETS+=pyupgrade-format

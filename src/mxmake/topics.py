@@ -275,6 +275,55 @@ def collect_missing_dependencies(
     )
 
 
+ENVIRONMENT_BASE = "core.mxenv"
+ENVIRONMENT_VARIANTS = ("core.mxenv-pip", "core.mxenv-uv")
+ENVIRONMENT_DEFAULT_VARIANT = "core.mxenv-uv"
+
+
+class EnvironmentVariantError(Exception):
+    """More than one environment variant selected."""
+
+    def __init__(self, selected: list[str]):
+        super().__init__(
+            f"Exactly one environment variant required, got: {sorted(selected)}"
+        )
+
+
+def ensure_environment_variant(
+    domains: list[Domain], default_variant: str = ENVIRONMENT_DEFAULT_VARIANT
+) -> list[Domain]:
+    """Ensure exactly one environment variant is present when the environment
+    base is in use. Inject ``default_variant`` if none is selected; raise if
+    more than one is selected.
+    """
+    fqns = {domain.fqn for domain in domains}
+    if ENVIRONMENT_BASE not in fqns:
+        return domains
+    selected = [v for v in ENVIRONMENT_VARIANTS if v in fqns]
+    if len(selected) > 1:
+        raise EnvironmentVariantError(selected)
+    if not selected:
+        return [*domains, get_domain(default_variant)]
+    return domains
+
+
+def order_environment_variant(domains: list[Domain]) -> list[Domain]:
+    """Move the selected environment variant immediately after the base so its
+    parse-time variable definitions are visible to all downstream domains.
+    """
+    fqns = [domain.fqn for domain in domains]
+    if ENVIRONMENT_BASE not in fqns:
+        return domains
+    variant = next((v for v in ENVIRONMENT_VARIANTS if v in fqns), None)
+    if variant is None:
+        return domains
+    ordered = [d for d in domains if d.fqn != variant]
+    base_idx = [d.fqn for d in ordered].index(ENVIRONMENT_BASE)
+    variant_domain = next(d for d in domains if d.fqn == variant)
+    ordered.insert(base_idx + 1, variant_domain)
+    return ordered
+
+
 def set_domain_runtime_depends(domains: list[Domain]) -> None:
     """Expect a list of domain instances, and set runtime_depends on each
     domain, which consists of the hard dependencies and the soft dependencies

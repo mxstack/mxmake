@@ -8,13 +8,14 @@ def test_suite():
     from mxmake.tests import test_topics
     from mxmake.tests import test_utils
 
+    loader = unittest.defaultTestLoader
     suite = unittest.TestSuite()
 
-    suite.addTest(unittest.findTestCases(test_hook))
-    suite.addTest(unittest.findTestCases(test_parser))
-    suite.addTest(unittest.findTestCases(test_templates))
-    suite.addTest(unittest.findTestCases(test_topics))
-    suite.addTest(unittest.findTestCases(test_utils))
+    suite.addTest(loader.loadTestsFromModule(test_hook))
+    suite.addTest(loader.loadTestsFromModule(test_parser))
+    suite.addTest(loader.loadTestsFromModule(test_templates))
+    suite.addTest(loader.loadTestsFromModule(test_topics))
+    suite.addTest(loader.loadTestsFromModule(test_utils))
 
     return suite
 

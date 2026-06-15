@@ -6,19 +6,17 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+  pip-variant:
     strategy:
       fail-fast: false
       matrix:
-        python-version:
-        # we test on lowest and highest supported versions
-        - "3.10"
-        - "3.14"
-        os:
-          - ubuntu-latest
-          - macos-latest
-          - windows-latest
+        # lowest and highest supported versions
+        python-version: ["3.10", "3.14"]
+        os: [ubuntu-latest, macos-latest]
     runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: bash
     steps:
     - uses: actions/checkout@v6
     - name: Set up Python ${{ matrix.python-version }}
@@ -26,50 +24,51 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
         cache: "pip"
-    - name: VENV to be created with pip
+    - name: Switch project Makefile to the pip variant
       run: |
-        make VENV_ENABLED=true VENV_CREATE=true PRIMARY_PYTHON=python3 PYTHON_PACKAGE_INSTALLER=pip test
-        make clean
-    - name: VENV to be created with uv (local install, no global UV)
+        python -m pip install -e .
+        sed -i.bak 's/^#: core.mxenv-uv/#: core.mxenv-pip/' Makefile && rm -f Makefile.bak
+        mxmake update
+    - name: VENV created with pip
       run: |
-        make VENV_ENABLED=true VENV_CREATE=true PYTHON_PACKAGE_INSTALLER=uv PRIMARY_PYTHON=python3 test
+        make VENV_ENABLED=true VENV_CREATE=true PRIMARY_PYTHON=python3 test
         make clean
-    - name: VENV to be created with uv (global UV auto-detected)
-      run: |
-        pip install uv
-        make VENV_ENABLED=true VENV_CREATE=true PYTHON_PACKAGE_INSTALLER=uv PRIMARY_PYTHON=${{ matrix.python-version }} test
-        make clean
-        pip uninstall -y uv
     - name: VENV pre-installed with pip
       run: |
         python -m venv existingvenv
-        make VENV_ENABLED=true VENV_CREATE=false VENV_FOLDER=existingvenv PRIMARY_PYTHON=python3 PYTHON_PACKAGE_INSTALLER=pip test
+        make VENV_ENABLED=true VENV_CREATE=false VENV_FOLDER=existingvenv PRIMARY_PYTHON=python3 test
         make clean
         rm -r existingvenv
-    - name: VENV pre-installed with uv (local install, no global UV)
-      run: |
-        python -m venv existingvenv
-        make VENV_ENABLED=true VENV_CREATE=false VENV_FOLDER=existingvenv PRIMARY_PYTHON=python3 PYTHON_PACKAGE_INSTALLER=uv test
-        make clean
-        rm -r existingvenv
-    - name: VENV pre-installed with uv (global UV auto-detected)
-      run: |
-        python -m venv existingvenv
-        pip install uv
-        make VENV_ENABLED=true VENV_CREATE=false VENV_FOLDER=existingvenv PYTHON_PACKAGE_INSTALLER=uv PRIMARY_PYTHON=python3 test
-        make clean
-        pip uninstall -y uv
-        rm -r existingvenv
-    - name: VENV with global UV using different UV_PYTHON
-      run: |
-        pip install uv
-        make VENV_ENABLED=true VENV_CREATE=true PYTHON_PACKAGE_INSTALLER=uv PRIMARY_PYTHON=python3 UV_PYTHON=${{ matrix.python-version }} test
-        make clean
-        pip uninstall -y uv
     - name: Global Python with pip
       run: |
-        make VENV_ENABLED=false VENV_CREATE=false PRIMARY_PYTHON=python3 PYTHON_PACKAGE_INSTALLER=pip test
+        make VENV_ENABLED=false VENV_CREATE=false PRIMARY_PYTHON=python3 test
         make clean
+
+  uv-variant:
+    strategy:
+      fail-fast: false
+      matrix:
+        # lowest and highest supported versions
+        python-version: ["3.10", "3.14"]
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: bash
+    steps:
+    - uses: actions/checkout@v6
+    - name: Set up uv
+      uses: astral-sh/setup-uv@v5
+    - name: VENV created with uv
+      run: |
+        make VENV_ENABLED=true VENV_CREATE=true PRIMARY_PYTHON=python3 UV_PYTHON=${{ matrix.python-version }} test
+        make clean
+    - name: VENV pre-installed with uv
+      run: |
+        uv venv -p ${{ matrix.python-version }} --seed existingvenv
+        make VENV_ENABLED=true VENV_CREATE=false VENV_FOLDER=existingvenv UV_PYTHON=${{ matrix.python-version }} test
+        make clean
+        rm -r existingvenv
 
   uv-only:
     name: UV-only (no Python) - Python ${{ matrix.uv-python }}

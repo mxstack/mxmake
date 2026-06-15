@@ -50,7 +50,11 @@ make install
 - Ideal for CI/CD environments
 
 ```{note}
-When using UV, set `PYTHON_PACKAGE_INSTALLER=uv` and `UV_PYTHON=3.14` (or your preferred version) in the Makefile settings section. UV will automatically download and use that Python version.
+mxmake provides two environment variants. The uv variant (`core.mxenv-uv`, the
+default) downloads and uses the Python set by `UV_PYTHON` (e.g. `3.14`). The pip
+variant (`core.mxenv-pip`) uses a pre-installed Python. Pick one at `mxmake init`;
+switch later by changing the `#: core.mxenv-*` line in the Makefile header and
+running `mxmake update`.
 ```
 
 #### Option 2: Traditional pip-based
@@ -210,41 +214,42 @@ For details read the chapter [on topics and it's domains](topics-and-domains).
 Do not add custom settings to settings section.
 They will be lost on next `mxmake init` respective `mxmake update` run.
 
-### Python Package Installer
+### Environment Variants
 
-mxmake supports two package installers:
+mxmake provides two environment variants. Exactly one is selected at `mxmake init`
+(the base `core.mxenv` requires it); the default is the uv variant.
 
-**UV (Recommended)**: Modern, fast package installer that can automatically download Python.
-- Set `PYTHON_PACKAGE_INSTALLER=uv` in the Makefile
-- UV is auto-detected if installed globally, or installed locally in the venv
-- **Specify `UV_PYTHON` explicitly** (e.g., `3.14`) to control which Python version UV downloads
+**uv variant (`core.mxenv-uv`, recommended/default)**: Modern, fast. Requires a
+globally installed `uv`, which can automatically download Python.
+- Selected by default at `mxmake init`.
+- Set `UV_PYTHON` (e.g. `3.14`) to control which Python uv downloads.
+- Provision with `uv pip install` (`UV_PROVISION=pip`, default) or `uv sync`
+  (`UV_PROVISION=sync`) against `pyproject.toml`/`uv.lock`.
+- Style/format tools run via `uvx` by default (`TOOL_EXECUTION=uvx`); set
+  `TOOL_EXECUTION=venv` to install them into the environment instead.
 
-**pip (Default)**: Traditional package installer, requires Python pre-installed.
-- Works with any Python 3.10+ installation
-- Uses the Python specified in `PRIMARY_PYTHON` setting
+**pip variant (`core.mxenv-pip`)**: Traditional, requires Python pre-installed.
+- Works with any Python 3.10+ installation; uses `PRIMARY_PYTHON`.
+- Select it by choosing `core.mxenv-pip` at init, or by editing the
+  `#: core.mxenv-*` line and running `mxmake update`.
 
-Example UV configuration:
-```makefile
-PYTHON_PACKAGE_INSTALLER?=uv
-UV_PYTHON?=3.14  # UV downloads Python 3.14 automatically
+The generated Makefile header records the active variant:
 ```
-
-Example pip configuration:
-```makefile
-PRIMARY_PYTHON?=python3.12
-PYTHON_PACKAGE_INSTALLER?=pip  # Default
+#: core.mxenv
+#: core.mxenv-uv
 ```
 
 ```{important}
-When using UV, **always set `UV_PYTHON` explicitly**. While it currently defaults to `PRIMARY_PYTHON` for backward compatibility, relying on this default is not recommended and may change in future versions.
+When using the uv variant, **always set `UV_PYTHON` explicitly** (e.g. `3.14`).
+While it defaults to `PRIMARY_PYTHON`, relying on that default is not recommended.
 ```
 
 ```{note}
-With UV + `UV_PYTHON` explicitly set:
-- `PRIMARY_PYTHON` is **not needed** (only used as UV_PYTHON default)
-- `PYTHON_MIN_VERSION` is **not needed** (validation skipped with global UV)
+With the uv variant and `UV_PYTHON` set explicitly:
+- `PRIMARY_PYTHON` is **not needed** (only used as the `UV_PYTHON` default)
+- `PYTHON_MIN_VERSION` is **not needed** (uv manages the interpreter)
 
-These settings are **only required** for pip-based workflows.
+These settings are **only required** for the pip variant.
 ```
 
 ## How to use on the Windows operating system
@@ -279,7 +284,7 @@ After installation, run `mxmake update` to regenerate the Makefile.
 
 ### Python version mismatch
 
-If UV uses a different Python version than expected, explicitly set `UV_PYTHON` in your Makefile settings:
+If UV uses a different Python version than expected, explicitly set `UV_PYTHON` under the uv variant settings in your Makefile:
 
 ```makefile
 UV_PYTHON?=3.14

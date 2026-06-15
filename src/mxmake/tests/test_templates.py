@@ -551,9 +551,12 @@ class TestTemplates(testing.RenderTestCase):
 
     @testing.temp_directory
     def test_Makefile(self, tempdir):
-        domains = [topics.get_domain("core.mxenv")]
+        domains = [topics.get_domain("core.mxenv-pip")]
         domains = topics.collect_missing_dependencies(domains)
+        domains = topics.ensure_environment_variant(domains)
+        topics.set_domain_runtime_depends(domains)
         domains = topics.resolve_domain_dependencies(domains)
+        domains = topics.order_environment_variant(domains)
         domain_settings = {
             "core.base.DEPLOY_TARGETS": "",
             "core.base.RUN_TARGET": "",
@@ -563,8 +566,6 @@ class TestTemplates(testing.RenderTestCase):
             "core.base.PROJECT_PATH_PYTHON": "",
             "core.mxenv.PRIMARY_PYTHON": "python3",
             "core.mxenv.PYTHON_MIN_VERSION": "3.10",
-            "core.mxenv.PYTHON_PACKAGE_INSTALLER": "pip",
-            "core.mxenv.UV_PYTHON": "$(PRIMARY_PYTHON)",
             "core.mxenv.VENV_ENABLED": "true",
             "core.mxenv.VENV_CREATE": "true",
             "core.mxenv.VENV_FOLDER": ".venv",
@@ -581,6 +582,45 @@ class TestTemplates(testing.RenderTestCase):
         with (
             (tempdir / "Makefile").open() as result,
             (EXPECTED_DIRECTORY / "Makefile").open() as expected,
+        ):
+            self.checkOutput(
+                expected.read(), result.read(), optionflags=doctest.REPORT_UDIFF
+            )
+
+    @testing.temp_directory
+    def test_Makefile_uv_variant(self, tempdir):
+        domains = [topics.get_domain("core.mxenv-uv")]
+        domains = topics.collect_missing_dependencies(domains)
+        domains = topics.ensure_environment_variant(domains)
+        topics.set_domain_runtime_depends(domains)
+        domains = topics.resolve_domain_dependencies(domains)
+        domains = topics.order_environment_variant(domains)
+        domain_settings = {
+            "core.base.DEPLOY_TARGETS": "",
+            "core.base.RUN_TARGET": "",
+            "core.base.CLEAN_FS": "",
+            "core.base.INCLUDE_MAKEFILE": "include.mk",
+            "core.base.EXTRA_PATH": "",
+            "core.base.PROJECT_PATH_PYTHON": "",
+            "core.mxenv.PRIMARY_PYTHON": "python3",
+            "core.mxenv.PYTHON_MIN_VERSION": "3.10",
+            "core.mxenv.VENV_ENABLED": "true",
+            "core.mxenv.VENV_CREATE": "true",
+            "core.mxenv.VENV_FOLDER": ".venv",
+            "core.mxenv.MXDEV": "mxdev",
+            "core.mxenv.MXMAKE": "mxmake",
+            "core.mxenv-uv.UV_PYTHON": "$(PRIMARY_PYTHON)",
+            "core.mxenv-uv.UV_PROVISION": "pip",
+            "core.mxenv-uv.TOOL_EXECUTION": "uvx",
+        }
+        factory = templates.template.lookup("makefile")
+        template = factory(
+            tempdir, domains, domain_settings, templates.get_template_environment()
+        )
+        template.write()
+        with (
+            (tempdir / "Makefile").open() as result,
+            (EXPECTED_DIRECTORY / "Makefile-uv").open() as expected,
         ):
             self.checkOutput(
                 expected.read(), result.read(), optionflags=doctest.REPORT_UDIFF

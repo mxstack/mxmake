@@ -28,18 +28,18 @@ endif
 BLACK_TARGET:=$(SENTINEL_FOLDER)/black.sentinel
 $(BLACK_TARGET): $(MXENV_TARGET)
 	@echo "Install Black"
-	@$(PYTHON_PACKAGE_COMMAND) install black
+	@$(call INSTALL_TOOL,black)
 	@touch $(BLACK_TARGET)
 
 .PHONY: black-check
 black-check: $(BLACK_TARGET)
 	@echo "Run black checks"
-	@black --check $(BLACK_SRC)
+	@$(call RUN_TOOL,black,,--check $(BLACK_SRC))
 
 .PHONY: black-format
 black-format: $(BLACK_TARGET)
 	@echo "Run black format"
-	@black $(BLACK_SRC)
+	@$(call RUN_TOOL,black,,$(BLACK_SRC))
 
 .PHONY: black-dirty
 black-dirty:
@@ -47,7 +47,7 @@ black-dirty:
 
 .PHONY: black-clean
 black-clean: black-dirty
-	@test -e $(MXENV_PYTHON) && $(MXENV_PYTHON) -m pip uninstall -y black || :
+	@$(call UNINSTALL_TOOL,black)
 
 INSTALL_TARGETS+=$(BLACK_TARGET)
 CHECK_TARGETS+=black-check
