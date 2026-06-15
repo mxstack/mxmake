@@ -58,7 +58,7 @@ jobs:
     steps:
     - uses: actions/checkout@v6
     - name: Set up uv
-      uses: astral-sh/setup-uv@v5
+      uses: astral-sh/setup-uv@v7
     - name: VENV created with uv
       run: |
         make VENV_ENABLED=true VENV_CREATE=true PRIMARY_PYTHON=python3 UV_PYTHON=${{ matrix.python-version }} test
