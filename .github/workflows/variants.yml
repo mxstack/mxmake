@@ -18,7 +18,7 @@ jobs:
       run:
         shell: bash
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v7
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v6
       with:
@@ -56,7 +56,7 @@ jobs:
       run:
         shell: bash
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v7
     - name: Set up uv
       uses: astral-sh/setup-uv@v5
     - name: VENV created with uv
@@ -85,7 +85,7 @@ jobs:
         apt-get update
         apt-get install -y make curl ca-certificates git
 
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v7
 
     - name: Install UV globally
       run: |
