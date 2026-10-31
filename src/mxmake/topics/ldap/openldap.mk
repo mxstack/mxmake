@@ -14,7 +14,7 @@
 #:
 #:[setting.OPENLDAP_VERSION]
 #:description = OpenLDAP version to download
-#:default = 2.4.59
+#:default = 2.6.16
 #:
 #:[setting.OPENLDAP_URL]
 #:description = OpenLDAP base download URL

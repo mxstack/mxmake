@@ -2,6 +2,12 @@
 
 ## 3.0.0
 
+- Change the default `OPENLDAP_VERSION` of the `ldap.openldap` domain from
+  2.4.59 to 2.6.16. The `configure` script of OpenLDAP 2.4 fails with GCC 14
+  and later, its test programs use implicit `int` and implicit function
+  declarations, which are errors by default now. OpenLDAP 2.5 and later
+  removed `back-bdb` and `back-hdb`, use `back-mdb`.
+  [rnix, 2026-10-31]
 - Split `core.mxenv` into a shared base plus `core.mxenv-pip` and `core.mxenv-uv`
   environment variants. The package installer is now chosen by selecting a variant
   instead of the removed `PYTHON_PACKAGE_INSTALLER` setting. QA dev-tool execution
